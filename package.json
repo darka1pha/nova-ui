@@ -1,0 +1,36 @@
+{
+  "name": "kaleido-monorepo",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@12.5.1",
+  "engines": {
+    "node": ">=20.19"
+  },
+  "scripts": {
+    "build": "pnpm --filter \"./packages/**\" run build",
+    "build:docs": "pnpm --filter @kaleido/docs run build",
+    "dev": "pnpm --filter @kaleido/docs run dev",
+    "typecheck": "pnpm -r run typecheck",
+    "lint": "eslint .",
+    "test": "pnpm --filter \"./packages/**\" run test",
+    "test:e2e": "pnpm --filter @kaleido/docs run test:e2e",
+    "verify:install": "node scripts/verify-install.mjs",
+    "pack:local": "node scripts/pack-local.mjs",
+    "install:local": "node scripts/install-local.mjs",
+    "size": "pnpm --filter @kaleido/ui run size",
+    "check": "pnpm build && pnpm typecheck && pnpm lint && pnpm test && pnpm build:docs && pnpm verify:install",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "pnpm build && changeset publish"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^3.0.3",
+    "@eslint/js": "^10.0.0",
+    "eslint": "^10.13.0",
+    "eslint-plugin-react-hooks": "^7.0.0",
+    "globals": "^16.0.0",
+    "typescript": "~6.0.0",
+    "typescript-eslint": "^8.72.1",
+    "@types/node": "^24.0.0"
+  }
+}

@@ -1,0 +1,10 @@
+packages:
+  - packages/*
+  - apps/*
+
+# @parcel/watcher (Tailwind CLI) ships prebuilt binaries; its install script is not needed.
+allowBuilds:
+  "@parcel/watcher": false
+
+minimumReleaseAgeExclude:
+  - lucide-react@1.63.0
