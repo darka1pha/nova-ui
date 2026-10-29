@@ -1,0 +1,23 @@
+{
+  "name": "kaleido-vite-example",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "@kaleido/tokens": "file:./vendor/kaleido/kaleido-tokens-20261029070709.tgz",
+    "@kaleido/ui": "file:./vendor/kaleido/kaleido-ui-20261029070709.tgz"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.1.2",
+    "vite": "^8.3.5"
+  },
+  "overrides": {
+    "@kaleido/tokens": "$@kaleido/tokens"
+  }
+}
