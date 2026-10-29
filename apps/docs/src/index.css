@@ -1,0 +1,34 @@
+/* The docs app is a normal Tailwind v4 consumer of Kaleido. */
+@import "tailwindcss";
+@import "@kaleido/ui/tailwind.css";
+
+@source "../src";
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+body {
+  margin: 0;
+  background: var(--ks-color-background);
+}
+.ks-theme {
+  min-height: 100dvh;
+}
+
+/* Easing demo dots on the Motion page. */
+.ks-ease-demo {
+  left: 0;
+  animation: ks-docs-ease 1.8s infinite alternate;
+}
+@keyframes ks-docs-ease {
+  to {
+    left: calc(100% - 0.75rem);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ks-ease-demo {
+    animation: none;
+  }
+}
