@@ -65,8 +65,8 @@ export type BadgeVariant = Tone | "outline" | "gradient";
 export interface BadgeProps extends HTMLAttributes<HTMLSpanElement>, VariantProps<typeof badgeBase> {
   /** A semantic tone, or "outline"/"gradient". */
   variant?: BadgeVariant;
-  /** For tones: soft (tinted, default), solid (filled) or outline. */
-  appearance?: "soft" | "solid" | "outline";
+  /** For tones: soft (tinted, default), solid (filled), outline, glass or clay. */
+  appearance?: "soft" | "solid" | "outline" | "glass" | "clay";
   /** Leading status dot. */
   dot?: boolean;
   /** Pulse the dot to signal something live (disabled under reduced motion). */
@@ -79,11 +79,15 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(function Badge({ va
   const look =
     variant === "gradient"
       ? "bg-(image:--ks-gradient-brand) text-primary-on-solid"
-      : variant === "outline" || appearance === "outline"
-        ? toneOutline[tone]
-        : appearance === "solid"
-          ? toneSolid[tone]
-          : toneSoft[tone];
+      : appearance === "glass"
+        ? "bg-(--ks-glass-bg) backdrop-blur-sm border border-(--ks-glass-border) text-foreground shadow-(--ks-shadow-glass)"
+        : appearance === "clay"
+          ? "rounded-full border-0 bg-surface text-foreground shadow-(--ks-shadow-clay)"
+          : variant === "outline" || appearance === "outline"
+            ? toneOutline[tone]
+            : appearance === "solid"
+              ? toneSolid[tone]
+              : toneSoft[tone];
   return (
     <span ref={ref} className={cn(badgeBase({ size }), look, className)} {...props}>
       {dot || pulse ? (

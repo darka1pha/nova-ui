@@ -83,11 +83,149 @@
     background-size: 100% 1.5px;
   }
 
+  /* Frosted translucent glass surface */
+  .ks-glass {
+    background-color: var(--ks-glass-bg);
+    backdrop-filter: blur(var(--ks-glass-blur)) saturate(160%);
+    -webkit-backdrop-filter: blur(var(--ks-glass-blur)) saturate(160%);
+    border: 1px solid var(--ks-glass-border);
+    box-shadow: var(--ks-shadow-glass);
+  }
+
+  .ks-glass-card {
+    background-color: var(--ks-glass-bg);
+    backdrop-filter: blur(var(--ks-glass-blur)) saturate(160%);
+    -webkit-backdrop-filter: blur(var(--ks-glass-blur)) saturate(160%);
+    border: 1px solid var(--ks-glass-border);
+    box-shadow: var(--ks-shadow-glass);
+    border-radius: var(--ks-card-radius);
+    transition:
+      background-color var(--ks-duration-fast) var(--ks-ease-standard),
+      box-shadow var(--ks-duration-normal) var(--ks-ease-standard),
+      translate var(--ks-duration-normal) var(--ks-ease-interactive);
+  }
+  .ks-glass-card:hover {
+    background-color: var(--ks-glass-bg-hover);
+    box-shadow: var(--ks-shadow-lg), var(--ks-shadow-glass);
+    translate: 0 var(--ks-hover-lift);
+  }
+
+  /* Tactile 3D Claymorphism: inflated cushion depth with dual inner highlights & floating drop shadow */
+  .ks-clay {
+    background-color: var(--ks-color-surface);
+    box-shadow: var(--ks-shadow-clay);
+    border-radius: var(--ks-radius-xl);
+    border: none;
+    transition:
+      box-shadow var(--ks-duration-normal) var(--ks-ease-interactive),
+      translate var(--ks-duration-normal) var(--ks-ease-interactive),
+      scale var(--ks-duration-fast) var(--ks-ease-interactive);
+  }
+  .ks-clay:hover {
+    translate: 0 var(--ks-hover-lift);
+  }
+  .ks-clay:active {
+    box-shadow: var(--ks-shadow-clay-press);
+    scale: var(--ks-press-scale);
+  }
+
+  .ks-clay-card {
+    background-color: var(--ks-color-surface);
+    box-shadow: var(--ks-shadow-clay);
+    border-radius: var(--ks-radius-2xl);
+    border: none;
+    transition:
+      box-shadow var(--ks-duration-normal) var(--ks-ease-interactive),
+      translate var(--ks-duration-normal) var(--ks-ease-interactive);
+  }
+  .ks-clay-card:hover {
+    translate: 0 var(--ks-hover-lift);
+  }
+
+  .ks-clay-primary {
+    background-color: var(--ks-color-primary-solid);
+    color: var(--ks-color-primary-on-solid);
+    box-shadow: var(--ks-shadow-clay-primary);
+    border-radius: var(--ks-radius-xl);
+    border: none;
+    transition:
+      box-shadow var(--ks-duration-normal) var(--ks-ease-interactive),
+      translate var(--ks-duration-normal) var(--ks-ease-interactive),
+      scale var(--ks-duration-fast) var(--ks-ease-interactive);
+  }
+  .ks-clay-primary:hover {
+    translate: 0 var(--ks-hover-lift);
+  }
+  .ks-clay-primary:active {
+    box-shadow: var(--ks-shadow-clay-press);
+    scale: var(--ks-press-scale);
+  }
+
+  .ks-clay-secondary {
+    background-color: var(--ks-color-secondary-solid);
+    color: var(--ks-color-secondary-on-solid);
+    box-shadow: var(--ks-shadow-clay-secondary);
+    border-radius: var(--ks-radius-xl);
+    border: none;
+  }
+
+  .ks-clay-accent {
+    background-color: var(--ks-color-accent-solid);
+    color: var(--ks-color-accent-on-solid);
+    box-shadow: var(--ks-shadow-clay-accent);
+    border-radius: var(--ks-radius-xl);
+    border: none;
+  }
+
+  /* Neumorphism: Soft extruded and sunken material surfaces */
+  .ks-neomorph {
+    background-color: var(--ks-color-surface);
+    box-shadow: var(--ks-shadow-neomorph);
+    border: none;
+    transition: box-shadow var(--ks-duration-normal) var(--ks-ease-standard);
+  }
+  .ks-neomorph:active {
+    box-shadow: var(--ks-shadow-neomorph-inset);
+  }
+
+  .ks-neomorph-inset {
+    background-color: var(--ks-color-surface-sunken);
+    box-shadow: var(--ks-shadow-neomorph-inset);
+    border: none;
+  }
+
+  /* Radiant ambient glow halo */
+  .ks-glow-halo {
+    position: relative;
+    isolation: isolate;
+  }
+  .ks-glow-halo::before {
+    content: "";
+    position: absolute;
+    inset: -3px;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--ks-gradient-brand);
+    filter: blur(8px);
+    opacity: 0.65;
+    transition: opacity var(--ks-duration-normal) var(--ks-ease-standard), filter var(--ks-duration-normal) var(--ks-ease-standard);
+  }
+  .ks-glow-halo:hover::before {
+    opacity: 0.95;
+    filter: blur(12px);
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .ks-lift:hover,
     .ks-lift:focus-within,
     .ks-press:active,
-    .ks-grow:hover {
+    .ks-grow:hover,
+    .ks-clay:hover,
+    .ks-clay:active,
+    .ks-clay-card:hover,
+    .ks-clay-primary:hover,
+    .ks-clay-primary:active,
+    .ks-glass-card:hover {
       translate: none;
       scale: none;
     }
@@ -97,7 +235,7 @@
       display: none;
     }
   }
-  [data-ks-motion="reduce"] :is(.ks-lift, .ks-press, .ks-grow) {
+  [data-ks-motion="reduce"] :is(.ks-lift, .ks-press, .ks-grow, .ks-clay, .ks-clay-card, .ks-clay-primary, .ks-glass-card) {
     translate: none !important;
     scale: none !important;
   }

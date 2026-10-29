@@ -504,4 +504,39 @@ describe("Accessibility (axe)", () => {
     const { container } = wrap(<Screen />);
     expect(await axeViolations(container)).toEqual([]);
   });
+
+  describe("Surface Styles (Glassmorphism, Claymorphism, Neumorphism)", () => {
+    it("renders Card variants for glass, clay and neomorphic", () => {
+      wrap(
+        <div>
+          <Card variant="glass" data-testid="card-glass">Glass Card</Card>
+          <Card variant="clay" interactive data-testid="card-clay">Clay Card</Card>
+          <Card variant="neomorphic" data-testid="card-neomorph">Neomorphic Card</Card>
+        </div>,
+      );
+      const glass = screen.getByTestId("card-glass");
+      expect(glass.className).toContain("backdrop-blur");
+      const clay = screen.getByTestId("card-clay");
+      expect(clay.className).toContain("shadow-(--ks-shadow-clay)");
+      const neomorph = screen.getByTestId("card-neomorph");
+      expect(neomorph.className).toContain("shadow-(--ks-shadow-neomorph)");
+    });
+
+    it("renders Button and Badge with glass and clay styles", () => {
+      wrap(
+        <div>
+          <Button variant="glass">Glass Button</Button>
+          <Button variant="clay">Clay Button</Button>
+          <Button variant="neomorphic">Neomorph Button</Button>
+          <Badge appearance="glass">Glass Badge</Badge>
+          <Badge appearance="clay">Clay Badge</Badge>
+        </div>,
+      );
+      expect(screen.getByRole("button", { name: "Glass Button" }).className).toContain("backdrop-blur");
+      expect(screen.getByRole("button", { name: "Clay Button" }).className).toContain("shadow-(--ks-shadow-clay-primary)");
+      expect(screen.getByRole("button", { name: "Neomorph Button" }).className).toContain("shadow-(--ks-shadow-neomorph)");
+      expect(screen.getByText("Glass Badge").className).toContain("backdrop-blur-sm");
+      expect(screen.getByText("Clay Badge").className).toContain("shadow-(--ks-shadow-clay)");
+    });
+  });
 });

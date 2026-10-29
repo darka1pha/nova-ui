@@ -275,6 +275,7 @@ export function resolveTheme(theme: ThemeDefinition, options: ResolveOptions = {
     dark: dark.colors,
     radius: theme.radius ?? "md",
     shadow: theme.shadow ?? "soft",
+    surface: theme.surface ?? "classic",
     density: theme.density ?? "comfortable",
     motion: theme.motion ?? "standard",
     fonts: {

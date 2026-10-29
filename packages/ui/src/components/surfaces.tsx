@@ -19,12 +19,38 @@ const cardVariants = cva("relative flex flex-col overflow-hidden rounded-(--ks-c
       /** A gradient border that frames featured content. */
       featured:
         "border border-transparent [background:linear-gradient(var(--ks-color-surface),var(--ks-color-surface))_padding-box,var(--ks-gradient-vivid)_border-box] shadow-md",
+      /** Frosted translucent glass with backdrop blur and specular rim highlight. */
+      glass:
+        "border border-(--ks-glass-border) bg-(--ks-glass-bg) backdrop-blur-(--ks-glass-blur) backdrop-saturate-150 shadow-(--ks-shadow-glass)",
+      /** 3D tactile inflated clay aesthetic with dual highlights and floating shadow. */
+      clay:
+        "border-0 rounded-(--ks-radius-2xl) bg-surface shadow-(--ks-shadow-clay)",
+      /** Soft extruded material surface extruded from the background plane. */
+      neomorphic:
+        "border-0 bg-surface shadow-(--ks-shadow-neomorph)",
     },
     interactive: {
       true: `cursor-pointer hover:translate-y-(--ks-hover-lift) hover:shadow-lg hover:border-border-strong active:translate-y-0 active:scale-(--ks-press-scale) ${transition} has-[:focus-visible]:translate-y-(--ks-hover-lift) has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus-ring motion-reduce:hover:translate-y-0`,
       false: "",
     },
   },
+  compoundVariants: [
+    {
+      variant: "clay",
+      interactive: true,
+      className: "active:shadow-(--ks-shadow-clay-press) active:scale-(--ks-press-scale)",
+    },
+    {
+      variant: "glass",
+      interactive: true,
+      className: "hover:bg-(--ks-glass-bg-hover)",
+    },
+    {
+      variant: "neomorphic",
+      interactive: true,
+      className: "active:shadow-(--ks-shadow-neomorph-inset)",
+    },
+  ],
   defaultVariants: { variant: "elevated", interactive: false },
 });
 

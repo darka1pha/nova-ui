@@ -108,6 +108,7 @@ registerTheme(acme);            // then <ThemeProvider theme="acme">`}
   mode="system"          // "light" | "dark" | "system" — or omit and use defaultMode
   radius="xl"            // none · sm · md · lg · xl
   density="compact"      // compact · comfortable · spacious
+  surface="glass"        // classic · glass · clay · neomorphic
   motion="reduce"        // force reduced motion
   fonts={{ sans: '"Inter", system-ui' }}
 />`}
@@ -118,6 +119,77 @@ registerTheme(acme);            // then <ThemeProvider theme="acme">`}
             portal into the nearest provider, so a dialog opened inside a "sunset" region is themed "sunset" too.
           </p>
         </Prose>
+      </Section>
+
+      <Section title="Modern surface styles (Glassmorphism, Claymorphism, Neumorphism)">
+        <Prose>
+          <p>
+            Kaleido ships with first-class surface materiality primitives. You can activate them through component variants (<code>&lt;Card variant="glass"&gt;</code>, <code>&lt;Button variant="clay"&gt;</code>) or compose them on any element with utility classes (<code>.ks-glass</code>, <code>.ks-clay</code>, <code>.ks-neomorph</code>, <code>.ks-glow-halo</code>).
+          </p>
+        </Prose>
+
+        <div className="my-6 grid grid-cols-1 md:grid-cols-3 gap-5 p-6 rounded-2xl border border-border bg-surface-sunken">
+          {/* Glassmorphic Card */}
+          <Card variant="glass" interactive className="p-5 gap-3">
+            <div className="flex items-center justify-between">
+              <Text weight="bold" className="font-display">Glassmorphism</Text>
+              <Badge appearance="glass">Frosted</Badge>
+            </div>
+            <Text size="sm" tone="muted">
+              Translucent frosted backdrop with specular rim highlights, edge reflection, and diffuse ambient blur.
+            </Text>
+            <div className="pt-2 flex gap-2">
+              <Button size="sm" variant="glass">Glass Action</Button>
+            </div>
+          </Card>
+
+          {/* Claymorphic Card */}
+          <Card variant="clay" interactive className="p-5 gap-3">
+            <div className="flex items-center justify-between">
+              <Text weight="bold" className="font-display">Claymorphism</Text>
+              <Badge appearance="clay">3D Tactile</Badge>
+            </div>
+            <Text size="sm" tone="muted">
+              Friendly, inflated cushion aesthetic with dual top-left specular highlight and bottom-right inner shadow.
+            </Text>
+            <div className="pt-2 flex gap-2">
+              <Button size="sm" variant="clay">Clay Button</Button>
+            </div>
+          </Card>
+
+          {/* Neumorphic Card */}
+          <Card variant="neomorphic" interactive className="p-5 gap-3">
+            <div className="flex items-center justify-between">
+              <Text weight="bold" className="font-display">Neumorphism</Text>
+              <Badge variant="neutral">Embossed</Badge>
+            </div>
+            <Text size="sm" tone="muted">
+              Continuous material extrusion with soft directional ambient shadows that seamlessly emerge from the plane.
+            </Text>
+            <div className="pt-2 flex gap-2">
+              <Button size="sm" variant="neomorphic">Neomorph</Button>
+            </div>
+          </Card>
+        </div>
+
+        <CodeBlock
+          code={`// Component variants
+<Card variant="glass">...</Card>
+<Card variant="clay" interactive>...</Card>
+<Card variant="neomorphic">...</Card>
+
+<Button variant="glass">Frosted Glass</Button>
+<Button variant="clay">Tactile 3D Clay</Button>
+<Button variant="neomorphic">Soft Embossed</Button>
+<Badge appearance="glass">Live Glass</Badge>
+<Badge appearance="clay">Tactile Pill</Badge>
+
+// Universal CSS classes
+<div className="ks-glass p-6 rounded-xl">...</div>
+<div className="ks-clay p-6">...</div>
+<div className="ks-neomorph p-6 rounded-2xl">...</div>
+<div className="ks-glow-halo">...</div>`}
+        />
       </Section>
 
       <Section title="Zero-JavaScript theming">

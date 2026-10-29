@@ -54,6 +54,7 @@ export function themeVariables(theme: ResolvedTheme): Record<string, string> {
   vars[p("font-mono")] = theme.fonts.mono;
   for (const [size, value] of Object.entries(SHADOWS[theme.shadow])) vars[p(`shadow-${size}`)] = value;
   for (const [key, value] of Object.entries(scales.motionStyles[theme.motion])) vars[p(key)] = value;
+  vars[p("surface-style")] = theme.surface;
   return vars;
 }
 
@@ -93,6 +94,29 @@ export function staticVariables(): Record<string, string> {
       `0 8px 24px -6px color-mix(in srgb, ${v(`color-${intent}-solid`)} 50%, transparent), 0 2px 6px -2px color-mix(in srgb, ${v(`color-${intent}-solid`)} 35%, transparent)`;
   }
   vars[p("focus-glow")] = `0 0 0 4px color-mix(in srgb, ${v("color-focus-ring")} 22%, transparent)`;
+
+  // Modern surface styles: Glassmorphism, Claymorphism, Neumorphism
+  vars[p("glass-bg")] = `color-mix(in srgb, ${v("color-surface")} 68%, transparent)`;
+  vars[p("glass-bg-hover")] = `color-mix(in srgb, ${v("color-surface-hover")} 78%, transparent)`;
+  vars[p("glass-border")] = `color-mix(in srgb, ${v("color-border")} 45%, transparent)`;
+  vars[p("glass-blur")] = "16px";
+  vars[p("shadow-glass")] = `0 8px 32px 0 color-mix(in srgb, ${v("color-shadow")} 14%, transparent), inset 0 1px 0 0 rgb(255 255 255 / 0.22)`;
+
+  // Claymorphism: 3D tactile inflated clay with dual inner highlights and floating shadow
+  vars[p("shadow-clay")] =
+    `0 16px 32px -8px color-mix(in srgb, ${v("color-shadow")} 20%, transparent), 0 4px 10px 0 color-mix(in srgb, ${v("color-shadow")} 8%, transparent), inset 3px 3px 6px 0 rgb(255 255 255 / 0.35), inset -4px -4px 8px 0 color-mix(in srgb, ${v("color-shadow")} 22%, transparent)`;
+  vars[p("shadow-clay-press")] =
+    `0 6px 16px -4px color-mix(in srgb, ${v("color-shadow")} 18%, transparent), 0 2px 4px 0 color-mix(in srgb, ${v("color-shadow")} 8%, transparent), inset 2px 2px 4px 0 rgb(255 255 255 / 0.2), inset -2px -2px 5px 0 color-mix(in srgb, ${v("color-shadow")} 18%, transparent)`;
+  for (const intent of INTENTS) {
+    vars[p(`shadow-clay-${intent}`)] =
+      `0 16px 32px -8px color-mix(in srgb, ${v(`color-${intent}-solid`)} 35%, transparent), 0 4px 10px 0 color-mix(in srgb, ${v(`color-${intent}-solid`)} 18%, transparent), inset 3px 3px 6px 0 rgb(255 255 255 / 0.45), inset -4px -4px 8px 0 color-mix(in srgb, ${v("color-shadow")} 30%, transparent)`;
+  }
+
+  // Neumorphism: Continuous surface extrusion with directional ambient lighting
+  vars[p("shadow-neomorph")] =
+    `8px 8px 18px 0 color-mix(in srgb, ${v("color-shadow")} 18%, transparent), -8px -8px 18px 0 rgb(255 255 255 / 0.25)`;
+  vars[p("shadow-neomorph-inset")] =
+    `inset 4px 4px 8px 0 color-mix(in srgb, ${v("color-shadow")} 18%, transparent), inset -4px -4px 8px 0 rgb(255 255 255 / 0.25)`;
 
   // Decorative gradients reference semantic colors so they follow the theme.
   vars[p("gradient-brand")] = `linear-gradient(135deg, ${v("color-primary-solid")} 0%, ${v("color-accent-solid")} 100%)`;
@@ -164,6 +188,12 @@ export function tailwindThemeCss(): string {
     ...["xs", "sm", "md", "lg", "xl"].map((s) => `  --shadow-${s}: ${v(`shadow-${s}`)};`),
     ...INTENTS.map((i) => `  --shadow-glow-${i}: ${v(`shadow-glow-${i}`)};`),
     `  --shadow-focus-glow: ${v("focus-glow")};`,
+    `  --shadow-glass: ${v("shadow-glass")};`,
+    `  --shadow-clay: ${v("shadow-clay")};`,
+    `  --shadow-clay-press: ${v("shadow-clay-press")};`,
+    ...INTENTS.map((i) => `  --shadow-clay-${i}: ${v(`shadow-clay-${i}`)};`),
+    `  --shadow-neomorph: ${v("shadow-neomorph")};`,
+    `  --shadow-neomorph-inset: ${v("shadow-neomorph-inset")};`,
     "  --blur-*: initial;",
     ...Object.keys(scales.blur).map((k) => `  --blur-${k}: ${v(`blur-${k}`)};`),
     `  --font-sans: ${v("font-sans")};`,

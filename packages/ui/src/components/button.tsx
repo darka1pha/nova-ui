@@ -47,6 +47,12 @@ export const buttonVariants = cva(
           "[transition-property:background-position,box-shadow,translate,scale] [transition-duration:var(--ks-duration-slowest),var(--ks-duration-normal),var(--ks-duration-slow),var(--ks-duration-slow)] " +
           "after:pointer-events-none after:absolute after:inset-0 after:-translate-x-[110%] after:bg-[linear-gradient(110deg,transparent_30%,rgb(255_255_255/0.32)_50%,transparent_70%)] after:transition-transform after:duration-(--ks-duration-slowest) after:ease-(--ks-ease-out) hover:after:translate-x-[110%] motion-reduce:after:hidden",
         link: "h-auto px-0 text-primary-text underline decoration-transparent underline-offset-4 hover:decoration-current active:scale-100",
+        glass:
+          `bg-(--ks-glass-bg) text-foreground border border-(--ks-glass-border) backdrop-blur-(--ks-glass-blur) backdrop-saturate-150 shadow-(--ks-shadow-glass) hover:bg-(--ks-glass-bg-hover) hover:border-border-strong active:bg-surface-active ${lift}`,
+        clay:
+          `rounded-(--ks-radius-xl) border-0 bg-primary text-primary-on-solid shadow-(--ks-shadow-clay-primary) hover:translate-y-(--ks-hover-lift) active:translate-y-0 active:shadow-(--ks-shadow-clay-press) active:scale-(--ks-press-scale)`,
+        neomorphic:
+          `border-0 bg-surface text-foreground shadow-(--ks-shadow-neomorph) hover:text-primary-text active:shadow-(--ks-shadow-neomorph-inset) active:scale-(--ks-press-scale)`,
       },
       size: {
         xs: "h-(--ks-control-h-xs) px-2.5 text-xs [&_svg]:size-3.5",

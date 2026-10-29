@@ -13,6 +13,7 @@ export type ColorSeed = PaletteName | (string & {}) | ColorScale;
 
 export type RadiusPreset = "none" | "sm" | "md" | "lg" | "xl";
 export type ShadowStyle = "soft" | "crisp" | "flat";
+export type SurfaceStyle = "classic" | "glass" | "clay" | "neomorphic";
 
 export interface ThemeFonts {
   /** Body and UI text. */
@@ -34,6 +35,7 @@ export interface ThemeDefinition {
   /** Overall roundness. Every radius token scales from this. */
   radius?: RadiusPreset;
   shadow?: ShadowStyle;
+  surface?: SurfaceStyle;
   density?: Density;
   /** Motion personality: how far things lift, squash and spring. */
   motion?: MotionStyle;
@@ -66,6 +68,7 @@ export interface ResolvedTheme {
   dark: Record<SemanticColorName, string>;
   radius: RadiusPreset;
   shadow: ShadowStyle;
+  surface: SurfaceStyle;
   density: Density;
   motion: MotionStyle;
   fonts: Required<ThemeFonts>;

@@ -12,6 +12,7 @@ import {
   type RadiusPreset,
   type ResolvedTheme,
   type SemanticOverrides,
+  type SurfaceStyle,
   type ThemeDefinition,
   type ThemeFonts,
 } from "@kaleido/tokens";
@@ -52,6 +53,7 @@ export interface ThemeProviderProps extends Omit<HTMLAttributes<HTMLDivElement>,
    */
   storageKey?: string;
   radius?: RadiusPreset;
+  surface?: SurfaceStyle;
   density?: Density;
   fonts?: ThemeFonts;
   /** `"reduce"` forces reduced motion regardless of the OS setting. */
@@ -115,6 +117,7 @@ export function ThemeProvider({
   onModeChange,
   storageKey,
   radius,
+  surface,
   density,
   fonts,
   motion = "system",
@@ -167,7 +170,7 @@ export function ThemeProvider({
   const resolvedMode: ColorMode = inherits ? parent.resolvedMode : mode === "system" ? (systemDark ? "dark" : "light") : mode;
 
   const isDefaultLook =
-    resolved.id === defaultTheme.id && !brand && !overrides && !fonts && !radius && !density && !motionStyle;
+    resolved.id === defaultTheme.id && !brand && !overrides && !fonts && !radius && !surface && !density && !motionStyle;
   const fontKey = JSON.stringify(fonts);
   const vars = useMemo(() => {
     // The default theme ships in styles.css already; only emit what differs.
@@ -175,13 +178,14 @@ export function ThemeProvider({
     const all = themeVariables({
       ...resolved,
       radius: radius ?? resolved.radius,
+      surface: surface ?? resolved.surface,
       density: density ?? resolved.density,
       motion: motionStyle ?? resolved.motion,
       fonts: { ...resolved.fonts, ...fonts },
     });
     return all;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [resolved, radius, density, motionStyle, fontKey, isDefaultLook, parent]);
+  }, [resolved, radius, surface, density, motionStyle, fontKey, isDefaultLook, parent]);
 
   const dir = dirProp ?? parent?.dir ?? "ltr";
   const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(null);
@@ -205,6 +209,7 @@ export function ThemeProvider({
           data-ks-motion={motion === "reduce" ? "reduce" : undefined}
           data-ks-density={density ?? resolved.density}
           data-ks-motion-style={motionStyle ?? resolved.motion}
+          data-ks-surface={surface ?? resolved.surface}
           className={className ? `ks-theme ${className}` : "ks-theme"}
           style={{ ...(vars as CSSProperties), ...style }}
         >

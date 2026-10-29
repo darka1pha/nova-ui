@@ -155,6 +155,26 @@ describe("CSS output", () => {
     expect(statics["--ks-shadow-glow-primary"]).toContain("var(--ks-color-primary-solid)");
   });
 
+  it("emits surface styling tokens (glass, clay, neomorph)", () => {
+    const statics = staticVariables();
+    expect(statics["--ks-glass-bg"]).toContain("var(--ks-color-surface)");
+    expect(statics["--ks-shadow-glass"]).toContain("var(--ks-color-shadow)");
+    expect(statics["--ks-shadow-clay"]).toContain("inset");
+    expect(statics["--ks-shadow-clay-primary"]).toContain("var(--ks-color-primary-solid)");
+    expect(statics["--ks-shadow-neomorph"]).toContain("var(--ks-color-shadow)");
+    expect(statics["--ks-shadow-neomorph-inset"]).toContain("inset");
+
+    const vibrant = getResolvedTheme("vibrant");
+    expect(vibrant.surface).toBe("classic");
+    const vars = themeVariables(vibrant);
+    expect(vars["--ks-surface-style"]).toBe("classic");
+
+    const css = tailwindThemeCss();
+    expect(css).toContain("--shadow-glass: var(--ks-shadow-glass);");
+    expect(css).toContain("--shadow-clay: var(--ks-shadow-clay);");
+    expect(css).toContain("--shadow-neomorph: var(--ks-shadow-neomorph);");
+  });
+
   it("scopes theme CSS to a selector", () => {
     expect(themeCss(getResolvedTheme("berry"))).toMatch(/^\[data-ks-theme="berry"\] \{/);
   });
