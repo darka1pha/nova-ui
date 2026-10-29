@@ -5,6 +5,7 @@ const routes = [
   "home",
   "getting-started",
   "playground",
+  "template",
   "theming",
   "tokens",
   "motion",

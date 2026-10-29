@@ -28,6 +28,7 @@ import {
   CardTitle,
   Checkbox,
   Code,
+  cn,
   Combobox,
   CommandEmpty,
   CommandGroup,
@@ -107,13 +108,19 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-  Sidebar,
+  DualSidebar,
+  FloatingSidebar,
+  ResponsiveSidebar,
+  SidebarInset,
   SidebarItem,
+  SidebarProvider,
   SidebarSection,
+  SidebarTrigger,
   Skeleton,
   Slider,
   Spinner,
   Stack,
+  Stat,
   StatusIndicator,
   Switch,
   Tabs,
@@ -122,11 +129,13 @@ import {
   TabsTrigger,
   Text,
   Textarea,
+  ThemeProvider,
   Toggle,
   ToggleGroup,
   ToggleGroupItem,
   Tooltip,
   chartColors,
+  presets,
   toast,
   type DataTableColumn,
 } from "@kaleido/ui";
@@ -137,19 +146,25 @@ import {
   ArrowRight,
   Bold,
   Calendar,
+  Compass,
   Copy,
   CreditCard,
   Download,
+  Folder,
   Heart,
   Home,
   Inbox,
   Italic,
+  Layers,
   Mail,
+  Moon,
   MoreHorizontal,
   Plus,
   Search,
   Settings,
+  Sun,
   Trash2,
+  TrendingUp,
   Underline,
   Users,
 } from "lucide-react";
@@ -941,6 +956,384 @@ export function OverlaysPage() {
   );
 }
 
+/* -------------------------------------------------- Sidebar Showcase Demo */
+
+function InteractiveSidebarShowcase() {
+  const [activePage, setActivePage] = useState<"dashboard" | "inbox" | "analytics" | "projects" | "team" | "settings">("dashboard");
+  const [demoTheme, setDemoTheme] = useState<string>("vibrant");
+  const [demoMode, setDemoMode] = useState<"light" | "dark">("light");
+  const [sidebarVariant, setSidebarVariant] = useState<"inset" | "dual" | "floating">("inset");
+  const [unreadCount, setUnreadCount] = useState(4);
+  const [activeWorkspace, setActiveWorkspace] = useState("ws-1");
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+
+  const renderActivePageContent = () => {
+    switch (activePage) {
+      case "dashboard":
+        return (
+          <div className="flex flex-col gap-4 animate-ks-fade-in animate-ks-slide-up">
+            <div className="flex flex-col gap-1">
+              <Heading level={3} size="xs">Workspace Overview</Heading>
+              <Text size="xs" tone="muted">Key telemetry and operational health for current cycle</Text>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <Stat label="Monthly Revenue" value="$128,450" delta={18.4} trend={[12, 19, 24, 21, 35, 48, 52, 60]} />
+              <Stat label="Active Users" value="2,410" delta={8.2} trend={[10, 14, 18, 22, 28, 30, 36, 42]} />
+              <Stat label="Service Uptime" value="99.98%" delta={0.02} trend={[99, 99, 100, 99, 100, 100, 100, 100]} />
+            </div>
+            <Card variant="outline" className="p-4 gap-2.5">
+              <Text size="xs" weight="semibold">Recent Operations</Text>
+              <div className="flex flex-col gap-2">
+                {[
+                  { text: "Deployed v0.2.0 to production cluster", time: "12m ago", user: "Sara K." },
+                  { text: "Design token preset 'kaveh' added and audited", time: "34m ago", user: "Omrani" },
+                  { text: "Accessibility test suite passed 100% WCAG AA", time: "1h ago", user: "CI Bot" },
+                ].map((item, idx) => (
+                  <div key={idx} className="flex items-center justify-between text-xs py-1 border-b border-border/50 last:border-0">
+                    <div className="flex items-center gap-2">
+                      <span className="size-1.5 rounded-full bg-primary" />
+                      <Text size="xs">{item.text}</Text>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge size="sm" variant="neutral">{item.user}</Badge>
+                      <Text size="xs" tone="muted">{item.time}</Text>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </div>
+        );
+
+      case "inbox":
+        return (
+          <div className="flex flex-col gap-3 animate-ks-fade-in animate-ks-slide-up">
+            <div className="flex items-center justify-between">
+              <div className="flex flex-col">
+                <Heading level={3} size="xs">Notifications & Messages</Heading>
+                <Text size="xs" tone="muted">{unreadCount} unread message{unreadCount === 1 ? "" : "s"}</Text>
+              </div>
+              {unreadCount > 0 ? (
+                <Button size="xs" variant="outline" onClick={() => setUnreadCount(0)}>
+                  Mark all as read
+                </Button>
+              ) : (
+                <Badge size="sm" variant="success">All caught up</Badge>
+              )}
+            </div>
+            <div className="flex flex-col gap-2">
+              {[
+                { title: "Security Alert: New Sign-in", from: "Auth Service", time: "5m ago", desc: "Detected new session from Chrome on Windows", unread: unreadCount >= 1 },
+                { title: "Weekly Design System Sync", from: "Elena Rostova", time: "42m ago", desc: "Reviewing responsive sidebar animation curves", unread: unreadCount >= 2 },
+                { title: "Tokens generated for Figma", from: "Sync Bot", time: "2h ago", desc: "Tokens v0.2.0 export published to CDN", unread: unreadCount >= 3 },
+                { title: "Pull Request approved: feat(ui)", from: "Dev Lead", time: "4h ago", desc: "All 93 tests passing cleanly", unread: unreadCount >= 4 },
+              ].map((msg, i) => (
+                <Card key={i} variant={msg.unread ? "elevated" : "outline"} className={cn("p-3 flex-row items-center gap-3 transition-colors", msg.unread && "border-primary/40 bg-primary-subtle/30")}>
+                  <Avatar name={msg.from} size="sm" />
+                  <div className="flex flex-col min-w-0 flex-1">
+                    <div className="flex items-center justify-between">
+                      <Text size="xs" weight={msg.unread ? "semibold" : "medium"} className="truncate">{msg.title}</Text>
+                      <Text size="xs" tone="muted">{msg.time}</Text>
+                    </div>
+                    <Text size="xs" tone="muted" className="truncate">{msg.desc}</Text>
+                  </div>
+                  {msg.unread ? <span className="size-2 rounded-full bg-primary shrink-0 animate-ks-pulse" /> : null}
+                </Card>
+              ))}
+            </div>
+          </div>
+        );
+
+      case "analytics":
+        return (
+          <div className="flex flex-col gap-4 animate-ks-fade-in animate-ks-slide-up">
+            <div className="flex flex-col gap-1">
+              <Heading level={3} size="xs">Usage & Telemetry</Heading>
+              <Text size="xs" tone="muted">API requests and component render volume by module</Text>
+            </div>
+            <Card variant="outline" className="p-4 gap-3">
+              <BarList
+                aria-label="Component usage"
+                data={[
+                  { label: "@kaleido/ui: ResponsiveSidebar", value: 6840 },
+                  { label: "@kaleido/ui: Button & Actions", value: 5410 },
+                  { label: "@kaleido/tokens: Color Engine", value: 4230 },
+                  { label: "@kaleido/ui: Forms & Select", value: 3120 },
+                  { label: "@kaleido/ui: Charts & Sparkline", value: 2090 },
+                ]}
+              />
+            </Card>
+          </div>
+        );
+
+      case "projects":
+        return (
+          <div className="flex flex-col gap-3 animate-ks-fade-in animate-ks-slide-up">
+            <div className="flex items-center justify-between">
+              <Heading level={3} size="xs">Active Projects</Heading>
+              <Button size="xs" variant="primary">New project</Button>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {[
+                { name: "Kaleido UI Components", progress: 92, status: "Active", badge: "primary" as const },
+                { name: "Design Tokens & Engine", progress: 100, status: "Complete", badge: "success" as const },
+                { name: "Playwright Regression Suite", progress: 84, status: "Testing", badge: "warning" as const },
+                { name: "Mobile App Navigation", progress: 65, status: "In Progress", badge: "neutral" as const },
+              ].map((proj) => (
+                <Card key={proj.name} variant="outline" className="p-3.5 gap-2.5">
+                  <div className="flex items-center justify-between">
+                    <Text size="xs" weight="semibold">{proj.name}</Text>
+                    <Badge size="sm" variant={proj.badge}>{proj.status}</Badge>
+                  </div>
+                  <Progress value={proj.progress} size="sm" />
+                  <div className="flex items-center justify-between text-2xs text-foreground-muted">
+                    <span>Progress: {proj.progress}%</span>
+                    <AvatarGroup max={3} size="sm">
+                      {["Omrani", "Alex", "Elena"].map((n) => (
+                        <Avatar key={n} name={n} size="sm" />
+                      ))}
+                    </AvatarGroup>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>
+        );
+
+      case "team":
+        return (
+          <div className="flex flex-col gap-3 animate-ks-fade-in animate-ks-slide-up">
+            <div className="flex items-center justify-between">
+              <Heading level={3} size="xs">Team Members</Heading>
+              <Badge size="sm" variant="primary">4 Online</Badge>
+            </div>
+            <div className="flex flex-col gap-2">
+              {[
+                { name: "Omrani", role: "Design Systems Architect", email: "abolfazl@example.com", online: true },
+                { name: "Alex Morgan", role: "Frontend Engineer", email: "alex@company.com", online: true },
+                { name: "Elena Rostova", role: "Product Designer", email: "elena@company.com", online: true },
+                { name: "Sarah Chen", role: "QA & Accessibility", email: "sarah@company.com", online: false },
+              ].map((member) => (
+                <Card key={member.email} variant="outline" className="p-2.5 flex-row items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <Avatar name={member.name} size="sm" />
+                    <div className="flex flex-col">
+                      <Text size="xs" weight="semibold">{member.name}</Text>
+                      <Text size="xs" tone="muted">{member.role} · {member.email}</Text>
+                    </div>
+                  </div>
+                  <StatusIndicator status={member.online ? "online" : "offline"} label={member.online ? "Online" : "Away"} />
+                </Card>
+              ))}
+            </div>
+          </div>
+        );
+
+      case "settings":
+        return (
+          <div className="flex flex-col gap-4 animate-ks-fade-in animate-ks-slide-up">
+            <div className="flex flex-col gap-1">
+              <Heading level={3} size="xs">Preferences & Configuration</Heading>
+              <Text size="xs" tone="muted">Manage your workspace navigation behavior and notifications</Text>
+            </div>
+            <Card variant="outline" className="p-4 gap-3">
+              <div className="flex items-center justify-between">
+                <div className="flex flex-col">
+                  <Text size="xs" weight="medium">Push Notifications</Text>
+                  <Text size="xs" tone="muted">Receive real-time alerts when assignments change</Text>
+                </div>
+                <Switch checked={notificationsEnabled} onCheckedChange={setNotificationsEnabled} />
+              </div>
+              <Separator />
+              <div className="flex items-center justify-between">
+                <div className="flex flex-col">
+                  <Text size="xs" weight="medium">Keyboard Navigation</Text>
+                  <Text size="xs" tone="muted">Enable Ctrl+B / Cmd+B shortcut to toggle sidebar</Text>
+                </div>
+                <Badge size="sm" variant="success">Enabled</Badge>
+              </div>
+              <Separator />
+              <div className="flex items-center justify-between">
+                <div className="flex flex-col">
+                  <Text size="xs" weight="medium">Active Color Mode</Text>
+                  <Text size="xs" tone="muted">Currently running in {demoMode} mode with '{demoTheme}' preset</Text>
+                </div>
+                <Button size="xs" variant="outline" onClick={() => setDemoMode(m => m === "light" ? "dark" : "light")}>
+                  Switch to {demoMode === "light" ? "Dark" : "Light"}
+                </Button>
+              </div>
+            </Card>
+          </div>
+        );
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-3 w-full">
+      {/* Top Interactive Controls Toolbar */}
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-surface-raised p-2.5 shadow-xs">
+        <div className="flex items-center gap-2">
+          <Badge size="sm" variant="primary">Interactive Demo</Badge>
+          <Tabs value={sidebarVariant} onValueChange={(v) => setSidebarVariant(v as never)} variant="segmented">
+            <TabsList>
+              <TabsTrigger value="inset">Responsive Inset</TabsTrigger>
+              <TabsTrigger value="dual">Dual Rail</TabsTrigger>
+              <TabsTrigger value="floating">Floating Island</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
+
+        <div className="flex items-center gap-2 ms-auto">
+          <Text size="xs" weight="medium" className="hidden sm:inline">Theme Preset:</Text>
+          <Select value={demoTheme} onValueChange={setDemoTheme}>
+            <SelectTrigger size="sm" className="w-32 h-8 text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {Object.values(presets).map((p) => (
+                <SelectItem key={p.id} value={p.id}>
+                  {p.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <IconButton
+            size="sm"
+            variant="outline"
+            className="size-8"
+            aria-label="Toggle demo mode"
+            onClick={() => setDemoMode((m) => (m === "light" ? "dark" : "light"))}
+          >
+            {demoMode === "light" ? <Moon className="size-3.5" /> : <Sun className="size-3.5" />}
+          </IconButton>
+        </div>
+      </div>
+
+      {/* Interactive Render Container */}
+      <ThemeProvider theme={demoTheme} mode={demoMode}>
+        <div className="relative flex h-[540px] w-full flex-col overflow-hidden rounded-2xl border border-border bg-surface text-foreground shadow-md transition-colors duration-(--ks-duration-normal)">
+          {sidebarVariant === "inset" ? (
+            <SidebarProvider defaultOpen className="h-full min-h-0 flex-row w-full bg-surface-sunken">
+              <ResponsiveSidebar
+                label="App Navigation"
+                brand={{
+                  logo: <span className="flex size-7 items-center justify-center rounded-lg bg-primary text-primary-on-solid font-bold text-xs shadow-xs animate-ks-pop-in">K</span>,
+                  title: "Kaleido Studio",
+                  subtitle: `${demoTheme.charAt(0).toUpperCase() + demoTheme.slice(1)} Edition`,
+                }}
+                groups={[
+                  {
+                    title: "Overview",
+                    items: [
+                      { title: "Dashboard", icon: <Home />, isActive: activePage === "dashboard", onClick: () => setActivePage("dashboard") },
+                      { title: "Inbox", icon: <Inbox />, isActive: activePage === "inbox", badge: unreadCount > 0 ? <Badge size="sm" variant="primary">{unreadCount}</Badge> : null, onClick: () => setActivePage("inbox") },
+                      { title: "Analytics", icon: <Layers />, isActive: activePage === "analytics", onClick: () => setActivePage("analytics") },
+                    ],
+                  },
+                  {
+                    title: "Workspace",
+                    items: [
+                      {
+                        title: "Projects",
+                        icon: <Folder />,
+                        isActive: activePage === "projects",
+                        onClick: () => setActivePage("projects"),
+                        subItems: [
+                          { title: "UI Components", isActive: activePage === "projects", onClick: () => setActivePage("projects") },
+                          { title: "Design Tokens", onClick: () => setActivePage("projects") },
+                        ],
+                      },
+                      { title: "Team", icon: <Users />, isActive: activePage === "team", onClick: () => setActivePage("team") },
+                      { title: "Settings", icon: <Settings />, isActive: activePage === "settings", onClick: () => setActivePage("settings") },
+                    ],
+                  },
+                ]}
+                footerUser={{
+                  name: "Alex Morgan",
+                  email: "alex@company.com",
+                  avatar: <Avatar name="Alex Morgan" size="sm" />,
+                  action: <Badge size="sm" variant="neutral">PRO</Badge>,
+                }}
+              />
+              <SidebarInset className="min-h-0 overflow-y-auto">
+                <header className="flex h-12 shrink-0 items-center justify-between border-b border-border px-4 bg-surface/60 backdrop-blur-xs">
+                  <div className="flex items-center gap-2">
+                    <SidebarTrigger />
+                    <Separator orientation="vertical" className="h-4" />
+                    <Text weight="semibold" size="sm" className="capitalize">{activePage}</Text>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Text size="xs" tone="muted" className="hidden sm:inline">Press <Kbd>Ctrl+B</Kbd></Text>
+                    <StatusIndicator status="online" label="Live" pulse />
+                  </div>
+                </header>
+                <div key={activePage} className="p-5 flex flex-col gap-4">
+                  {renderActivePageContent()}
+                </div>
+              </SidebarInset>
+            </SidebarProvider>
+          ) : sidebarVariant === "dual" ? (
+            <SidebarProvider defaultOpen className="h-full min-h-0 flex-row w-full bg-surface">
+              <DualSidebar
+                label="Dual Navigation"
+                title={activeWorkspace === "ws-1" ? "Core Engineering" : activeWorkspace === "ws-2" ? "Design Lab" : "DevOps Ops"}
+                railItems={[
+                  { id: "ws-1", label: "Core Workspace", icon: <Layers className="size-5" />, isActive: activeWorkspace === "ws-1", onClick: () => setActiveWorkspace("ws-1") },
+                  { id: "ws-2", label: "Design Lab", icon: <Compass className="size-5" />, isActive: activeWorkspace === "ws-2", onClick: () => setActiveWorkspace("ws-2") },
+                  { id: "ws-3", label: "Admin Ops", icon: <Settings className="size-5" />, badge: "2", isActive: activeWorkspace === "ws-3", onClick: () => setActiveWorkspace("ws-3") },
+                ]}
+              >
+                <SidebarSection title="Channels">
+                  <SidebarItem active={activePage === "dashboard"} onClick={() => setActivePage("dashboard")} icon={<Home />}>general</SidebarItem>
+                  <SidebarItem active={activePage === "inbox"} onClick={() => setActivePage("inbox")} icon={<Inbox />} badge={unreadCount > 0 ? <Badge size="sm" variant="primary">{unreadCount}</Badge> : null}>releases</SidebarItem>
+                  <SidebarItem active={activePage === "team"} onClick={() => setActivePage("team")} icon={<Users />}>team-standup</SidebarItem>
+                </SidebarSection>
+                <SidebarSection title="Direct Messages">
+                  <SidebarItem active={activePage === "projects"} onClick={() => setActivePage("projects")} icon={<Folder />}>Projects Bot</SidebarItem>
+                  <SidebarItem active={activePage === "analytics"} onClick={() => setActivePage("analytics")} icon={<TrendingUp />}>Telemetry</SidebarItem>
+                </SidebarSection>
+              </DualSidebar>
+              <div className="flex flex-1 flex-col overflow-y-auto p-4 bg-surface-raised m-2 rounded-2xl border border-border shadow-xs">
+                <div className="flex items-center gap-2 border-b border-border pb-2.5 mb-3">
+                  <SidebarTrigger />
+                  <Separator orientation="vertical" className="h-4" />
+                  <Text weight="semibold" size="sm" className="capitalize">{activeWorkspace === "ws-1" ? "Engineering" : activeWorkspace === "ws-2" ? "Design" : "Ops"} · {activePage}</Text>
+                </div>
+                <div key={activePage} className="p-2 flex flex-col gap-4">
+                  {renderActivePageContent()}
+                </div>
+              </div>
+            </SidebarProvider>
+          ) : (
+            <SidebarProvider defaultOpen className="h-full min-h-0 flex-row w-full bg-surface-sunken p-2">
+              <FloatingSidebar label="Floating Navigation">
+                <SidebarSection title="Explore">
+                  <SidebarItem active={activePage === "dashboard"} onClick={() => setActivePage("dashboard")} icon={<Home />}>Dashboard</SidebarItem>
+                  <SidebarItem active={activePage === "inbox"} onClick={() => setActivePage("inbox")} icon={<Inbox />} badge={unreadCount > 0 ? <Badge size="sm">{unreadCount}</Badge> : null}>Activity Feed</SidebarItem>
+                  <SidebarItem active={activePage === "analytics"} onClick={() => setActivePage("analytics")} icon={<Layers />}>Metrics</SidebarItem>
+                  <SidebarItem active={activePage === "projects"} onClick={() => setActivePage("projects")} icon={<Folder />}>Projects</SidebarItem>
+                  <SidebarItem active={activePage === "settings"} onClick={() => setActivePage("settings")} icon={<Settings />}>Preferences</SidebarItem>
+                </SidebarSection>
+              </FloatingSidebar>
+              <div className="flex flex-1 flex-col overflow-y-auto rounded-2xl border border-border bg-surface-raised p-4 shadow-sm m-1">
+                <div className="flex items-center gap-2 border-b border-border pb-2.5 mb-3">
+                  <SidebarTrigger />
+                  <Separator orientation="vertical" className="h-4" />
+                  <Text weight="semibold" size="sm" className="capitalize">Floating Canvas · {activePage}</Text>
+                </div>
+                <div key={activePage} className="p-2 flex flex-col gap-4">
+                  {renderActivePageContent()}
+                </div>
+              </div>
+            </SidebarProvider>
+          )}
+        </div>
+      </ThemeProvider>
+    </div>
+  );
+}
+
 /* -------------------------------------------------------------- Navigation */
 
 export function NavigationPage() {
@@ -1064,37 +1457,59 @@ export function NavigationPage() {
         </NavigationMenu>
       </Example>
       <Example
-        title="Sidebar primitives"
-        code={`<Sidebar>
-  <SidebarSection title="Workspace">
-    <SidebarItem href="/" icon={<Home />} active>Home</SidebarItem>
-    <SidebarItem href="/inbox" icon={<Inbox />} badge={<Badge size="sm">4</Badge>}>Inbox</SidebarItem>
-  </SidebarSection>
-</Sidebar>`}
+        title="Interactive responsive sidebars (live theme testing & page routing)"
+        description="Switch themes, toggle light/dark modes, collapse to icon-rail with Ctrl+B, and click navigation items to navigate live page views with spring animations."
+        code={`<SidebarProvider defaultOpen>
+  <ResponsiveSidebar
+    label="App Navigation"
+    brand={{
+      logo: <span className="flex size-7 items-center justify-center rounded-lg bg-primary text-primary-on-solid font-bold">K</span>,
+      title: "Kaleido Studio",
+      subtitle: "Enterprise",
+    }}
+    groups={[
+      {
+        title: "Overview",
+        items: [
+          { title: "Dashboard", icon: <Home />, isActive: activePage === "dashboard", onClick: () => setActivePage("dashboard") },
+          { title: "Inbox", icon: <Inbox />, isActive: activePage === "inbox", badge: <Badge size="sm">4</Badge>, onClick: () => setActivePage("inbox") },
+          { title: "Analytics", icon: <Layers />, isActive: activePage === "analytics", onClick: () => setActivePage("analytics") },
+        ],
+      },
+      {
+        title: "Workspace",
+        items: [
+          {
+            title: "Projects",
+            icon: <Folder />,
+            subItems: [
+              { title: "UI Components", onClick: () => setActivePage("projects") },
+              { title: "Design Tokens", onClick: () => setActivePage("projects") },
+            ],
+          },
+          { title: "Team", icon: <Users />, onClick: () => setActivePage("team") },
+          { title: "Settings", icon: <Settings />, onClick: () => setActivePage("settings") },
+        ],
+      },
+    ]}
+    footerUser={{
+      name: "Alex Morgan",
+      email: "alex@company.com",
+      avatar: <Avatar name="Alex Morgan" size="sm" />,
+    }}
+  />
+  <SidebarInset>
+    <header className="flex h-12 items-center gap-2 border-b border-border px-4">
+      <SidebarTrigger />
+      <Text weight="medium" size="sm">Active Page View</Text>
+    </header>
+    <main className="p-6 animate-ks-fade-in animate-ks-slide-up">
+      {/* Page view content */}
+    </main>
+  </SidebarInset>
+</SidebarProvider>`}
       >
-        <Card variant="outline" className="h-80 w-full flex-row overflow-hidden p-0">
-          <Sidebar label="Demo" className="h-full w-56">
-            <SidebarSection title="Workspace">
-              <SidebarItem href="#/navigation" icon={<Home />} active>
-                Home
-              </SidebarItem>
-              <SidebarItem href="#/navigation" icon={<Inbox />} badge={<Badge size="sm" variant="primary">4</Badge>}>
-                Inbox
-              </SidebarItem>
-              <SidebarItem href="#/navigation" icon={<Users />}>
-                Team
-              </SidebarItem>
-            </SidebarSection>
-            <SidebarSection title="Account">
-              <SidebarItem href="#/navigation" icon={<Settings />}>
-                Settings
-              </SidebarItem>
-            </SidebarSection>
-          </Sidebar>
-          <div className="flex flex-1 items-center justify-center p-6">
-            <Text tone="muted">Page content</Text>
-          </div>
-        </Card>
+        <InteractiveSidebarShowcase />
       </Example>
       <NavigationExtras />
       <A11yNotes

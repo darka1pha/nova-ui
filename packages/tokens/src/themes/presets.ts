@@ -88,8 +88,8 @@ export const premium: ThemeDefinition = {
 export const kaveh: ThemeDefinition = {
   id: "kaveh",
   label: "Kaveh",
-  description: "Maritime navy with energetic port orange and harbor blue accents on cool slate.",
-  colors: { primary: "#114b94", secondary: "#a5bbe2", accent: "#f07025", neutral: "slate", ...status, info: "sky" },
+  description: "Energetic port orange with deep maritime navy and harbor blue accents on cool slate.",
+  colors: { primary: "#f07025", secondary: "#114b94", accent: "#a5bbe2", neutral: "slate", ...status, info: "sky" },
   radius: "md",
   shadow: "crisp",
 };

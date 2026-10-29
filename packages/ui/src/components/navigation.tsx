@@ -1,6 +1,5 @@
 "use client";
 
-import { cva, type VariantProps } from "class-variance-authority";
 import { ChevronDown, ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
 import { Accordion as AccordionPrimitive, NavigationMenu as NavigationMenuPrimitive, Slot, Tabs as TabsPrimitive } from "radix-ui";
 import { createContext, forwardRef, useContext, useEffect, useLayoutEffect, useState, type AnchorHTMLAttributes, type ComponentPropsWithoutRef, type HTMLAttributes, type ReactNode } from "react";
@@ -400,64 +399,4 @@ export const NavigationMenuLink = forwardRef<HTMLAnchorElement, ComponentPropsWi
 
 /* ----------------------------------------------------------------- Sidebar */
 
-const sidebarItem = cva(
-  `group relative flex w-full items-center gap-3 rounded-md px-3 text-sm font-medium [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:transition-transform [&_svg]:duration-(--ks-duration-slow) [&_svg]:ease-(--ks-ease-interactive) ${transition} ${focusRing}`,
-  {
-    variants: {
-      active: {
-        true: "bg-primary-subtle text-primary-on-subtle [&_svg]:text-primary-text before:absolute before:inset-y-1.5 before:start-0 before:w-0.75 before:rounded-full before:bg-primary before:animate-ks-bounce-in",
-        false: "text-foreground-secondary hover:bg-surface-hover hover:text-foreground [&_svg]:text-foreground-muted hover:[&_svg]:translate-x-0.5 rtl:hover:[&_svg]:-translate-x-0.5",
-      },
-      size: { sm: "h-8", md: "h-9" },
-    },
-    defaultVariants: { active: false, size: "md" },
-  },
-);
-
-/** Primary app navigation in a vertical column. Compose with the parts below. */
-export const Sidebar = forwardRef<HTMLElement, HTMLAttributes<HTMLElement> & { label?: string }>(function Sidebar({ label = "Main", className, ...props }, ref) {
-  return <nav ref={ref} aria-label={label} className={cn("flex h-full w-64 flex-col gap-2 border-e border-border bg-surface p-3", className)} {...props} />;
-});
-
-export function SidebarHeader({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("flex items-center gap-2 px-2 py-2", className)} {...props} />;
-}
-
-export function SidebarFooter({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("mt-auto flex flex-col gap-1 border-t border-border pt-3", className)} {...props} />;
-}
-
-export function SidebarSection({ title, className, children, ...props }: HTMLAttributes<HTMLDivElement> & { title?: ReactNode }) {
-  return (
-    <div className={cn("flex flex-col gap-0.5", className)} {...props}>
-      {title ? <p className="px-3 pb-1 pt-3 text-2xs font-semibold uppercase tracking-(--ks-tracking-wider) text-foreground-muted">{title}</p> : null}
-      <ul className="flex flex-col gap-0.5">{children}</ul>
-    </div>
-  );
-}
-
-export interface SidebarItemProps extends AnchorHTMLAttributes<HTMLAnchorElement>, VariantProps<typeof sidebarItem> {
-  icon?: ReactNode;
-  /** Trailing content such as a count badge. */
-  badge?: ReactNode;
-  asChild?: boolean;
-}
-
-export const SidebarItem = forwardRef<HTMLAnchorElement, SidebarItemProps>(function SidebarItem({ icon, badge, active, size, asChild, className, children, ...props }, ref) {
-  const Comp = asChild ? Slot.Root : "a";
-  return (
-    <li>
-      <Comp ref={ref} aria-current={active ? "page" : undefined} className={cn(sidebarItem({ active, size }), className)} {...props}>
-        {asChild ? (
-          children
-        ) : (
-          <>
-            {icon}
-            <span className="flex-1 truncate">{children}</span>
-            {badge}
-          </>
-        )}
-      </Comp>
-    </li>
-  );
-});
+export * from "./sidebar.tsx";

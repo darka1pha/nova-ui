@@ -53,6 +53,7 @@ export * from "./components/overlay.tsx";
 export { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter, Avatar, AvatarGroup } from "./components/surfaces.tsx";
 export type { CardProps, AvatarProps, AvatarGroupProps } from "./components/surfaces.tsx";
 export * from "./components/navigation.tsx";
+export * from "./components/sidebar.tsx";
 export * from "./components/table.tsx";
 
 // Data display & visualization
