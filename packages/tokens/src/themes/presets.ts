@@ -85,6 +85,15 @@ export const premium: ThemeDefinition = {
   fonts: { display: fontFamily.serif },
 };
 
-export const presets = { vibrant, ocean, sunset, forest, berry, minimal, midnight, premium } as const;
+export const kaveh: ThemeDefinition = {
+  id: "kaveh",
+  label: "Kaveh",
+  description: "Maritime navy with energetic port orange and harbor blue accents on cool slate.",
+  colors: { primary: "#114b94", secondary: "#a5bbe2", accent: "#f07025", neutral: "slate", ...status, info: "sky" },
+  radius: "md",
+  shadow: "crisp",
+};
+
+export const presets = { vibrant, ocean, sunset, forest, berry, minimal, midnight, premium, kaveh } as const;
 export type PresetName = keyof typeof presets;
 export const defaultTheme = vibrant;

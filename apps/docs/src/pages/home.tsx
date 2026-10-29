@@ -157,7 +157,7 @@ export function HomePage() {
             One system, many identities
           </Heading>
           <Text tone="secondary">
-            Eight presets share one implementation. Each is a complete semantic theme — surfaces, text, intents, focus, charts — not just a new button color.
+            {Object.keys(presets).length} presets share one implementation. Each is a complete semantic theme — surfaces, text, intents, focus, charts — not just a new button color.
           </Text>
         </div>
         <Grid columns={4} gap={4}>
