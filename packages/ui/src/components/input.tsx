@@ -1,0 +1,294 @@
+"use client";
+
+import { cva, type VariantProps } from "class-variance-authority";
+import { Minus, Plus, Search, X } from "lucide-react";
+import {
+  createContext,
+  forwardRef,
+  useCallback,
+  useContext,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type HTMLAttributes,
+  type InputHTMLAttributes,
+  type KeyboardEvent,
+  type ReactNode,
+  type TextareaHTMLAttributes,
+} from "react";
+import { cn } from "../utils/cn.ts";
+import { useComposedRefs } from "../utils/compose-refs.ts";
+import { useFormField } from "./field.tsx";
+import { transition } from "./shared.ts";
+
+/** The shared look of every text-entry control. */
+export const fieldVariants = cva(
+  `w-full min-w-0 rounded-(--ks-input-radius) border border-input bg-surface text-foreground shadow-xs ${transition} ` +
+    "placeholder:text-foreground-muted placeholder:opacity-80 outline-none " +
+    "hover:border-foreground-muted focus-visible:border-focus-ring focus-visible:ring-3 focus-visible:ring-focus-ring/25 " +
+    // Invalid fields shake once when the error appears (FormField adds text, so it's not color alone).
+    "aria-invalid:border-danger-text aria-invalid:focus-visible:ring-danger-text/25 aria-invalid:animate-ks-shake " +
+    // Warning and valid states come from FormField (warning / success props, or a validated RHF field).
+    "data-[status=warning]:border-warning-text data-[status=warning]:focus-visible:ring-warning-text/25 data-[status=valid]:border-success-text data-[status=valid]:focus-visible:ring-success-text/25 " +
+    "disabled:cursor-not-allowed disabled:bg-surface-sunken disabled:opacity-60 [&:is(input,textarea):read-only]:bg-surface-sunken",
+  {
+    variants: {
+      size: {
+        sm: "h-(--ks-control-h-sm) px-2.5 text-sm",
+        md: "h-(--ks-control-h-md) px-3 text-sm",
+        lg: "h-(--ks-control-h-lg) px-4 text-md",
+      },
+    },
+    defaultVariants: { size: "md" },
+  },
+);
+
+type FieldSize = NonNullable<VariantProps<typeof fieldVariants>["size"]>;
+
+interface InputGroupContextValue {
+  hasStart: boolean;
+  hasEnd: boolean;
+  size?: FieldSize;
+}
+const InputGroupContext = createContext<InputGroupContextValue | null>(null);
+
+export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "size">, VariantProps<typeof fieldVariants> {}
+
+/** A single-line text input. Wires itself to a surrounding FormField. */
+export const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ size, className, type = "text", ...props }, ref) {
+  const group = useContext(InputGroupContext);
+  const fieldProps = useFormField(props);
+  return (
+    <input
+      ref={ref}
+      type={type}
+      className={cn(
+        fieldVariants({ size: size ?? group?.size }),
+        group?.hasStart && "ps-9",
+        group?.hasEnd && "pe-9",
+        "file:me-3 file:border-0 file:bg-transparent file:text-sm file:font-medium",
+        className,
+      )}
+      {...fieldProps}
+    />
+  );
+});
+
+export interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
+  /** Grow with content (uses CSS field-sizing where supported). */
+  autoResize?: boolean;
+}
+
+export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function Textarea({ className, autoResize = false, rows = 3, ...props }, ref) {
+  const fieldProps = useFormField(props);
+  return (
+    <textarea
+      ref={ref}
+      rows={rows}
+      className={cn(fieldVariants(), "h-auto min-h-20 px-3 py-2 leading-relaxed", autoResize ? "field-sizing-content resize-none" : "resize-y", className)}
+      {...fieldProps}
+    />
+  );
+});
+
+export interface InputGroupProps extends HTMLAttributes<HTMLDivElement> {
+  /** Icon or text shown before the input (inside it). */
+  start?: ReactNode;
+  /** Icon, text or a small button shown after the input. */
+  end?: ReactNode;
+  size?: FieldSize;
+}
+
+/** Decorates an Input with leading/trailing adornments. */
+export const InputGroup = forwardRef<HTMLDivElement, InputGroupProps>(function InputGroup({ start, end, size, className, children, ...props }, ref) {
+  const adornment = "pointer-events-none absolute inset-y-0 flex items-center text-foreground-muted [&_svg]:size-4 [&_button]:pointer-events-auto";
+  return (
+    <InputGroupContext.Provider value={{ hasStart: !!start, hasEnd: !!end, size }}>
+      <div ref={ref} className={cn("relative flex w-full items-center", className)} {...props}>
+        {start ? <span className={cn(adornment, "start-3")}>{start}</span> : null}
+        {children}
+        {end ? <span className={cn(adornment, "end-2")}>{end}</span> : null}
+      </div>
+    </InputGroupContext.Provider>
+  );
+});
+
+export interface SearchInputProps extends Omit<InputProps, "type"> {
+  /** Called when the clear button is pressed or Escape clears the value. */
+  onClear?: () => void;
+  /** Accessible label for the clear button. */
+  clearLabel?: string;
+}
+
+/** A search field with an icon and a clear button. Escape clears. */
+export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(function SearchInput(
+  { onClear, clearLabel = "Clear search", value, defaultValue, onChange, onKeyDown, size, ...props },
+  ref,
+) {
+  const inner = useRef<HTMLInputElement>(null);
+  const composed = useComposedRefs(ref, inner);
+  const [uncontrolled, setUncontrolled] = useState(String(defaultValue ?? ""));
+  const current = value !== undefined ? String(value) : uncontrolled;
+
+  const clear = () => {
+    if (value === undefined) setUncontrolled("");
+    if (inner.current) {
+      // Notify listeners the same way typing would.
+      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set;
+      setter?.call(inner.current, "");
+      inner.current.dispatchEvent(new Event("input", { bubbles: true }));
+      inner.current.focus();
+    }
+    onClear?.();
+  };
+
+  return (
+    <InputGroup
+      size={size ?? undefined}
+      start={<Search />}
+      end={
+        current ? (
+          <button
+            type="button"
+            onClick={clear}
+            aria-label={clearLabel}
+            className="inline-flex size-6 items-center justify-center rounded-sm text-foreground-muted hover:bg-surface-hover hover:text-foreground focus-visible:outline-2 focus-visible:outline-focus-ring"
+          >
+            <X />
+          </button>
+        ) : null
+      }
+    >
+      <Input
+        ref={composed}
+        type="search"
+        role="searchbox"
+        value={value}
+        defaultValue={value === undefined ? defaultValue : undefined}
+        onChange={(e: ChangeEvent<HTMLInputElement>) => {
+          if (value === undefined) setUncontrolled(e.target.value);
+          onChange?.(e);
+        }}
+        onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
+          onKeyDown?.(e);
+          if (e.key === "Escape" && current && !e.defaultPrevented) {
+            e.preventDefault();
+            clear();
+          }
+        }}
+        className="[&::-webkit-search-cancel-button]:appearance-none"
+        {...props}
+      />
+    </InputGroup>
+  );
+});
+
+export interface NumberInputProps extends Omit<InputProps, "type" | "value" | "defaultValue" | "onChange" | "min" | "max" | "step"> {
+  value?: number | null;
+  defaultValue?: number | null;
+  onValueChange?: (value: number | null) => void;
+  min?: number;
+  max?: number;
+  step?: number;
+  /** Intl number formatting, e.g. `{ style: "currency", currency: "EUR" }`. Applied when not focused. */
+  formatOptions?: Intl.NumberFormatOptions;
+  /** BCP 47 locale for formatting; defaults to the browser's. */
+  locale?: string;
+  incrementLabel?: string;
+  decrementLabel?: string;
+}
+
+const clamp = (n: number, min?: number, max?: number) => Math.min(max ?? Infinity, Math.max(min ?? -Infinity, n));
+const decimals = (n: number) => (String(n).split(".")[1] ?? "").length;
+
+/**
+ * A numeric field with stepper buttons, Arrow/Page key stepping, clamping and
+ * locale-aware display formatting. Exposes `role="spinbutton"` semantics.
+ */
+export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(function NumberInput(
+  { value, defaultValue = null, onValueChange, min, max, step = 1, formatOptions, locale, incrementLabel = "Increase", decrementLabel = "Decrease", size, disabled, readOnly, onBlur, onFocus, onKeyDown, className, ...props },
+  ref,
+) {
+  const [internal, setInternal] = useState<number | null>(defaultValue);
+  const current = value !== undefined ? value : internal;
+  const [draft, setDraft] = useState<string | null>(null);
+  const fieldProps = useFormField({ disabled, ...props });
+
+  const commit = useCallback(
+    (next: number | null) => {
+      const clamped = next === null || Number.isNaN(next) ? null : clamp(Number(next.toFixed(Math.max(decimals(step), decimals(next)))), min, max);
+      if (value === undefined) setInternal(clamped);
+      onValueChange?.(clamped);
+    },
+    [value, onValueChange, min, max, step],
+  );
+
+  const stepBy = (delta: number) => commit((current ?? min ?? 0) + delta);
+  const format = (n: number | null) => (n === null ? "" : formatOptions ? new Intl.NumberFormat(locale, formatOptions).format(n) : String(n));
+  const atMin = min !== undefined && current !== null && current <= min;
+  const atMax = max !== undefined && current !== null && current >= max;
+  const stepper =
+    "flex h-1/2 w-7 items-center justify-center text-foreground-muted hover:bg-surface-hover hover:text-foreground disabled:opacity-40 [&_svg]:size-3.5";
+
+  return (
+    <div className={cn("relative flex w-full items-stretch", className)}>
+      <input
+        ref={ref}
+        type="text"
+        inputMode="decimal"
+        role="spinbutton"
+        aria-valuenow={current ?? undefined}
+        aria-valuemin={min}
+        aria-valuemax={max}
+        aria-valuetext={current === null ? undefined : format(current)}
+        readOnly={readOnly}
+        className={cn(fieldVariants({ size }), "pe-9 tabular-nums")}
+        value={draft ?? format(current)}
+        onFocus={(e) => {
+          setDraft(current === null ? "" : String(current));
+          onFocus?.(e);
+        }}
+        onChange={(e) => setDraft(e.target.value)}
+        onBlur={(e) => {
+          if (draft !== null) {
+            const trimmed = draft.trim().replace(",", ".");
+            commit(trimmed === "" ? null : Number(trimmed));
+          }
+          setDraft(null);
+          onBlur?.(e);
+        }}
+        onKeyDown={(e) => {
+          onKeyDown?.(e);
+          if (e.defaultPrevented || readOnly) return;
+          const big = step * 10;
+          const map: Record<string, () => void> = {
+            ArrowUp: () => stepBy(step),
+            ArrowDown: () => stepBy(-step),
+            PageUp: () => stepBy(big),
+            PageDown: () => stepBy(-big),
+            Home: () => min !== undefined && commit(min),
+            End: () => max !== undefined && commit(max),
+            Enter: () => {
+              if (draft !== null) commit(draft.trim() === "" ? null : Number(draft.replace(",", ".")));
+            },
+          };
+          const action = map[e.key];
+          if (action) {
+            e.preventDefault();
+            action();
+            setDraft(null);
+          }
+        }}
+        {...fieldProps}
+      />
+      <div className="absolute inset-y-px end-px flex flex-col overflow-hidden rounded-e-(--ks-input-radius) border-s border-border">
+        <button type="button" tabIndex={-1} aria-label={incrementLabel} className={stepper} disabled={disabled || readOnly || atMax} onClick={() => stepBy(step)}>
+          <Plus />
+        </button>
+        <button type="button" tabIndex={-1} aria-label={decrementLabel} className={cn(stepper, "border-t border-border")} disabled={disabled || readOnly || atMin} onClick={() => stepBy(-step)}>
+          <Minus />
+        </button>
+      </div>
+    </div>
+  );
+});

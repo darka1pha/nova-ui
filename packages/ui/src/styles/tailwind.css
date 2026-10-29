@@ -1,0 +1,10 @@
+/*
+ * @kaleido/ui/tailwind.css — for apps that use Tailwind CSS v4 themselves.
+ *   @import "tailwindcss";
+ *   @import "@kaleido/ui/tailwind.css";
+ * Your utilities (bg-primary, text-foreground-muted, rounded-lg, shadow-md…)
+ * then resolve to the same tokens as the components, and the motion
+ * utilities (animate-ks-*, ease-spring, dark:, rtl:) are available too.
+ */
+@import "./theme.generated.css";
+@import "./motion.generated.css";

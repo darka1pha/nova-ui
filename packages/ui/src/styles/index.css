@@ -1,0 +1,21 @@
+/*
+ * @kaleido/ui/styles.css
+ * Tokens + scoped base + the utilities components use. No global preflight:
+ * nothing here restyles elements outside a `.ks-theme` subtree.
+ */
+/* Same layer names and order as Tailwind CSS v4, so this file composes with an
+ * app's own Tailwind build in either load order. Tokens live in `theme`, the
+ * scoped reset in `base`. Unlayered app CSS always wins over all of them. */
+@layer theme, base, components, utilities;
+
+@import "./generated/tokens.css";
+@import "tailwindcss/theme" layer(theme);
+@import "./generated/theme.css";
+@import "./motion.css";
+@import "./base.css";
+@import "./interactions.css";
+@import "tailwindcss/utilities" layer(utilities);
+
+@source "../components";
+@source "../theme";
+@source "../react-hook-form.tsx";

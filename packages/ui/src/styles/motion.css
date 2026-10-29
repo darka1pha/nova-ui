@@ -1,0 +1,99 @@
+/* Lets the rotating-border gradient animate its angle smoothly. */
+@property --ks-angle {
+  syntax: "<angle>";
+  inherits: true;
+  initial-value: 0deg;
+}
+
+@theme inline {
+  --spacing: var(--ks-spacing);
+  --animate-ks-fade-in: ks-fade-in var(--ks-duration-normal) var(--ks-ease-out);
+  --animate-ks-fade-out: ks-fade-out var(--ks-duration-fast) var(--ks-ease-in);
+  --animate-ks-pop-in: ks-pop-in var(--ks-duration-slow) var(--ks-ease-interactive);
+  --animate-ks-pop-out: ks-pop-out var(--ks-duration-fast) var(--ks-ease-in);
+  --animate-ks-slide-up: ks-slide-up var(--ks-duration-normal) var(--ks-ease-out);
+  --animate-ks-slide-down: ks-slide-down var(--ks-duration-normal) var(--ks-ease-out);
+  --animate-ks-sheet-in-right: ks-sheet-in-right var(--ks-duration-slow) var(--ks-ease-out);
+  --animate-ks-sheet-out-right: ks-sheet-out-right var(--ks-duration-normal) var(--ks-ease-in);
+  --animate-ks-sheet-in-left: ks-sheet-in-left var(--ks-duration-slow) var(--ks-ease-out);
+  --animate-ks-sheet-out-left: ks-sheet-out-left var(--ks-duration-normal) var(--ks-ease-in);
+  --animate-ks-sheet-in-top: ks-sheet-in-top var(--ks-duration-slow) var(--ks-ease-out);
+  --animate-ks-sheet-out-top: ks-sheet-out-top var(--ks-duration-normal) var(--ks-ease-in);
+  --animate-ks-sheet-in-bottom: ks-sheet-in-bottom var(--ks-duration-slow) var(--ks-ease-out);
+  --animate-ks-sheet-out-bottom: ks-sheet-out-bottom var(--ks-duration-normal) var(--ks-ease-in);
+  --animate-ks-accordion-down: ks-accordion-down var(--ks-duration-normal) var(--ks-ease-out);
+  --animate-ks-accordion-up: ks-accordion-up var(--ks-duration-normal) var(--ks-ease-out);
+  --animate-ks-spin: ks-spin 0.8s linear infinite;
+  --animate-ks-shimmer: ks-shimmer 1.6s ease-in-out infinite;
+  --animate-ks-indeterminate: ks-indeterminate 1.4s var(--ks-ease-standard) infinite;
+  --animate-ks-pulse: ks-pulse 2s ease-in-out infinite;
+  --animate-ks-focus-in: ks-focus-in var(--ks-duration-slow) var(--ks-ease-interactive);
+  --animate-ks-check-draw: ks-check-draw var(--ks-duration-slow) var(--ks-ease-out) both;
+  --animate-ks-bounce-in: ks-bounce-in var(--ks-duration-slow) var(--ks-ease-interactive) both;
+  --animate-ks-shake: ks-shake var(--ks-duration-slower) var(--ks-ease-standard);
+  --animate-ks-ripple: ks-ripple var(--ks-duration-slowest) var(--ks-ease-out) forwards;
+  --animate-ks-spin-border: ks-spin-angle 4s linear infinite;
+  --animate-ks-marquee: ks-marquee var(--ks-marquee-duration, 30s) linear infinite;
+  --animate-ks-gradient-pan: ks-gradient-pan 6s ease-in-out infinite alternate;
+  --animate-ks-float: ks-float 4s ease-in-out infinite;
+  --animate-ks-wiggle: ks-wiggle var(--ks-duration-slower) var(--ks-ease-interactive);
+  --animate-ks-countdown: ks-countdown linear forwards;
+  --animate-ks-caret: ks-caret 1s step-end infinite;
+  --animate-ks-reveal-up: ks-reveal-up var(--ks-duration-slowest) var(--ks-ease-out) both;
+  --animate-ks-reveal-fade: ks-fade-in var(--ks-duration-slowest) var(--ks-ease-out) both;
+  --animate-ks-reveal-zoom: ks-reveal-zoom var(--ks-duration-slowest) var(--ks-ease-interactive) both;
+  --animate-ks-reveal-blur: ks-reveal-blur var(--ks-duration-slowest) var(--ks-ease-out) both;
+  --animate-ks-collapsible-down: ks-collapsible-down var(--ks-duration-normal) var(--ks-ease-out);
+  --animate-ks-collapsible-up: ks-collapsible-up var(--ks-duration-normal) var(--ks-ease-out);
+  --animate-ks-draw: ks-draw var(--ks-duration-slowest) var(--ks-ease-out) both;
+  --animate-ks-wipe: ks-wipe var(--ks-duration-slowest) var(--ks-ease-out) both;
+  --animate-ks-slide-from-right: ks-slide-from-right var(--ks-duration-slow) var(--ks-ease-out);
+  --animate-ks-slide-from-left: ks-slide-from-left var(--ks-duration-slow) var(--ks-ease-out);
+  --animate-ks-ring-pulse: ks-ring-pulse 2s var(--ks-ease-out) infinite;
+
+  @keyframes ks-fade-in { from { opacity: 0; } }
+  @keyframes ks-fade-out { to { opacity: 0; } }
+  @keyframes ks-pop-in { from { opacity: 0; transform: scale(0.96) translateY(2px); } }
+  @keyframes ks-pop-out { to { opacity: 0; transform: scale(0.97); } }
+  @keyframes ks-slide-up { from { opacity: 0; transform: translateY(8px); } }
+  @keyframes ks-slide-down { from { opacity: 0; transform: translateY(-8px); } }
+  @keyframes ks-sheet-in-right { from { transform: translateX(100%); } }
+  @keyframes ks-sheet-out-right { to { transform: translateX(100%); } }
+  @keyframes ks-sheet-in-left { from { transform: translateX(-100%); } }
+  @keyframes ks-sheet-out-left { to { transform: translateX(-100%); } }
+  @keyframes ks-sheet-in-top { from { transform: translateY(-100%); } }
+  @keyframes ks-sheet-out-top { to { transform: translateY(-100%); } }
+  @keyframes ks-sheet-in-bottom { from { transform: translateY(100%); } }
+  @keyframes ks-sheet-out-bottom { to { transform: translateY(100%); } }
+  @keyframes ks-accordion-down { from { height: 0; } to { height: var(--radix-accordion-content-height); } }
+  @keyframes ks-accordion-up { from { height: var(--radix-accordion-content-height); } to { height: 0; } }
+  @keyframes ks-spin { to { transform: rotate(360deg); } }
+  @keyframes ks-shimmer { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
+  @keyframes ks-indeterminate { 0% { transform: translateX(-100%) scaleX(0.4); } 50% { transform: translateX(30%) scaleX(0.6); } 100% { transform: translateX(110%) scaleX(0.4); } }
+  @keyframes ks-pulse { 50% { opacity: 0.55; } }
+  @keyframes ks-focus-in { from { outline-offset: calc(var(--ks-focus-ring-offset) + 5px); outline-color: transparent; } }
+  @keyframes ks-check-draw { from { stroke-dashoffset: 24; } to { stroke-dashoffset: 0; } }
+  @keyframes ks-bounce-in { from { opacity: 0; transform: scale(0.3); } }
+  @keyframes ks-shake { 15%, 55% { transform: translateX(-4px); } 35%, 75% { transform: translateX(4px); } 90% { transform: translateX(-1px); } }
+  @keyframes ks-ripple { from { transform: translate(-50%, -50%) scale(0); opacity: 0.35; } to { transform: translate(-50%, -50%) scale(1); opacity: 0; } }
+  @keyframes ks-spin-angle { to { --ks-angle: 360deg; } }
+  @keyframes ks-marquee { to { transform: translateX(calc(-50% - var(--ks-marquee-gap, 2rem) / 2)); } }
+  @keyframes ks-gradient-pan { from { background-position: 0% 50%; } to { background-position: 100% 50%; } }
+  @keyframes ks-float { 50% { transform: translateY(-6px); } }
+  @keyframes ks-wiggle { 20% { transform: rotate(-8deg); } 40% { transform: rotate(6deg); } 60% { transform: rotate(-4deg); } 80% { transform: rotate(2deg); } }
+  @keyframes ks-countdown { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+  @keyframes ks-caret { 50% { opacity: 0; } }
+  @keyframes ks-reveal-up { from { opacity: 0; transform: translateY(18px); } }
+  @keyframes ks-reveal-zoom { from { opacity: 0; transform: scale(0.92); } }
+  @keyframes ks-reveal-blur { from { opacity: 0; filter: blur(10px); } }
+  @keyframes ks-collapsible-down { from { height: 0; opacity: 0; } to { height: var(--radix-collapsible-content-height); } }
+  @keyframes ks-collapsible-up { from { height: var(--radix-collapsible-content-height); } to { height: 0; opacity: 0; } }
+  @keyframes ks-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+  @keyframes ks-wipe { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+  @keyframes ks-slide-from-right { from { opacity: 0; transform: translateX(16px); } }
+  @keyframes ks-slide-from-left { from { opacity: 0; transform: translateX(-16px); } }
+  @keyframes ks-ring-pulse { from { box-shadow: 0 0 0 0 color-mix(in srgb, var(--ks-color-primary-solid) 45%, transparent); } to { box-shadow: 0 0 0 10px transparent; } }
+}
+
+@custom-variant dark (&:where([data-ks-mode="dark"], [data-ks-mode="dark"] *));
+@custom-variant rtl (&:where([dir="rtl"], [dir="rtl"] *));

@@ -1,0 +1,104 @@
+/*
+ * Interaction classes usable on any element, with or without Tailwind.
+ * They read the theme's motion tokens, so the same class feels calm in a
+ * "subtle" theme and lively in an "expressive" one, and they all collapse
+ * under reduced motion (durations go to ~0, transforms are disabled).
+ */
+@layer components {
+  /* Lifts on hover with a soft shadow. Cards, tiles, list rows. */
+  .ks-lift {
+    transition:
+      translate var(--ks-duration-normal) var(--ks-ease-interactive),
+      box-shadow var(--ks-duration-normal) var(--ks-ease-standard);
+  }
+  .ks-lift:hover,
+  .ks-lift:focus-within {
+    translate: 0 var(--ks-hover-lift);
+    box-shadow: var(--ks-shadow-lg);
+  }
+
+  /* Squashes slightly while pressed. Anything clickable. */
+  .ks-press {
+    transition: scale var(--ks-duration-fast) var(--ks-ease-interactive);
+  }
+  .ks-press:active {
+    scale: var(--ks-press-scale);
+  }
+
+  /* Grows a touch on hover. Icons, avatars, thumbnails. */
+  .ks-grow {
+    transition: scale var(--ks-duration-normal) var(--ks-ease-interactive);
+  }
+  .ks-grow:hover {
+    scale: var(--ks-hover-scale);
+  }
+
+  /* A light sweep across the element on hover. */
+  .ks-shine {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .ks-shine::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / 0.35) 50%, transparent 70%);
+    translate: -110% 0;
+    transition: translate var(--ks-duration-slowest) var(--ks-ease-out);
+  }
+  .ks-shine:hover::after {
+    translate: 110% 0;
+  }
+
+  /* Colored glow on hover, using the primary intent (or set --ks-glow). */
+  .ks-glow {
+    transition: box-shadow var(--ks-duration-normal) var(--ks-ease-standard);
+  }
+  .ks-glow:hover,
+  .ks-glow:focus-visible {
+    box-shadow: var(--ks-glow, var(--ks-shadow-glow-primary));
+  }
+
+  /* Gentle idle float. Decorative illustrations and badges. */
+  .ks-float {
+    animation: ks-float 4s ease-in-out infinite;
+  }
+
+  /* Animated underline that grows from the start edge. */
+  .ks-underline {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-repeat: no-repeat;
+    background-size: 0% 1.5px;
+    background-position: 0 100%;
+    transition: background-size var(--ks-duration-slow) var(--ks-ease-out);
+  }
+  [dir="rtl"] .ks-underline {
+    background-position: 100% 100%;
+  }
+  .ks-underline:hover,
+  .ks-underline:focus-visible {
+    background-size: 100% 1.5px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ks-lift:hover,
+    .ks-lift:focus-within,
+    .ks-press:active,
+    .ks-grow:hover {
+      translate: none;
+      scale: none;
+    }
+    .ks-float,
+    .ks-shine::after {
+      animation: none;
+      display: none;
+    }
+  }
+  [data-ks-motion="reduce"] :is(.ks-lift, .ks-press, .ks-grow) {
+    translate: none !important;
+    scale: none !important;
+  }
+}

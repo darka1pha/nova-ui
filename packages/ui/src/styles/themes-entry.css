@@ -1,0 +1,2 @@
+/* @kaleido/ui/themes.css — every preset as a [data-ks-theme] block, for zero-JS theming. */
+@import "./generated/themes.css";
