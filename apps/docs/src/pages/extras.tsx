@@ -6,6 +6,7 @@ import {
   Calendar,
   Card,
   DateRangePicker,
+  TimeInput,
   RangeCalendar,
   Carousel,
   Chip,
@@ -99,6 +100,7 @@ function ChipDemo() {
 export function FormsExtras() {
   const [date, setDate] = useState<Date | null>(null);
   const [voyage, setVoyage] = useState<DateRange | null>(null);
+  const [eta, setEta] = useState<string | null>("14:30");
   return (
     <>
       <Example
@@ -137,6 +139,24 @@ export function FormsExtras() {
         <Card variant="outline" className="w-fit max-w-full overflow-x-auto p-3">
           <RangeCalendar defaultValue={{ start: new Date(new Date().setDate(new Date().getDate() - 3)), end: new Date(new Date().setDate(new Date().getDate() + 4)) }} />
         </Card>
+      </Example>
+      <Example
+        title="TimeInput"
+        description="Hour, minute and — for 12-hour locales — AM/PM segments. Arrows step (Page Up/Down jump), digits type straight in and advance on their own, and phones get a numeric keyboard. The value is plain HH:mm in 24-hour time."
+        code={`<FormField label="ETA" description="Local port time">
+  <TimeInput value={eta} onValueChange={setEta} minuteStep={5} clearable name="eta" />
+</FormField>
+<TimeInput locale="en-US" defaultValue="09:15" />   // 09:15 AM`}
+        className="items-start"
+      >
+        <Stack gap={3} className="w-full max-w-xs">
+          <FormField label="ETA" description={eta ? `Stored as ${eta}` : "Local port time"}>
+            <TimeInput value={eta} onValueChange={setEta} minuteStep={5} clearable name="eta" />
+          </FormField>
+          <FormField label="Pilot boarding (12-hour)">
+            <TimeInput locale="en-US" defaultValue="09:15" />
+          </FormField>
+        </Stack>
       </Example>
       <Example
         title="PinInput"

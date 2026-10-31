@@ -86,6 +86,7 @@ export type {
 // More inputs
 export { Chip, CopyButton, Rating, type ChipProps, type CopyButtonProps, type RatingProps } from "./components/chip.tsx";
 export { PinInput, TagInput, FileDropzone, type PinInputProps, type TagInputProps, type FileDropzoneProps } from "./components/entry.tsx";
+export { TimeInput, type TimeInputProps, type TimeValue } from "./components/time.tsx";
 export {
   Calendar,
   DatePicker,
