@@ -6,7 +6,7 @@
 /* Same layer names and order as Tailwind CSS v4, so this file composes with an
  * app's own Tailwind build in either load order. Tokens live in `theme`, the
  * scoped reset in `base`. Unlayered app CSS always wins over all of them. */
-@layer theme, base, components, utilities;
+@layer theme, base, components, utilities, ks-materials;
 
 @import "./generated/tokens.css";
 @import "tailwindcss/theme" layer(theme);
@@ -15,6 +15,7 @@
 @import "./base.css";
 @import "./interactions.css";
 @import "tailwindcss/utilities" layer(utilities);
+@import "./materials.css";
 
 @source "../components";
 @source "../theme";

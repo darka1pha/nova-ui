@@ -14,6 +14,8 @@ import {
   presets,
   primitives,
   staticVariables,
+  derivedVariables,
+  THEME_ROOT_SELECTOR,
   tailwindThemeCss,
   themeCss,
   themeVariables,
@@ -30,6 +32,7 @@ writeFileSync(
   out("css/tokens.css"),
   header +
     cssBlock(":where(:root)", { ...staticVariables(), ...themeVariables(defaults) }, "  color-scheme: light dark;") +
+    cssBlock(THEME_ROOT_SELECTOR, derivedVariables()) +
     modeRules,
 );
 

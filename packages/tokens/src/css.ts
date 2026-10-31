@@ -95,28 +95,49 @@ export function staticVariables(): Record<string, string> {
   }
   vars[p("focus-glow")] = `0 0 0 4px color-mix(in srgb, ${v("color-focus-ring")} 22%, transparent)`;
 
-  // Modern surface styles: Glassmorphism, Claymorphism, Neumorphism
-  vars[p("glass-bg")] = `color-mix(in srgb, ${v("color-surface")} 68%, transparent)`;
-  vars[p("glass-bg-hover")] = `color-mix(in srgb, ${v("color-surface-hover")} 78%, transparent)`;
-  vars[p("glass-border")] = `color-mix(in srgb, ${v("color-border")} 45%, transparent)`;
-  vars[p("glass-blur")] = "16px";
-  vars[p("shadow-glass")] = `0 8px 32px 0 color-mix(in srgb, ${v("color-shadow")} 14%, transparent), inset 0 1px 0 0 rgb(255 255 255 / 0.22)`;
+  // Surface materials (theme `surface`: glass, clay, neomorphic). Highlights use
+  // light-dark() because a white rim that reads as light on a pale surface turns
+  // into a glow on a dark one; each mode gets its own strength.
+  const lightRim = (light: number, dark: number) => `light-dark(rgb(255 255 255 / ${light}), rgb(255 255 255 / ${dark}))`;
+  const depth = (light: number, dark: number) => `light-dark(${shadowColor(light)}, rgb(0 0 0 / ${dark}))`;
 
-  // Claymorphism: 3D tactile inflated clay with dual inner highlights and floating shadow
+  // Glassmorphism: translucent, blurred panes over a colorful backdrop, with a bright rim.
+  vars[p("glass-bg")] = `color-mix(in oklab, ${v("color-surface")} 62%, transparent)`;
+  vars[p("glass-bg-hover")] = `color-mix(in oklab, ${v("color-surface-hover")} 76%, transparent)`;
+  vars[p("glass-border")] = lightRim(0.6, 0.1);
+  vars[p("glass-blur")] = "20px";
+  vars[p("shadow-glass")] = `0 12px 32px -12px ${shadowColor(24)}, 0 2px 6px -2px ${shadowColor(10)}, inset 0 1px 0 0 ${lightRim(0.85, 0.12)}, inset 0 -1px 0 0 ${lightRim(0.2, 0.03)}`;
+  vars[p("glass-backdrop")] =
+    `radial-gradient(at 10% 10%, color-mix(in oklab, ${v("color-primary-solid")} 55%, transparent) 0, transparent 55%), radial-gradient(at 90% 15%, color-mix(in oklab, ${v("color-accent-solid")} 45%, transparent) 0, transparent 50%), radial-gradient(at 55% 100%, color-mix(in oklab, ${v("color-secondary-solid")} 50%, transparent) 0, transparent 55%), linear-gradient(${v("color-background")}, ${v("color-background")})`;
+
+  // Claymorphism: puffy, pastel-tinted shapes. A light inner highlight top-left,
+  // a soft inner shade bottom-right and a deep floating drop shadow.
+  const clayHi = lightRim(0.9, 0.1);
+  const clayShade = depth(16, 0.5);
+  vars[p("clay-bg")] = `color-mix(in oklab, ${v("color-surface")}, ${v("color-primary-subtle")} 40%)`;
+  vars[p("clay-page")] = `color-mix(in oklab, ${v("color-surface-sunken")}, ${v("color-primary-subtle")} 55%)`;
   vars[p("shadow-clay")] =
-    `0 16px 32px -8px color-mix(in srgb, ${v("color-shadow")} 20%, transparent), 0 4px 10px 0 color-mix(in srgb, ${v("color-shadow")} 8%, transparent), inset 3px 3px 6px 0 rgb(255 255 255 / 0.35), inset -4px -4px 8px 0 color-mix(in srgb, ${v("color-shadow")} 22%, transparent)`;
-  vars[p("shadow-clay-press")] =
-    `0 6px 16px -4px color-mix(in srgb, ${v("color-shadow")} 18%, transparent), 0 2px 4px 0 color-mix(in srgb, ${v("color-shadow")} 8%, transparent), inset 2px 2px 4px 0 rgb(255 255 255 / 0.2), inset -2px -2px 5px 0 color-mix(in srgb, ${v("color-shadow")} 18%, transparent)`;
+    `0 22px 40px -16px ${shadowColor(32)}, 0 8px 16px -8px ${shadowColor(14)}, inset 5px 7px 12px -3px ${clayHi}, inset -6px -8px 16px -6px ${clayShade}`;
+  vars[p("shadow-clay-sm")] = `0 10px 18px -10px ${shadowColor(32)}, inset 2px 3px 6px -1px ${clayHi}, inset -3px -4px 8px -3px ${clayShade}`;
+  vars[p("shadow-clay-press")] = `0 4px 10px -6px ${shadowColor(24)}, inset 4px 5px 10px -3px ${clayShade}, inset -2px -2px 6px -2px ${clayHi}`;
+  vars[p("shadow-clay-inset")] = `inset 3px 4px 8px -3px ${clayShade}, inset -2px -3px 6px -2px ${clayHi}`;
   for (const intent of INTENTS) {
     vars[p(`shadow-clay-${intent}`)] =
-      `0 16px 32px -8px color-mix(in srgb, ${v(`color-${intent}-solid`)} 35%, transparent), 0 4px 10px 0 color-mix(in srgb, ${v(`color-${intent}-solid`)} 18%, transparent), inset 3px 3px 6px 0 rgb(255 255 255 / 0.45), inset -4px -4px 8px 0 color-mix(in srgb, ${v("color-shadow")} 30%, transparent)`;
+      `0 14px 26px -12px color-mix(in oklab, ${v(`color-${intent}-solid`)} 70%, transparent), inset 3px 4px 8px -2px rgb(255 255 255 / 0.45), inset -4px -6px 12px -4px color-mix(in oklab, ${v(`color-${intent}-solid-active`)}, black 35%)`;
   }
 
-  // Neumorphism: Continuous surface extrusion with directional ambient lighting
-  vars[p("shadow-neomorph")] =
-    `8px 8px 18px 0 color-mix(in srgb, ${v("color-shadow")} 18%, transparent), -8px -8px 18px 0 rgb(255 255 255 / 0.25)`;
-  vars[p("shadow-neomorph-inset")] =
-    `inset 4px 4px 8px 0 color-mix(in srgb, ${v("color-shadow")} 18%, transparent), inset -4px -4px 8px 0 rgb(255 255 255 / 0.25)`;
+  // Neumorphism: everything is carved from one base color; shapes read only
+  // through a light shadow (top-left) and a dark one (bottom-right).
+  // The base must be a mid-tone: on a near-white page the white highlight has
+  // nothing to stand out from and every shape washes out. Mixing in the theme's
+  // ink keeps its tint while leaving headroom for both shadows.
+  const neoLight = lightRim(1, 0.09);
+  const neoDark = depth(30, 0.65);
+  vars[p("neo-bg")] =
+    `light-dark(color-mix(in oklab, ${v("color-surface-sunken")}, ${v("color-foreground")} 9%), color-mix(in oklab, ${v("color-surface")}, ${v("color-foreground")} 6%))`;
+  vars[p("shadow-neomorph")] = `8px 8px 18px ${neoDark}, -8px -8px 18px ${neoLight}`;
+  vars[p("shadow-neomorph-sm")] = `4px 4px 9px ${neoDark}, -4px -4px 9px ${neoLight}`;
+  vars[p("shadow-neomorph-inset")] = `inset 4px 4px 9px ${neoDark}, inset -4px -4px 9px ${neoLight}`;
 
   // Decorative gradients reference semantic colors so they follow the theme.
   vars[p("gradient-brand")] = `linear-gradient(135deg, ${v("color-primary-solid")} 0%, ${v("color-accent-solid")} 100%)`;
@@ -151,6 +172,24 @@ export function staticVariables(): Record<string, string> {
   vars[p("focus-ring-offset")] = "2px";
   return vars;
 }
+
+/**
+ * The static tokens computed from other tokens (radius scale, control sizes,
+ * gradients, glows, materials…).
+ *
+ * A custom property that references another is resolved on the element that
+ * declares it, and descendants inherit the result. Declared only on `:root`,
+ * these would freeze to the outer theme's colors, radius and density, so a
+ * nested ThemeProvider (or a `[data-ks-theme]` element) would keep the parent's
+ * gradients and materials. Re-declaring them on every theme root makes each
+ * one recompute from its own inputs.
+ */
+export function derivedVariables(): Record<string, string> {
+  return Object.fromEntries(Object.entries(staticVariables()).filter(([, value]) => value.includes("var(")));
+}
+
+/** Selector for every element that sets a theme; derived tokens are re-declared here. */
+export const THEME_ROOT_SELECTOR = ":where(.ks-theme, [data-ks-theme])";
 
 export function cssBlock(selector: string, vars: Record<string, string>, extra = ""): string {
   const body = Object.entries(vars)
@@ -190,9 +229,12 @@ export function tailwindThemeCss(): string {
     `  --shadow-focus-glow: ${v("focus-glow")};`,
     `  --shadow-glass: ${v("shadow-glass")};`,
     `  --shadow-clay: ${v("shadow-clay")};`,
+    `  --shadow-clay-sm: ${v("shadow-clay-sm")};`,
     `  --shadow-clay-press: ${v("shadow-clay-press")};`,
+    `  --shadow-clay-inset: ${v("shadow-clay-inset")};`,
     ...INTENTS.map((i) => `  --shadow-clay-${i}: ${v(`shadow-clay-${i}`)};`),
     `  --shadow-neomorph: ${v("shadow-neomorph")};`,
+    `  --shadow-neomorph-sm: ${v("shadow-neomorph-sm")};`,
     `  --shadow-neomorph-inset: ${v("shadow-neomorph-inset")};`,
     "  --blur-*: initial;",
     ...Object.keys(scales.blur).map((k) => `  --blur-${k}: ${v(`blur-${k}`)};`),

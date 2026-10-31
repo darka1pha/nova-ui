@@ -150,8 +150,6 @@ export function TemplatePage() {
     );
   }, [shipments, searchQuery]);
 
-  const cardVariant = activeSurface === "glass" ? ("glass" as const) : activeSurface === "clay" ? ("clay" as const) : activeSurface === "neomorphic" ? ("neomorphic" as const) : ("outline" as const);
-  const statClass = activeSurface === "glass" ? "ks-glass border-(--ks-glass-border)" : activeSurface === "clay" ? "ks-clay-card" : activeSurface === "neomorphic" ? "ks-neomorph" : "";
 
   const handleCreateShipment = () => {
     if (!newVessel.trim()) return;
@@ -565,7 +563,6 @@ export function TemplatePage() {
                         delta={12.5}
                         trend={[32, 36, 40, 39, 44, 46, 48]}
                         icon={<Ship className="size-4" />}
-                        className={statClass}
                       />
                       <Stat
                         label="Monthly Cargo Volume"
@@ -573,7 +570,6 @@ export function TemplatePage() {
                         delta={18.4}
                         trend={[110, 118, 124, 130, 138, 142]}
                         icon={<Package className="size-4" />}
-                        className={statClass}
                       />
                       <Stat
                         label="On-Time Fleet Clearance"
@@ -581,7 +577,6 @@ export function TemplatePage() {
                         delta={0.2}
                         trend={[98, 99, 99, 98, 99, 100]}
                         icon={<CheckCircle2 className="size-4" />}
-                        className={statClass}
                       />
                       <Stat
                         label="Gross Operating Revenue"
@@ -589,13 +584,12 @@ export function TemplatePage() {
                         delta={16.2}
                         trend={[2.8, 3.1, 3.2, 3.5, 3.7, 3.84]}
                         icon={<TrendingUp className="size-4" />}
-                        className={statClass}
                       />
                     </div>
 
                     {/* Middle Section: Chart + Port Terminal Clearance */}
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                      <Card variant={cardVariant} className="lg:col-span-2 p-5 gap-3">
+                      <Card variant="outline" className="lg:col-span-2 p-5 gap-3">
                         <div className="flex items-center justify-between">
                           <div>
                             <CardTitle className="text-sm">Cargo Volume by Iranian Port Terminals</CardTitle>
@@ -615,7 +609,7 @@ export function TemplatePage() {
                         />
                       </Card>
 
-                      <Card variant={cardVariant} className="p-5 gap-3">
+                      <Card variant="outline" className="p-5 gap-3">
                         <CardTitle className="text-sm">Real-Time Port Operations</CardTitle>
                         <CardDescription className="text-xs">Live activity log from regional harbormasters</CardDescription>
                         <Timeline
@@ -630,7 +624,7 @@ export function TemplatePage() {
                     </div>
 
                     {/* Live DataTable */}
-                    <Card variant={cardVariant} className="p-5 gap-3">
+                    <Card variant="outline" className="p-5 gap-3">
                       <div className="flex flex-wrap items-center justify-between gap-3">
                         <div>
                           <CardTitle className="text-sm">Active Fleet Shipments</CardTitle>
@@ -673,7 +667,7 @@ export function TemplatePage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       {shipments.map((s) => (
-                        <Card key={s.id} variant={cardVariant} className="p-4 gap-3 hover:shadow-md transition-shadow">
+                        <Card key={s.id} variant="outline" className="p-4 gap-3 hover:shadow-md transition-shadow">
                           <div className="flex items-center justify-between">
                             <span className="font-mono text-xs font-bold text-primary-text">{s.trackingNo}</span>
                             <Badge size="sm" variant={s.status === "Delivered" ? "success" : s.status === "In Transit" ? "primary" : "warning"}>
@@ -712,17 +706,17 @@ export function TemplatePage() {
                       <Text size="xs" tone="muted">Deep analytics across maritime freight volumes and operational efficiency</Text>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <Card variant={cardVariant} className="p-4 flex flex-col items-center text-center gap-2">
+                      <Card variant="outline" className="p-4 flex flex-col items-center text-center gap-2">
                         <CircularProgress value={88} size={90} label="Fleet Utilization" />
                         <Text weight="semibold" size="xs" className="mt-2">Fleet Utilization</Text>
                         <Text size="xs" tone="muted">88% of container space allocated</Text>
                       </Card>
-                      <Card variant={cardVariant} className="p-4 flex flex-col items-center text-center gap-2">
+                      <Card variant="outline" className="p-4 flex flex-col items-center text-center gap-2">
                         <CircularProgress value={96} size={90} tone="success" label="Berth Efficiency" />
                         <Text weight="semibold" size="xs" className="mt-2">Berth Clearance</Text>
                         <Text size="xs" tone="muted">Average turnaround under 14 hours</Text>
                       </Card>
-                      <Card variant={cardVariant} className="p-4 flex flex-col items-center text-center gap-2">
+                      <Card variant="outline" className="p-4 flex flex-col items-center text-center gap-2">
                         <CircularProgress value={99} size={90} tone="primary" label="Safety Compliance" />
                         <Text weight="semibold" size="xs" className="mt-2">Safety Audits</Text>
                         <Text size="xs" tone="muted">Zero maritime incidents this quarter</Text>
@@ -744,7 +738,7 @@ export function TemplatePage() {
                       </Button>
                     </div>
 
-                    <Card variant={cardVariant} className="p-5 gap-3">
+                    <Card variant="outline" className="p-5 gap-3">
                       <DataTable
                         data={sampleInvoices}
                         columns={invoiceColumns}
@@ -772,7 +766,7 @@ export function TemplatePage() {
                         { name: "Sara Danesh", role: "Customs & Port Clearance Lead", email: "danesh@kaveh-marine.com", status: "online" as const },
                         { name: "Hossein Moradi", role: "Marine Fuel Logistics Specialist", email: "moradi@kaveh-marine.com", status: "offline" as const },
                       ].map((officer) => (
-                        <Card key={officer.email} variant={cardVariant} className="p-3.5 flex-row items-center justify-between gap-3">
+                        <Card key={officer.email} variant="outline" className="p-3.5 flex-row items-center justify-between gap-3">
                           <div className="flex items-center gap-3">
                             <Avatar name={officer.name} size="md" />
                             <div>
@@ -795,7 +789,7 @@ export function TemplatePage() {
                       <Text size="xs" tone="muted">Live preview controls for tuning tokens in a simulated production environment</Text>
                     </div>
 
-                    <Card variant={cardVariant} className="p-5 gap-4">
+                    <Card variant="outline" className="p-5 gap-4">
                       <div className="flex items-center justify-between">
                         <div>
                           <Text weight="semibold" size="xs">Active Theme Preset</Text>

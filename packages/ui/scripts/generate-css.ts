@@ -10,6 +10,8 @@ import {
   getResolvedTheme,
   presets,
   staticVariables,
+  derivedVariables,
+  THEME_ROOT_SELECTOR,
   tailwindThemeCss,
   themeCss,
   themeVariables,
@@ -25,6 +27,7 @@ writeFileSync(
   header +
     "@layer theme {\n" +
     cssBlock(":where(:root)", { ...staticVariables(), ...themeVariables(getResolvedTheme(defaultTheme)) }, "  color-scheme: light dark;") +
+    cssBlock(THEME_ROOT_SELECTOR, derivedVariables()) +
     '[data-ks-mode="light"] { color-scheme: light; }\n[data-ks-mode="dark"] { color-scheme: dark; }\n' +
     "}\n",
 );

@@ -52,7 +52,7 @@ export const buttonVariants = cva(
         clay:
           `rounded-(--ks-radius-xl) border-0 bg-primary text-primary-on-solid shadow-(--ks-shadow-clay-primary) hover:translate-y-(--ks-hover-lift) active:translate-y-0 active:shadow-(--ks-shadow-clay-press) active:scale-(--ks-press-scale)`,
         neomorphic:
-          `border-0 bg-surface text-foreground shadow-(--ks-shadow-neomorph) hover:text-primary-text active:shadow-(--ks-shadow-neomorph-inset) active:scale-(--ks-press-scale)`,
+          `border-0 bg-(--ks-neo-bg) text-foreground shadow-(--ks-shadow-neomorph-sm) hover:text-primary-text active:shadow-(--ks-shadow-neomorph-inset) active:scale-(--ks-press-scale)`,
       },
       size: {
         xs: "h-(--ks-control-h-xs) px-2.5 text-xs [&_svg]:size-3.5",
@@ -135,12 +135,15 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
   ref,
 ) {
   const group = useContext(ButtonGroupContext);
-  const classes = cn(buttonVariants({ variant: variant ?? group.variant, size: size ?? group.size, fullWidth }), className);
+  const resolvedVariant = variant ?? group.variant ?? "primary";
+  const classes = cn(buttonVariants({ variant: resolvedVariant, size: size ?? group.size, fullWidth }), className);
   const ink = useRipple(ripple);
+  // Lets theme materials (glass, clay, neomorphic) restyle buttons by role.
+  const slot = { "data-slot": "button", "data-variant": resolvedVariant };
 
   if (asChild) {
     return (
-      <Slot.Root ref={ref} className={classes} aria-disabled={disabled || loading || undefined} onPointerDown={onPointerDown} {...props}>
+      <Slot.Root ref={ref} {...slot} className={classes} aria-disabled={disabled || loading || undefined} onPointerDown={onPointerDown} {...props}>
         {children}
       </Slot.Root>
     );
@@ -150,6 +153,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     <button
       ref={ref}
       type={type ?? "button"}
+      {...slot}
       className={classes}
       disabled={disabled || loading}
       aria-busy={loading || undefined}
@@ -271,6 +275,7 @@ export const ToggleGroup = forwardRef<HTMLDivElement, ToggleGroupProps>(function
   return (
     <ToggleGroupPrimitive.Root
       ref={ref}
+      data-slot="toggle-group"
       className={cn("inline-flex items-center gap-1 rounded-(--ks-button-radius) bg-surface-sunken p-1", className)}
       {...props}
     >

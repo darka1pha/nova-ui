@@ -105,7 +105,7 @@ export const TabsList = forwardRef<HTMLDivElement, ComponentPropsWithoutRef<type
       : { left: 0, top: 0, width: rect.w, height: rect.h, translate: `${rect.x}px ${rect.y}px` });
 
   return (
-    <TabsPrimitive.List ref={composed} data-indicator={rect ? "ready" : undefined} className={cn("group/tabslist", tabsList[variant], className)} {...props}>
+    <TabsPrimitive.List ref={composed} data-slot="tabs-list" data-variant={variant} data-indicator={rect ? "ready" : undefined} className={cn("group/tabslist", tabsList[variant], className)} {...props}>
       {children}
       {style ? (
         <span

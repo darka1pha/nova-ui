@@ -327,6 +327,8 @@ export const Stat = forwardRef<HTMLDivElement, StatProps>(function Stat(
   return (
     <div
       ref={ref}
+      data-slot="card"
+      data-variant="elevated"
       className={cn(
         "group/stat flex flex-col gap-2 rounded-(--ks-card-radius) border border-border bg-surface p-(--ks-card-padding) shadow-sm",
         "transition-[translate,box-shadow] duration-(--ks-duration-slow) ease-(--ks-ease-interactive) hover:translate-y-(--ks-hover-lift) hover:shadow-md motion-reduce:hover:translate-y-0",

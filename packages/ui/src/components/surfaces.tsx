@@ -24,10 +24,10 @@ const cardVariants = cva("relative flex flex-col overflow-hidden rounded-(--ks-c
         "border border-(--ks-glass-border) bg-(--ks-glass-bg) backdrop-blur-(--ks-glass-blur) backdrop-saturate-150 shadow-(--ks-shadow-glass)",
       /** 3D tactile inflated clay aesthetic with dual highlights and floating shadow. */
       clay:
-        "border-0 rounded-(--ks-radius-2xl) bg-surface shadow-(--ks-shadow-clay)",
+        "border-0 rounded-(--ks-radius-2xl) bg-(--ks-clay-bg) shadow-(--ks-shadow-clay)",
       /** Soft extruded material surface extruded from the background plane. */
       neomorphic:
-        "border-0 bg-surface shadow-(--ks-shadow-neomorph)",
+        "border-0 bg-(--ks-neo-bg) shadow-(--ks-shadow-neomorph)",
     },
     interactive: {
       true: `cursor-pointer hover:translate-y-(--ks-hover-lift) hover:shadow-lg hover:border-border-strong active:translate-y-0 active:scale-(--ks-press-scale) ${transition} has-[:focus-visible]:translate-y-(--ks-hover-lift) has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus-ring motion-reduce:hover:translate-y-0`,
@@ -64,7 +64,7 @@ export interface CardProps extends HTMLAttributes<HTMLDivElement>, VariantProps<
  */
 export const Card = forwardRef<HTMLDivElement, CardProps>(function Card({ asChild, variant, interactive, className, ...props }, ref) {
   const Comp = asChild ? Slot.Root : "div";
-  return <Comp ref={ref} className={cn(cardVariants({ variant, interactive }), !hasSections(props.children) && "gap-4 p-(--ks-card-padding)", className)} {...props} />;
+  return <Comp ref={ref} data-slot="card" data-variant={variant ?? "elevated"} className={cn(cardVariants({ variant, interactive }), !hasSections(props.children) && "gap-4 p-(--ks-card-padding)", className)} {...props} />;
 });
 
 const SECTION = Symbol.for("ks.card.section");

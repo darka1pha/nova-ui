@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   auditContrast,
+  derivedVariables,
   contrastRatio,
   createTheme,
   generateScale,
@@ -186,5 +187,22 @@ describe("CSS output", () => {
     for (const name of SEMANTIC_COLOR_NAMES) expect(css, name).toContain(`--color-${name}: var(--ks-color-${name});`);
     expect(css).toContain("--color-foreground-muted: var(--ks-color-foreground-muted);");
     expect(css).toContain("--color-*: initial;");
+  });
+});
+
+describe("derived tokens", () => {
+  it("re-declares every token that references another, so nested themes recompute them", () => {
+    const derived = derivedVariables();
+    // Theme-dependent: materials, gradients, radius scale, control sizes.
+    for (const name of ["--ks-neo-bg", "--ks-clay-bg", "--ks-glass-bg", "--ks-gradient-brand", "--ks-radius-lg", "--ks-control-h-md"]) {
+      expect(derived, name).toHaveProperty(name);
+    }
+    // Plain literals stay on :root only.
+    expect(derived).not.toHaveProperty("--ks-spacing");
+    expect(Object.keys(derived).length).toBeLessThan(Object.keys(staticVariables()).length);
+  });
+
+  it("gives neumorphism a mid-tone base so both shadows can read", () => {
+    expect(derivedVariables()["--ks-neo-bg"]).toContain("var(--ks-color-foreground) 9%");
   });
 });

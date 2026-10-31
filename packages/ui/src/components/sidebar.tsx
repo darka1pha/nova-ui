@@ -164,6 +164,7 @@ export const SidebarProvider = forwardRef<HTMLDivElement, SidebarProviderProps>(
     <SidebarContext.Provider value={contextValue}>
       <div
         ref={ref}
+        data-slot="sidebar-wrapper"
         data-state={state}
         data-mobile={isMobile ? "true" : "false"}
         style={
@@ -254,6 +255,7 @@ export const Sidebar = forwardRef<HTMLElement, SidebarProps>(function Sidebar(
     <aside
       ref={ref}
       aria-label={label}
+      data-slot="sidebar"
       data-state={state}
       data-collapsible={state === "collapsed" ? collapsible : ""}
       data-variant={variant}
@@ -355,6 +357,7 @@ export const SidebarInset = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivEle
   return (
     <main
       ref={ref}
+      data-slot="sidebar-inset"
       className={cn(
         "relative flex min-h-screen flex-1 flex-col overflow-y-auto bg-surface-raised transition-[margin] duration-(--ks-duration-slow) ease-(--ks-ease-interactive)",
         "md:m-2 md:rounded-2xl md:border md:border-border md:shadow-xs",

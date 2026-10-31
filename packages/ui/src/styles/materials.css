@@ -1,0 +1,219 @@
+/*
+ * Theme materials: what the theme's `surface` setting (data-ks-surface on the
+ * ThemeProvider) does to components.
+ *
+ *   classic     the default look; nothing here applies
+ *   glass       translucent, blurred panes over a colorful backdrop
+ *   clay        puffy, pastel-tinted shapes with inner highlight and shade
+ *   neomorphic  one base color; shapes extruded or pressed by light and shadow
+ *
+ * Components opt in with data-slot (card, button, sidebar…) or the ks-field
+ * class. Cards and buttons that ask for a look explicitly (variant="glass",
+ * "featured", "gradient"…) are left alone.
+ *
+ * This lives in its own layer after `utilities` so a material can replace a
+ * component's default background, border and shadow utilities. Unlayered app
+ * CSS still wins, as with every other layer.
+ */
+@layer ks-materials {
+  /* Each solid button exposes its fill so one recipe serves every intent. */
+  [data-slot="button"]:is([data-variant="primary"], [data-variant="gradient"]) { --ks-m-solid: var(--ks-color-primary-solid); --ks-m-solid-active: var(--ks-color-primary-solid-active); }
+  [data-slot="button"][data-variant="secondary"] { --ks-m-solid: var(--ks-color-secondary-solid); --ks-m-solid-active: var(--ks-color-secondary-solid-active); }
+  [data-slot="button"][data-variant="accent"] { --ks-m-solid: var(--ks-color-accent-solid); --ks-m-solid-active: var(--ks-color-accent-solid-active); }
+  [data-slot="button"][data-variant="neutral"] { --ks-m-solid: var(--ks-color-neutral-solid); --ks-m-solid-active: var(--ks-color-neutral-solid-active); }
+  [data-slot="button"][data-variant="danger"] { --ks-m-solid: var(--ks-color-danger-solid); --ks-m-solid-active: var(--ks-color-danger-solid-active); }
+  [data-slot="button"][data-variant="success"] { --ks-m-solid: var(--ks-color-success-solid); --ks-m-solid-active: var(--ks-color-success-solid-active); }
+
+  /* ================================================================ Glass */
+
+  [data-ks-surface="glass"]:where(.ks-theme),
+  [data-ks-surface="glass"] [data-slot="sidebar-wrapper"] {
+    background: var(--ks-glass-backdrop);
+    background-attachment: local;
+  }
+
+  /* :where() keeps this shared rule low-specificity so the per-part rules below can refine it. */
+  [data-ks-surface="glass"] :where(
+      [data-slot="card"]:is([data-variant="elevated"], [data-variant="outline"], [data-variant="filled"]),
+      [data-slot="sidebar"]:not([data-variant="inset"]),
+      [data-slot="sidebar-inset"]
+    ) {
+    background-color: var(--ks-glass-bg);
+    border-color: var(--ks-glass-border);
+    backdrop-filter: blur(var(--ks-glass-blur)) saturate(170%);
+  }
+  [data-ks-surface="glass"] [data-slot="card"]:is([data-variant="elevated"], [data-variant="outline"], [data-variant="filled"]) {
+    border-width: 1px;
+    border-style: solid;
+    box-shadow: var(--ks-shadow-glass);
+  }
+  [data-ks-surface="glass"] [data-slot="sidebar-inset"] {
+    background-color: color-mix(in oklab, var(--ks-color-surface) 28%, transparent);
+  }
+
+  [data-ks-surface="glass"] [data-slot="button"]:is([data-variant="outline"], [data-variant="soft"]) {
+    background-color: var(--ks-glass-bg);
+    border-color: var(--ks-glass-border);
+    backdrop-filter: blur(12px) saturate(170%);
+    box-shadow: var(--ks-shadow-glass);
+  }
+  [data-ks-surface="glass"] [data-slot="button"]:is([data-variant="outline"], [data-variant="soft"]):hover {
+    background-color: var(--ks-glass-bg-hover);
+  }
+  /* Solid buttons stay solid and gain a glassy rim and a glow in their own hue. */
+  [data-ks-surface="glass"] [data-slot="button"]:is([data-variant="primary"], [data-variant="secondary"], [data-variant="accent"], [data-variant="neutral"], [data-variant="danger"], [data-variant="success"]) {
+    box-shadow:
+      inset 0 1px 0 0 rgb(255 255 255 / 0.4),
+      inset 0 0 0 1px rgb(255 255 255 / 0.12),
+      0 10px 24px -12px color-mix(in oklab, var(--ks-m-solid) 80%, transparent);
+  }
+
+  [data-ks-surface="glass"] .ks-field,
+  [data-ks-surface="glass"] [data-slot="toggle-group"],
+  [data-ks-surface="glass"] [data-slot="tabs-list"][data-variant="segmented"] {
+    background-color: var(--ks-glass-bg);
+    border-color: var(--ks-glass-border);
+    backdrop-filter: blur(12px) saturate(170%);
+  }
+
+  /* ================================================================= Clay */
+
+  [data-ks-surface="clay"]:where(.ks-theme),
+  [data-ks-surface="clay"] [data-slot="sidebar-wrapper"] {
+    background-color: var(--ks-clay-page);
+  }
+
+  [data-ks-surface="clay"] [data-slot="card"]:is([data-variant="elevated"], [data-variant="outline"], [data-variant="filled"]) {
+    background-color: var(--ks-clay-bg);
+    border-color: transparent;
+    border-radius: max(var(--ks-card-radius), var(--ks-radius-2xl));
+    box-shadow: var(--ks-shadow-clay);
+  }
+
+  /* The sidebar becomes a floating clay slab. */
+  [data-ks-surface="clay"] [data-slot="sidebar"]:not([data-variant="inset"]) {
+    margin: 0.75rem;
+    margin-inline-end: 0.25rem;
+    height: auto;
+    align-self: stretch;
+    background-color: var(--ks-clay-bg);
+    border: 0;
+    border-radius: var(--ks-radius-2xl);
+    box-shadow: var(--ks-shadow-clay);
+  }
+  [data-ks-surface="clay"] [data-slot="sidebar-inset"] {
+    background-color: transparent;
+    border-color: transparent;
+    box-shadow: none;
+  }
+  [data-ks-surface="clay"] [data-slot="sidebar"] [data-active="true"] {
+    background-color: var(--ks-color-surface);
+    box-shadow: var(--ks-shadow-clay-sm);
+  }
+
+  [data-ks-surface="clay"] [data-slot="button"]:is([data-variant="primary"], [data-variant="secondary"], [data-variant="accent"], [data-variant="neutral"], [data-variant="danger"], [data-variant="success"]) {
+    border-color: transparent;
+    border-radius: max(var(--ks-button-radius), var(--ks-radius-xl));
+    box-shadow:
+      0 12px 22px -12px color-mix(in oklab, var(--ks-m-solid) 75%, transparent),
+      inset 3px 4px 8px -2px rgb(255 255 255 / 0.45),
+      inset -4px -6px 12px -4px color-mix(in oklab, var(--ks-m-solid-active), black 35%);
+  }
+  [data-ks-surface="clay"] [data-slot="button"]:is([data-variant="primary"], [data-variant="secondary"], [data-variant="accent"], [data-variant="neutral"], [data-variant="danger"], [data-variant="success"]):active {
+    box-shadow:
+      0 4px 10px -8px color-mix(in oklab, var(--ks-m-solid) 75%, transparent),
+      inset 4px 5px 10px -3px color-mix(in oklab, var(--ks-m-solid-active), black 35%),
+      inset -2px -2px 6px -2px rgb(255 255 255 / 0.3);
+  }
+  [data-ks-surface="clay"] [data-slot="button"]:is([data-variant="outline"], [data-variant="soft"]) {
+    background-color: var(--ks-clay-bg);
+    border-color: transparent;
+    border-radius: max(var(--ks-button-radius), var(--ks-radius-xl));
+    box-shadow: var(--ks-shadow-clay-sm);
+  }
+  [data-ks-surface="clay"] [data-slot="button"]:is([data-variant="outline"], [data-variant="soft"]):active {
+    box-shadow: var(--ks-shadow-clay-press);
+  }
+
+  [data-ks-surface="clay"] .ks-field {
+    background-color: color-mix(in oklab, var(--ks-color-surface-sunken), var(--ks-color-primary-subtle) 30%);
+    border-color: transparent;
+    border-radius: max(var(--ks-input-radius), var(--ks-radius-xl));
+    box-shadow: var(--ks-shadow-clay-inset);
+  }
+  [data-ks-surface="clay"] .ks-field:is(:focus-visible, :focus-within) {
+    box-shadow: var(--ks-shadow-clay-inset), 0 0 0 3px color-mix(in oklab, var(--ks-color-focus-ring) 35%, transparent);
+  }
+
+  [data-ks-surface="clay"] :is([data-slot="toggle-group"], [data-slot="tabs-list"][data-variant="segmented"]) {
+    background-color: color-mix(in oklab, var(--ks-color-surface-sunken), var(--ks-color-primary-subtle) 30%);
+    border-radius: max(var(--ks-button-radius), var(--ks-radius-xl));
+    box-shadow: var(--ks-shadow-clay-inset);
+  }
+  [data-ks-surface="clay"] [data-slot="toggle-group"] > [data-state="on"],
+  [data-ks-surface="clay"] [data-slot="tabs-list"][data-variant="segmented"] > [data-tabs-indicator] {
+    background-color: var(--ks-clay-bg);
+    box-shadow: var(--ks-shadow-clay-sm);
+  }
+
+  /* =========================================================== Neumorphic */
+
+  [data-ks-surface="neomorphic"]:where(.ks-theme),
+  [data-ks-surface="neomorphic"] [data-slot="sidebar-wrapper"] {
+    background-color: var(--ks-neo-bg);
+  }
+
+  [data-ks-surface="neomorphic"] [data-slot="card"]:is([data-variant="elevated"], [data-variant="outline"], [data-variant="filled"]) {
+    background-color: var(--ks-neo-bg);
+    border-color: transparent;
+    box-shadow: var(--ks-shadow-neomorph);
+  }
+
+  [data-ks-surface="neomorphic"] [data-slot="sidebar"]:not([data-variant="inset"]),
+  [data-ks-surface="neomorphic"] [data-slot="sidebar-inset"] {
+    background-color: var(--ks-neo-bg);
+    border-color: transparent;
+    box-shadow: none;
+  }
+  [data-ks-surface="neomorphic"] [data-slot="sidebar"] [data-active="true"] {
+    background-color: var(--ks-neo-bg);
+    box-shadow: var(--ks-shadow-neomorph-inset);
+  }
+
+  /* Solid buttons keep their fill (it carries the meaning) and rise off the base. */
+  [data-ks-surface="neomorphic"] [data-slot="button"]:is([data-variant="primary"], [data-variant="secondary"], [data-variant="accent"], [data-variant="neutral"], [data-variant="danger"], [data-variant="success"]) {
+    border-color: transparent;
+    box-shadow: var(--ks-shadow-neomorph-sm);
+  }
+  [data-ks-surface="neomorphic"] [data-slot="button"]:is([data-variant="outline"], [data-variant="soft"]) {
+    background-color: var(--ks-neo-bg);
+    border-color: transparent;
+    color: var(--ks-color-foreground);
+    box-shadow: var(--ks-shadow-neomorph-sm);
+  }
+  [data-ks-surface="neomorphic"] [data-slot="button"]:is([data-variant="outline"], [data-variant="soft"]):hover {
+    color: var(--ks-color-primary-text);
+  }
+  [data-ks-surface="neomorphic"] [data-slot="button"]:not([data-variant="link"], [data-variant="ghost"]):active {
+    box-shadow: var(--ks-shadow-neomorph-inset);
+  }
+
+  [data-ks-surface="neomorphic"] .ks-field {
+    background-color: var(--ks-neo-bg);
+    border-color: transparent;
+    box-shadow: var(--ks-shadow-neomorph-inset);
+  }
+  [data-ks-surface="neomorphic"] .ks-field:is(:focus-visible, :focus-within) {
+    box-shadow: var(--ks-shadow-neomorph-inset), 0 0 0 3px color-mix(in oklab, var(--ks-color-focus-ring) 35%, transparent);
+  }
+
+  [data-ks-surface="neomorphic"] :is([data-slot="toggle-group"], [data-slot="tabs-list"][data-variant="segmented"]) {
+    background-color: var(--ks-neo-bg);
+    box-shadow: var(--ks-shadow-neomorph-inset);
+  }
+  [data-ks-surface="neomorphic"] [data-slot="toggle-group"] > [data-state="on"],
+  [data-ks-surface="neomorphic"] [data-slot="tabs-list"][data-variant="segmented"] > [data-tabs-indicator] {
+    background-color: var(--ks-neo-bg);
+    box-shadow: var(--ks-shadow-neomorph-sm);
+  }
+}

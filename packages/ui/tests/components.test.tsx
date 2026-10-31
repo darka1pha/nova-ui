@@ -542,9 +542,29 @@ describe("Accessibility (axe)", () => {
       );
       expect(screen.getByRole("button", { name: "Glass Button" }).className).toContain("backdrop-blur");
       expect(screen.getByRole("button", { name: "Clay Button" }).className).toContain("shadow-(--ks-shadow-clay-primary)");
-      expect(screen.getByRole("button", { name: "Neomorph Button" }).className).toContain("shadow-(--ks-shadow-neomorph)");
+      expect(screen.getByRole("button", { name: "Neomorph Button" }).className).toContain("shadow-(--ks-shadow-neomorph-sm)");
       expect(screen.getByText("Glass Badge").className).toContain("backdrop-blur-sm");
       expect(screen.getByText("Clay Badge").className).toContain("shadow-(--ks-shadow-clay)");
+    });
+
+    it("exposes slots so the theme surface setting can restyle components", () => {
+      render(
+        <ThemeProvider surface="clay">
+          <Card>Plain card</Card>
+          <Card variant="glass">Explicit glass</Card>
+          <Button>Save</Button>
+          <Button variant="outline">Cancel</Button>
+          <Input aria-label="Vessel" />
+        </ThemeProvider>,
+      );
+      expect(document.querySelector("[data-ks-surface]")).toHaveAttribute("data-ks-surface", "clay");
+      expect(screen.getByText("Plain card")).toHaveAttribute("data-slot", "card");
+      expect(screen.getByText("Plain card")).toHaveAttribute("data-variant", "elevated");
+      // Explicit material variants keep their own look; the material layer skips them.
+      expect(screen.getByText("Explicit glass")).toHaveAttribute("data-variant", "glass");
+      expect(screen.getByRole("button", { name: "Save" })).toHaveAttribute("data-variant", "primary");
+      expect(screen.getByRole("button", { name: "Cancel" })).toHaveAttribute("data-slot", "button");
+      expect(screen.getByRole("textbox", { name: "Vessel" })).toHaveClass("ks-field");
     });
   });
 });

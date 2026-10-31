@@ -23,7 +23,8 @@ import { transition } from "./shared.ts";
 
 /** The shared look of every text-entry control. */
 export const fieldVariants = cva(
-  `w-full min-w-0 rounded-(--ks-input-radius) border border-input bg-surface text-foreground shadow-xs ${transition} ` +
+  // `ks-field` marks every text-entry control for theme materials (glass, clay, neomorphic).
+  `ks-field w-full min-w-0 rounded-(--ks-input-radius) border border-input bg-surface text-foreground shadow-xs ${transition} ` +
     "placeholder:text-foreground-muted placeholder:opacity-80 outline-none " +
     "hover:border-foreground-muted focus-visible:border-focus-ring focus-visible:ring-3 focus-visible:ring-focus-ring/25 " +
     // Invalid fields shake once when the error appears (FormField adds text, so it's not color alone).
