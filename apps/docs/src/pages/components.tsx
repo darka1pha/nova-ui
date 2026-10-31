@@ -95,6 +95,9 @@ import {
   PopoverTrigger,
   Progress,
   Radio,
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
   RadioGroup,
   SearchInput,
   Select,
@@ -261,6 +264,50 @@ export function LayoutPage() {
           { name: "asChild", type: "boolean", default: "false", description: "Render your own element with these styles." },
         ]}
       />
+      <Example
+        title="Resizable panels"
+        description="Split views people can adjust: drag a handle, or focus it and use the arrow keys (Shift for bigger steps), Home/End for the limits, and Enter or a double-click to collapse a collapsible panel. Sizes are percentages within each panel's min/max; autoSaveId remembers the layout."
+        code={`<ResizablePanelGroup direction="horizontal" autoSaveId="fleet">
+  <ResizablePanel aria-label="Vessels" defaultSize={32} minSize={20} maxSize={50} collapsible>…</ResizablePanel>
+  <ResizableHandle withGrip />
+  <ResizablePanel aria-label="Details">
+    <ResizablePanelGroup direction="vertical">
+      <ResizablePanel aria-label="Position">…</ResizablePanel>
+      <ResizableHandle />
+      <ResizablePanel aria-label="Log" defaultSize={35} minSize={20}>…</ResizablePanel>
+    </ResizablePanelGroup>
+  </ResizablePanel>
+</ResizablePanelGroup>`}
+      >
+        <ResizablePanelGroup direction="horizontal" autoSaveId="docs-fleet" className="h-72 rounded-lg border border-border bg-surface">
+          <ResizablePanel aria-label="Vessels" defaultSize={32} minSize={20} maxSize={50} collapsible>
+            <ul className="m-0 flex list-none flex-col gap-0.5 p-2">
+              {["MSC Aurora", "Iran Shahr", "Persian Gulf", "Kish Star"].map((v, i) => (
+                <li key={v} className={cn("rounded-md px-2.5 py-1.5 text-sm", i === 1 ? "bg-primary-subtle font-medium text-primary-on-subtle" : "text-foreground-secondary")}>
+                  {v}
+                </li>
+              ))}
+            </ul>
+          </ResizablePanel>
+          <ResizableHandle withGrip />
+          <ResizablePanel aria-label="Details">
+            <ResizablePanelGroup direction="vertical">
+              <ResizablePanel aria-label="Position" className="flex flex-col gap-1 p-4">
+                <Text weight="semibold">Iran Shahr</Text>
+                <Text size="sm" tone="muted">
+                  Berth 2, Shahid Rajaee · ETD 14:30
+                </Text>
+              </ResizablePanel>
+              <ResizableHandle />
+              <ResizablePanel aria-label="Log" defaultSize={35} minSize={20} className="p-4">
+                <Text size="xs" tone="muted" className="font-mono">
+                  09:12 Pilot on board · 10:05 All fast · 11:40 Discharge started
+                </Text>
+              </ResizablePanel>
+            </ResizablePanelGroup>
+          </ResizablePanel>
+        </ResizablePanelGroup>
+      </Example>
       <Container size="full" className="px-0!" />
     </Page>
   );
