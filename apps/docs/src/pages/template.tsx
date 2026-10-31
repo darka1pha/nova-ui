@@ -11,6 +11,7 @@ import {
   CardTitle,
   CircularProgress,
   DataTable,
+  DateRangePicker,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -115,6 +116,7 @@ const sampleInvoices: Invoice[] = [
 
 /* ------------------------------------------------------------- Main Component */
 
+const reportingPeriod = { start: new Date(2026, 3, 1), end: new Date(2026, 8, 30) };
 const terminalThroughput = [
   { month: "Apr", bandarAbbas: 182, bushehr: 96, chabahar: 41 },
   { month: "May", bandarAbbas: 191, bushehr: 101, chabahar: 47 },
@@ -736,9 +738,13 @@ export function TemplatePage() {
 
                 {activeView === "analytics" && (
                   <div className="flex flex-col gap-4">
-                    <div>
-                      <Heading level={3} size="xs">Fleet Telemetry & Throughput</Heading>
-                      <Text size="xs" tone="muted">Deep analytics across maritime freight volumes and operational efficiency</Text>
+                    <div className="flex flex-wrap items-end justify-between gap-3">
+                      <div>
+                        <Heading level={3} size="xs">Fleet Telemetry & Throughput</Heading>
+                        <Text size="xs" tone="muted">Deep analytics across maritime freight volumes and operational efficiency</Text>
+                      </div>
+                      {/* One filter row above everything it scopes. */}
+                      <DateRangePicker aria-label="Reporting period" size="sm" className="w-auto min-w-64" defaultValue={reportingPeriod} />
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <Card variant="outline" className="p-4 flex flex-col items-center text-center gap-2">

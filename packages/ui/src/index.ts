@@ -86,7 +86,20 @@ export type {
 // More inputs
 export { Chip, CopyButton, Rating, type ChipProps, type CopyButtonProps, type RatingProps } from "./components/chip.tsx";
 export { PinInput, TagInput, FileDropzone, type PinInputProps, type TagInputProps, type FileDropzoneProps } from "./components/entry.tsx";
-export { Calendar, DatePicker, type CalendarProps, type DatePickerProps } from "./components/calendar.tsx";
+export {
+  Calendar,
+  DatePicker,
+  RangeCalendar,
+  DateRangePicker,
+  defaultDateRangePresets,
+  type CalendarProps,
+  type DatePickerProps,
+  type DateRange,
+  type RangeCalendarProps,
+  type DateRangePickerProps,
+  type DateRangePreset,
+  type DateRangePresetLabels,
+} from "./components/calendar.tsx";
 
 // Disclosure & containers
 export { Collapsible, CollapsibleTrigger, CollapsibleContent, HoverCard, HoverCardTrigger, HoverCardContent, ScrollArea, AspectRatio } from "./components/disclosure.tsx";

@@ -5,6 +5,8 @@ import {
   Button,
   Calendar,
   Card,
+  DateRangePicker,
+  RangeCalendar,
   Carousel,
   Chip,
   CircularProgress,
@@ -32,6 +34,7 @@ import {
   Text,
   Timeline,
   toast,
+  type DateRange,
 } from "@kaleido/ui";
 import { ChevronsUpDown, CircleCheck, DollarSign, GitCommit, Package, Truck, Users } from "lucide-react";
 import { useState } from "react";
@@ -95,6 +98,7 @@ function ChipDemo() {
 
 export function FormsExtras() {
   const [date, setDate] = useState<Date | null>(null);
+  const [voyage, setVoyage] = useState<DateRange | null>(null);
   return (
     <>
       <Example
@@ -113,6 +117,25 @@ export function FormsExtras() {
         </Stack>
         <Card variant="outline" className="w-fit p-3">
           <Calendar defaultValue={new Date()} />
+        </Card>
+      </Example>
+      <Example
+        title="DateRangePicker and RangeCalendar"
+        description="Preset rows for the ranges people reach for, then two months for a custom range. The first click sets one end, the second the other (in either order), with a live preview under the pointer or keyboard focus. Follows the provider's locale and Jalali calendar."
+        code={`<FormField label="Voyage window">
+  <DateRangePicker value={range} onValueChange={setRange} clearable name="voyage" />
+</FormField>
+// Submits voyageStart / voyageEnd as YYYY-MM-DD.
+<RangeCalendar defaultValue={{ start, end }} />`}
+        className="items-start"
+      >
+        <Stack gap={3} className="w-full max-w-sm">
+          <FormField label="Voyage window" description="ETD to ETA. Pick a preset or two days.">
+            <DateRangePicker value={voyage} onValueChange={setVoyage} onClear={() => setVoyage(null)} clearable name="voyage" />
+          </FormField>
+        </Stack>
+        <Card variant="outline" className="w-fit max-w-full overflow-x-auto p-3">
+          <RangeCalendar defaultValue={{ start: new Date(new Date().setDate(new Date().getDate() - 3)), end: new Date(new Date().setDate(new Date().getDate() + 4)) }} />
         </Card>
       </Example>
       <Example
