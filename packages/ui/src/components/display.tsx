@@ -435,31 +435,94 @@ export const Carousel = forwardRef<HTMLElement, CarouselProps>(function Carousel
   const slides = Children.toArray(children);
   const track = useRef<HTMLDivElement>(null);
   const [index, setIndex] = useState(0);
+  // Whether the track can scroll further back / forward. Drives the buttons, so they
+  // stay right when several slides are visible at once (index alone can't tell).
+  const [edges, setEdges] = useState({ start: true, end: slides.length <= 1 });
   const [paused, setPaused] = useState(false);
+  // The slide a button scroll is heading to, so quick repeat clicks step on from
+  // there instead of from wherever the smooth scroll has reached.
+  const target = useRef<number | null>(null);
+
+  /** Signed distance from the track's leading edge (left, or right in RTL) to a slide's. */
+  const offsetOf = (el: HTMLElement, slide: HTMLElement) => {
+    const box = el.getBoundingClientRect();
+    const rect = slide.getBoundingClientRect();
+    return getComputedStyle(el).direction === "rtl" ? rect.right - box.right : rect.left - box.left;
+  };
+
+  // The current slide is the one aligned with the leading edge, read from the scroll
+  // position. (Visibility can't decide it: with narrow slides several are visible.)
+  const measure = useCallback(() => {
+    const el = track.current;
+    if (!el) return;
+    let best = 0;
+    let distance = Infinity;
+    el.querySelectorAll<HTMLElement>("[data-index]").forEach((slide, i) => {
+      const d = Math.abs(offsetOf(el, slide));
+      if (d < distance) {
+        distance = d;
+        best = i;
+      }
+    });
+    // scrollLeft is negative in RTL; the distance travelled is what matters.
+    const position = Math.abs(el.scrollLeft);
+    const max = el.scrollWidth - el.clientWidth;
+    if (target.current === best && distance < 2) target.current = null;
+    setIndex(best);
+    setEdges({ start: position <= 1, end: position >= max - 1 });
+  }, []);
 
   useEffect(() => {
     const el = track.current;
-    if (!el || typeof IntersectionObserver === "undefined") return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) if (entry.isIntersecting) setIndex(Number((entry.target as HTMLElement).dataset.index));
-      },
-      { root: el, threshold: 0.6 },
-    );
-    el.querySelectorAll("[data-index]").forEach((s) => observer.observe(s));
-    return () => observer.disconnect();
-  }, [slides.length]);
+    if (!el) return;
+    measure();
+    let frame = 0;
+    const onScroll = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(measure);
+    };
+    // A swipe, wheel or key scroll takes over from any button scroll in flight.
+    const release = () => {
+      target.current = null;
+    };
+    el.addEventListener("scroll", onScroll, { passive: true });
+    el.addEventListener("pointerdown", release, { passive: true });
+    el.addEventListener("wheel", release, { passive: true });
+    el.addEventListener("keydown", release);
+    const resize = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(measure);
+    resize?.observe(el);
+    return () => {
+      cancelAnimationFrame(frame);
+      el.removeEventListener("scroll", onScroll);
+      el.removeEventListener("pointerdown", release);
+      el.removeEventListener("wheel", release);
+      el.removeEventListener("keydown", release);
+      resize?.disconnect();
+    };
+  }, [measure, slides.length]);
 
-  const goTo = useCallback((i: number) => {
-    const el = track.current?.querySelector<HTMLElement>(`[data-index="${(i + slides.length) % slides.length}"]`);
-    el?.scrollIntoView({ behavior: window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "nearest", inline: "start" });
-  }, [slides.length]);
+  const goTo = useCallback(
+    (i: number) => {
+      const el = track.current;
+      const n = (i + slides.length) % slides.length;
+      const slide = el?.querySelector<HTMLElement>(`[data-index="${n}"]`);
+      if (!el || !slide) return;
+      target.current = n;
+      // Scroll the track only: scrollIntoView would also scroll the page to the carousel.
+      const left = el.scrollLeft + offsetOf(el, slide);
+      const behavior = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+      if (typeof el.scrollTo === "function") el.scrollTo({ left, behavior });
+      else el.scrollLeft = left;
+    },
+    [slides.length],
+  );
 
   useEffect(() => {
     if (!autoPlay || paused || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
-    const t = setInterval(() => goTo(index + 1), autoPlay);
+    // At the end, wrap to the first slide.
+    const t = setInterval(() => goTo(edges.end ? 0 : index + 1), autoPlay);
     return () => clearInterval(t);
-  }, [autoPlay, paused, index, goTo]);
+  }, [autoPlay, paused, index, edges.end, goTo]);
 
   const nav = cn(
     "absolute top-1/2 z-10 inline-flex size-9 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-surface/90 text-foreground shadow-md backdrop-blur-sm hover:scale-110 disabled:opacity-0 [&_svg]:size-4",
@@ -503,10 +566,10 @@ export const Carousel = forwardRef<HTMLElement, CarouselProps>(function Carousel
             </div>
           ))}
         </div>
-        <button type="button" className={cn(nav, "start-2")} aria-label={labels?.previous ?? "Previous slide"} disabled={index === 0} onClick={() => goTo(index - 1)}>
+        <button type="button" className={cn(nav, "start-2")} aria-label={labels?.previous ?? "Previous slide"} disabled={edges.start} onClick={() => goTo(Math.max(0, (target.current ?? index) - 1))}>
           <ChevronLeft className="rtl:-scale-x-100" />
         </button>
-        <button type="button" className={cn(nav, "end-2")} aria-label={labels?.next ?? "Next slide"} disabled={index === slides.length - 1} onClick={() => goTo(index + 1)}>
+        <button type="button" className={cn(nav, "end-2")} aria-label={labels?.next ?? "Next slide"} disabled={edges.end} onClick={() => goTo(Math.min(slides.length - 1, (target.current ?? index) + 1))}>
           <ChevronRight className="rtl:-scale-x-100" />
         </button>
       </div>

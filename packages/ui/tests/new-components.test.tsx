@@ -293,6 +293,55 @@ describe("Display components", () => {
     expect(screen.getByRole("button", { name: "Go to slide 1" })).toHaveAttribute("aria-current", "true");
   });
 
+  it("Carousel previous/next work when several slides are visible", async () => {
+    // Fake layout: 5 slides of 352px with a 16px gap in a 766px track, so two show at once.
+    const SLIDE = 352;
+    const STEP = SLIDE + 16;
+    const user = userEvent.setup();
+    wrap(
+      <Carousel label="Themes" slideSize="352px">
+        {[1, 2, 3, 4, 5].map((n) => (
+          <div key={n}>Slide {n}</div>
+        ))}
+      </Carousel>,
+    );
+    const region = screen.getByRole("region", { name: "Themes" });
+    const track = region.querySelector<HTMLElement>("[tabindex='0']");
+    if (!track) throw new Error("track not found");
+    Object.defineProperty(track, "clientWidth", { configurable: true, value: 766 });
+    Object.defineProperty(track, "scrollWidth", { configurable: true, value: STEP * 5 - 16 });
+    track.getBoundingClientRect = () => ({ left: 0, right: 766, top: 0, bottom: 200, width: 766, height: 200, x: 0, y: 0, toJSON: () => ({}) });
+    track.querySelectorAll<HTMLElement>("[data-index]").forEach((slide, i) => {
+      slide.getBoundingClientRect = () => {
+        const left = i * STEP - track.scrollLeft;
+        return { left, right: left + SLIDE, top: 0, bottom: 200, width: SLIDE, height: 200, x: left, y: 0, toJSON: () => ({}) };
+      };
+    });
+    track.scrollTo = ((opts: ScrollToOptions) => {
+      track.scrollLeft = Math.min(opts.left ?? 0, STEP * 5 - 16 - 766);
+      track.dispatchEvent(new Event("scroll"));
+    }) as typeof track.scrollTo;
+    track.dispatchEvent(new Event("scroll"));
+
+    const previous = screen.getByRole("button", { name: "Previous slide" });
+    const next = screen.getByRole("button", { name: "Next slide" });
+    // Position is measured on the next frame after a scroll.
+    await waitFor(() => expect(next).toBeEnabled());
+    expect(previous).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Go to slide 1" })).toHaveAttribute("aria-current", "true");
+
+    await user.click(next);
+    expect(track.scrollLeft).toBe(STEP);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Go to slide 2" })).toHaveAttribute("aria-current", "true"));
+    expect(previous).toBeEnabled();
+
+    // The bug: Previous did nothing because the carousel thought it was already further along.
+    await user.click(previous);
+    expect(track.scrollLeft).toBe(0);
+    await waitFor(() => expect(previous).toBeDisabled());
+    expect(screen.getByRole("button", { name: "Go to slide 1" })).toHaveAttribute("aria-current", "true");
+  });
+
   it("Collapsible toggles its content", async () => {
     wrap(
       <Collapsible>
