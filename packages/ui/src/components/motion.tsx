@@ -3,7 +3,7 @@
 import { forwardRef, useEffect, useRef, useState, type CSSProperties, type HTMLAttributes, type PointerEvent, type ReactNode } from "react";
 import { cn } from "../utils/cn.ts";
 import { useComposedRefs } from "../utils/compose-refs.ts";
-import { useOptionalTheme } from "../theme/theme-provider.tsx";
+import { useLocale, useOptionalTheme } from "../theme/theme-provider.tsx";
 
 const prefersReducedMotion = () => typeof window !== "undefined" && !!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
@@ -86,9 +86,10 @@ export interface AnimatedNumberProps extends Omit<HTMLAttributes<HTMLSpanElement
  * final value only (the ticking digits are hidden from them).
  */
 export const AnimatedNumber = forwardRef<HTMLSpanElement, AnimatedNumberProps>(function AnimatedNumber(
-  { value, format, locale, duration = 900, className, ...props },
+  { value, format, locale: localeProp, duration = 900, className, ...props },
   ref,
 ) {
+  const { locale } = useLocale(localeProp);
   const formatter = new Intl.NumberFormat(locale, format);
   const [display, setDisplay] = useState(value);
   const from = useRef(value);

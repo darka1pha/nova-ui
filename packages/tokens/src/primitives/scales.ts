@@ -23,11 +23,17 @@ export const borderWidth = {
   thick: "2px",
 } as const;
 
+// Vazirmatn follows the Latin faces in each stack: browsers pick fonts per glyph,
+// so Latin text keeps its face and Persian/Arabic text gets a matching one.
+const persianStack = `"Vazirmatn Variable", "Vazirmatn"`;
+
 export const fontFamily = {
-  sans: `"Plus Jakarta Sans Variable", "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji"`,
-  display: `"Bricolage Grotesque Variable", "Bricolage Grotesque", "Plus Jakarta Sans Variable", "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif`,
+  sans: `"Plus Jakarta Sans Variable", "Plus Jakarta Sans", ${persianStack}, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji"`,
+  display: `"Bricolage Grotesque Variable", "Bricolage Grotesque", "Plus Jakarta Sans Variable", "Plus Jakarta Sans", ${persianStack}, ui-sans-serif, system-ui, sans-serif`,
   serif: `"Fraunces Variable", "Fraunces", ui-serif, Georgia, Cambria, "Times New Roman", serif`,
   mono: `"JetBrains Mono Variable", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace`,
+  /** Persian-first stack for fully Persian interfaces. */
+  persian: `${persianStack}, Tahoma, ui-sans-serif, system-ui, sans-serif`,
   system: `ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Helvetica Neue", Arial, sans-serif`,
 } as const;
 

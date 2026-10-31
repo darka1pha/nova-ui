@@ -1,4 +1,22 @@
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, Alert, Badge, Button, Card, FormField, Input, Pagination, ThemeProvider } from "@kaleido/ui";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+  Alert,
+  Badge,
+  Button,
+  Calendar,
+  Card,
+  DatePicker,
+  FormField,
+  Input,
+  NumberInput,
+  Pagination,
+  Stat,
+  Text,
+  ThemeProvider,
+} from "@kaleido/ui";
 import { ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { CodeBlock, Example, Page, Prose, Section } from "../docs/kit.tsx";
@@ -58,6 +76,37 @@ test("our brand theme is accessible", () => {
   );
 }
 
+function PersianDemo() {
+  const [arrival, setArrival] = useState<Date | null>(new Date());
+  return (
+    <div className="grid w-full gap-4 md:grid-cols-[auto_minmax(0,1fr)]">
+      <Calendar value={arrival} onValueChange={setArrival} labels={{ previousMonth: "ماه قبل", nextMonth: "ماه بعد" }} className="rounded-lg border border-border bg-surface" />
+      <div className="flex min-w-0 flex-col gap-3">
+        <FormField label="تاریخ ورود کشتی" description="تاریخ به شمسی نمایش داده و به میلادی ذخیره می‌شود.">
+          <DatePicker value={arrival} onValueChange={setArrival} placeholder="انتخاب تاریخ" clearable onClear={() => setArrival(null)} />
+        </FormField>
+        <FormField label="وزن محموله (تن)">
+          <NumberInput defaultValue={1250.5} step={0.5} incrementLabel="افزایش" decrementLabel="کاهش" />
+        </FormField>
+        <Stat label="کشتی‌های فعال" value={48} delta={12.5} />
+        <div className="flex flex-wrap items-center gap-2">
+          <Button>ثبت ورود</Button>
+          <Badge variant="success">تأیید شده</Badge>
+          <Text size="sm" tone="muted">
+            {arrival ? (
+              <>
+                ذخیره: <bdi dir="ltr">{arrival.toLocaleDateString("en-CA")}</bdi>
+              </>
+            ) : (
+              "بدون تاریخ"
+            )}
+          </Text>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function I18nPage() {
   const [page, setPage] = useState(2);
   return (
@@ -82,6 +131,24 @@ export function I18nPage() {
           </div>
         </ThemeProvider>
       </Example>
+      <Example
+        title="Persian (fa-IR) and the Jalali calendar"
+        description="Set locale on the provider. Calendars switch to Jalali months with Saturday first and Friday marked, numbers use Persian digits, and number fields accept what people type on a Persian keyboard. Values stay plain Dates and numbers."
+        code={`<ThemeProvider dir="rtl" locale="fa-IR" theme="kaveh">
+  <DatePicker placeholder="انتخاب تاریخ" />   // stores 2026-10-31, shows ۹ آبان ۱۴۰۵
+  <Calendar />
+  <NumberInput defaultValue={1250.5} />      // shows ۱۲۵۰٫۵, accepts ۱۲۵۰ or 1250
+  <Stat label="کشتی‌های فعال" value={48} delta={12.5} />
+</ThemeProvider>
+
+// Opt out per component or per locale:
+<Calendar calendar="gregory" />
+<ThemeProvider locale="fa-IR-u-ca-gregory-nu-latn" />`}
+      >
+        <ThemeProvider dir="rtl" locale="fa-IR" theme="kaveh" className="min-h-0! w-full rounded-lg border border-border p-4">
+          <PersianDemo />
+        </ThemeProvider>
+      </Example>
       <Section title="Rules the components follow">
         <Prose>
           <ul>
@@ -93,8 +160,16 @@ export function I18nPage() {
             </li>
             <li>Sheet sides <code>start</code>/<code>end</code> follow reading direction; <code>left</code>/<code>right</code> stay physical.</li>
             <li>
-              NumberInput formats with <code>Intl.NumberFormat</code> (pass <code>locale</code> and <code>formatOptions</code>); DataTable sorts with{" "}
+              <code>locale</code> on ThemeProvider reaches Calendar, DatePicker, NumberInput, Stat, AnimatedNumber and DataTable; a component's own{" "}
+              <code>locale</code> prop still wins. It is also written to <code>lang</code>.
+            </li>
+            <li>
+              NumberInput formats with <code>Intl.NumberFormat</code> and parses Persian (۰–۹) and Arabic-Indic digits; DataTable sorts with{" "}
               <code>Intl.Collator</code>.
+            </li>
+            <li>
+              <code>toJalali</code>, <code>fromJalali</code>, <code>toPersianDigits</code> and <code>toLatinDigits</code> are exported for your own formatting
+              and parsing.
             </li>
             <li>Every built-in label ("Close", "Clear search", "Next page", "Loading") is a prop with an English default.</li>
           </ul>

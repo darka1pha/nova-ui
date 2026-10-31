@@ -62,7 +62,28 @@ export interface ThemeProviderProps extends Omit<HTMLAttributes<HTMLDivElement>,
   motionStyle?: MotionStyle;
   /** Text direction for this subtree. Also configures Radix primitives. */
   dir?: "ltr" | "rtl";
+  /**
+   * BCP 47 locale for this subtree, e.g. "fa-IR". Date, number and calendar
+   * components use it when they are not given their own, and it is written
+   * to `lang` so screen readers pronounce text correctly. Inherited by nested providers.
+   */
+  locale?: string;
+  /**
+   * Calendar system for dates. Defaults to "persian" (Jalali) for Persian
+   * locales or a `-u-ca-persian` locale, otherwise "gregory".
+   */
+  calendar?: CalendarSystemName;
   children?: ReactNode;
+}
+
+export type CalendarSystemName = "gregory" | "persian";
+
+/** The calendar a locale implies: an explicit `-u-ca-` extension, else Jalali for Persian. */
+export function calendarForLocale(locale: string | undefined): CalendarSystemName {
+  if (!locale) return "gregory";
+  const ca = /-u-(?:.*-)?ca-([a-z]+)/i.exec(locale)?.[1]?.toLowerCase();
+  if (ca) return ca === "persian" ? "persian" : "gregory";
+  return /^fa(-|$)/i.test(locale) ? "persian" : "gregory";
 }
 
 export interface ThemeContextValue {
@@ -74,6 +95,9 @@ export interface ThemeContextValue {
   resolvedMode: ColorMode;
   setMode: (mode: ModePreference) => void;
   dir: "ltr" | "rtl";
+  /** Locale for this subtree, if one was set on this or an outer provider. */
+  locale: string | undefined;
+  calendar: CalendarSystemName;
   /** Element portals render into so overlays inherit this theme. */
   portalContainer: HTMLElement | null;
 }
@@ -123,6 +147,8 @@ export function ThemeProvider({
   motion = "system",
   motionStyle,
   dir: dirProp,
+  locale: localeProp,
+  calendar: calendarProp,
   className,
   style,
   children,
@@ -188,11 +214,13 @@ export function ThemeProvider({
   }, [resolved, radius, surface, density, motionStyle, fontKey, isDefaultLook, parent]);
 
   const dir = dirProp ?? parent?.dir ?? "ltr";
+  const locale = localeProp ?? parent?.locale;
+  const calendar = calendarProp ?? (localeProp ? calendarForLocale(localeProp) : parent?.calendar ?? "gregory");
   const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(null);
 
   const value = useMemo<ThemeContextValue>(
-    () => ({ theme: resolved, mode, resolvedMode, setMode, dir, portalContainer }),
-    [resolved, mode, resolvedMode, setMode, dir, portalContainer],
+    () => ({ theme: resolved, mode, resolvedMode, setMode, dir, locale, calendar, portalContainer }),
+    [resolved, mode, resolvedMode, setMode, dir, locale, calendar, portalContainer],
   );
 
   // Only an explicit choice is written; "system" and inherited modes are left
@@ -204,6 +232,7 @@ export function ThemeProvider({
         <div
           {...rest}
           dir={dirProp ?? (parent ? undefined : dir)}
+          lang={localeProp ?? rest.lang}
           data-ks-theme={resolved.id}
           data-ks-mode={explicitMode}
           data-ks-motion={motion === "reduce" ? "reduce" : undefined}
@@ -231,6 +260,16 @@ export function useTheme(): ThemeContextValue {
   return ctx;
 }
 
+/**
+ * The locale and calendar for date and number formatting: the component's own
+ * `locale` prop wins, then the nearest ThemeProvider's, then the browser's.
+ */
+export function useLocale(locale?: string): { locale: string | undefined; calendar: CalendarSystemName } {
+  const ctx = useContext(ThemeContext);
+  if (locale) return { locale, calendar: calendarForLocale(locale) };
+  return { locale: ctx?.locale, calendar: ctx?.calendar ?? "gregory" };
+}
+
 /** Like {@link useTheme} but returns null outside a provider. */
 export function useOptionalTheme(): ThemeContextValue | null {
   return useContext(ThemeContext);
@@ -242,6 +281,8 @@ const fallbackContext: ThemeContextValue = {
   resolvedMode: "light",
   setMode: () => devWarn("setMode() has no effect outside <ThemeProvider>."),
   dir: "ltr",
+  locale: undefined,
+  calendar: "gregory",
   portalContainer: null,
 };
 

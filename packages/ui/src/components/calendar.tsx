@@ -3,7 +3,8 @@
 import { CalendarDays, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { forwardRef, useEffect, useId, useMemo, useRef, useState, type HTMLAttributes, type KeyboardEvent } from "react";
 import { cn } from "../utils/cn.ts";
-import { useOptionalTheme } from "../theme/theme-provider.tsx";
+import { useLocale, useOptionalTheme, type CalendarSystemName } from "../theme/theme-provider.tsx";
+import { fromJalali, jalaliMonthLength, toJalali } from "../utils/jalali.ts";
 import { useFormField } from "./field.tsx";
 import { fieldVariants } from "./input.tsx";
 import { Popover, PopoverContent, PopoverTrigger } from "./overlay.tsx";
@@ -12,14 +13,41 @@ import { focusRing, pressable, transition } from "./shared.ts";
 /* Date helpers. Calendar dates are local dates at midnight. */
 const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
 const addDays = (d: Date, n: number) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
-const addMonths = (d: Date, n: number) => {
-  const target = new Date(d.getFullYear(), d.getMonth() + n, 1);
-  const last = new Date(target.getFullYear(), target.getMonth() + 1, 0).getDate();
-  return new Date(target.getFullYear(), target.getMonth(), Math.min(d.getDate(), last));
-};
 const sameDay = (a: Date | null | undefined, b: Date | null | undefined) =>
   !!a && !!b && a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
-const sameMonth = (a: Date, b: Date) => a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth();
+
+/**
+ * How a calendar system names days and groups them into months. Dates stay
+ * ordinary local Dates; only month boundaries and labels change.
+ */
+interface CalendarMath {
+  parts: (d: Date) => { year: number; month: number; day: number };
+  /** Month is 1-based and may overflow (13 → next year). */
+  make: (year: number, month: number, day: number) => Date;
+  monthLength: (year: number, month: number) => number;
+}
+
+const calendars: Record<CalendarSystemName, CalendarMath> = {
+  gregory: {
+    parts: (d) => ({ year: d.getFullYear(), month: d.getMonth() + 1, day: d.getDate() }),
+    make: (y, m, d) => new Date(y, m - 1, d),
+    monthLength: (y, m) => new Date(y, m, 0).getDate(),
+  },
+  persian: { parts: toJalali, make: fromJalali, monthLength: jalaliMonthLength },
+};
+
+function addMonths(cal: CalendarMath, d: Date, n: number) {
+  const { year, month, day } = cal.parts(d);
+  const index = month - 1 + n;
+  const y = year + Math.floor(index / 12);
+  const m = (((index % 12) + 12) % 12) + 1;
+  return cal.make(y, m, Math.min(day, cal.monthLength(y, m)));
+}
+function sameMonth(cal: CalendarMath, a: Date, b: Date) {
+  const pa = cal.parts(a);
+  const pb = cal.parts(b);
+  return pa.year === pb.year && pa.month === pb.month;
+}
 
 /** First day of the week for a locale (Intl.Locale weekInfo where available). */
 function weekStartFor(locale?: string): number {
@@ -36,6 +64,21 @@ function weekStartFor(locale?: string): number {
   return 0;
 }
 
+/** Weekend days (0 = Sunday … 6 = Saturday) for a locale, e.g. Friday in Iran. */
+function weekendFor(locale?: string): number[] {
+  try {
+    const loc = new Intl.Locale(locale ?? new Intl.DateTimeFormat().resolvedOptions().locale) as Intl.Locale & {
+      weekInfo?: { weekend: number[] };
+      getWeekInfo?: () => { weekend: number[] };
+    };
+    const info = loc.getWeekInfo?.() ?? loc.weekInfo;
+    if (info) return info.weekend.map((d) => d % 7);
+  } catch {
+    /* fall through */
+  }
+  return [0, 6];
+}
+
 export interface CalendarProps extends Omit<HTMLAttributes<HTMLDivElement>, "onChange" | "defaultValue"> {
   value?: Date | null;
   defaultValue?: Date | null;
@@ -49,6 +92,14 @@ export interface CalendarProps extends Omit<HTMLAttributes<HTMLDivElement>, "onC
   locale?: string;
   /** 0 = Sunday … 6 = Saturday. Defaults to the locale's convention. */
   weekStartsOn?: number;
+  /**
+   * "persian" shows Jalali (Solar Hijri) months; "gregory" the Gregorian ones.
+   * Defaults to the ThemeProvider's calendar, which follows its locale.
+   * Values are always plain Dates either way.
+   */
+  calendar?: CalendarSystemName;
+  /** Tint the locale's weekend days (Friday in Iran). Defaults to true for the Persian calendar. */
+  highlightWeekends?: boolean;
   labels?: { previousMonth?: string; nextMonth?: string };
 }
 
@@ -58,10 +109,13 @@ export interface CalendarProps extends Omit<HTMLAttributes<HTMLDivElement>, "onC
  * Months slide in from the direction you travel; the selected day springs in.
  */
 export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(function Calendar(
-  { value, defaultValue = null, onValueChange, defaultMonth, min, max, isDateDisabled, locale, weekStartsOn, labels, className, ...props },
+  { value, defaultValue = null, onValueChange, defaultMonth, min, max, isDateDisabled, locale: localeProp, weekStartsOn, calendar: calendarProp, highlightWeekends, labels, className, ...props },
   ref,
 ) {
   const dir = useOptionalTheme()?.dir ?? "ltr";
+  const { locale, calendar: localeCalendar } = useLocale(localeProp);
+  const calendar = calendarProp ?? localeCalendar;
+  const cal = calendars[calendar];
   const [internal, setInternal] = useState<Date | null>(defaultValue);
   const selected = value !== undefined ? value : internal;
   const today = useMemo(() => startOfDay(new Date()), []);
@@ -72,18 +126,36 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(function Calen
   const titleId = useId();
 
   const firstDay = weekStartsOn ?? weekStartFor(locale);
-  const monthStart = new Date(focused.getFullYear(), focused.getMonth(), 1);
+  const weekend = (highlightWeekends ?? calendar === "persian") ? weekendFor(locale) : [];
+  const focusedParts = cal.parts(focused);
+  const monthStart = cal.make(focusedParts.year, focusedParts.month, 1);
   const gridStart = addDays(monthStart, -((monthStart.getDay() - firstDay + 7) % 7));
   const weeks = Array.from({ length: 6 }, (_, w) => Array.from({ length: 7 }, (_, d) => addDays(gridStart, w * 7 + d)));
   const weekdayFmt = new Intl.DateTimeFormat(locale, { weekday: "short" });
   const weekdayLong = new Intl.DateTimeFormat(locale, { weekday: "long" });
-  const monthFmt = new Intl.DateTimeFormat(locale, { month: "long", year: "numeric" });
-  const dayLabel = new Intl.DateTimeFormat(locale, { dateStyle: "full" });
+  const monthFmt = new Intl.DateTimeFormat(locale, { calendar, month: "long", year: "numeric" });
+  const dayLabelFmt = new Intl.DateTimeFormat(locale, { calendar, weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  // ICU orders Persian Jalali dates year-first ("۱۴۰۵ آبان ۹, شنبه"); readers expect
+  // "شنبه ۹ آبان ۱۴۰۵" and "آبان ۱۴۰۵", so those are assembled from parts.
+  const persianOrder = calendar === "persian" && /^fa\b/i.test(dayLabelFmt.resolvedOptions().locale);
+  const parts = (fmt: Intl.DateTimeFormat, d: Date) => Object.fromEntries(fmt.formatToParts(d).map((x) => [x.type, x.value]));
+  const dayLabel = (d: Date) => {
+    if (!persianOrder) return dayLabelFmt.format(d);
+    const p = parts(dayLabelFmt, d);
+    return `${p.weekday} ${p.day} ${p.month} ${p.year}`;
+  };
+  const monthTitle = (d: Date) => {
+    if (!persianOrder) return monthFmt.format(d);
+    const p = parts(monthFmt, d);
+    return `${p.month} ${p.year}`;
+  };
+  // Day numbers in the locale's digits (Persian ۱۲۳ for fa-IR).
+  const dayNumber = new Intl.NumberFormat(locale, { useGrouping: false });
 
   const disabled = (d: Date) => (min && d < startOfDay(min)) || (max && d > startOfDay(max)) || !!isDateDisabled?.(d);
 
   const move = (next: Date) => {
-    if (!sameMonth(next, focused)) setSlide(next > focused ? "next" : "prev");
+    if (!sameMonth(cal, next, focused)) setSlide(next > focused ? "next" : "prev");
     shouldFocus.current = true;
     setFocused(next);
   };
@@ -108,8 +180,8 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(function Calen
       ArrowDown: () => addDays(focused, 7),
       Home: () => addDays(focused, -((focused.getDay() - firstDay + 7) % 7)),
       End: () => addDays(focused, 6 - ((focused.getDay() - firstDay + 7) % 7)),
-      PageUp: () => addMonths(focused, e.shiftKey ? -12 : -1),
-      PageDown: () => addMonths(focused, e.shiftKey ? 12 : 1),
+      PageUp: () => addMonths(cal, focused, e.shiftKey ? -12 : -1),
+      PageDown: () => addMonths(cal, focused, e.shiftKey ? 12 : 1),
     };
     const action = keys[e.key];
     if (action) {
@@ -127,29 +199,35 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(function Calen
   return (
     <div ref={ref} className={cn("inline-flex w-fit flex-col gap-3 p-1", className)} {...props}>
       <div className="flex items-center justify-between gap-2">
-        <button type="button" className={navButton} aria-label={labels?.previousMonth ?? "Previous month"} onClick={() => move(addMonths(focused, -1))}>
+        <button type="button" className={navButton} aria-label={labels?.previousMonth ?? "Previous month"} onClick={() => move(addMonths(cal, focused, -1))}>
           <ChevronLeft className="rtl:-scale-x-100" />
         </button>
         <p id={titleId} aria-live="polite" className="font-display text-sm font-semibold capitalize">
-          {monthFmt.format(focused)}
+          {monthTitle(focused)}
         </p>
-        <button type="button" className={navButton} aria-label={labels?.nextMonth ?? "Next month"} onClick={() => move(addMonths(focused, 1))}>
+        <button type="button" className={navButton} aria-label={labels?.nextMonth ?? "Next month"} onClick={() => move(addMonths(cal, focused, 1))}>
           <ChevronRight className="rtl:-scale-x-100" />
         </button>
       </div>
       <div ref={grid} role="grid" aria-labelledby={titleId} onKeyDown={onKeyDown} className="flex flex-col gap-1">
         <div role="row" className="grid grid-cols-7 gap-1">
           {weeks[0]?.map((d) => (
-            <span key={d.getDay()} role="columnheader" aria-label={weekdayLong.format(d)} className="flex h-8 items-center justify-center text-xs font-medium text-foreground-muted">
+            <span
+              key={d.getDay()}
+              role="columnheader"
+              aria-label={weekdayLong.format(d)}
+              className={cn("flex h-8 items-center justify-center text-xs font-medium", weekend.includes(d.getDay()) ? "text-danger-text" : "text-foreground-muted")}
+            >
               {weekdayFmt.format(d)}
             </span>
           ))}
         </div>
-        <div key={`${focused.getFullYear()}-${focused.getMonth()}`} className={cn("flex flex-col gap-1", slideClass)}>
+        <div key={`${calendar}-${focusedParts.year}-${focusedParts.month}`} className={cn("flex flex-col gap-1", slideClass)}>
           {weeks.map((week, w) => (
             <div role="row" key={w} className="grid grid-cols-7 gap-1">
               {week.map((d) => {
-                const outside = !sameMonth(d, focused);
+                const outside = !sameMonth(cal, d, focused);
+                const isWeekend = weekend.includes(d.getDay());
                 const isSelected = sameDay(d, selected);
                 const isToday = sameDay(d, today);
                 const isDisabled = disabled(d);
@@ -158,7 +236,7 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(function Calen
                     <button
                       type="button"
                       tabIndex={sameDay(d, focused) ? 0 : -1}
-                      aria-label={dayLabel.format(d)}
+                      aria-label={dayLabel(d)}
                       aria-current={isToday ? "date" : undefined}
                       aria-disabled={isDisabled || undefined}
                       onClick={() => {
@@ -170,14 +248,14 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(function Calen
                         focusRing,
                         transition,
                         pressable,
-                        outside ? "text-foreground-muted" : "text-foreground",
+                        outside ? "text-foreground-muted" : isWeekend ? "text-danger-text" : "text-foreground",
                         !isSelected && !isDisabled && "hover:bg-primary-subtle hover:text-primary-on-subtle",
                         isSelected && "bg-primary font-semibold text-primary-on-solid shadow-glow-primary animate-ks-bounce-in",
                         isToday && !isSelected && "font-semibold text-primary-text after:absolute after:bottom-1 after:size-1 after:rounded-full after:bg-primary",
                         isDisabled && "cursor-not-allowed text-foreground-disabled line-through opacity-60",
                       )}
                     >
-                      {d.getDate()}
+                      {dayNumber.format(cal.parts(d).day)}
                     </button>
                   </div>
                 );
@@ -231,7 +309,8 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(functio
     onClear,
     size,
     className,
-    locale,
+    locale: localeProp,
+    calendar: calendarProp,
     disabled,
     id,
     "aria-label": ariaLabel,
@@ -248,7 +327,9 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(functio
   const [open, setOpen] = useState(false);
   const [internal, setInternal] = useState<Date | null>(defaultValue);
   const current = value !== undefined ? value : internal;
-  const text = current ? new Intl.DateTimeFormat(locale, format).format(current) : null;
+  const { locale, calendar: localeCalendar } = useLocale(localeProp);
+  const calendar = calendarProp ?? localeCalendar;
+  const text = current ? new Intl.DateTimeFormat(locale, { calendar, ...format }).format(current) : null;
 
   return (
     <div className={cn("relative w-full", className)}>
@@ -297,6 +378,7 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(functio
           <Calendar
             {...calendarProps}
             locale={locale}
+            calendar={calendar}
             value={current}
             defaultMonth={current ?? undefined}
             onValueChange={(d) => {

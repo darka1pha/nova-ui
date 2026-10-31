@@ -10,6 +10,7 @@ import {
   type TdHTMLAttributes,
   type ThHTMLAttributes,
 } from "react";
+import { useLocale } from "../theme/theme-provider.tsx";
 import { cn } from "../utils/cn.ts";
 import { Checkbox } from "./controls.tsx";
 import { EmptyState } from "./feedback.tsx";
@@ -159,9 +160,10 @@ export function DataTable<T>({
   empty,
   caption,
   labels,
-  locale,
+  locale: localeProp,
   ...tableProps
 }: DataTableProps<T>) {
+  const { locale } = useLocale(localeProp);
   const [internalSort, setInternalSort] = useState<SortState | null>(null);
   const sort = sortProp !== undefined ? sortProp : internalSort;
   const [internalSelected, setInternalSelected] = useState<string[]>([]);

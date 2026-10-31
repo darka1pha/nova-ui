@@ -18,6 +18,8 @@ import {
 } from "react";
 import { cn } from "../utils/cn.ts";
 import { useComposedRefs } from "../utils/compose-refs.ts";
+import { useLocale } from "../theme/theme-provider.tsx";
+import { toLatinDigits } from "../utils/jalali.ts";
 import { useFormField } from "./field.tsx";
 import { transition } from "./shared.ts";
 
@@ -210,13 +212,14 @@ const decimals = (n: number) => (String(n).split(".")[1] ?? "").length;
  * locale-aware display formatting. Exposes `role="spinbutton"` semantics.
  */
 export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(function NumberInput(
-  { value, defaultValue = null, onValueChange, min, max, step = 1, formatOptions, locale, incrementLabel = "Increase", decrementLabel = "Decrease", size, disabled, readOnly, onBlur, onFocus, onKeyDown, className, ...props },
+  { value, defaultValue = null, onValueChange, min, max, step = 1, formatOptions, locale: localeProp, incrementLabel = "Increase", decrementLabel = "Decrease", size, disabled, readOnly, onBlur, onFocus, onKeyDown, className, ...props },
   ref,
 ) {
   const [internal, setInternal] = useState<number | null>(defaultValue);
   const current = value !== undefined ? value : internal;
   const [draft, setDraft] = useState<string | null>(null);
   const fieldProps = useFormField({ disabled, ...props });
+  const { locale } = useLocale(localeProp);
 
   const commit = useCallback(
     (next: number | null) => {
@@ -228,7 +231,14 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(functi
   );
 
   const stepBy = (delta: number) => commit((current ?? min ?? 0) + delta);
-  const format = (n: number | null) => (n === null ? "" : formatOptions ? new Intl.NumberFormat(locale, formatOptions).format(n) : String(n));
+  // Without a locale, plain JS digits; with one, its digits (Persian ۱۲٫۵ for fa-IR).
+  const plain = (n: number) => (locale ? new Intl.NumberFormat(locale, { useGrouping: false, maximumFractionDigits: 20 }).format(n) : String(n));
+  const format = (n: number | null) => (n === null ? "" : formatOptions ? new Intl.NumberFormat(locale, formatOptions).format(n) : plain(n));
+  // Accepts what people type on any keyboard: Persian/Arabic digits and separators, or a decimal comma.
+  const parse = (text: string) => {
+    const t = toLatinDigits(text).trim().replace(",", ".");
+    return t === "" ? null : Number(t);
+  };
   const atMin = min !== undefined && current !== null && current <= min;
   const atMax = max !== undefined && current !== null && current >= max;
   const stepper =
@@ -249,15 +259,12 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(functi
         className={cn(fieldVariants({ size }), "pe-9 tabular-nums")}
         value={draft ?? format(current)}
         onFocus={(e) => {
-          setDraft(current === null ? "" : String(current));
+          setDraft(current === null ? "" : plain(current));
           onFocus?.(e);
         }}
         onChange={(e) => setDraft(e.target.value)}
         onBlur={(e) => {
-          if (draft !== null) {
-            const trimmed = draft.trim().replace(",", ".");
-            commit(trimmed === "" ? null : Number(trimmed));
-          }
+          if (draft !== null) commit(parse(draft));
           setDraft(null);
           onBlur?.(e);
         }}
@@ -273,7 +280,7 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(functi
             Home: () => min !== undefined && commit(min),
             End: () => max !== undefined && commit(max),
             Enter: () => {
-              if (draft !== null) commit(draft.trim() === "" ? null : Number(draft.replace(",", ".")));
+              if (draft !== null) commit(parse(draft));
             },
           };
           const action = map[e.key];

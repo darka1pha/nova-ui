@@ -88,6 +88,15 @@ export { useRipple } from "./components/button.tsx";
 // Utilities
 export { cn } from "./utils/cn.ts";
 export { useComposedRefs } from "./utils/compose-refs.ts";
+export {
+  toJalali,
+  fromJalali,
+  isJalaliLeapYear,
+  jalaliMonthLength,
+  toPersianDigits,
+  toLatinDigits,
+  type JalaliDate,
+} from "./utils/jalali.ts";
 
 // Token engine re-exports, so most apps need a single import.
 export {

@@ -13,6 +13,7 @@ import {
   type HTMLAttributes,
   type ReactNode,
 } from "react";
+import { useLocale } from "../theme/theme-provider.tsx";
 import { cn } from "../utils/cn.ts";
 import { AnimatedNumber } from "./motion.tsx";
 import { focusRing, pressable, transition } from "./shared.ts";
@@ -319,11 +320,14 @@ export interface StatProps extends HTMLAttributes<HTMLDivElement> {
 
 /** A key metric with its change and optional trend. */
 export const Stat = forwardRef<HTMLDivElement, StatProps>(function Stat(
-  { label, value, format, delta, invertDelta = false, helpText, icon, trend, locale, className, ...props },
+  { label, value, format, delta, invertDelta = false, helpText, icon, trend, locale: localeProp, className, ...props },
   ref,
 ) {
+  const { locale } = useLocale(localeProp);
   const good = delta === undefined ? null : invertDelta ? delta <= 0 : delta >= 0;
-  const deltaText = delta === undefined ? null : `${delta >= 0 ? "+" : ""}${new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }).format(delta)}%`;
+  // Intl places the sign and percent per locale (and adds direction marks, so "+۱۲٫۵٪" stays intact in RTL).
+  const deltaText =
+    delta === undefined ? null : new Intl.NumberFormat(locale, { style: "percent", signDisplay: "exceptZero", maximumFractionDigits: 1 }).format(delta / 100);
   return (
     <div
       ref={ref}
