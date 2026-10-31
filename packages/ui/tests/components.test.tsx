@@ -226,6 +226,14 @@ describe("Forms", () => {
     expect(onClear).toHaveBeenCalledTimes(2);
   });
 
+  it("SearchInput keeps start padding for its icon without a conflicting px class", () => {
+    // Both `px-*` and `ps-9` surviving lets the consumer's stylesheet order decide, hiding text under the icon.
+    wrap(<SearchInput aria-label="Search" size="sm" className="h-8" />);
+    const classes = screen.getByRole("searchbox").className.split(/\s+/);
+    expect(classes).toContain("ps-9");
+    expect(classes.some((c) => /^(px|ps-2\.5)/.test(c))).toBe(false);
+  });
+
   it("Combobox filters and selects an option", async () => {
     const onValueChange = vi.fn();
     wrap(

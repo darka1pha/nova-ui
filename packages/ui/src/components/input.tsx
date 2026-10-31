@@ -33,10 +33,13 @@ export const fieldVariants = cva(
     "disabled:cursor-not-allowed disabled:bg-surface-sunken disabled:opacity-60 [&:is(input,textarea):read-only]:bg-surface-sunken",
   {
     variants: {
+      // Padding is set per side (not `px-*`) so adornment padding like `ps-9` replaces it in the
+      // merged class list. With `px-*` both classes survive and whichever stylesheet the consumer's
+      // Tailwind emits last wins, which can put the text under a leading icon.
       size: {
-        sm: "h-(--ks-control-h-sm) px-2.5 text-sm",
-        md: "h-(--ks-control-h-md) px-3 text-sm",
-        lg: "h-(--ks-control-h-lg) px-4 text-md",
+        sm: "h-(--ks-control-h-sm) ps-2.5 pe-2.5 text-sm",
+        md: "h-(--ks-control-h-md) ps-3 pe-3 text-sm",
+        lg: "h-(--ks-control-h-lg) ps-4 pe-4 text-md",
       },
     },
     defaultVariants: { size: "md" },
