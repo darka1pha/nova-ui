@@ -1,7 +1,10 @@
 import {
   Avatar,
   Badge,
+  AreaChart,
+  BarChart,
   BarList,
+  DonutChart,
   Button,
   Card,
   CardDescription,
@@ -111,6 +114,38 @@ const sampleInvoices: Invoice[] = [
 ];
 
 /* ------------------------------------------------------------- Main Component */
+
+const terminalThroughput = [
+  { month: "Apr", bandarAbbas: 182, bushehr: 96, chabahar: 41 },
+  { month: "May", bandarAbbas: 191, bushehr: 101, chabahar: 47 },
+  { month: "Jun", bandarAbbas: 176, bushehr: 108, chabahar: 52 },
+  { month: "Jul", bandarAbbas: 204, bushehr: 112, chabahar: 58 },
+  { month: "Aug", bandarAbbas: 219, bushehr: 109, chabahar: 63 },
+  { month: "Sep", bandarAbbas: 228, bushehr: 118, chabahar: 71 },
+];
+const terminalSeries = [
+  { key: "bandarAbbas" as const, label: "Bandar Abbas" },
+  { key: "bushehr" as const, label: "Bushehr" },
+  { key: "chabahar" as const, label: "Chabahar" },
+];
+const cargoMixData = [
+  { label: "Containers", value: 5420 },
+  { label: "Dry bulk", value: 2310 },
+  { label: "Liquid bulk", value: 1880 },
+  { label: "Ro-Ro", value: 640 },
+];
+const bunkerFuel = [
+  { month: "Apr", mgo: 42, vlsfo: 61 },
+  { month: "May", mgo: 45, vlsfo: 66 },
+  { month: "Jun", mgo: 39, vlsfo: 70 },
+  { month: "Jul", mgo: 48, vlsfo: 74 },
+  { month: "Aug", mgo: 51, vlsfo: 79 },
+  { month: "Sep", mgo: 47, vlsfo: 83 },
+];
+const fuelSeries = [
+  { key: "mgo" as const, label: "MGO" },
+  { key: "vlsfo" as const, label: "VLSFO" },
+];
 
 export function TemplatePage() {
   const [activePreset, setActivePreset] = useState<PresetName>("kaveh");
@@ -722,6 +757,29 @@ export function TemplatePage() {
                         <Text size="xs" tone="muted">Zero maritime incidents this quarter</Text>
                       </Card>
                     </div>
+                    <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+                      <Card variant="outline" className="lg:col-span-3 p-5 gap-3">
+                        <div>
+                          <Text weight="semibold" size="sm">Throughput by terminal</Text>
+                          <Text size="xs" tone="muted">Thousand TEU per month</Text>
+                        </div>
+                        <AreaChart label="Throughput by terminal (k TEU)" data={terminalThroughput} index="month" series={terminalSeries} stacked height={240} />
+                      </Card>
+                      <Card variant="outline" className="lg:col-span-2 p-5 gap-3">
+                        <div>
+                          <Text weight="semibold" size="sm">Cargo mix</Text>
+                          <Text size="xs" tone="muted">Thousand tonnes this quarter</Text>
+                        </div>
+                        <DonutChart label="Cargo mix (k tonnes)" data={cargoMixData} size={168} />
+                      </Card>
+                    </div>
+                    <Card variant="outline" className="p-5 gap-3">
+                      <div>
+                        <Text weight="semibold" size="sm">Bunker fuel delivered</Text>
+                        <Text size="xs" tone="muted">Thousand tonnes, MGO vs VLSFO</Text>
+                      </div>
+                      <BarChart label="Bunker fuel delivered (k tonnes)" data={bunkerFuel} index="month" series={fuelSeries} height={220} />
+                    </Card>
                   </div>
                 )}
 

@@ -1,8 +1,9 @@
 "use client";
 
-import { ArrowDown, ArrowUp, ChevronsUpDown } from "lucide-react";
+import { ArrowDown, ArrowUp, ChevronRight, ChevronsUpDown, Columns3 } from "lucide-react";
 import {
   forwardRef,
+  Fragment,
   useMemo,
   useState,
   type HTMLAttributes,
@@ -12,7 +13,11 @@ import {
 } from "react";
 import { useLocale } from "../theme/theme-provider.tsx";
 import { cn } from "../utils/cn.ts";
+import { Button } from "./button.tsx";
 import { Checkbox } from "./controls.tsx";
+import { SearchInput } from "./input.tsx";
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./menu.tsx";
+import { Pagination } from "./navigation.tsx";
 import { EmptyState } from "./feedback.tsx";
 import { focusRing } from "./shared.ts";
 import { Skeleton } from "./skeleton.tsx";
@@ -108,6 +113,12 @@ export interface DataTableColumn<T> {
   align?: "start" | "center" | "end";
   /** CSS width, e.g. "8rem" or "20%". */
   width?: string;
+  /** Text matched by the search box. Defaults to `sortValue`, then `row[id]`. Return "" to exclude. */
+  filterValue?: (row: T) => string | number | null | undefined;
+  /** Allow hiding this column from the columns menu. Defaults to true. */
+  hideable?: boolean;
+  /** Label for the columns menu when `header` is not plain text. */
+  menuLabel?: string;
 }
 
 export interface SortState {
@@ -132,8 +143,50 @@ export interface DataTableProps<T> extends Omit<TableProps, "children"> {
   empty?: ReactNode;
   caption?: ReactNode;
   /** Accessible labels (for localization). */
-  labels?: { selectAll?: string; selectRow?: (row: T) => string; loading?: string };
+  labels?: {
+    selectAll?: string;
+    selectRow?: (row: T) => string;
+    loading?: string;
+    search?: string;
+    columns?: string;
+    expandRow?: (row: T) => string;
+    /** e.g. (from, to, total) => `${from}–${to} of ${total}` */
+    range?: (from: string, to: string, total: string) => string;
+    noMatches?: string;
+    /** Header of the expand-toggle column (screen readers only). */
+    details?: string;
+  };
   locale?: string;
+
+  /** Show a search box that filters rows across columns (client-side). */
+  searchable?: boolean;
+  /** Controlled search text. */
+  search?: string;
+  onSearchChange?: (search: string) => void;
+
+  /** Rows per page. Enables pagination. */
+  pageSize?: number;
+  /** Controlled page (1-based). */
+  page?: number;
+  onPageChange?: (page: number) => void;
+  /**
+   * Total rows on the server. Pass it with controlled `page` and the current
+   * page as `data` for server-side pagination.
+   */
+  rowCount?: number;
+
+  /** Show the columns menu for hiding and showing columns. */
+  columnToggle?: boolean;
+  /** Controlled hidden column ids. */
+  hiddenColumns?: string[];
+  defaultHiddenColumns?: string[];
+  onHiddenColumnsChange?: (ids: string[]) => void;
+
+  /** Content shown under a row when it is expanded. Adds an expand toggle per row. */
+  renderExpanded?: (row: T) => ReactNode;
+
+  /** Extra toolbar content, e.g. filters or an export button. */
+  toolbar?: ReactNode;
 }
 
 const alignClass = { start: "text-start", center: "text-center", end: "text-end" } as const;
@@ -143,9 +196,11 @@ function defaultValue<T>(row: T, id: string): unknown {
 }
 
 /**
- * A ready-made table for record lists: sorting (with aria-sort), selection,
- * loading and empty states. For virtualized or server-driven grids, control
- * `sort` and pass the current page of `data`.
+ * A ready-made table for record lists: sorting (with aria-sort), search,
+ * pagination, column visibility, expandable rows, selection, loading and empty
+ * states. Everything works client-side by default; for server-driven data,
+ * control `sort`, `search` and `page`, pass the current page as `data` and the
+ * total as `rowCount`.
  */
 export function DataTable<T>({
   data,
@@ -161,9 +216,29 @@ export function DataTable<T>({
   caption,
   labels,
   locale: localeProp,
+  searchable,
+  search: searchProp,
+  onSearchChange,
+  pageSize,
+  page: pageProp,
+  onPageChange,
+  rowCount,
+  columnToggle,
+  hiddenColumns: hiddenProp,
+  defaultHiddenColumns = [],
+  onHiddenColumnsChange,
+  renderExpanded,
+  toolbar,
   ...tableProps
 }: DataTableProps<T>) {
   const { locale } = useLocale(localeProp);
+  const [internalSearch, setInternalSearch] = useState("");
+  const search = searchProp ?? internalSearch;
+  const [internalPage, setInternalPage] = useState(1);
+  const [internalHidden, setInternalHidden] = useState<string[]>(defaultHiddenColumns);
+  const hidden = hiddenProp ?? internalHidden;
+  const [expanded, setExpanded] = useState<string[]>([]);
+  const visibleColumns = columns.filter((c) => !hidden.includes(c.id));
   const [internalSort, setInternalSort] = useState<SortState | null>(null);
   const sort = sortProp !== undefined ? sortProp : internalSort;
   const [internalSelected, setInternalSelected] = useState<string[]>([]);
@@ -171,7 +246,7 @@ export function DataTable<T>({
 
   const collator = useMemo(() => new Intl.Collator(locale, { numeric: true, sensitivity: "base" }), [locale]);
 
-  const rows = useMemo(() => {
+  const sortedRows = useMemo(() => {
     // When sort is controlled the consumer sorts (e.g. on the server).
     if (!sort || sortProp !== undefined) return data;
     const column = columns.find((c) => c.id === sort.id);
@@ -189,6 +264,45 @@ export function DataTable<T>({
     return sort.direction === "desc" ? sorted.reverse() : sorted;
   }, [data, columns, sort, sortProp, collator]);
 
+  // Client-side search, unless the consumer controls it (server search).
+  const filtered = useMemo(() => {
+    const query = search.trim().toLocaleLowerCase(locale);
+    if (!query || searchProp !== undefined) return sortedRows;
+    const words = query.split(/\s+/);
+    const text = (row: T) =>
+      columns
+        .map((c) => (c.filterValue ? c.filterValue(row) : c.sortValue ? c.sortValue(row) : defaultValue(row, c.id)))
+        .map((v) => (v instanceof Date ? v.toLocaleDateString(locale) : v == null ? "" : String(v)))
+        .join(" ")
+        .toLocaleLowerCase(locale);
+    return sortedRows.filter((row) => {
+      const haystack = text(row);
+      return words.every((w) => haystack.includes(w));
+    });
+  }, [sortedRows, search, searchProp, columns, locale]);
+
+  const serverPaged = pageProp !== undefined && rowCount !== undefined;
+  const total = serverPaged ? rowCount : filtered.length;
+  const pageCount = pageSize ? Math.max(1, Math.ceil(total / pageSize)) : 1;
+  const page = Math.min(pageProp ?? internalPage, pageCount);
+  const rows = pageSize && !serverPaged ? filtered.slice((page - 1) * pageSize, page * pageSize) : filtered;
+
+  const setPage = (next: number) => {
+    if (pageProp === undefined) setInternalPage(next);
+    onPageChange?.(next);
+  };
+  const setSearch = (next: string) => {
+    if (searchProp === undefined) setInternalSearch(next);
+    onSearchChange?.(next);
+    // New results start on the first page.
+    if (page !== 1) setPage(1);
+  };
+  const setHidden = (ids: string[]) => {
+    if (hiddenProp === undefined) setInternalHidden(ids);
+    onHiddenColumnsChange?.(ids);
+  };
+  const number = new Intl.NumberFormat(locale);
+
   const toggleSort = (id: string) => {
     const next: SortState | null = sort?.id !== id ? { id, direction: "asc" } : sort.direction === "asc" ? { id, direction: "desc" } : null;
     if (sortProp === undefined) setInternalSort(next);
@@ -202,13 +316,22 @@ export function DataTable<T>({
   const allIds = rows.map(getRowId);
   const allSelected = allIds.length > 0 && allIds.every((id) => selected.includes(id));
   const someSelected = !allSelected && allIds.some((id) => selected.includes(id));
-  const colSpan = columns.length + (selectable ? 1 : 0);
+  const colSpan = visibleColumns.length + (selectable ? 1 : 0) + (renderExpanded ? 1 : 0);
+  const from = total === 0 ? 0 : pageSize ? (page - 1) * pageSize + 1 : 1;
+  const to = pageSize ? Math.min(total, page * pageSize) : total;
+  const columnName = (c: DataTableColumn<T>) => c.menuLabel ?? (typeof c.header === "string" ? c.header : c.id);
+  const showToolbar = searchable || columnToggle || toolbar;
 
-  return (
+  const table = (
     <Table aria-busy={loading || undefined} {...tableProps}>
       {caption ? <TableCaption>{caption}</TableCaption> : null}
       <TableHeader>
         <TableRow className="hover:bg-transparent">
+          {renderExpanded ? (
+            <TableHead className="w-10">
+              <span className="sr-only">{labels?.details ?? "Details"}</span>
+            </TableHead>
+          ) : null}
           {selectable ? (
             <TableHead className="w-10">
               <Checkbox
@@ -219,7 +342,7 @@ export function DataTable<T>({
               />
             </TableHead>
           ) : null}
-          {columns.map((column) => {
+          {visibleColumns.map((column) => {
             const active = sort?.id === column.id;
             return (
               <TableHead
@@ -265,14 +388,37 @@ export function DataTable<T>({
           ))
         ) : rows.length === 0 ? (
           <TableRow className="hover:bg-transparent">
-            <TableCell colSpan={colSpan}>{empty ?? <EmptyState size="sm" title="No results" description="There is nothing to show here yet." />}</TableCell>
+            <TableCell colSpan={colSpan}>
+              {search && data.length > 0 ? (
+                <EmptyState size="sm" title={labels?.noMatches ?? "No matching rows"} description={`“${search}”`} />
+              ) : (
+                (empty ?? <EmptyState size="sm" title="No results" description="There is nothing to show here yet." />)
+              )}
+            </TableCell>
           </TableRow>
         ) : (
           rows.map((row) => {
             const id = getRowId(row);
             const isSelected = selected.includes(id);
+            const isExpanded = expanded.includes(id);
+            const detailId = `ks-row-${id}-details`;
             return (
-              <TableRow key={id} data-state={isSelected ? "selected" : undefined} aria-selected={selectable ? isSelected : undefined}>
+              <Fragment key={id}>
+              <TableRow data-state={isSelected ? "selected" : undefined} aria-selected={selectable ? isSelected : undefined}>
+                {renderExpanded ? (
+                  <TableCell className="w-10">
+                    <button
+                      type="button"
+                      aria-expanded={isExpanded}
+                      aria-controls={isExpanded ? detailId : undefined}
+                      aria-label={labels?.expandRow?.(row) ?? `Show details for ${id}`}
+                      onClick={() => setExpanded((ids) => (ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id]))}
+                      className={cn("-m-1 inline-flex size-7 items-center justify-center rounded-md text-foreground-muted hover:bg-surface-hover hover:text-foreground", focusRing)}
+                    >
+                      <ChevronRight aria-hidden className={cn("size-4 transition-transform duration-(--ks-duration-normal) rtl:-scale-x-100", isExpanded && "rotate-90 rtl:-rotate-90")} />
+                    </button>
+                  </TableCell>
+                ) : null}
                 {selectable ? (
                   <TableCell>
                     <Checkbox
@@ -283,16 +429,87 @@ export function DataTable<T>({
                     />
                   </TableCell>
                 ) : null}
-                {columns.map((column) => (
+                {visibleColumns.map((column) => (
                   <TableCell key={column.id} className={alignClass[column.align ?? "start"]}>
                     {column.cell ? column.cell(row) : String(defaultValue(row, column.id) ?? "")}
                   </TableCell>
                 ))}
               </TableRow>
+              {renderExpanded && isExpanded ? (
+                <TableRow id={detailId} className="bg-surface-sunken/50 hover:bg-surface-sunken/50">
+                  <TableCell colSpan={colSpan} className="animate-ks-slide-down">
+                    {renderExpanded(row)}
+                  </TableCell>
+                </TableRow>
+              ) : null}
+              </Fragment>
             );
           })
         )}
       </TableBody>
     </Table>
+  );
+
+  if (!showToolbar && !pageSize) return table;
+
+  return (
+    <div className="flex w-full flex-col gap-3">
+      {showToolbar ? (
+        <div className="flex flex-wrap items-center gap-2">
+          {searchable ? (
+            // SearchInput fills its container, so the container sets the width.
+            <div className="w-full max-w-72 min-w-40 flex-1">
+            <SearchInput
+              aria-label={labels?.search ?? "Search rows"}
+              placeholder={labels?.search ?? "Search…"}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onClear={() => setSearch("")}
+              size="sm"
+            />
+            </div>
+          ) : null}
+          <div className="ms-auto flex items-center gap-2">
+            {toolbar}
+            {columnToggle ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm" startIcon={<Columns3 />}>
+                    {labels?.columns ?? "Columns"}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="min-w-48">
+                  <DropdownMenuLabel>{labels?.columns ?? "Columns"}</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  {columns
+                    .filter((c) => c.hideable !== false)
+                    .map((c) => (
+                      <DropdownMenuCheckboxItem
+                        key={c.id}
+                        checked={!hidden.includes(c.id)}
+                        // Keep at least one column on screen.
+                        disabled={!hidden.includes(c.id) && visibleColumns.length === 1}
+                        onSelect={(e) => e.preventDefault()}
+                        onCheckedChange={(on) => setHidden(on ? hidden.filter((h) => h !== c.id) : [...hidden, c.id])}
+                      >
+                        {columnName(c)}
+                      </DropdownMenuCheckboxItem>
+                    ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
+      {table}
+      {pageSize ? (
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p aria-live="polite" className="text-xs tabular-nums text-foreground-muted">
+            {(labels?.range ?? ((f, t, n) => `${f}–${t} of ${n}`))(number.format(from), number.format(to), number.format(total))}
+          </p>
+          {pageCount > 1 ? <Pagination size="sm" page={page} pageCount={pageCount} onPageChange={setPage} /> : null}
+        </div>
+      ) : null}
+    </div>
   );
 }

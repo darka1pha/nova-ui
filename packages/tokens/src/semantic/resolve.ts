@@ -205,15 +205,30 @@ function resolveIntent(ctx: ModeContext, intent: Intent, seed: ResolvedSeed, neu
   set("text", pickReadable(ctx, `${intent}-text`, scale, plan.text, [background, surface], WCAG.text));
 }
 
-const CHART_SOURCES: Intent[] = ["primary", "secondary", "accent", "info", "warning", "success"];
+/**
+ * Categorical series colors: one validated palette in a fixed order, shared by
+ * every theme (blue, orange, aqua, yellow, magenta, green, violet, red).
+ *
+ * Brand intents are deliberately not used. Derived from each theme they repeat
+ * hues (Minimal: gray, gray, blue, blue), fall outside the readable lightness
+ * band in dark mode, collapse under color-vision deficiency (Berry's magenta and
+ * blue), and reuse status colors as series. This set clears adjacent-pair
+ * CVD ΔE ≥ 8 and normal-vision ΔE ≥ 15 on every preset's surface; dark mode has
+ * its own steps, not a flip. Light slots 3–5 sit under 3:1 on white, so charts
+ * always ship a data table. Single-series charts use the brand primary instead.
+ */
+const CHART_PALETTE: Record<ColorMode, readonly string[]> = {
+  light: ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300", "#6250d6", "#e34948"],
+  dark: ["#3987e5", "#d95926", "#199e70", "#c98500", "#d55181", "#008300", "#9085e9", "#e66767"],
+};
 
 function resolveMode(mode: ColorMode, seeds: Record<Intent, ResolvedSeed>, overrides: SemanticOverrides | undefined, warnings: string[]) {
   const ctx: ModeContext = { mode, out: {}, adjustments: [] };
   resolveSurfaces(ctx, seeds.neutral.scale, seeds.primary.scale);
   for (const intent of INTENTS) resolveIntent(ctx, intent, seeds[intent], seeds.neutral.scale);
   ctx.out["focus-ring"] = pickReadable(ctx, "focus-ring", seeds.primary.scale, mode === "light" ? 500 : 400, [ctx.out.background as string, ctx.out.surface as string], WCAG.ui);
-  CHART_SOURCES.forEach((intent, i) => {
-    ctx.out[`chart-${i + 1}` as SemanticColorName] = seeds[intent].scale[mode === "light" ? 500 : 400];
+  CHART_PALETTE[mode].forEach((color, i) => {
+    ctx.out[`chart-${i + 1}` as SemanticColorName] = color;
   });
 
   for (const [key, value] of Object.entries(overrides ?? {})) {

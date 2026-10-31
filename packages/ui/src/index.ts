@@ -58,6 +58,18 @@ export * from "./components/table.tsx";
 
 // Data display & visualization
 export { BarList, chartColors, type BarListProps, type BarListItem } from "./components/chart.tsx";
+export {
+  LineChart,
+  AreaChart,
+  BarChart,
+  DonutChart,
+  type ChartSeries,
+  type LineChartProps,
+  type AreaChartProps,
+  type BarChartProps,
+  type DonutChartProps,
+  type DonutChartDatum,
+} from "./components/charts.tsx";
 export { CircularProgress, Stepper, Timeline, Sparkline, Stat, Banner, Carousel } from "./components/display.tsx";
 export type {
   CircularProgressProps,

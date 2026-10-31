@@ -64,7 +64,7 @@ export const SURFACE_ROLES = [
 export type SurfaceRole = (typeof SURFACE_ROLES)[number];
 
 /** Decorative colors for charts and illustrations. Never used for meaning alone. */
-export const CHART_ROLES = ["chart-1", "chart-2", "chart-3", "chart-4", "chart-5", "chart-6"] as const;
+export const CHART_ROLES = ["chart-1", "chart-2", "chart-3", "chart-4", "chart-5", "chart-6", "chart-7", "chart-8"] as const;
 export type ChartRole = (typeof CHART_ROLES)[number];
 
 export type IntentColorName = `${Intent}-${IntentRole}`;

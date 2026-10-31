@@ -2,7 +2,7 @@ import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 import { cn } from "../utils/cn.ts";
 
 /** CSS colors for chart series, following the active theme. Decorative: pair with labels. */
-export const chartColors = [1, 2, 3, 4, 5, 6].map((i) => `var(--ks-color-chart-${i})`);
+export const chartColors = [1, 2, 3, 4, 5, 6, 7, 8].map((i) => `var(--ks-color-chart-${i})`);
 
 export interface BarListItem {
   label: ReactNode;

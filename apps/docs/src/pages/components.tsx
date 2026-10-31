@@ -16,7 +16,11 @@ import {
   Avatar,
   AvatarGroup,
   Badge,
+  AreaChart,
+  BarChart,
   BarList,
+  DonutChart,
+  LineChart,
   BreadcrumbItem,
   Breadcrumbs,
   Button,
@@ -1544,6 +1548,27 @@ const invoices: Invoice[] = [
 
 const statusVariant = { paid: "success", pending: "warning", overdue: "danger" } as const;
 
+const throughput = [
+  { month: "Apr", bandarAbbas: 182, bushehr: 96, chabahar: 41 },
+  { month: "May", bandarAbbas: 191, bushehr: 101, chabahar: 47 },
+  { month: "Jun", bandarAbbas: 176, bushehr: 108, chabahar: 52 },
+  { month: "Jul", bandarAbbas: 204, bushehr: 112, chabahar: 58 },
+  { month: "Aug", bandarAbbas: 219, bushehr: 109, chabahar: 63 },
+  { month: "Sep", bandarAbbas: 228, bushehr: 118, chabahar: 71 },
+];
+const terminals = [
+  { key: "bandarAbbas" as const, label: "Bandar Abbas" },
+  { key: "bushehr" as const, label: "Bushehr" },
+  { key: "chabahar" as const, label: "Chabahar" },
+];
+const cargoMix = [
+  { label: "Containers", value: 5420 },
+  { label: "Dry bulk", value: 2310 },
+  { label: "Liquid bulk", value: 1880 },
+  { label: "Ro-Ro", value: 640 },
+  { label: "Other", value: 310 },
+];
+
 export function DataPage() {
   const [selected, setSelected] = useState<string[]>([]);
   const columns: DataTableColumn<Invoice>[] = [
@@ -1616,12 +1641,55 @@ export function DataPage() {
         </AvatarGroup>
       </Example>
       <Example
+        title="LineChart and AreaChart"
+        description="Change over time. Hover or focus the plot and use the arrow keys: a crosshair snaps to the nearest month and one tooltip lists every series. Series take the validated categorical palette in fixed order; a single series uses the brand color."
+        code={`<LineChart
+  label="Monthly throughput (k TEU)"
+  data={throughput}
+  index="month"
+  series={[
+    { key: "bandarAbbas", label: "Bandar Abbas" },
+    { key: "bushehr", label: "Bushehr" },
+    { key: "chabahar", label: "Chabahar" },
+  ]}
+/>
+<AreaChart label="Bandar Abbas" data={throughput} index="month" series={[{ key: "bandarAbbas", label: "Bandar Abbas" }]} />
+<AreaChart stacked … />`}
+      >
+        <Grid columns="auto" minColumnWidth="18rem" gap={6} className="w-full">
+          <LineChart label="Monthly throughput (k TEU)" data={throughput} index="month" series={terminals} />
+          <AreaChart label="Bandar Abbas throughput (k TEU)" data={throughput} index="month" series={terminals.slice(0, 1)} />
+        </Grid>
+      </Example>
+      <Example
+        title="BarChart"
+        description="Compare magnitudes across categories, grouped or stacked from a zero baseline. Bars cap at 24px with a rounded data end; touching bars and segments are split by a 2px surface gap."
+        code={`<BarChart label="Throughput by terminal" data={throughput} index="month" series={terminals} />
+<BarChart stacked … />`}
+      >
+        <Grid columns="auto" minColumnWidth="18rem" gap={6} className="w-full">
+          <BarChart label="Throughput by terminal (k TEU)" data={throughput.slice(-4)} index="month" series={terminals} />
+          <BarChart label="Total throughput, stacked (k TEU)" data={throughput} index="month" series={terminals} stacked />
+        </Grid>
+      </Example>
+      <Example
+        title="DonutChart"
+        description="Part-to-whole for a handful of categories; fold the long tail into Other. The center shows the total, or the hovered slice."
+        code={`<DonutChart label="Cargo mix (k tonnes)" data={[{ label: "Containers", value: 5420 }, …]} />`}
+      >
+        <DonutChart label="Cargo mix this quarter (k tonnes)" data={cargoMix} className="max-w-xl" />
+      </Example>
+      <Example
         title="DataTable"
-        description="Sortable columns (aria-sort), row selection, loading and empty states. Sorting uses Intl.Collator for the user's locale."
+        description="Sorting (aria-sort), search across columns, pagination, a columns menu, expandable rows and selection. Everything runs client-side; control sort, search and page for server data."
         code={`<DataTable
   data={invoices}
   columns={columns}
   getRowId={(row) => row.id}
+  searchable
+  pageSize={4}
+  columnToggle
+  renderExpanded={(row) => <InvoiceDetails invoice={row} />}
   selectable
   onSelectionChange={setSelected}
 />`}
@@ -1635,12 +1703,28 @@ export function DataPage() {
               </Button>
             </Inline>
           ) : null}
-          <DataTable data={invoices} columns={columns} getRowId={(r) => r.id} selectable selectedIds={selected} onSelectionChange={setSelected} caption="Recent invoices" />
+          <DataTable
+            data={invoices}
+            columns={columns}
+            getRowId={(r) => r.id}
+            searchable
+            pageSize={4}
+            columnToggle
+            renderExpanded={(r) => (
+              <Text size="sm" tone="secondary">
+                Billed to {r.email} · {r.status} · issued {r.date.toLocaleDateString(undefined, { dateStyle: "long" })}
+              </Text>
+            )}
+            selectable
+            selectedIds={selected}
+            onSelectionChange={setSelected}
+            caption="Recent invoices"
+          />
         </Stack>
       </Example>
       <Example
         title="BarList"
-        description="A dependency-free chart primitive. For full charts, use any library with chartColors so series follow the theme."
+        description="A labelled horizontal bar list that reads as a plain list. chartColors are the eight validated series colors, in the order charts use them."
         code={`import { BarList, chartColors } from "@kaleido/ui";
 <BarList data={[{ label: "Direct", value: 4120 }, …]} />`}
       >
@@ -1661,13 +1745,14 @@ export function DataPage() {
             </Text>
             <div className="flex gap-2">
               {chartColors.map((c, i) => (
-                <span key={c} className="flex h-12 flex-1 items-end justify-center rounded-md pb-1 text-2xs font-bold text-white" style={{ background: c }}>
-                  {i + 1}
+                <span key={c} className="flex flex-1 flex-col items-center gap-1">
+                  <span className="h-10 w-full rounded-md" style={{ background: c }} />
+                  <span className="text-2xs tabular-nums text-foreground-muted">{i + 1}</span>
                 </span>
               ))}
             </div>
             <Text size="xs" tone="muted">
-              Decorative — always pair series with labels or patterns.
+              Same order in every theme and mode (dark mode has its own steps), so a series keeps its color everywhere. Pair with a legend or labels.
             </Text>
           </div>
         </Grid>
@@ -1678,6 +1763,7 @@ export function DataPage() {
           "DataTable uses native table semantics, scope=\"col\" headers, aria-sort on sortable columns and labelled checkboxes.",
           "Avatars without images expose the person's name as role=\"img\"; status dots have an accessible label.",
           "BarList is a list with visible values, so it reads correctly with a screen reader.",
+          "Charts are labelled figures with a data table that is always available to screen readers and one click away for everyone; the plot is focusable and arrow keys announce each point.",
         ]}
       />
     </Page>
