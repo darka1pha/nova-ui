@@ -10,7 +10,7 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const dist = fileURLToPath(new URL("../dist/", import.meta.url));
-const FACTORIES = /(=\s*)(forwardRef|createContext|cva|section|lazy)\(/g;
+const FACTORIES = /(=\s*)(forwardRef|createContext|cva|section|lazy|createIcon)\(/g;
 
 function walk(dir: string): string[] {
   return readdirSync(dir).flatMap((name) => {

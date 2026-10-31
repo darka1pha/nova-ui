@@ -174,9 +174,9 @@ export function PropsTable({ props, title = "Props" }: { props: PropDoc[]; title
 
 /* ------------------------------------------------------------ Page layout */
 
-export function Page({ eyebrow, title, lead, children }: { eyebrow?: string; title: string; lead?: ReactNode; children: ReactNode }) {
+export function Page({ eyebrow, title, lead, wide, children }: { eyebrow?: string; title: string; lead?: ReactNode; wide?: boolean; children: ReactNode }) {
   return (
-    <article className="mx-auto flex w-full max-w-4xl flex-col gap-10 px-4 py-10 sm:px-8 lg:py-14">
+    <article className={cn("mx-auto flex w-full flex-col gap-10 px-4 py-10 sm:px-8 lg:py-14", wide ? "max-w-6xl" : "max-w-4xl")}>
       <header className="flex flex-col gap-3">
         {eyebrow ? (
           <Badge variant="primary" className="w-fit">

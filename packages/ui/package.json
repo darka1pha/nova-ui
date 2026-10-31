@@ -16,6 +16,14 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
+    "./icons": {
+      "types": "./dist/icons/index.d.ts",
+      "default": "./dist/icons/index.js"
+    },
+    "./icons/catalog": {
+      "types": "./dist/icons/catalog.d.ts",
+      "default": "./dist/icons/catalog.js"
+    },
     "./react-hook-form": {
       "types": "./dist/react-hook-form.d.ts",
       "default": "./dist/react-hook-form.js"
