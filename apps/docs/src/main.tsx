@@ -3,7 +3,6 @@ import "@fontsource-variable/bricolage-grotesque";
 import "@fontsource-variable/fraunces";
 import "@fontsource-variable/jetbrains-mono";
 import "@fontsource-variable/vazirmatn";
-import "@kaleido/ui/styles.css";
 import "./index.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";

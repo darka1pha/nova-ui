@@ -235,6 +235,10 @@ export function StylingPage() {
             the default is removed. Non-conflicting core styles (focus ring, disabled state) stay intact. The stylesheet uses cascade layers, so your unlayered CSS
             always beats library CSS without <code>!important</code>.
           </p>
+          <p>
+            Responsive classes work the same way (<code>className="sm:flex-col"</code>). In a Tailwind app this relies on one build generating both your
+            utilities and the components': import <code>@kaleido/ui/tailwind.css</code> instead of <code>styles.css</code> (see Getting started).
+          </p>
         </Prose>
       </Section>
       <Section title="4. Extending variants">
@@ -376,7 +380,8 @@ export function TroubleshootingPage() {
     ["A dialog or menu ignores my theme", "Overlays portal into the nearest ThemeProvider. If you render your own Radix portal, pass container={usePortalContainer()} or use <Portal>."],
     ["Dark mode flashes on load", "When using storageKey, render <ThemeScript storageKey=\"…\" /> in <head>. Without storageKey, 'system' mode is pure CSS and cannot flash."],
     ["Hydration warning on <html>", "Add suppressHydrationWarning to <html>; ThemeScript sets data-ks-mode before React hydrates."],
-    ["My Tailwind classes like bg-primary don't exist", "Import \"@kaleido/ui/tailwind.css\" after \"tailwindcss\" in your CSS entry (Tailwind v4)."],
+    ["My Tailwind classes like bg-primary don't exist", "Import \"@kaleido/ui/tailwind.css\" after \"tailwindcss\" in your CSS entry (Tailwind v4), in place of styles.css."],
+    ["Responsive layouts ignore the breakpoint (a dialog footer stays stacked on desktop)", "Your app runs Tailwind and also loads \"@kaleido/ui/styles.css\": two builds each sort their own utilities, so your sheet's base utility (flex-col) can follow the library's sm:flex-row and win at every width. Import \"@kaleido/ui/tailwind.css\" after \"tailwindcss\" instead of styles.css, so one build orders everything."],
     ["My className doesn't override", "Check for a conflicting variant prop; tailwind-merge resolves conflicts within the same utility group. For plain CSS, unlayered rules always win over the library's layered CSS."],
     ["Brand color looks darker than my hex", "Text on it would fail 4.5:1, so the resolver chose a nearby readable tone. In development a warning lists every adjustment; see the playground's Contrast tab."],
     ["Colors don't switch in an old browser", "light-dark() requires 2024+ browsers. For older targets, set an explicit mode — explicit light/dark still works where color-scheme is supported."],

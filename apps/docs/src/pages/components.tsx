@@ -1443,7 +1443,7 @@ export function NavigationPage() {
           </AccordionItem>
           <AccordionItem value="c">
             <AccordionTrigger>Do I need Tailwind?</AccordionTrigger>
-            <AccordionContent>No. styles.css is precompiled. If you do use Tailwind v4, import the preset to share tokens.</AccordionContent>
+            <AccordionContent>No. styles.css is precompiled. If you do use Tailwind v4, import @kaleido/ui/tailwind.css instead, so your build generates the component styles and shares the tokens.</AccordionContent>
           </AccordionItem>
         </Accordion>
       </Example>

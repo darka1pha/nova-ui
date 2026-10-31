@@ -14,7 +14,7 @@
 @import "./motion.css";
 @import "./base.css";
 @import "./interactions.css";
-@import "tailwindcss/utilities" layer(utilities);
+@import "tailwindcss/utilities" layer(utilities) source(none);
 @import "./materials.css";
 
 @source "../components";

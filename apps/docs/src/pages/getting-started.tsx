@@ -41,6 +41,10 @@ pnpm install:local ../path/to/your-app
             <code>styles.css</code> is precompiled: it contains the tokens, a reset scoped to <code>.ks-theme</code> and every utility the components use. You do
             not need Tailwind. It does not restyle anything outside a <code>ThemeProvider</code>.
           </p>
+          <p>
+            If your app runs Tailwind CSS v4 itself, import <code>@kaleido/ui/tailwind.css</code> from your CSS entry instead, as shown under "Using Tailwind in your
+            app too?" below. Don't load both.
+          </p>
         </Prose>
       </Section>
 
@@ -98,7 +102,7 @@ export function App() {
               ["Next.js Pages Router", "Supported", "Import styles.css in _app.tsx."],
               ["Remix / React Router 7", "Supported", "Link styles.css via links() or import it."],
               ["Astro (React islands)", "Supported", "Wrap each island in ThemeProvider, or theme the page with getThemeCss()."],
-              ["Tailwind CSS v4 apps", "First-class", "Also import @kaleido/ui/tailwind.css for matching utilities."],
+              ["Tailwind CSS v4 apps", "First-class", "Import @kaleido/ui/tailwind.css after tailwindcss, instead of styles.css."],
             ].map(([fw, status, notes]) => (
               <TableRow key={fw}>
                 <TableCell className="font-medium">{fw}</TableCell>
@@ -152,12 +156,28 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <Section title="Using Tailwind in your app too?">
         <CodeBlock
           language="css"
-          code={`/* app.css */
+          code={`/* app.css: replaces import "@kaleido/ui/styles.css" */
 @import "tailwindcss";
-@import "@kaleido/ui/tailwind.css";   /* bg-primary, text-foreground-muted, rounded-lg, shadow-md… */`}
+@import "@kaleido/ui/tailwind.css";   /* tokens, scoped base, and @source for the components */`}
         />
         <Prose>
-          <p>Your own utilities then resolve to the same tokens as the components, so custom UI matches automatically and follows theme changes.</p>
+          <p>
+            <code>tailwind.css</code> is Kaleido as source rather than precompiled CSS: the tokens, the scoped base, interactions, materials, the token
+            utilities (<code>bg-primary</code>, <code>text-foreground-muted</code>, <code>rounded-lg</code>, <code>animate-ks-*</code>, <code>dark:</code>,{" "}
+            <code>rtl:</code>) and an <code>@source</code> that points your build at the components. Your Tailwind then generates the components'
+            utilities along with yours, and your own UI resolves to the same tokens and follows theme changes.
+          </p>
+          <p>
+            Use it <strong>instead of</strong> <code>styles.css</code>, not as well. Two Tailwind builds each sort their own <code>utilities</code> layer,
+            so your sheet's <code>.flex-col</code> can land after the library's <code>sm:flex-row</code> and win at every width: dialog footers stay
+            stacked, containers and headings keep their phone sizes. One build orders every utility once, so breakpoint and container-query overrides
+            always apply.
+          </p>
+          <p>
+            Your theme's breakpoints and spacing apply to the components too. If you use a class prefix (<code>@import "tailwindcss" prefix(tw)</code>),
+            the component classes won't match it: import <code>styles.css</code> instead. Prefixed utilities can't collide with Kaleido's, so the two
+            sheets coexist.
+          </p>
         </Prose>
       </Section>
     </Page>

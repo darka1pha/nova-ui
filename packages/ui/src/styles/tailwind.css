@@ -1,10 +1,29 @@
 /*
- * @kaleido/ui/tailwind.css — for apps that use Tailwind CSS v4 themselves.
+ * @kaleido/ui/tailwind.css — the whole of Kaleido for apps that run Tailwind CSS v4.
  *   @import "tailwindcss";
  *   @import "@kaleido/ui/tailwind.css";
- * Your utilities (bg-primary, text-foreground-muted, rounded-lg, shadow-md…)
- * then resolve to the same tokens as the components, and the motion
- * utilities (animate-ks-*, ease-spring, dark:, rtl:) are available too.
+ * Import this INSTEAD of styles.css. It brings the tokens, the scoped base,
+ * interactions, materials and the token utilities (bg-primary, rounded-lg,
+ * animate-ks-*, dark:, rtl:…), and points your Tailwind at the components so
+ * it generates their utilities itself.
+ *
+ * Why not styles.css as well: two Tailwind builds each emit their own sorted
+ * `utilities` layer. Loaded together, your `.flex-col` can land after the
+ * library's `sm:flex-row` and beat it at every width. One build sorts every
+ * utility once, so breakpoint and container overrides always win.
+ *
+ * This file ships in dist/ next to the files it imports; it is not usable
+ * from src/.
  */
+@layer theme, base, components, utilities, ks-materials;
+
+@import "./tokens.generated.css";
 @import "./theme.generated.css";
 @import "./motion.generated.css";
+@import "./base.css";
+@import "./interactions.css";
+@import "./materials.css";
+
+@source "./components/**/*.js";
+@source "./theme/**/*.js";
+@source "./react-hook-form.js";
