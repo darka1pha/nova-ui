@@ -240,7 +240,7 @@ export const ButtonGroup = forwardRef<HTMLDivElement, ButtonGroupProps>(function
   );
 });
 
-const toggleVariants = cva(
+export const toggleVariants = cva(
   `inline-flex items-center justify-center gap-2 rounded-(--ks-button-radius) text-sm font-medium [&_svg]:size-4 [&_svg]:shrink-0 ${focusRing} ${transition} ${pressable} ${disabledState} ` +
     "data-[state=on]:bg-primary-subtle data-[state=on]:text-primary-on-subtle data-[state=on]:[&_svg]:animate-ks-bounce-in",
   {

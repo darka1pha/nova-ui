@@ -8,6 +8,24 @@ import {
   DateRangePicker,
   TimeInput,
   TreeView,
+  Menubar,
+  MenubarCheckboxItem,
+  MenubarContent,
+  MenubarItem,
+  MenubarMenu,
+  MenubarRadioGroup,
+  MenubarRadioItem,
+  MenubarSeparator,
+  MenubarSub,
+  MenubarSubContent,
+  MenubarSubTrigger,
+  MenubarTrigger,
+  MenuShortcut,
+  Toolbar,
+  ToolbarButton,
+  ToolbarSeparator,
+  ToolbarToggleGroup,
+  ToolbarToggleItem,
   RangeCalendar,
   Carousel,
   Chip,
@@ -38,7 +56,7 @@ import {
   toast,
   type DateRange,
 } from "@kaleido/ui";
-import { Anchor, Building2, ChevronsUpDown, CircleCheck, Container, DollarSign, GitCommit, Package, Ship, Truck, Users } from "lucide-react";
+import { AlignCenter, AlignLeft, AlignRight, Anchor, Bold, Building2, ChevronsUpDown, Italic, Printer, Share2, CircleCheck, Container, DollarSign, GitCommit, Package, Ship, Truck, Users } from "lucide-react";
 import { useState } from "react";
 import { Example, PropsTable } from "../docs/kit.tsx";
 
@@ -292,6 +310,8 @@ const portTree = [
 
 export function NavigationExtras() {
   const [berth, setBerth] = useState<string | null>("sr-berth-2");
+  const [showBerths, setShowBerths] = useState(true);
+  const [units, setUnits] = useState("teu");
   const [step, setStep] = useState(1);
   const steps = [
     { title: "Account", description: "Email & password" },
@@ -301,6 +321,107 @@ export function NavigationExtras() {
   ];
   return (
     <>
+      <Example
+        title="Menubar"
+        description="Application menus with one tab stop: Left/Right move between menus (mirrored in RTL), Down or Enter opens one, and submenus, checkbox and radio items work as in DropdownMenu."
+        code={`<Menubar aria-label="Application">
+  <MenubarMenu>
+    <MenubarTrigger>File</MenubarTrigger>
+    <MenubarContent>
+      <MenubarItem>New voyage <MenuShortcut>Ctrl+N</MenuShortcut></MenubarItem>
+      <MenubarSub>
+        <MenubarSubTrigger>Export</MenubarSubTrigger>
+        <MenubarSubContent>…</MenubarSubContent>
+      </MenubarSub>
+    </MenubarContent>
+  </MenubarMenu>
+  …
+</Menubar>`}
+      >
+        <Menubar aria-label="Application">
+          <MenubarMenu>
+            <MenubarTrigger>File</MenubarTrigger>
+            <MenubarContent>
+              <MenubarItem>
+                New voyage <MenuShortcut>Ctrl+N</MenuShortcut>
+              </MenubarItem>
+              <MenubarItem>
+                Open manifest… <MenuShortcut>Ctrl+O</MenuShortcut>
+              </MenubarItem>
+              <MenubarSub>
+                <MenubarSubTrigger>Export</MenubarSubTrigger>
+                <MenubarSubContent>
+                  <MenubarItem>Manifest (CSV)</MenubarItem>
+                  <MenubarItem>Bill of lading (PDF)</MenubarItem>
+                </MenubarSubContent>
+              </MenubarSub>
+              <MenubarSeparator />
+              <MenubarItem destructive>Cancel voyage</MenubarItem>
+            </MenubarContent>
+          </MenubarMenu>
+          <MenubarMenu>
+            <MenubarTrigger>View</MenubarTrigger>
+            <MenubarContent>
+              <MenubarCheckboxItem checked={showBerths} onCheckedChange={setShowBerths}>
+                Show berths
+              </MenubarCheckboxItem>
+              <MenubarSeparator />
+              <MenubarRadioGroup value={units} onValueChange={setUnits}>
+                <MenubarRadioItem value="teu">Volume in TEU</MenubarRadioItem>
+                <MenubarRadioItem value="tonnes">Volume in tonnes</MenubarRadioItem>
+              </MenubarRadioGroup>
+            </MenubarContent>
+          </MenubarMenu>
+          <MenubarMenu>
+            <MenubarTrigger>Help</MenubarTrigger>
+            <MenubarContent>
+              <MenubarItem>Keyboard shortcuts</MenubarItem>
+            </MenubarContent>
+          </MenubarMenu>
+        </Menubar>
+      </Example>
+      <Example
+        title="Toolbar"
+        description="A row of actions and toggles with one tab stop; arrow keys move between them. Toggle groups take single or multiple selection. Label the toolbar and every icon-only control."
+        code={`<Toolbar aria-label="Report formatting">
+  <ToolbarToggleGroup type="multiple" aria-label="Text style">
+    <ToolbarToggleItem value="bold" aria-label="Bold"><Bold /></ToolbarToggleItem>
+    …
+  </ToolbarToggleGroup>
+  <ToolbarSeparator />
+  <ToolbarButton><Printer /> Print</ToolbarButton>
+</Toolbar>`}
+      >
+        <Toolbar aria-label="Report formatting">
+          <ToolbarToggleGroup type="multiple" aria-label="Text style" defaultValue={["bold"]}>
+            <ToolbarToggleItem value="bold" aria-label="Bold">
+              <Bold />
+            </ToolbarToggleItem>
+            <ToolbarToggleItem value="italic" aria-label="Italic">
+              <Italic />
+            </ToolbarToggleItem>
+          </ToolbarToggleGroup>
+          <ToolbarSeparator />
+          <ToolbarToggleGroup type="single" aria-label="Alignment" defaultValue="left">
+            <ToolbarToggleItem value="left" aria-label="Align start">
+              <AlignLeft className="rtl:-scale-x-100" />
+            </ToolbarToggleItem>
+            <ToolbarToggleItem value="center" aria-label="Align center">
+              <AlignCenter />
+            </ToolbarToggleItem>
+            <ToolbarToggleItem value="right" aria-label="Align end">
+              <AlignRight className="rtl:-scale-x-100" />
+            </ToolbarToggleItem>
+          </ToolbarToggleGroup>
+          <ToolbarSeparator />
+          <ToolbarButton>
+            <Printer /> Print
+          </ToolbarButton>
+          <ToolbarButton>
+            <Share2 /> Share
+          </ToolbarButton>
+        </Toolbar>
+      </Example>
       <Example
         title="TreeView"
         description="Hierarchies that expand and collapse: ports, terminals, berths. One tab stop; arrows move and open, Home/End jump, Enter/Space select, * opens every sibling, and typing jumps to a matching label. Left and Right mirror in RTL."

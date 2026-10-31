@@ -90,6 +90,28 @@ export { TimeInput, type TimeInputProps, type TimeValue } from "./components/tim
 export { TreeView, type TreeViewProps, type TreeItem } from "./components/tree.tsx";
 export { ResizablePanelGroup, ResizablePanel, ResizableHandle, type ResizablePanelGroupProps, type ResizablePanelProps, type ResizableHandleProps } from "./components/resizable.tsx";
 export {
+  Menubar,
+  MenubarMenu,
+  MenubarTrigger,
+  MenubarContent,
+  MenubarItem,
+  MenubarCheckboxItem,
+  MenubarRadioGroup,
+  MenubarRadioItem,
+  MenubarLabel,
+  MenubarSeparator,
+  MenubarGroup,
+  MenubarSub,
+  MenubarSubTrigger,
+  MenubarSubContent,
+  Toolbar,
+  ToolbarButton,
+  ToolbarLink,
+  ToolbarSeparator,
+  ToolbarToggleGroup,
+  ToolbarToggleItem,
+} from "./components/bars.tsx";
+export {
   Calendar,
   DatePicker,
   RangeCalendar,
