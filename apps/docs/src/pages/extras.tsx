@@ -7,6 +7,7 @@ import {
   Card,
   DateRangePicker,
   TimeInput,
+  TreeView,
   RangeCalendar,
   Carousel,
   Chip,
@@ -37,7 +38,7 @@ import {
   toast,
   type DateRange,
 } from "@kaleido/ui";
-import { ChevronsUpDown, CircleCheck, DollarSign, GitCommit, Package, Truck, Users } from "lucide-react";
+import { Anchor, Building2, ChevronsUpDown, CircleCheck, Container, DollarSign, GitCommit, Package, Ship, Truck, Users } from "lucide-react";
 import { useState } from "react";
 import { Example, PropsTable } from "../docs/kit.tsx";
 
@@ -258,7 +259,39 @@ export function FeedbackExtras() {
 
 /* --------------------------------------------------------------- Navigation */
 
+const portTree = [
+  {
+    id: "bandar-abbas",
+    label: "Bandar Abbas",
+    icon: <Building2 />,
+    badge: "3",
+    children: [
+      {
+        id: "shahid-rajaee",
+        label: "Shahid Rajaee",
+        icon: <Container />,
+        badge: "24",
+        children: [
+          { id: "sr-berth-1", label: "Berth 1", icon: <Anchor />, badge: "MSC Aurora" },
+          { id: "sr-berth-2", label: "Berth 2", icon: <Anchor />, badge: "Iran Shahr" },
+          { id: "sr-berth-3", label: "Berth 3", icon: <Anchor /> },
+        ],
+      },
+      { id: "shahid-bahonar", label: "Shahid Bahonar", icon: <Container />, badge: "8" },
+      { id: "old-jetty", label: "Old jetty (closed)", icon: <Anchor />, disabled: true },
+    ],
+  },
+  {
+    id: "bushehr",
+    label: "Bushehr",
+    icon: <Building2 />,
+    children: [{ id: "bushehr-ct", label: "Container terminal", icon: <Container />, badge: "6" }],
+  },
+  { id: "chabahar", label: "Chabahar", icon: <Building2 />, children: [{ id: "shahid-beheshti", label: "Shahid Beheshti", icon: <Ship />, badge: "4" }] },
+];
+
 export function NavigationExtras() {
+  const [berth, setBerth] = useState<string | null>("sr-berth-2");
   const [step, setStep] = useState(1);
   const steps = [
     { title: "Account", description: "Email & password" },
@@ -268,6 +301,30 @@ export function NavigationExtras() {
   ];
   return (
     <>
+      <Example
+        title="TreeView"
+        description="Hierarchies that expand and collapse: ports, terminals, berths. One tab stop; arrows move and open, Home/End jump, Enter/Space select, * opens every sibling, and typing jumps to a matching label. Left and Right mirror in RTL."
+        code={`<TreeView
+  label="Ports"
+  items={[{ id: "bandar-abbas", label: "Bandar Abbas", icon: <Building2 />, children: […] }, …]}
+  defaultExpanded={["bandar-abbas", "shahid-rajaee"]}
+  selected={berth}
+  onSelectedChange={setBerth}
+/>`}
+        className="items-start"
+      >
+        <TreeView
+          label="Ports"
+          items={portTree}
+          defaultExpanded={["bandar-abbas", "shahid-rajaee"]}
+          selected={berth}
+          onSelectedChange={(id) => setBerth(id)}
+          className="w-full max-w-sm rounded-lg border border-border bg-surface p-1.5"
+        />
+        <Text size="sm" tone="muted">
+          Selected: <code>{berth ?? "none"}</code>
+        </Text>
+      </Example>
       <Example
         title="Stepper"
         description="Checkmarks draw in, the current step pulses, connectors fill as you advance. Completed steps can be clickable."
