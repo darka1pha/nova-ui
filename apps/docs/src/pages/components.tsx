@@ -1225,19 +1225,18 @@ function InteractiveSidebarShowcase() {
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-surface-raised p-2.5 shadow-xs">
         <div className="flex items-center gap-2">
           <Badge size="sm" variant="primary">Interactive Demo</Badge>
-          <Tabs value={sidebarVariant} onValueChange={(v) => setSidebarVariant(v as never)} variant="segmented">
-            <TabsList>
-              <TabsTrigger value="inset">Responsive Inset</TabsTrigger>
-              <TabsTrigger value="dual">Dual Rail</TabsTrigger>
-              <TabsTrigger value="floating">Floating Island</TabsTrigger>
-            </TabsList>
-          </Tabs>
+          {/* A switcher, not tabs: there are no tab panels behind these. */}
+          <ToggleGroup type="single" size="sm" aria-label="Sidebar variant" value={sidebarVariant} onValueChange={(v) => v && setSidebarVariant(v as never)}>
+            <ToggleGroupItem value="inset" className="h-7 px-2.5 text-xs">Responsive Inset</ToggleGroupItem>
+            <ToggleGroupItem value="dual" className="h-7 px-2.5 text-xs">Dual Rail</ToggleGroupItem>
+            <ToggleGroupItem value="floating" className="h-7 px-2.5 text-xs">Floating Island</ToggleGroupItem>
+          </ToggleGroup>
         </div>
 
         <div className="flex items-center gap-2 ms-auto">
           <Text size="xs" weight="medium" className="hidden sm:inline">Theme Preset:</Text>
           <Select value={demoTheme} onValueChange={setDemoTheme}>
-            <SelectTrigger size="sm" className="w-32 h-8 text-xs">
+            <SelectTrigger size="sm" className="w-32 h-8 text-xs" aria-label="Theme preset">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>

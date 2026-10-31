@@ -8,6 +8,8 @@ import {
   DateRangePicker,
   TimeInput,
   TreeView,
+  NotificationCenter,
+  type NotificationItem,
   Menubar,
   MenubarCheckboxItem,
   MenubarContent,
@@ -228,11 +230,68 @@ export function FormsExtras() {
 
 /* ----------------------------------------------------------------- Feedback */
 
+const minutesAgo = (n: number) => new Date(Date.now() - n * 60_000);
+const portNotifications = (): NotificationItem[] => [
+  { id: "n1", title: "Iran Shahr berthed at Berth 2", description: "Shahid Rajaee terminal · 14 containers to discharge", time: minutesAgo(4), tone: "success", category: "vessels", icon: <Ship /> },
+  { id: "n2", title: "Customs hold on MSKU 482117", description: "Documents requested by Bandar Abbas customs", time: minutesAgo(38), tone: "warning", category: "customs" },
+  { id: "n3", title: "Berth 3 maintenance moved to 18:00", time: minutesAgo(130), tone: "info", category: "vessels" },
+  { id: "n4", title: "Reefer alarm cleared on CMAU 220931", time: minutesAgo(60 * 22), tone: "success", category: "cargo", read: true },
+  { id: "n5", title: "Payment overdue: INV-2026-079", description: "Kish Freight Lines · $42,800", time: minutesAgo(60 * 50), tone: "danger", category: "billing", read: true },
+];
+const notificationCategories = [
+  { id: "vessels", label: "Vessels" },
+  { id: "customs", label: "Customs" },
+  { id: "cargo", label: "Cargo" },
+  { id: "billing", label: "Billing" },
+];
+
 export function FeedbackExtras() {
+  const [notifications, setNotifications] = useState(portNotifications);
   const [value, setValue] = useState(35);
   const [banner, setBanner] = useState(true);
   return (
     <>
+      <Example
+        title="NotificationCenter"
+        description="A bell with an unread count that opens recent notifications grouped by day. Filter by unread or category, mark one or all as read, dismiss, and open an item. New arrivals are announced to screen readers; times use the locale."
+        code={`<NotificationCenter
+  items={items}
+  categories={[{ id: "vessels", label: "Vessels" }, { id: "customs", label: "Customs" }]}
+  onMarkRead={(id, read) => …}
+  onMarkAllRead={() => …}
+  onDismiss={(id) => …}
+  onItemClick={(item) => router.push(…)}
+  footer={<Link href="/notifications">View all</Link>}
+/>`}
+      >
+        <NotificationCenter
+          items={notifications}
+          categories={notificationCategories}
+          onMarkRead={(id, read) => setNotifications((all) => all.map((n) => (n.id === id ? { ...n, read } : n)))}
+          onMarkAllRead={() => setNotifications((all) => all.map((n) => ({ ...n, read: true })))}
+          onDismiss={(id) => setNotifications((all) => all.filter((n) => n.id !== id))}
+          footer={
+            <Button size="xs" variant="link">
+              View all notifications
+            </Button>
+          }
+        />
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() =>
+            setNotifications((all) => [
+              { id: `n${Date.now()}`, title: "Pilot boarded Kish Star", description: "ETA Berth 5 in 40 minutes", time: new Date(), tone: "info", category: "vessels" },
+              ...all,
+            ])
+          }
+        >
+          Simulate an arrival
+        </Button>
+        <Button size="sm" variant="ghost" onClick={() => setNotifications(portNotifications())}>
+          Reset
+        </Button>
+      </Example>
       <Example title="CircularProgress" code={`<CircularProgress aria-label="Upload" value={65} />\n<CircularProgress aria-label="Syncing" />`}>
         <CircularProgress aria-label="Upload" value={value} size={72} />
         <CircularProgress aria-label="Storage" value={82} tone="warning" size={56} />

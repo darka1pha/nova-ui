@@ -54,5 +54,31 @@ for (const mode of ["light", "dark"] as const) {
       await open(page, "playground", mode);
       await expect(page.getByTestId("playground-preview")).toHaveScreenshot(`playground-${mode}.png`);
     });
+
+    // Surface materials on the template: a nested ThemeProvider (Kaveh inside the docs theme),
+    // so these also catch derived tokens leaking from the outer theme.
+    for (const material of ["Classic", "Glass", "Clay", "Neomorph"] as const) {
+      test(`template material › ${material}`, async ({ page }) => {
+        await open(page, "template", mode);
+        await page.getByRole("button", { name: material, exact: true }).first().click();
+        const app = page.locator("[data-slot=sidebar-wrapper]");
+        await app.scrollIntoViewIfNeeded();
+        await expect(app).toHaveScreenshot(`template-${material.toLowerCase()}-${mode}.png`, { mask: [page.locator("time")] });
+      });
+    }
+
+    test("Persian (fa-IR, RTL, Jalali)", async ({ page }) => {
+      await open(page, "i18n", mode);
+      const persian = page.locator('[lang="fa-IR"]').first();
+      await persian.scrollIntoViewIfNeeded();
+      await expect(persian).toHaveScreenshot(`i18n-persian-${mode}.png`);
+    });
+
+    test("block › detail page", async ({ page }) => {
+      await open(page, "blocks", mode);
+      const block = page.locator("section").filter({ has: page.getByRole("heading", { name: "Detail page", exact: true }) }).locator(".bg-surface-sunken\\/40").first();
+      await block.scrollIntoViewIfNeeded();
+      await expect(block).toHaveScreenshot(`block-detail-${mode}.png`);
+    });
   });
 }

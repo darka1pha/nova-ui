@@ -237,7 +237,7 @@ function IconExplorer() {
                 )}
               >
                 {c.label}
-                <span className={cn("tabular-nums", active ? "opacity-80" : "text-foreground-muted")}>{count}</span>
+                <span className={cn("tabular-nums", active ? "font-normal" : "text-foreground-muted")}>{count}</span>
               </button>
             );
           })}

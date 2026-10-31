@@ -12,6 +12,8 @@ import {
   CircularProgress,
   DataTable,
   DateRangePicker,
+  NotificationCenter,
+  type NotificationItem,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -116,6 +118,11 @@ const sampleInvoices: Invoice[] = [
 
 /* ------------------------------------------------------------- Main Component */
 
+const startingNotifications = (): NotificationItem[] => [
+  { id: "t1", title: "Iran Shahr berthed at Berth 2", description: "Shahid Rajaee terminal", time: new Date(Date.now() - 4 * 60_000), tone: "success", category: "vessels" },
+  { id: "t2", title: "Customs hold on MSKU 482117", description: "Documents requested", time: new Date(Date.now() - 38 * 60_000), tone: "warning", category: "customs" },
+  { id: "t3", title: "Bunkering completed for Kish Star", time: new Date(Date.now() - 26 * 3_600_000), tone: "info", category: "vessels", read: true },
+];
 const reportingPeriod = { start: new Date(2026, 3, 1), end: new Date(2026, 8, 30) };
 const terminalThroughput = [
   { month: "Apr", bandarAbbas: 182, bushehr: 96, chabahar: 41 },
@@ -150,6 +157,7 @@ const fuelSeries = [
 ];
 
 export function TemplatePage() {
+  const [notifications, setNotifications] = useState(startingNotifications);
   const [activePreset, setActivePreset] = useState<PresetName>("kaveh");
   const [activeMode, setActiveMode] = useState<"light" | "dark">("light");
   const [activeDensity, setActiveDensity] = useState<Density>("comfortable");
@@ -299,7 +307,7 @@ export function TemplatePage() {
               <Sparkles className="size-4" />
             </span>
             <div>
-              <Heading level={2} size="xs" className="leading-tight">
+              <Heading level={1} size="xs" className="leading-tight">
                 Project Template Preview
               </Heading>
               <Text size="xs" tone="muted">
@@ -521,6 +529,17 @@ export function TemplatePage() {
                   <Badge size="sm" variant="primary" className="hidden md:inline-flex capitalize">
                     Theme: {activePreset}
                   </Badge>
+
+                  <NotificationCenter
+                    items={notifications}
+                    categories={[
+                      { id: "vessels", label: "Vessels" },
+                      { id: "customs", label: "Customs" },
+                    ]}
+                    onMarkRead={(id, read) => setNotifications((all) => all.map((n) => (n.id === id ? { ...n, read } : n)))}
+                    onMarkAllRead={() => setNotifications((all) => all.map((n) => ({ ...n, read: true })))}
+                    onDismiss={(id) => setNotifications((all) => all.filter((n) => n.id !== id))}
+                  />
 
                   {/* Add Shipment Action Button */}
                   <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

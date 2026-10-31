@@ -130,11 +130,13 @@ export function staticVariables(): Record<string, string> {
   // through a light shadow (top-left) and a dark one (bottom-right).
   // The base must be a mid-tone: on a near-white page the white highlight has
   // nothing to stand out from and every shape washes out. Mixing in the theme's
-  // ink keeps its tint while leaving headroom for both shadows.
+  // ink keeps its tint while leaving headroom for both shadows. 6.5% is the most
+  // that keeps every text color AA in every preset (Forest's primary text is the
+  // limit); tests/materials.test.ts enforces both bounds.
   const neoLight = lightRim(1, 0.09);
   const neoDark = depth(30, 0.65);
   vars[p("neo-bg")] =
-    `light-dark(color-mix(in oklab, ${v("color-surface-sunken")}, ${v("color-foreground")} 9%), color-mix(in oklab, ${v("color-surface")}, ${v("color-foreground")} 6%))`;
+    `light-dark(color-mix(in oklab, ${v("color-surface-sunken")}, ${v("color-foreground")} 6.5%), color-mix(in oklab, ${v("color-surface")}, ${v("color-foreground")} 6%))`;
   vars[p("shadow-neomorph")] = `8px 8px 18px ${neoDark}, -8px -8px 18px ${neoLight}`;
   vars[p("shadow-neomorph-sm")] = `4px 4px 9px ${neoDark}, -4px -4px 9px ${neoLight}`;
   vars[p("shadow-neomorph-inset")] = `inset 4px 4px 9px ${neoDark}, inset -4px -4px 9px ${neoLight}`;

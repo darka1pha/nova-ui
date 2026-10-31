@@ -203,6 +203,7 @@ describe("derived tokens", () => {
   });
 
   it("gives neumorphism a mid-tone base so both shadows can read", () => {
-    expect(derivedVariables()["--ks-neo-bg"]).toContain("var(--ks-color-foreground) 9%");
+    // Darkened toward the ink; how far is bounded by tests/materials.test.ts (text AA vs a visible rim).
+    expect(derivedVariables()["--ks-neo-bg"]).toMatch(/color-mix\(in oklab, var\(--ks-color-surface-sunken\), var\(--ks-color-foreground\) [\d.]+%\)/);
   });
 });

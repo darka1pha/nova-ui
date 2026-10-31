@@ -15,6 +15,7 @@ export const nav: { title: string; items: { id: string; label: string; badge?: s
       { id: "getting-started", label: "Getting started" },
       { id: "playground", label: "Theme playground", badge: "Live" },
       { id: "template", label: "Template preview", badge: "New" },
+      { id: "blocks", label: "Blocks", badge: "New" },
     ],
   },
   {
@@ -58,6 +59,7 @@ export const pages: Record<string, LazyExoticComponent<ComponentType>> & { home:
   "getting-started": page(() => import("./getting-started.tsx"), "GettingStartedPage"),
   playground: page(() => import("./playground.tsx"), "PlaygroundPage"),
   template: page(() => import("./template.tsx"), "TemplatePage"),
+  blocks: page(() => import("./blocks.tsx"), "BlocksPage"),
   theming: page(() => import("./theming.tsx"), "ThemingPage"),
   tokens: page(() => import("./tokens.tsx"), "TokensPage"),
   motion: page(() => import("./motion.tsx"), "MotionPage"),

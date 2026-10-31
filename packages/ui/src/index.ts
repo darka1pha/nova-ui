@@ -111,6 +111,7 @@ export {
   ToolbarToggleGroup,
   ToolbarToggleItem,
 } from "./components/bars.tsx";
+export { NotificationCenter, type NotificationCenterProps, type NotificationItem, type NotificationCategory, type NotificationTone } from "./components/notifications.tsx";
 export {
   Calendar,
   DatePicker,

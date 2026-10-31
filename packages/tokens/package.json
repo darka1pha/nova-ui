@@ -15,6 +15,8 @@
     "./css/themes.css": "./dist/css/themes.css",
     "./css/tailwind.css": "./dist/css/tailwind.css",
     "./tokens.json": "./dist/tokens.json",
+    "./tokens.dtcg.json": "./dist/tokens.dtcg.json",
+    "./dtcg/*": "./dist/dtcg/*",
     "./package.json": "./package.json"
   },
   "scripts": {

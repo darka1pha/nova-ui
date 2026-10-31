@@ -9,6 +9,9 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import {
   cssBlock,
+  dtcgTokens,
+  primitiveTokens,
+  themeTokens,
   defaultTheme,
   getResolvedTheme,
   presets,
@@ -51,4 +54,15 @@ const json = {
   })),
 };
 writeFileSync(out("tokens.json"), JSON.stringify(json, null, 2));
-console.log("CSS + JSON written to dist/");
+
+// W3C DTCG: one document with everything, plus a file per set for Tokens Studio and Figma variables.
+const resolved = Object.values(presets).map((t) => getResolvedTheme(t));
+writeFileSync(out("tokens.dtcg.json"), JSON.stringify(dtcgTokens(resolved), null, 2));
+mkdirSync(out("dtcg"), { recursive: true });
+writeFileSync(out("dtcg/primitives.json"), JSON.stringify(primitiveTokens(), null, 2));
+for (const theme of resolved) {
+  for (const mode of ["light", "dark"] as const) {
+    writeFileSync(out(`dtcg/${theme.id}.${mode}.json`), JSON.stringify(themeTokens(theme, mode), null, 2));
+  }
+}
+console.log("CSS, JSON and DTCG tokens written to dist/");
