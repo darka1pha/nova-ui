@@ -145,7 +145,8 @@ describe("Sidebar Provider & Core", () => {
 });
 
 describe("Responsive Sidebar Variants", () => {
-  it("renders ResponsiveSidebar with brand, groups, badges, and user profile", () => {
+  it("renders ResponsiveSidebar with brand, groups, badges, and user profile", async () => {
+    const user = userEvent.setup();
     render(
       <SidebarProvider>
         <ResponsiveSidebar
@@ -190,7 +191,14 @@ describe("Responsive Sidebar Variants", () => {
     expect(screen.getByText("Design System")).toBeInTheDocument();
     expect(screen.getByText("Dashboard")).toBeInTheDocument();
     expect(screen.getByText("3")).toBeInTheDocument();
-    expect(screen.getByText("Active")).toBeInTheDocument();
+
+    // Sub menus start closed unless something inside is active, and toggle from their parent.
+    const projects = screen.getByRole("button", { name: "Projects" });
+    expect(projects).toHaveAttribute("aria-expanded", "false");
+    expect(screen.queryByText("Active")).not.toBeInTheDocument();
+    await user.click(projects);
+    expect(projects).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByRole("link", { name: "Active" })).toBeInTheDocument();
     expect(screen.getByText("Jane Doe")).toBeInTheDocument();
     expect(screen.getByText("jane@example.com")).toBeInTheDocument();
   });

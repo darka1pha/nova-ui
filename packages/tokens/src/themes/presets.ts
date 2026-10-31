@@ -85,13 +85,28 @@ export const premium: ThemeDefinition = {
   fonts: { display: fontFamily.serif },
 };
 
+/**
+ * Kaveh Port & Marine Services (KMS). Taken from the brand mark: the navy of the
+ * anchor and KAVEH wordmark leads, the KMS / "Since 1948" orange is the signature
+ * accent, and the periwinkle tagline band becomes the secondary. Neutrals carry a
+ * faint navy tint so surfaces sit with the brand instead of reading as plain gray.
+ */
 export const kaveh: ThemeDefinition = {
   id: "kaveh",
   label: "Kaveh",
-  description: "Energetic port orange with deep maritime navy and harbor blue accents on cool slate.",
-  colors: { primary: "#f07025", secondary: "#114b94", accent: "#a5bbe2", neutral: "slate", ...status, info: "sky" },
+  description: "Maritime navy from the KMS anchor, signature port orange and a periwinkle harbor band on navy-tinted neutrals.",
+  colors: {
+    primary: "#164f9a",
+    secondary: "#7b95d4",
+    accent: "#f37321",
+    neutral: "#5b6982",
+    ...status,
+    warning: "amber",
+    info: "sky",
+  },
   radius: "md",
   shadow: "crisp",
+  motion: "standard",
 };
 
 export const presets = { vibrant, ocean, sunset, forest, berry, minimal, midnight, premium, kaveh } as const;

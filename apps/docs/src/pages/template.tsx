@@ -321,7 +321,7 @@ export function TemplatePage() {
                   style={{
                     backgroundColor:
                       pId === "kaveh"
-                        ? "#f07025"
+                        ? "#164f9a"
                         : pId === "vibrant"
                           ? "#6d4aff"
                           : pId === "ocean"

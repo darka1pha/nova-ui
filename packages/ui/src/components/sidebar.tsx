@@ -1,7 +1,7 @@
 "use client";
 
 import { cva, type VariantProps } from "class-variance-authority";
-import { PanelLeft } from "lucide-react";
+import { ChevronRight, PanelLeft } from "lucide-react";
 import { Slot } from "radix-ui";
 import {
   createContext,
@@ -21,6 +21,7 @@ import {
 } from "react";
 import { cn } from "../utils/cn.ts";
 import { buttonVariants } from "./button.tsx";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./disclosure.tsx";
 import { Separator, VisuallyHidden } from "./layout.tsx";
 import { DialogDescription, DialogTitle, Sheet, SheetContent, Tooltip } from "./overlay.tsx";
 import { focusRing, transition } from "./shared.ts";
@@ -133,10 +134,12 @@ export const SidebarProvider = forwardRef<HTMLDivElement, SidebarProviderProps>(
     if (!keyboardShortcut || typeof window === "undefined") return;
     const targetKey = typeof keyboardShortcut === "string" ? keyboardShortcut.toLowerCase() : "b";
     const handler = (event: KeyboardEvent) => {
-      if (event.key.toLowerCase() === targetKey && (event.metaKey || event.ctrlKey) && !event.defaultPrevented) {
-        event.preventDefault();
-        toggleSidebar();
-      }
+      if (event.key.toLowerCase() !== targetKey || !(event.metaKey || event.ctrlKey) || event.defaultPrevented) return;
+      // Leave Ctrl/Cmd+B to rich-text editors and inputs (bold).
+      const target = event.target as HTMLElement | null;
+      if (target?.isContentEditable || target?.closest?.("input, textarea, select, [contenteditable='true']")) return;
+      event.preventDefault();
+      toggleSidebar();
     };
     window.addEventListener("keydown", handler as never);
     return () => window.removeEventListener("keydown", handler as never);
@@ -334,8 +337,8 @@ export const SidebarRail = forwardRef<HTMLButtonElement, ButtonHTMLAttributes<HT
       title="Toggle Sidebar"
       onClick={toggleSidebar}
       className={cn(
-        "absolute inset-y-0 end-0 z-20 hidden w-1.5 -translate-x-1/2 cursor-col-resize transition-all ease-linear group-hover/sidebar:w-2 hover:bg-primary/20 sm:flex",
-        "after:absolute after:inset-y-0 after:start-1/2 after:w-0.5 after:-translate-x-1/2 after:bg-border hover:after:bg-primary",
+        "absolute inset-y-0 end-0 z-20 hidden w-1.5 translate-x-1/2 rtl:-translate-x-1/2 cursor-col-resize transition-all ease-linear group-hover/sidebar:w-2 hover:bg-primary/20 sm:flex",
+        "after:absolute after:inset-y-0 after:start-1/2 after:w-0.5 after:-translate-x-1/2 after:bg-transparent hover:after:bg-primary",
         className,
       )}
       {...props}
@@ -395,7 +398,8 @@ export function SidebarGroupLabel({
     <Comp
       className={cn(
         "flex h-7 shrink-0 items-center px-2 text-2xs font-semibold uppercase tracking-(--ks-tracking-wider) text-foreground-muted outline-none transition-[margin,opacity] duration-(--ks-duration-normal) ease-(--ks-ease-interactive)",
-        "group-data-[collapsible=icon]/sidebar:hidden",
+        // Collapsed to the icon rail, the label turns into a hairline divider between groups.
+        "group-data-[collapsible=icon]/sidebar:mx-2 group-data-[collapsible=icon]/sidebar:my-1 group-data-[collapsible=icon]/sidebar:h-px group-data-[collapsible=icon]/sidebar:overflow-hidden group-data-[collapsible=icon]/sidebar:bg-border group-data-[collapsible=icon]/sidebar:p-0 group-data-[collapsible=icon]/sidebar:text-transparent",
         className,
       )}
       {...props}
@@ -436,7 +440,7 @@ export function SidebarMenuItem({ className, ...props }: HTMLAttributes<HTMLLIEl
 }
 
 const sidebarMenuButtonVariants = cva(
-  `peer/menu-button group/menu-btn flex w-full items-center gap-2.5 rounded-md p-2 text-start font-medium outline-none ${transition} ${focusRing} [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:transition-transform [&>svg]:duration-(--ks-duration-normal) [&>svg]:ease-(--ks-ease-interactive) hover:[&>svg]:scale-110 hover:[&>svg]:translate-x-0.5 rtl:hover:[&>svg]:-translate-x-0.5 active:scale-(--ks-press-scale,0.98)`,
+  `peer/menu-button group/menu-btn relative flex w-full items-center gap-2.5 rounded-md p-2 text-start font-medium outline-none ${transition} ${focusRing} [&_svg]:size-4 [&_svg]:shrink-0 [&>svg]:transition-transform [&>svg]:duration-(--ks-duration-normal) [&>svg]:ease-(--ks-ease-interactive) hover:[&>svg]:scale-110 active:scale-(--ks-press-scale,0.98) disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50`,
   {
     variants: {
       variant: {
@@ -446,10 +450,11 @@ const sidebarMenuButtonVariants = cva(
       size: {
         sm: "h-7 text-xs px-2",
         md: "h-9 text-sm px-2.5",
-        lg: "h-11 text-base px-3 [&>svg]:size-5",
+        lg: "h-11 text-base px-3 [&_svg]:size-5",
       },
       isActive: {
-        true: "bg-primary-subtle text-primary-on-subtle font-semibold shadow-xs [&>svg]:text-primary-text before:absolute before:inset-y-1.5 before:start-0 before:w-1 before:rounded-full before:bg-primary before:shadow-glow-primary before:animate-ks-bounce-in",
+        // A slim indicator bar on the leading edge plus a tinted fill; the icon picks up the brand color.
+        true: "bg-primary-subtle text-primary-on-subtle font-semibold hover:bg-primary-subtle-hover [&_svg]:text-primary-text before:absolute before:inset-y-2 before:-start-0.5 before:w-1 before:rounded-full before:bg-primary-solid before:animate-ks-bounce-in group-data-[collapsible=icon]/sidebar:before:hidden",
         false: "",
       },
     },
@@ -483,7 +488,7 @@ export const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButton
       aria-current={isActive ? "page" : undefined}
       className={cn(
         sidebarMenuButtonVariants({ variant, size, isActive }),
-        isCollapsed && "justify-center px-0 group-data-[collapsible=icon]/sidebar:size-9",
+        isCollapsed && "mx-auto justify-center px-0 group-data-[collapsible=icon]/sidebar:size-9",
         className,
       )}
       {...props}
@@ -528,7 +533,9 @@ export function SidebarMenuBadge({ className, ...props }: HTMLAttributes<HTMLSpa
   return (
     <span
       className={cn(
-        "ms-auto flex items-center justify-center text-xs font-semibold text-foreground-muted group-data-[collapsible=icon]/sidebar:hidden",
+        "ms-auto flex min-w-5 shrink-0 items-center justify-center rounded-full px-1.5 text-2xs font-semibold tabular-nums text-foreground-muted group-data-[active=true]/menu-btn:text-primary-text",
+        // On the icon rail the count shrinks to an accent dot on the icon's corner.
+        "group-data-[collapsible=icon]/sidebar:absolute group-data-[collapsible=icon]/sidebar:end-1 group-data-[collapsible=icon]/sidebar:top-1 group-data-[collapsible=icon]/sidebar:size-2 group-data-[collapsible=icon]/sidebar:min-w-0 group-data-[collapsible=icon]/sidebar:overflow-hidden group-data-[collapsible=icon]/sidebar:p-0 group-data-[collapsible=icon]/sidebar:bg-accent-solid group-data-[collapsible=icon]/sidebar:text-transparent group-data-[collapsible=icon]/sidebar:ring-2 group-data-[collapsible=icon]/sidebar:ring-surface group-data-[collapsible=icon]/sidebar:[&>*]:hidden",
         className,
       )}
       {...props}
@@ -540,7 +547,7 @@ export function SidebarMenuSub({ className, ...props }: HTMLAttributes<HTMLUList
   return (
     <ul
       className={cn(
-        "ms-4 flex flex-col gap-1 border-s border-border ps-2 pt-1 list-none group-data-[collapsible=icon]/sidebar:hidden",
+        "ms-[1.125rem] flex flex-col gap-0.5 border-s border-border ps-2.5 py-1 list-none m-0 group-data-[collapsible=icon]/sidebar:hidden",
         className,
       )}
       {...props}
@@ -548,22 +555,29 @@ export function SidebarMenuSub({ className, ...props }: HTMLAttributes<HTMLUList
   );
 }
 
-export function SidebarMenuSubItem(props: HTMLAttributes<HTMLLIElement>) {
-  return <li className="list-none" {...props} />;
+export function SidebarMenuSubItem({ className, ...props }: HTMLAttributes<HTMLLIElement>) {
+  return <li className={cn("relative list-none", className)} {...props} />;
 }
 
 export const SidebarMenuSubButton = forwardRef<
   HTMLAnchorElement,
   AnchorHTMLAttributes<HTMLAnchorElement> & { asChild?: boolean; isActive?: boolean }
->(function SidebarMenuSubButton({ asChild, isActive, className, ...props }, ref) {
-  const Comp = asChild ? Slot.Root : "a";
+>(function SidebarMenuSubButton({ asChild, isActive, className, href, ...props }, ref) {
+  // Without an href an anchor is not focusable, so action-only sub items render as buttons.
+  const isButton = !asChild && href === undefined;
+  const Comp = (asChild ? Slot.Root : isButton ? "button" : "a") as "a";
   return (
     <Comp
-      ref={ref}
+      ref={ref as never}
+      href={href}
+      {...(isButton ? { type: "button" as never } : null)}
+      data-active={isActive ? "true" : "false"}
       aria-current={isActive ? "page" : undefined}
       className={cn(
-        "flex h-7 items-center gap-2 rounded-md px-2 text-xs font-medium text-foreground-muted hover:bg-surface-hover hover:text-foreground transition-all duration-(--ks-duration-fast) ease-(--ks-ease-interactive) active:scale-(--ks-press-scale,0.98)",
-        isActive && "text-primary-text font-semibold bg-primary-subtle/70 shadow-xs before:size-1.5 before:rounded-full before:bg-primary before:animate-ks-bounce-in",
+        "relative flex h-8 w-full items-center gap-2 rounded-md px-2 text-start text-xs font-medium text-foreground-secondary hover:bg-surface-hover hover:text-foreground transition-colors duration-(--ks-duration-fast) ease-(--ks-ease-interactive) active:scale-(--ks-press-scale,0.98) [&_svg]:size-3.5 [&_svg]:shrink-0",
+        // The active sub item lights up its segment of the guide line.
+        isActive &&
+          "text-primary-text font-semibold before:absolute before:inset-y-1.5 before:-start-[calc(0.625rem+1px)] before:w-0.5 before:rounded-full before:bg-primary-solid before:animate-ks-bounce-in",
         focusRing,
         className,
       )}
@@ -624,14 +638,25 @@ export const SidebarItem = forwardRef<HTMLAnchorElement, SidebarItemProps>(funct
 
 /* -------------------------------------------------- 1. ResponsiveSidebar -- */
 
+export interface ResponsiveSidebarSubItem {
+  title: string;
+  href?: string;
+  badge?: ReactNode;
+  isActive?: boolean;
+  onClick?: () => void;
+}
+
 export interface ResponsiveSidebarNavItem {
   title: string;
   href?: string;
   icon?: ReactNode;
   badge?: ReactNode;
   isActive?: boolean;
+  disabled?: boolean;
   onClick?: () => void;
-  subItems?: Array<{ title: string; href?: string; isActive?: boolean; onClick?: () => void }>;
+  subItems?: ResponsiveSidebarSubItem[];
+  /** Whether the sub menu starts open. Defaults to open when the item or one of its sub items is active. */
+  defaultOpen?: boolean;
 }
 
 export interface ResponsiveSidebarGroup {
@@ -656,74 +681,145 @@ export interface ResponsiveSidebarProps extends SidebarProps {
   };
 }
 
+function ResponsiveSidebarEntry({ item }: { item: ResponsiveSidebarNavItem }) {
+  const { state, isMobile, setOpen, setOpenMobile } = useSidebar();
+  const subItems = item.subItems ?? [];
+  const subActive = subItems.some((sub) => sub.isActive);
+  const [subOpen, setSubOpen] = useState(item.defaultOpen ?? Boolean(item.isActive || subActive));
+  const isCollapsed = state === "collapsed" && !isMobile;
+
+  // Navigating on mobile closes the sheet so the destination is visible.
+  const afterNavigate = () => {
+    if (isMobile) setOpenMobile(false);
+  };
+
+  const label = (
+    <>
+      {item.icon}
+      <span className="flex-1 truncate group-data-[collapsible=icon]/sidebar:hidden">{item.title}</span>
+      {item.badge ? <SidebarMenuBadge>{item.badge}</SidebarMenuBadge> : null}
+    </>
+  );
+
+  if (subItems.length > 0) {
+    return (
+      <SidebarMenuItem>
+        <Collapsible open={subOpen && !isCollapsed} onOpenChange={setSubOpen}>
+          <CollapsibleTrigger asChild>
+            <SidebarMenuButton
+              isActive={item.isActive || (subActive && isCollapsed)}
+              tooltip={item.title}
+              disabled={item.disabled}
+              onClick={() => {
+                item.onClick?.();
+                // The icon rail has no room for a sub menu: expand the sidebar and reveal it.
+                if (isCollapsed) {
+                  setOpen(true);
+                  setSubOpen(true);
+                }
+              }}
+            >
+              {label}
+              <ChevronRight
+                aria-hidden
+                className={cn(
+                  "text-foreground-muted transition-transform duration-(--ks-duration-normal) ease-(--ks-ease-interactive) rtl:-scale-x-100 group-data-[collapsible=icon]/sidebar:hidden",
+                  subOpen && !isCollapsed && "rotate-90 rtl:-rotate-90",
+                )}
+              />
+            </SidebarMenuButton>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <SidebarMenuSub>
+              {subItems.map((sub) => (
+                <SidebarMenuSubItem key={sub.title}>
+                  <SidebarMenuSubButton
+                    href={sub.href}
+                    isActive={sub.isActive}
+                    onClick={() => {
+                      sub.onClick?.();
+                      afterNavigate();
+                    }}
+                  >
+                    <span className="flex-1 truncate">{sub.title}</span>
+                    {sub.badge ? <SidebarMenuBadge>{sub.badge}</SidebarMenuBadge> : null}
+                  </SidebarMenuSubButton>
+                </SidebarMenuSubItem>
+              ))}
+            </SidebarMenuSub>
+          </CollapsibleContent>
+        </Collapsible>
+      </SidebarMenuItem>
+    );
+  }
+
+  const isLink = Boolean(item.href && !item.onClick);
+  return (
+    <SidebarMenuItem>
+      <SidebarMenuButton
+        asChild={isLink}
+        isActive={item.isActive}
+        tooltip={item.title}
+        disabled={item.disabled}
+        onClick={() => {
+          item.onClick?.();
+          afterNavigate();
+        }}
+      >
+        {isLink ? (
+          <a href={item.href} aria-disabled={item.disabled || undefined}>
+            {label}
+          </a>
+        ) : (
+          label
+        )}
+      </SidebarMenuButton>
+    </SidebarMenuItem>
+  );
+}
+
 /**
  * ResponsiveSidebar: A complete, fully responsive sidebar with logo, navigation groups,
- * badge counters, submenus, user profile footer, and collapsible icon rail.
+ * badge counters, collapsible submenus, user profile footer, and collapsible icon rail.
  */
 export const ResponsiveSidebar = forwardRef<HTMLElement, ResponsiveSidebarProps>(function ResponsiveSidebar(
   { brand, groups, footerUser, children, ...props },
   ref,
 ) {
+  const brandRow = "flex items-center gap-3 rounded-md group-data-[collapsible=icon]/sidebar:justify-center";
+  const brandInner = brand ? (
+    <>
+      {brand.logo ? <div className="flex shrink-0 items-center justify-center">{brand.logo}</div> : null}
+      <div className="flex min-w-0 flex-col group-data-[collapsible=icon]/sidebar:hidden">
+        <span className="truncate text-sm font-semibold leading-tight text-foreground">{brand.title}</span>
+        {brand.subtitle ? <span className="truncate text-2xs text-foreground-muted">{brand.subtitle}</span> : null}
+      </div>
+    </>
+  ) : null;
+
   return (
     <Sidebar ref={ref} {...props}>
       {brand ? (
-        <SidebarHeader className="border-b border-border pb-3">
-          <div className="flex items-center gap-3">
-            {brand.logo ? <div className="shrink-0">{brand.logo}</div> : null}
-            <div className="flex flex-col min-w-0 group-data-[collapsible=icon]/sidebar:hidden">
-              <span className="text-sm font-semibold truncate leading-tight text-foreground">{brand.title}</span>
-              {brand.subtitle ? <span className="text-2xs text-foreground-muted truncate">{brand.subtitle}</span> : null}
-            </div>
-          </div>
+        <SidebarHeader className="border-b border-border pb-3 group-data-[collapsible=icon]/sidebar:px-0">
+          {brand.href ? (
+            <a href={brand.href} className={cn(brandRow, "-m-1 p-1 hover:bg-surface-hover", transition, focusRing)}>
+              {brandInner}
+            </a>
+          ) : (
+            <div className={brandRow}>{brandInner}</div>
+          )}
         </SidebarHeader>
       ) : null}
 
-      <SidebarContent>
+      <SidebarContent className="gap-3 group-data-[collapsible=icon]/sidebar:px-0">
         {groups?.map((group, idx) => (
           <SidebarGroup key={group.title ?? idx}>
-            {group.title ? (
-              <div className="flex items-center justify-between">
-                <SidebarGroupLabel>{group.title}</SidebarGroupLabel>
-                {group.action ? <SidebarGroupAction asChild>{group.action}</SidebarGroupAction> : null}
-              </div>
-            ) : null}
+            {group.title ? <SidebarGroupLabel>{group.title}</SidebarGroupLabel> : null}
+            {group.action ? <SidebarGroupAction asChild>{group.action}</SidebarGroupAction> : null}
             <SidebarGroupContent>
               <SidebarMenu>
                 {group.items.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      asChild={Boolean(item.href && !item.onClick)}
-                      isActive={item.isActive}
-                      tooltip={item.title}
-                      onClick={item.onClick}
-                    >
-                      {item.href && !item.onClick ? (
-                        <a href={item.href} className="flex w-full items-center gap-2.5">
-                          {item.icon}
-                          <span className="flex-1 truncate group-data-[collapsible=icon]/sidebar:hidden">{item.title}</span>
-                          {item.badge ? <SidebarMenuBadge>{item.badge}</SidebarMenuBadge> : null}
-                        </a>
-                      ) : (
-                        <div className="flex w-full items-center gap-2.5">
-                          {item.icon}
-                          <span className="flex-1 truncate group-data-[collapsible=icon]/sidebar:hidden">{item.title}</span>
-                          {item.badge ? <SidebarMenuBadge>{item.badge}</SidebarMenuBadge> : null}
-                        </div>
-                      )}
-                    </SidebarMenuButton>
-
-                    {item.subItems && item.subItems.length > 0 ? (
-                      <SidebarMenuSub>
-                        {item.subItems.map((sub) => (
-                          <SidebarMenuSubItem key={sub.title}>
-                            <SidebarMenuSubButton href={sub.href} isActive={sub.isActive} onClick={sub.onClick}>
-                              {sub.title}
-                            </SidebarMenuSubButton>
-                          </SidebarMenuSubItem>
-                        ))}
-                      </SidebarMenuSub>
-                    ) : null}
-                  </SidebarMenuItem>
+                  <ResponsiveSidebarEntry key={item.title} item={item} />
                 ))}
               </SidebarMenu>
             </SidebarGroupContent>
@@ -733,12 +829,12 @@ export const ResponsiveSidebar = forwardRef<HTMLElement, ResponsiveSidebarProps>
       </SidebarContent>
 
       {footerUser ? (
-        <SidebarFooter>
-          <div className="flex items-center gap-3 w-full">
+        <SidebarFooter className="group-data-[collapsible=icon]/sidebar:px-0">
+          <div className="flex w-full items-center gap-3 group-data-[collapsible=icon]/sidebar:justify-center">
             {footerUser.avatar ? <div className="shrink-0">{footerUser.avatar}</div> : null}
-            <div className="flex flex-col min-w-0 flex-1 group-data-[collapsible=icon]/sidebar:hidden">
-              <span className="text-xs font-semibold text-foreground truncate">{footerUser.name}</span>
-              {footerUser.email ? <span className="text-2xs text-foreground-muted truncate">{footerUser.email}</span> : null}
+            <div className="flex min-w-0 flex-1 flex-col group-data-[collapsible=icon]/sidebar:hidden">
+              <span className="truncate text-xs font-semibold text-foreground">{footerUser.name}</span>
+              {footerUser.email ? <span className="truncate text-2xs text-foreground-muted">{footerUser.email}</span> : null}
             </div>
             {footerUser.action ? <div className="shrink-0 group-data-[collapsible=icon]/sidebar:hidden">{footerUser.action}</div> : null}
           </div>
@@ -807,6 +903,8 @@ export const DualSidebar = forwardRef<HTMLElement, DualSidebarProps>(function Du
                       : "border-border bg-surface-raised text-foreground-secondary hover:bg-surface-hover",
                   )}
                   title={item.label}
+                  aria-label={item.label}
+                  aria-current={activeRailId === item.id ? "true" : undefined}
                 >
                   {item.icon}
                 </button>
