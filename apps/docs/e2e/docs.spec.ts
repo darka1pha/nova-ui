@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { axe, open } from "./helpers.ts";
 
 const routes = [
@@ -73,6 +73,35 @@ test("dialog traps focus and restores it", async ({ page }) => {
   await page.keyboard.press("Escape");
   await expect(dialog).toBeHidden();
   await expect(trigger).toBeFocused();
+});
+
+/*
+ * Breakpoint overrides inside components (`flex-col-reverse sm:flex-row`,
+ * `text-3xl sm:text-4xl`) must win at their width. They lose when a second
+ * Tailwind build re-emits the base utility later in the same layer, which is
+ * why Tailwind apps import @kaleido/ui/tailwind.css instead of styles.css.
+ */
+async function responsiveLayouts(page: Page) {
+  await open(page, "layout");
+  const heading = await page.getByRole("heading", { level: 3, name: "Section heading" }).evaluate((h) => getComputedStyle(h).fontSize);
+  await open(page, "feedback");
+  const columns = await page.getByText("No projects yet").first().evaluate((el) => {
+    const grid = el.closest(".grid");
+    return grid ? getComputedStyle(grid).gridTemplateColumns.split(" ").length : 0;
+  });
+  await open(page, "overlays");
+  await page.getByRole("button", { name: "Edit profile" }).click();
+  const footer = page.getByRole("dialog", { name: "Edit profile" }).getByRole("button", { name: "Save changes" }).locator("..");
+  const direction = await footer.evaluate((el) => getComputedStyle(el).flexDirection);
+  return { heading, columns, direction };
+}
+
+test("component breakpoints apply at desktop width", async ({ page }) => {
+  expect(await responsiveLayouts(page)).toEqual({ heading: "36px", columns: 3, direction: "row" });
+});
+
+test("component breakpoints collapse at phone width @mobile", async ({ page }) => {
+  expect(await responsiveLayouts(page)).toEqual({ heading: "30px", columns: 1, direction: "column-reverse" });
 });
 
 test("dropdown menu works with the keyboard", async ({ page }) => {

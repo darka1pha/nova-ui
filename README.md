@@ -141,8 +141,9 @@ Primitive tokens        Semantic tokens                 Component tokens
   so dialogs keep the theme, mode and direction they were opened from.
 - **Styling.** Components use Tailwind utilities compiled into a precompiled
   `styles.css` (no preflight, a reset scoped to `.ks-theme`, cascade layers in
-  Tailwind's own order). Consumers need no Tailwind; Tailwind v4 users can add
-  `@kaleido/ui/tailwind.css` to get the same token utilities.
+  Tailwind's own order). Consumers need no Tailwind; Tailwind v4 apps import
+  `@kaleido/ui/tailwind.css` instead, so their one build generates the component
+  utilities and the same token utilities in a single, correctly ordered layer.
 - **Motion.** Interaction tokens (`--ks-hover-lift`, `--ks-press-scale`,
   `--ks-ease-interactive` springs written with CSS `linear()`, motion-scaled
   durations, intent-colored glows) come from the theme's motion personality —

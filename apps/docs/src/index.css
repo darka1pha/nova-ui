@@ -1,4 +1,5 @@
-/* The docs app is a normal Tailwind v4 consumer of Kaleido. */
+/* The docs app is a normal Tailwind v4 consumer of Kaleido: tailwind.css replaces
+ * styles.css, so this one build generates the components' utilities and ours. */
 @import "tailwindcss";
 @import "@kaleido/ui/tailwind.css";
 

@@ -9,7 +9,7 @@
  * Usage: pnpm build && node scripts/verify-install.mjs
  */
 import { execSync } from "node:child_process";
-import { mkdtempSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 
@@ -34,6 +34,10 @@ try {
   const files = run(`tar -tf "${ui}"`).split("\n");
   for (const required of ["package/dist/index.js", "package/dist/index.d.ts", "package/dist/styles.css", "package/dist/themes.css", "package/dist/tailwind.css"]) {
     if (!files.includes(required)) throw new Error(`Tarball is missing ${required}`);
+  }
+  // tailwind.css is compiled by the consumer, so everything it imports must ship next to it.
+  for (const [, dep] of readFileSync(join(root, "packages/ui/dist/tailwind.css"), "utf8").matchAll(/@import "\.\/([^"]+)"/g)) {
+    if (!files.includes(`package/dist/${dep}`)) throw new Error(`Tarball is missing dist/${dep}, imported by tailwind.css`);
   }
   if (files.some((f) => f.includes("/tests/") || f.endsWith(".test.js"))) throw new Error("Tests leaked into the tarball");
 

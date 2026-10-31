@@ -20,10 +20,27 @@ import "@kaleido/ui/styles.css";
 | Import | Contents |
 | --- | --- |
 | `@kaleido/ui` | Components, `ThemeProvider`, `ThemeScript`, hooks, `cn`, and the token API (`createTheme`, `registerTheme`, `auditContrast`…) |
-| `@kaleido/ui/styles.css` | Required once. Tokens, a reset scoped to `.ks-theme`, and component styles. No global preflight. |
+| `@kaleido/ui/styles.css` | Required once (unless you use `tailwind.css`). Tokens, a reset scoped to `.ks-theme`, and component styles. No global preflight. |
 | `@kaleido/ui/themes.css` | Optional. All presets as `[data-ks-theme="…"]` blocks for zero-JS theming. |
 | `@kaleido/ui/react-hook-form` | Optional bindings for react-hook-form (any resolver, e.g. zod). Requires `react-hook-form` ≥ 7.55; never loaded by the main entry. |
-| `@kaleido/ui/tailwind.css` | Optional, for Tailwind v4 apps: `@import "tailwindcss"; @import "@kaleido/ui/tailwind.css";` |
+| `@kaleido/ui/tailwind.css` | For Tailwind v4 apps, **instead of** `styles.css`: `@import "tailwindcss"; @import "@kaleido/ui/tailwind.css";` |
+
+## Apps that use Tailwind CSS v4
+
+Import `tailwind.css` from your CSS entry and drop the `styles.css` import:
+
+```css
+@import "tailwindcss";
+@import "@kaleido/ui/tailwind.css";
+```
+
+It ships Kaleido as source (tokens, scoped base, materials, token utilities such
+as `bg-primary`) plus an `@source` for the components, so your build generates
+the component utilities together with yours. Loading the precompiled
+`styles.css` as well gives you two separately sorted `utilities` layers: your
+`.flex-col` can then follow the library's `sm:flex-row` and win at every width.
+With a class prefix (`prefix(tw)`), use `styles.css` instead; prefixed
+utilities can't collide with the components'.
 
 ## ThemeProvider
 
