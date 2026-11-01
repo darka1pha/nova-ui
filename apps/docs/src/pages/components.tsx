@@ -89,6 +89,8 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
   NumberInput,
+  PasswordInput,
+  passwordRequirements,
   Pagination,
   Popover,
   PopoverContent,
@@ -556,6 +558,34 @@ export function FormsPage() {
         </Stack>
       </Example>
       <Example
+        title="PasswordInput"
+        description="Show/hide toggle, strength meter, live requirement checklist and a Caps Lock hint."
+        code={`<FormField label="Password">
+  <PasswordInput />
+</FormField>
+<FormField label="New password">
+  <PasswordInput showStrength requirements={[
+    passwordRequirements.minLength(10),
+    passwordRequirements.uppercase(),
+    passwordRequirements.number(),
+    passwordRequirements.symbol(),
+  ]} />
+</FormField>`}
+      >
+        <Stack gap={4} className="w-full max-w-sm">
+          <FormField label="Password">
+            <PasswordInput defaultValue="hunter2" />
+          </FormField>
+          <FormField label="New password" description="Long passphrases beat clever substitutions.">
+            <PasswordInput
+              defaultValue="Kaleido-2026"
+              showStrength
+              requirements={[passwordRequirements.minLength(10), passwordRequirements.uppercase(), passwordRequirements.number(), passwordRequirements.symbol()]}
+            />
+          </FormField>
+        </Stack>
+      </Example>
+      <Example
         title="Checkbox, Radio and Switch"
         code={`<FormField label="Email me updates" inline><Checkbox /></FormField>
 <RadioGroup defaultValue="pro">…</RadioGroup>
@@ -640,12 +670,25 @@ export function FormsPage() {
           { name: "inline", type: "boolean", default: "false", description: "Label beside the control (checkbox, switch)." },
         ]}
       />
+      <PropsTable
+        title="PasswordInput props"
+        props={[
+          { name: "showStrength", type: "boolean", default: "false", description: "Four-step meter with a text label (Too weak … Strong)." },
+          { name: "strength", type: "(password) => 0 | 1 | 2 | 3 | 4", default: "passwordStrength", description: "Swap in a stronger estimator such as zxcvbn." },
+          { name: "requirements", type: "PasswordRequirement[]", description: "Live checklist. Ready-made: passwordRequirements.minLength(n), uppercase(), lowercase(), number(), symbol()." },
+          { name: "visible / defaultVisible / onVisibleChange", type: "boolean", default: "false", description: "Control whether the password is shown." },
+          { name: "capsLockWarning", type: "ReactNode | false", default: '"Caps Lock is on"', description: "Shown while Caps Lock is on; false turns it off." },
+          { name: "showLabel / hideLabel / strengthLabels / strengthPrefix", type: "string / ReactNode", description: "Localize every visible and spoken string." },
+          { name: "autoComplete", type: "string", default: '"current-password" or "new-password"', description: "new-password whenever a meter or requirements are shown." },
+        ]}
+      />
       <A11yNotes
         items={[
           "Every control has a visible focus ring with ≥3:1 contrast, and input borders meet 3:1 against their surface.",
           "Errors use an icon and text, never color alone.",
           "Use Fieldset with a legend to name groups of radios or checkboxes.",
           "Calendar follows the WAI-ARIA date grid pattern: arrows, Home/End, Page Up/Down (Shift for years); arrows mirror in RTL.",
+          "PasswordInput's toggle is a real button whose label flips between \"Show password\" and \"Hide password\"; strength changes are announced politely and the checklist is linked with aria-describedby, each item saying \"met\" or \"not met\" to screen readers.",
           "PinInput labels every box (\"Character 2 of 6\") and uses autocomplete=\"one-time-code\" so phones can fill SMS codes.",
         ]}
       />

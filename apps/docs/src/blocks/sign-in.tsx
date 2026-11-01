@@ -1,4 +1,4 @@
-import { Button, Card, Checkbox, FormField, Heading, Input, Separator, Text } from "@kaleido/ui";
+import { Button, Card, Checkbox, FormField, Heading, Input, PasswordInput, Separator, Text } from "@kaleido/ui";
 import { Anchor, KeyRound } from "lucide-react";
 import { useState, type FormEvent } from "react";
 
@@ -37,7 +37,7 @@ export function SignInBlock() {
             <Input type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@kaveh-marine.com" />
           </FormField>
           <FormField label="Password" error={passwordError} required>
-            <Input type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
+            <PasswordInput value={password} onChange={(e) => setPassword(e.target.value)} />
           </FormField>
           <div className="flex items-center justify-between gap-3">
             <FormField label="Remember me" inline>

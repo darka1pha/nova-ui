@@ -8,6 +8,7 @@ import {
   FormErrorSummary,
   FormInput,
   FormNumberInput,
+  FormPasswordInput,
   FormPinInput,
   FormRadioGroup,
   FormReset,
@@ -81,7 +82,7 @@ function LiveSignupForm() {
         <div className="grid gap-5 sm:grid-cols-2">
           <FormInput control={control} name="name" label="Full name" autoComplete="name" successMessage="Looks good!" />
           <FormInput control={control} name="email" label="Email" type="email" autoComplete="email" description="We'll send a confirmation link." />
-          <FormInput control={control} name="password" label="Password" type="password" autoComplete="new-password" description="Every failed rule is listed (criteriaMode: all)." />
+          <FormPasswordInput control={control} name="password" label="Password" showStrength description="Every failed rule is listed (criteriaMode: all)." />
           <FormNumberInput control={control} name="age" label="Age" min={0} max={120} />
           <FormSelect
             control={control}

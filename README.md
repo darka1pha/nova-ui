@@ -63,7 +63,7 @@ const form = useForm({ resolver: zodResolver(schema), mode: "onTouched" });
 ```
 
 Bound components exist for every control (`FormInput`, `FormTextarea`,
-`FormNumberInput`, `FormCheckbox`, `FormSwitch`, `FormRadioGroup`, `FormSelect`,
+`FormNumberInput`, `FormPasswordInput`, `FormCheckbox`, `FormSwitch`, `FormRadioGroup`, `FormSelect`,
 `FormCombobox`, `FormDatePicker`, `FormSlider`, `FormPinInput`, `FormTagInput`,
 `FormRating`, `FormFileDropzone`), plus `FormController` for anything custom,
 `formFields<T>()` for typed names, `FormSuccess`, `FormReset`, and
@@ -214,7 +214,7 @@ Select and Combobox are dominated by Radix's positioning engine.
 | --- | --- |
 | Foundation | Box, Stack, Inline, Grid, Container, Separator, VisuallyHidden, Text, Heading, Link (incl. animated underline), Code, Kbd, Icon, Spinner, Skeleton, Portal, AspectRatio, ScrollArea |
 | Actions | Button (lift, glow, spring press, optional ripple), IconButton, ButtonGroup, Toggle, ToggleGroup, CopyButton, Chip, DropdownMenu, ContextMenu |
-| Forms | FormField (error / warning / success), Fieldset, Label, Input, Textarea, InputGroup, SearchInput, NumberInput, PinInput, TagInput, Checkbox, RadioGroup, Switch, Slider, Select, Combobox, Calendar, DatePicker, Rating, FileDropzone |
+| Forms | FormField (error / warning / success), Fieldset, Label, Input, Textarea, InputGroup, SearchInput, NumberInput, PasswordInput, PinInput, TagInput, Checkbox, RadioGroup, Switch, Slider, Select, Combobox, Calendar, DatePicker, Rating, FileDropzone |
 | Feedback | Alert, Badge (pulse), Toast (countdown), Progress, CircularProgress, Banner, StatusIndicator, Tooltip, Popover, HoverCard, EmptyState, ErrorState, LoadingState |
 | Overlays | Dialog, AlertDialog, Sheet, Drawer, CommandPalette |
 | Navigation | Tabs (gliding indicator), Accordion, Collapsible, Breadcrumbs, Pagination, NavigationMenu, Sidebar, Stepper |

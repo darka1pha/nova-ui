@@ -48,6 +48,7 @@ import { FileDropzone, PinInput, TagInput, type FileDropzoneProps, type PinInput
 import { Alert, type AlertProps } from "./components/feedback.tsx";
 import { FormField, Label, type FormFieldProps } from "./components/field.tsx";
 import { Input, NumberInput, Textarea, type InputProps, type NumberInputProps, type TextareaProps } from "./components/input.tsx";
+import { PasswordInput, type PasswordInputProps } from "./components/password.tsx";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, type SelectTriggerProps } from "./components/select.tsx";
 import { cn } from "./utils/cn.ts";
 
@@ -386,6 +387,16 @@ export function FormTextarea<T extends FieldValues = FieldValues, N extends Fiel
     <FormController<T, N>
       {...{ name, control, rules, defaultValue, shouldUnregister, required, successMessage, label, description, warning, success, optional, inline, className }}
       render={({ field }) => <Textarea {...textarea} {...field} value={field.value ?? ""} />}
+    />
+  );
+}
+
+/** Password field bound to a field. `requirements` is the checklist; validation still belongs in the schema or `rules`. */
+export function FormPasswordInput<T extends FieldValues = FieldValues, N extends FieldPath<T> = FieldPath<T>>({ name, control, rules, defaultValue, shouldUnregister, required, successMessage, label, description, warning, success, optional, inline, className, ...input }: Bound<T, N, PasswordInputProps>) {
+  return (
+    <FormController<T, N>
+      {...{ name, control, rules, defaultValue, shouldUnregister, required, successMessage, label, description, warning, success, optional, inline, className }}
+      render={({ field }) => <PasswordInput {...input} {...field} value={field.value ?? ""} />}
     />
   );
 }
@@ -767,6 +778,7 @@ export function formFields<T extends FieldValues>() {
     Controller: FormController as <N extends FieldPath<T>>(p: FormControllerProps<T, N>) => ReactNode,
     Input: FormInput as <N extends FieldPath<T>>(p: Bound<T, N, InputProps>) => ReactNode,
     Textarea: FormTextarea as <N extends FieldPath<T>>(p: Bound<T, N, TextareaProps>) => ReactNode,
+    PasswordInput: FormPasswordInput as <N extends FieldPath<T>>(p: Bound<T, N, PasswordInputProps>) => ReactNode,
     NumberInput: FormNumberInput as <N extends FieldPath<T>>(p: Bound<T, N, NumberInputProps>) => ReactNode,
     Checkbox: FormCheckbox as <N extends FieldPath<T>>(p: Bound<T, N, CheckboxProps>) => ReactNode,
     Switch: FormSwitch as <N extends FieldPath<T>>(p: Bound<T, N, SwitchProps>) => ReactNode,

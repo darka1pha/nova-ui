@@ -87,6 +87,7 @@ export type {
 export { Chip, CopyButton, Rating, type ChipProps, type CopyButtonProps, type RatingProps } from "./components/chip.tsx";
 export { PinInput, TagInput, FileDropzone, type PinInputProps, type TagInputProps, type FileDropzoneProps } from "./components/entry.tsx";
 export { TimeInput, type TimeInputProps, type TimeValue } from "./components/time.tsx";
+export { PasswordInput, passwordStrength, passwordRequirements, type PasswordInputProps, type PasswordRequirement, type PasswordScore } from "./components/password.tsx";
 export { TreeView, type TreeViewProps, type TreeItem } from "./components/tree.tsx";
 export { ResizablePanelGroup, ResizablePanel, ResizableHandle, type ResizablePanelGroupProps, type ResizablePanelProps, type ResizableHandleProps } from "./components/resizable.tsx";
 export {
