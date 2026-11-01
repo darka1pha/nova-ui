@@ -29,6 +29,13 @@ jobs:
     name: Playwright (a11y, keyboard, visual regression)
     runs-on: ubuntu-latest
     needs: check
+    # The official image pins the browser build and system fonts, so screenshots are
+    # byte-stable between runs. Keep its tag in step with @playwright/test in apps/docs.
+    # Baselines for this image live in e2e/__screenshots__/linux; refresh them with the
+    # "Update visual baselines" workflow or `pnpm test:e2e:linux` (Docker) locally.
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.1-noble
+      options: --ipc=host
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -38,9 +45,6 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
-      - run: pnpm --filter @kaleido/docs exec playwright install --with-deps chromium
-      # Visual baselines are per-platform; generate linux ones once with
-      # `pnpm --filter @kaleido/docs test:e2e:update` in this workflow and commit them.
       - run: pnpm test:e2e
       - uses: actions/upload-artifact@v4
         if: failure()

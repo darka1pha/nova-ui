@@ -224,9 +224,12 @@ Select and Combobox are dominated by Radix's positioning engine.
 
 ## Known limitations
 
-- Visual-regression baselines are committed for Windows only. Screenshot
-  rendering differs per OS, so generate Linux baselines once in CI
-  (`pnpm --filter @kaleido/docs test:e2e:update`) and commit them.
+- Screenshot rendering differs per OS, so visual baselines are per-platform.
+  CI runs Playwright in the pinned `mcr.microsoft.com/playwright` image and
+  compares against `e2e/__screenshots__/linux`. Regenerate those with the
+  **Update visual baselines** workflow (Actions tab, commits to the chosen
+  branch) or locally with Docker: `pnpm test:e2e:linux visual.spec.ts --update-snapshots=all`.
+  When bumping `@playwright/test`, bump the image tag in both workflows too.
 - Screen-reader behavior was not tested manually for this release; see the
   checklist on the Accessibility docs page.
 - React 18.2+ is inside the peer range (only stable 18 APIs are used), but the
