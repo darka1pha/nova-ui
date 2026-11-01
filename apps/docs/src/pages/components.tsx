@@ -179,6 +179,8 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { A11yNotes, capitalize, Example, Page, PropsTable } from "../docs/kit.tsx";
+import { ActionsAdditions, DataAdditions, FormsAdditions, OverlaysAdditions } from "./additions.tsx";
+import { DataMoreAdditions, FeedbackAdditions, FormsMoreAdditions, OverlaysMoreAdditions } from "./additions-more.tsx";
 import { ActionsExtras, DataExtras, FeedbackExtras, FormsExtras, NavigationExtras } from "./extras.tsx";
 
 /* ---------------------------------------------------------- Layout & type */
@@ -473,6 +475,7 @@ export function ActionsPage() {
         </ContextMenu>
       </Example>
       <ActionsExtras />
+      <ActionsAdditions />
       <PropsTable
         title="Button props"
         props={[
@@ -660,6 +663,8 @@ export function FormsPage() {
         </Stack>
       </Example>
       <FormsExtras />
+      <FormsAdditions />
+      <FormsMoreAdditions />
       <PropsTable
         title="FormField props"
         props={[
@@ -827,6 +832,7 @@ toast.error("Upload failed", { action: { label: "Retry", altText: "Retry upload"
         ]}
       />
       <FeedbackExtras />
+      <FeedbackAdditions />
     </Page>
   );
 }
@@ -1038,6 +1044,8 @@ export function OverlaysPage() {
           </CommandList>
         </CommandPalette>
       </Example>
+      <OverlaysAdditions />
+      <OverlaysMoreAdditions />
       <A11yNotes
         items={[
           "Dialogs trap focus, close on Escape, restore focus to the trigger and need a DialogTitle (a dev warning appears if missing).",
@@ -1847,6 +1855,8 @@ export function DataPage() {
         </Grid>
       </Example>
       <DataExtras />
+      <DataAdditions />
+      <DataMoreAdditions />
       <A11yNotes
         items={[
           "DataTable uses native table semantics, scope=\"col\" headers, aria-sort on sortable columns and labelled checkboxes.",

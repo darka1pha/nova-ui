@@ -213,12 +213,13 @@ Select and Combobox are dominated by Radix's positioning engine.
 | Group | Components |
 | --- | --- |
 | Foundation | Box, Stack, Inline, Grid, Container, Separator, VisuallyHidden, Text, Heading, Link (incl. animated underline), Code, Kbd, Icon, Spinner, Skeleton, Portal, AspectRatio, ScrollArea |
-| Actions | Button (lift, glow, spring press, optional ripple), IconButton, ButtonGroup, Toggle, ToggleGroup, CopyButton, Chip, DropdownMenu, ContextMenu |
-| Forms | FormField (error / warning / success), Fieldset, Label, Input, Textarea, InputGroup, SearchInput, NumberInput, PasswordInput, PinInput, TagInput, Checkbox, RadioGroup, Switch, Slider, Select, Combobox, Calendar, DatePicker, Rating, FileDropzone |
-| Feedback | Alert, Badge (pulse), Toast (countdown), Progress, CircularProgress, Banner, StatusIndicator, Tooltip, Popover, HoverCard, EmptyState, ErrorState, LoadingState |
-| Overlays | Dialog, AlertDialog, Sheet, Drawer, CommandPalette |
+| Actions | Button (lift, glow, spring press, optional ripple), IconButton, ButtonGroup, Toggle, ToggleGroup, SegmentedControl (gliding indicator), CopyButton, Chip, DropdownMenu, ContextMenu |
+| Forms | FormField (error / warning / success), Fieldset, Label, Input, Textarea, InputGroup, SearchInput, NumberInput, CurrencyInput, PhoneInput, PasswordInput, ColorInput / ColorPicker (WCAG contrast check, tonal scale preview), InlineEdit, TransferList, FileUploadList, PinInput, TagInput, Checkbox, RadioGroup, Switch, Slider, Select, Combobox, Calendar, DatePicker, Rating, FileDropzone |
+| Feedback | Alert, Badge (pulse), Toast (countdown), Progress, CircularProgress, Banner, StatusIndicator, Tooltip, Popover, HoverCard, EmptyState, ErrorState, LoadingState, Gauge, Countdown |
+| Overlays | Dialog, AlertDialog, Sheet, Drawer, CommandPalette, Lightbox, Tour, Popconfirm |
 | Navigation | Tabs (gliding indicator), Accordion, Collapsible, Breadcrumbs, Pagination, NavigationMenu, Sidebar, Stepper |
-| Data | Card, Avatar, AvatarGroup, Table, DataTable, Stat, Timeline, Carousel, BarList, Sparkline |
+| Data | Card, Avatar, AvatarGroup, Table, DataTable, DescriptionList, Stat, Timeline, Carousel, BarList, Sparkline, CalendarHeatmap, SortableList (keyboard reordering), VirtualList, Image, ImageGallery, RelativeTime, CodeBlock, ExpandableText |
+| Chat | MessageList (sticks to the bottom, "Jump to latest"), MessageGroup, Message (streaming caret), ChatComposer (auto-grow, IME-safe Enter, attachments, Stop), TypingIndicator |
 | Form bindings (`@kaleido/ui/react-hook-form`, optional) | Form, FormController, Form{Input, Textarea, NumberInput, Checkbox, Switch, RadioGroup, Select, Combobox, DatePicker, Slider, PinInput, TagInput, Rating, FileDropzone}, FormSubmit, FormReset, FormErrorSummary, FormRootError, FormSuccess, FormError, formFields |
 | Motion | Reveal, AnimatedNumber, Marquee, GradientText, SpotlightCard, AnimatedBorder, `useRipple` |
 

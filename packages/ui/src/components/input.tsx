@@ -200,6 +200,8 @@ export interface NumberInputProps extends Omit<InputProps, "type" | "value" | "d
   formatOptions?: Intl.NumberFormatOptions;
   /** BCP 47 locale for formatting; defaults to the browser's. */
   locale?: string;
+  /** Round committed values to this many decimals (e.g. 2 for cents). */
+  precision?: number;
   incrementLabel?: string;
   decrementLabel?: string;
 }
@@ -212,7 +214,7 @@ const decimals = (n: number) => (String(n).split(".")[1] ?? "").length;
  * locale-aware display formatting. Exposes `role="spinbutton"` semantics.
  */
 export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(function NumberInput(
-  { value, defaultValue = null, onValueChange, min, max, step = 1, formatOptions, locale: localeProp, incrementLabel = "Increase", decrementLabel = "Decrease", size, disabled, readOnly, onBlur, onFocus, onKeyDown, className, ...props },
+  { value, defaultValue = null, onValueChange, min, max, step = 1, formatOptions, locale: localeProp, precision, incrementLabel = "Increase", decrementLabel = "Decrease", size, disabled, readOnly, onBlur, onFocus, onKeyDown, className, ...props },
   ref,
 ) {
   const [internal, setInternal] = useState<number | null>(defaultValue);
@@ -223,11 +225,12 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(functi
 
   const commit = useCallback(
     (next: number | null) => {
-      const clamped = next === null || Number.isNaN(next) ? null : clamp(Number(next.toFixed(Math.max(decimals(step), decimals(next)))), min, max);
+      const clamped =
+        next === null || Number.isNaN(next) ? null : clamp(Number(next.toFixed(precision ?? Math.max(decimals(step), decimals(next)))), min, max);
       if (value === undefined) setInternal(clamped);
       onValueChange?.(clamped);
     },
-    [value, onValueChange, min, max, step],
+    [value, onValueChange, min, max, step, precision],
   );
 
   const stepBy = (delta: number) => commit((current ?? min ?? 0) + delta);

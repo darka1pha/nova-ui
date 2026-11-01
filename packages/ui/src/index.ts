@@ -87,6 +87,38 @@ export type {
 export { Chip, CopyButton, Rating, type ChipProps, type CopyButtonProps, type RatingProps } from "./components/chip.tsx";
 export { PinInput, TagInput, FileDropzone, type PinInputProps, type TagInputProps, type FileDropzoneProps } from "./components/entry.tsx";
 export { TimeInput, type TimeInputProps, type TimeValue } from "./components/time.tsx";
+export { CurrencyInput, PhoneInput, phoneCountries, formatPhoneNumber, parsePhoneNumber, type CurrencyInputProps, type PhoneInputProps, type PhoneCountry, type PhoneValueDetails } from "./components/formatted-input.tsx";
+export { SegmentedControl, SegmentedControlItem, type SegmentedControlProps, type SegmentedControlItemProps } from "./components/segmented.tsx";
+export { InlineEdit, type InlineEditProps } from "./components/inline-edit.tsx";
+export { SortableList, type SortableListProps, type SortableItemState, type SortableMessages } from "./components/sortable.tsx";
+// Data display
+export { DescriptionList, DescriptionItem, type DescriptionListProps, type DescriptionItemProps } from "./components/description-list.tsx";
+export { RelativeTime, formatRelativeTime, type RelativeTimeProps, type RelativeTimeInput } from "./components/relative-time.tsx";
+export { VirtualList, type VirtualListProps, type VirtualListApi } from "./components/virtual-list.tsx";
+export { CalendarHeatmap, type CalendarHeatmapProps, type HeatmapDatum } from "./components/heatmap.tsx";
+export { Image, Lightbox, ImageGallery, type ImageProps, type LightboxProps, type LightboxImage, type LightboxLabels, type ImageGalleryProps } from "./components/media.tsx";
+export { Tour, type TourProps, type TourStep, type TourLabels } from "./components/tour.tsx";
+export { ColorPicker, ColorInput, defaultSwatches, type ColorPickerProps, type ColorInputProps, type ColorPickerLabels } from "./components/color-picker.tsx";
+export { CodeBlock, ExpandableText, type CodeBlockProps, type ExpandableTextProps } from "./components/code-block.tsx";
+export { Popconfirm, type PopconfirmProps } from "./components/popconfirm.tsx";
+export { Countdown, Gauge, splitDuration, type CountdownProps, type GaugeProps } from "./components/countdown.tsx";
+export { TransferList, type TransferListProps, type TransferItem, type TransferListLabels } from "./components/transfer-list.tsx";
+export { FileUploadList, formatFileSize, type FileUploadListProps, type UploadItem, type UploadStatus, type FileUploadListLabels } from "./components/upload-list.tsx";
+// Chat
+export {
+  MessageList,
+  MessageGroup,
+  Message,
+  TypingIndicator,
+  ChatComposer,
+  type MessageListProps,
+  type MessageListApi,
+  type MessageGroupProps,
+  type MessageProps,
+  type TypingIndicatorProps,
+  type ChatComposerProps,
+  type ChatComposerLabels,
+} from "./components/chat.tsx";
 export { PasswordInput, passwordStrength, passwordRequirements, type PasswordInputProps, type PasswordRequirement, type PasswordScore } from "./components/password.tsx";
 export { TreeView, type TreeViewProps, type TreeItem } from "./components/tree.tsx";
 export { ResizablePanelGroup, ResizablePanel, ResizableHandle, type ResizablePanelGroupProps, type ResizablePanelProps, type ResizableHandleProps } from "./components/resizable.tsx";

@@ -2,9 +2,10 @@
 
 import { ChevronDown, ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
 import { Accordion as AccordionPrimitive, NavigationMenu as NavigationMenuPrimitive, Slot, Tabs as TabsPrimitive } from "radix-ui";
-import { createContext, forwardRef, useContext, useEffect, useLayoutEffect, useState, type AnchorHTMLAttributes, type ComponentPropsWithoutRef, type HTMLAttributes, type ReactNode } from "react";
+import { createContext, forwardRef, useContext, useEffect, useState, type AnchorHTMLAttributes, type ComponentPropsWithoutRef, type HTMLAttributes, type ReactNode } from "react";
 import { cn } from "../utils/cn.ts";
 import { useComposedRefs } from "../utils/compose-refs.ts";
+import { useActiveRect } from "../utils/use-active-rect.ts";
 import { buttonVariants } from "./button.tsx";
 import { focusRing, transition } from "./shared.ts";
 
@@ -49,44 +50,11 @@ const tabsTrigger = {
     "relative z-10 rounded-[calc(var(--ks-button-radius)-2px)] px-3 py-1.5 text-foreground-muted hover:text-foreground data-[state=active]:bg-surface data-[state=active]:text-foreground data-[state=active]:shadow-sm group-data-[indicator=ready]/tabslist:data-[state=active]:bg-transparent group-data-[indicator=ready]/tabslist:data-[state=active]:shadow-none",
 };
 
-interface TabRect {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-}
-
-/** Measures the active tab (relative to the list) and re-measures on change or resize. */
-// useLayoutEffect warns during SSR on React 18; measuring only matters in the browser.
-const useIsomorphicLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
-
-function useActiveTabRect(list: HTMLElement | null): TabRect | null {
-  const [rect, setRect] = useState<TabRect | null>(null);
-  useIsomorphicLayoutEffect(() => {
-    if (!list) return;
-    const measure = () => {
-      const active = list.querySelector<HTMLElement>('[role="tab"][data-state="active"]');
-      setRect(active ? { x: active.offsetLeft, y: active.offsetTop, w: active.offsetWidth, h: active.offsetHeight } : null);
-    };
-    measure();
-    const mutations = new MutationObserver(measure);
-    mutations.observe(list, { subtree: true, attributes: true, attributeFilter: ["data-state"] });
-    const resize = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(measure);
-    resize?.observe(list);
-    list.querySelectorAll('[role="tab"]').forEach((tab) => resize?.observe(tab));
-    return () => {
-      mutations.disconnect();
-      resize?.disconnect();
-    };
-  }, [list]);
-  return rect;
-}
-
 export const TabsList = forwardRef<HTMLDivElement, ComponentPropsWithoutRef<typeof TabsPrimitive.List>>(function TabsList({ className, children, ...props }, ref) {
   const variant = useContext(TabsVariantContext);
   const [list, setList] = useState<HTMLDivElement | null>(null);
   const composed = useComposedRefs(ref, setList);
-  const rect = useActiveTabRect(list);
+  const rect = useActiveRect(list, '[role="tab"][data-state="active"]', '[role="tab"]');
   // Place the indicator without a transition first, so it doesn't fly in from the corner.
   const [animate, setAnimate] = useState(false);
   useEffect(() => {
