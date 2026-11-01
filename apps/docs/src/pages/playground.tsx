@@ -1,4 +1,4 @@
-import { themeVariables } from "@kaleido/tokens";
+import { themeVariables } from "@darkalpha/nova-tokens";
 import {
   Alert,
   Avatar,
@@ -39,8 +39,8 @@ import {
   presets,
   type BrandColors,
   type ColorMode,
-} from "@kaleido/ui";
-import type { Density, MotionStyle, RadiusPreset } from "@kaleido/tokens";
+} from "@darkalpha/nova-ui";
+import type { Density, MotionStyle, RadiusPreset } from "@darkalpha/nova-tokens";
 import { Check, Moon, RotateCcw, Sun, X } from "lucide-react";
 import { useDeferredValue, useMemo, useState } from "react";
 import { capitalize, CodeBlock } from "../docs/kit.tsx";
@@ -62,7 +62,7 @@ function ColorField({ label, value, fallback, onChange }: { label: string; value
             setDraft(e.target.value);
             onChange(e.target.value);
           }}
-          className="h-(--ks-control-h-md) w-12 shrink-0 cursor-pointer rounded-(--ks-input-radius) border border-input bg-surface p-1"
+          className="h-(--nv-control-h-md) w-12 shrink-0 cursor-pointer rounded-(--nv-input-radius) border border-input bg-surface p-1"
         />
         <Input
           value={draft}
@@ -161,10 +161,10 @@ function Preview() {
           <Card className="gap-5">
             <div className="grid gap-4 sm:grid-cols-2">
               <FormField label="Workspace name">
-                <Input defaultValue="Kaleido Labs" />
+                <Input defaultValue="Nova UI Labs" />
               </FormField>
               <FormField label="Billing email" error="This email is not verified">
-                <Input defaultValue="billing@kaleido" />
+                <Input defaultValue="billing@novaui" />
               </FormField>
               <FormField label="Region">
                 <Select defaultValue="eu">
@@ -222,7 +222,7 @@ export function PlaygroundPage() {
 
   const cssVars = useMemo(() => {
     const vars = themeVariables({ ...resolved, radius, density, motion: motionStyle });
-    return `.ks-theme {\n${Object.entries(vars)
+    return `.nv-theme {\n${Object.entries(vars)
       .map(([k, v]) => `  ${k}: ${v};`)
       .join("\n")}\n}`;
   }, [resolved, radius, density, motionStyle]);
@@ -344,7 +344,7 @@ export function PlaygroundPage() {
             <TabsContent value="contrast" className="flex flex-col gap-3">
               {resolved.adjustments.length ? (
                 <Alert variant="info" title={`${resolved.adjustments.length} automatic contrast adjustments`}>
-                  Kaleido moved some tokens along their scale so every rendered pair meets WCAG AA. Your exact colors are kept where they pass.
+                  Nova UI moved some tokens along their scale so every rendered pair meets WCAG AA. Your exact colors are kept where they pass.
                 </Alert>
               ) : null}
               <div className="grid gap-2 sm:grid-cols-2">

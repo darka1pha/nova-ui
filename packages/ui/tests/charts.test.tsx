@@ -33,7 +33,7 @@ describe("Cartesian charts", () => {
 
   it("uses the brand primary and no legend for a single series", () => {
     const { container } = render(<AreaChart label="TEU" data={months} index="month" series={[series[0]!]} />);
-    expect(container.querySelector("path[stroke='var(--ks-color-primary-solid)']")).not.toBeNull();
+    expect(container.querySelector("path[stroke='var(--nv-color-primary-solid)']")).not.toBeNull();
     expect(container.querySelector("ul")).toBeNull();
   });
 

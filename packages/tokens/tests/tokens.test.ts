@@ -140,52 +140,52 @@ describe("custom themes", () => {
 describe("CSS output", () => {
   it("emits light-dark() pairs and theme knobs", () => {
     const vars = themeVariables(getResolvedTheme("vibrant"));
-    expect(vars["--ks-color-background"]).toMatch(/^light-dark\(#[0-9a-f]{6}, #[0-9a-f]{6}\)$/);
-    expect(vars["--ks-radius-base"]).toBe("0.5rem");
-    expect(vars["--ks-density"]).toBe("1");
+    expect(vars["--nv-color-background"]).toMatch(/^light-dark\(#[0-9a-f]{6}, #[0-9a-f]{6}\)$/);
+    expect(vars["--nv-radius-base"]).toBe("0.5rem");
+    expect(vars["--nv-density"]).toBe("1");
   });
 
   it("emits the theme's motion personality and motion-scaled durations", () => {
     const calm = themeVariables(getResolvedTheme("minimal"));
     const lively = themeVariables(getResolvedTheme("berry"));
-    expect(calm["--ks-press-scale"]).toBe("0.985");
-    expect(lively["--ks-press-scale"]).toBe("0.94");
-    expect(lively["--ks-ease-interactive"]).toMatch(/^linear\(/);
+    expect(calm["--nv-press-scale"]).toBe("0.985");
+    expect(lively["--nv-press-scale"]).toBe("0.94");
+    expect(lively["--nv-ease-interactive"]).toMatch(/^linear\(/);
     const statics = staticVariables();
-    expect(statics["--ks-duration-normal"]).toBe("calc(200ms * var(--ks-motion-scale))");
-    expect(statics["--ks-shadow-glow-primary"]).toContain("var(--ks-color-primary-solid)");
+    expect(statics["--nv-duration-normal"]).toBe("calc(200ms * var(--nv-motion-scale))");
+    expect(statics["--nv-shadow-glow-primary"]).toContain("var(--nv-color-primary-solid)");
   });
 
   it("emits surface styling tokens (glass, clay, neomorph)", () => {
     const statics = staticVariables();
-    expect(statics["--ks-glass-bg"]).toContain("var(--ks-color-surface)");
-    expect(statics["--ks-shadow-glass"]).toContain("var(--ks-color-shadow)");
-    expect(statics["--ks-shadow-clay"]).toContain("inset");
-    expect(statics["--ks-shadow-clay-primary"]).toContain("var(--ks-color-primary-solid)");
-    expect(statics["--ks-shadow-neomorph"]).toContain("var(--ks-color-shadow)");
-    expect(statics["--ks-shadow-neomorph-inset"]).toContain("inset");
+    expect(statics["--nv-glass-bg"]).toContain("var(--nv-color-surface)");
+    expect(statics["--nv-shadow-glass"]).toContain("var(--nv-color-shadow)");
+    expect(statics["--nv-shadow-clay"]).toContain("inset");
+    expect(statics["--nv-shadow-clay-primary"]).toContain("var(--nv-color-primary-solid)");
+    expect(statics["--nv-shadow-neomorph"]).toContain("var(--nv-color-shadow)");
+    expect(statics["--nv-shadow-neomorph-inset"]).toContain("inset");
 
     const vibrant = getResolvedTheme("vibrant");
     expect(vibrant.surface).toBe("classic");
     const vars = themeVariables(vibrant);
-    expect(vars["--ks-surface-style"]).toBe("classic");
+    expect(vars["--nv-surface-style"]).toBe("classic");
 
     const css = tailwindThemeCss();
-    expect(css).toContain("--shadow-glass: var(--ks-shadow-glass);");
-    expect(css).toContain("--shadow-clay: var(--ks-shadow-clay);");
-    expect(css).toContain("--shadow-neomorph: var(--ks-shadow-neomorph);");
+    expect(css).toContain("--shadow-glass: var(--nv-shadow-glass);");
+    expect(css).toContain("--shadow-clay: var(--nv-shadow-clay);");
+    expect(css).toContain("--shadow-neomorph: var(--nv-shadow-neomorph);");
   });
 
   it("scopes theme CSS to a selector", () => {
-    expect(themeCss(getResolvedTheme("berry"))).toMatch(/^\[data-ks-theme="berry"\] \{/);
+    expect(themeCss(getResolvedTheme("berry"))).toMatch(/^\[data-nv-theme="berry"\] \{/);
   });
 
   it("maps Tailwind utility names to tokens", () => {
     const css = tailwindThemeCss();
-    expect(css).toContain("--color-primary: var(--ks-color-primary-solid);");
+    expect(css).toContain("--color-primary: var(--nv-color-primary-solid);");
     // Every semantic token is reachable by its full name too (bg-primary-solid, text-danger-on-subtle…).
-    for (const name of SEMANTIC_COLOR_NAMES) expect(css, name).toContain(`--color-${name}: var(--ks-color-${name});`);
-    expect(css).toContain("--color-foreground-muted: var(--ks-color-foreground-muted);");
+    for (const name of SEMANTIC_COLOR_NAMES) expect(css, name).toContain(`--color-${name}: var(--nv-color-${name});`);
+    expect(css).toContain("--color-foreground-muted: var(--nv-color-foreground-muted);");
     expect(css).toContain("--color-*: initial;");
   });
 });
@@ -194,16 +194,16 @@ describe("derived tokens", () => {
   it("re-declares every token that references another, so nested themes recompute them", () => {
     const derived = derivedVariables();
     // Theme-dependent: materials, gradients, radius scale, control sizes.
-    for (const name of ["--ks-neo-bg", "--ks-clay-bg", "--ks-glass-bg", "--ks-gradient-brand", "--ks-radius-lg", "--ks-control-h-md"]) {
+    for (const name of ["--nv-neo-bg", "--nv-clay-bg", "--nv-glass-bg", "--nv-gradient-brand", "--nv-radius-lg", "--nv-control-h-md"]) {
       expect(derived, name).toHaveProperty(name);
     }
     // Plain literals stay on :root only.
-    expect(derived).not.toHaveProperty("--ks-spacing");
+    expect(derived).not.toHaveProperty("--nv-spacing");
     expect(Object.keys(derived).length).toBeLessThan(Object.keys(staticVariables()).length);
   });
 
   it("gives neumorphism a mid-tone base so both shadows can read", () => {
     // Darkened toward the ink; how far is bounded by tests/materials.test.ts (text AA vs a visible rim).
-    expect(derivedVariables()["--ks-neo-bg"]).toMatch(/color-mix\(in oklab, var\(--ks-color-surface-sunken\), var\(--ks-color-foreground\) [\d.]+%\)/);
+    expect(derivedVariables()["--nv-neo-bg"]).toMatch(/color-mix\(in oklab, var\(--nv-color-surface-sunken\), var\(--nv-color-foreground\) [\d.]+%\)/);
   });
 });

@@ -1,7 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
 // Runs against the production build of the docs (`vite build` + `vite preview`),
-// which consumes @kaleido/ui from its published dist/ output.
+// which consumes @darkalpha/nova-ui from its published dist/ output.
 export default defineConfig({
   testDir: "./e2e",
   fullyParallel: true,

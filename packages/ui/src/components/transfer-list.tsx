@@ -101,7 +101,7 @@ export function TransferList({ items, value: valueProp, defaultValue = [], onVal
 
   const checkedIn = (list: TransferItem[]) => list.filter((i) => checked.has(i.value)).length;
   const control = cn(
-    "inline-flex size-9 items-center justify-center rounded-(--ks-button-radius) border border-border bg-surface text-foreground-muted hover:bg-surface-hover hover:text-foreground disabled:pointer-events-none disabled:opacity-40 [&_svg]:size-4 max-sm:[&_svg]:rotate-90",
+    "inline-flex size-9 items-center justify-center rounded-(--nv-button-radius) border border-border bg-surface text-foreground-muted hover:bg-surface-hover hover:text-foreground disabled:pointer-events-none disabled:opacity-40 [&_svg]:size-4 max-sm:[&_svg]:rotate-90",
     transition,
     focusRing,
   );
@@ -161,7 +161,7 @@ function TransferPane({
   const someChecked = enabled.some((i) => checked.has(i.value));
 
   return (
-    <fieldset disabled={disabled} className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-(--ks-card-radius) border border-border bg-surface">
+    <fieldset disabled={disabled} className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-(--nv-card-radius) border border-border bg-surface">
       <legend className="sr-only">{title}</legend>
       <div className="flex items-center gap-2 border-b border-border px-3 py-2">
         <Checkbox

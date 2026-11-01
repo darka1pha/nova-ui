@@ -123,7 +123,7 @@ export function FileUploadList({ items, onCancel, onRetry, onRemove, labels: lab
           const Icon = iconFor(item.type);
           const active = item.status === "uploading" || item.status === "queued";
           return (
-            <li key={item.id} data-status={item.status} className="flex items-center gap-3 rounded-(--ks-card-radius) border border-border bg-surface p-3 data-[status=error]:border-danger-border">
+            <li key={item.id} data-status={item.status} className="flex items-center gap-3 rounded-(--nv-card-radius) border border-border bg-surface p-3 data-[status=error]:border-danger-border">
               {item.preview ? (
                 <img src={item.preview} alt="" className="size-10 shrink-0 rounded-sm object-cover" />
               ) : (

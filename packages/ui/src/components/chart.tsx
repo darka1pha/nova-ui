@@ -2,7 +2,7 @@ import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 import { cn } from "../utils/cn.ts";
 
 /** CSS colors for chart series, following the active theme. Decorative: pair with labels. */
-export const chartColors = [1, 2, 3, 4, 5, 6, 7, 8].map((i) => `var(--ks-color-chart-${i})`);
+export const chartColors = [1, 2, 3, 4, 5, 6, 7, 8].map((i) => `var(--nv-color-chart-${i})`);
 
 export interface BarListItem {
   label: ReactNode;
@@ -34,7 +34,7 @@ export const BarList = forwardRef<HTMLDivElement, BarListProps>(function BarList
             <div className="relative flex h-8 items-center overflow-hidden rounded-sm">
               <div
                 aria-hidden
-                className="absolute inset-y-0 start-0 rounded-sm opacity-25 transition-[width] duration-(--ks-duration-slow) ease-(--ks-ease-out)"
+                className="absolute inset-y-0 start-0 rounded-sm opacity-25 transition-[width] duration-(--nv-duration-slow) ease-(--nv-ease-out)"
                 style={{ width: `${Math.max(2, (item.value / top) * 100)}%`, background: item.color ?? chartColors[i % chartColors.length] }}
               />
               <div

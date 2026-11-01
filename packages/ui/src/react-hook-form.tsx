@@ -1,9 +1,9 @@
 "use client";
 
 /**
- * Optional react-hook-form bindings: `@kaleido/ui/react-hook-form`.
+ * Optional react-hook-form bindings: `@darkalpha/nova-ui/react-hook-form`.
  *
- * Nothing here is needed to use Kaleido forms — FormField and every control
+ * Nothing here is needed to use Nova UI forms — FormField and every control
  * work with plain React state or native <form> posts. Import this entry only
  * if your app uses react-hook-form (any resolver: zod, valibot, yup…).
  */
@@ -71,7 +71,7 @@ const defaultMessages: FormMessages = {
   serverErrorTitle: "Something went wrong",
 };
 
-interface KaleidoFormContextValue {
+interface NovaFormContextValue {
   schema: unknown;
   indicate: "required" | "optional";
   messages: FormMessages;
@@ -80,8 +80,8 @@ interface KaleidoFormContextValue {
   labels: Map<string, ReactNode>;
 }
 
-const KaleidoFormContext = createContext<KaleidoFormContextValue | null>(null);
-const useKaleidoForm = () => useContext(KaleidoFormContext);
+const NovaFormContext = createContext<NovaFormContextValue | null>(null);
+const useNovaForm = () => useContext(NovaFormContext);
 
 /* ------------------------------------------------------- Schema inspection */
 
@@ -206,7 +206,7 @@ export interface FormProps<T extends FieldValues> extends Omit<FormHTMLAttribute
 }
 
 /**
- * Connects a react-hook-form instance to Kaleido fields: provides context,
+ * Connects a react-hook-form instance to Nova UI fields: provides context,
  * prevents native validation bubbles, handles async submit + server errors,
  * and disables the form while submitting.
  */
@@ -225,7 +225,7 @@ export function Form<T extends FieldValues>({
 }: FormProps<T>) {
   const labels = useRef(new Map<string, ReactNode>()).current;
   const messageKey = JSON.stringify(Object.keys(messages ?? {}));
-  const value = useMemo<KaleidoFormContextValue>(
+  const value = useMemo<NovaFormContextValue>(
     () => ({ schema, indicate, messages: { ...defaultMessages, ...messages }, formatError, labels }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [schema, indicate, messageKey, formatError, labels],
@@ -250,12 +250,12 @@ export function Form<T extends FieldValues>({
 
   return (
     <FormProvider {...form}>
-      <KaleidoFormContext.Provider value={value}>
+      <NovaFormContext.Provider value={value}>
         <form noValidate onSubmit={submit} className={cn("flex flex-col gap-5", className)} {...props}>
           {/* display: contents keeps your layout while letting `disabled` cover every control. */}
           <SubmittingFieldset enabled={disableWhileSubmitting}>{children}</SubmittingFieldset>
         </form>
-      </KaleidoFormContext.Provider>
+      </NovaFormContext.Provider>
     </FormProvider>
   );
 }
@@ -323,7 +323,7 @@ export function FormController<T extends FieldValues = FieldValues, N extends Fi
   render,
   ...fieldProps
 }: FormControllerProps<T, N>) {
-  const ctx = useKaleidoForm();
+  const ctx = useNovaForm();
   const { field, fieldState } = useController<T, N>({ name, control, rules: rules as RegisterOptions<T, N>, defaultValue, shouldUnregister });
 
   useEffect(() => {
@@ -414,7 +414,7 @@ export function FormNumberInput<T extends FieldValues = FieldValues, N extends F
 /** Stores a boolean. Label sits beside the box. */
 export function FormCheckbox<T extends FieldValues = FieldValues, N extends FieldPath<T> = FieldPath<T>>({ name, control, rules, defaultValue, shouldUnregister, required: requiredProp, successMessage, label, description, warning, success, optional, inline = true, className, ...checkbox }: Bound<T, N, CheckboxProps>) {
   // A checkbox always has a value, so it's only "required" when it must be ticked.
-  const schema = useKaleidoForm()?.schema;
+  const schema = useNovaForm()?.schema;
   const required = requiredProp ?? (schema ? isSchemaLiteralTrue(schema, name) : !!rules?.required);
   return (
     <FormController<T, N>
@@ -682,7 +682,7 @@ export const FormReset = forwardRef<HTMLButtonElement, ButtonProps>(function For
  */
 export function FormRootError({ title, ...props }: Omit<AlertProps, "variant" | "children">) {
   const { errors } = useFormState();
-  const ctx = useKaleidoForm();
+  const ctx = useNovaForm();
   const root = errors.root as (Record<string, FieldError> & FieldError) | undefined;
   if (!root) return null;
   const list = [root.message, ...Object.values(root).map((e) => (e && typeof e === "object" && "message" in e ? (e as FieldError).message : undefined))].filter(
@@ -709,7 +709,7 @@ export function FormRootError({ title, ...props }: Omit<AlertProps, "variant" | 
 export function FormErrorSummary({ title, className, ...props }: Omit<AlertProps, "variant" | "children" | "title"> & { title?: (count: number) => ReactNode }) {
   const { errors, submitCount, isSubmitting } = useFormState();
   const { setFocus } = useFormContext();
-  const ctx = useKaleidoForm();
+  const ctx = useNovaForm();
   const messages = ctx?.messages ?? defaultMessages;
   const items = flattenErrors(errors, "", [], messages);
   if (!submitCount || isSubmitting || !items.length) return null;
@@ -760,7 +760,7 @@ export function FormSuccess({ title, children, ...props }: Omit<AlertProps, "var
 /** The messages for one field, for fully custom layouts. */
 export function useFieldMessages(name: string): string[] {
   const { errors } = useFormState({ name });
-  const ctx = useKaleidoForm();
+  const ctx = useNovaForm();
   return errorMessages(get(errors, name) as FieldError | undefined, ctx?.messages);
 }
 

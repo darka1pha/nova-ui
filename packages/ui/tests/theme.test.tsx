@@ -15,7 +15,7 @@ function ModeProbe() {
   );
 }
 
-const root = (el: HTMLElement) => el.closest(".ks-theme") as HTMLElement;
+const root = (el: HTMLElement) => el.closest(".nv-theme") as HTMLElement;
 
 describe("ThemeProvider", () => {
   it("renders the default theme without inline variables (styles.css covers it)", () => {
@@ -25,8 +25,8 @@ describe("ThemeProvider", () => {
       </ThemeProvider>,
     );
     const el = root(screen.getByText("hi"));
-    expect(el).toHaveAttribute("data-ks-theme", "vibrant");
-    expect(el.getAttribute("style") ?? "").not.toContain("--ks-color");
+    expect(el).toHaveAttribute("data-nv-theme", "vibrant");
+    expect(el.getAttribute("style") ?? "").not.toContain("--nv-color");
   });
 
   it("applies a preset's semantic colors as CSS variables", () => {
@@ -36,8 +36,8 @@ describe("ThemeProvider", () => {
       </ThemeProvider>,
     );
     const el = root(screen.getByText("hi"));
-    expect(el).toHaveAttribute("data-ks-theme", "ocean");
-    expect(el.style.getPropertyValue("--ks-color-primary-solid")).toMatch(/light-dark\(#|^#/);
+    expect(el).toHaveAttribute("data-nv-theme", "ocean");
+    expect(el.style.getPropertyValue("--nv-color-primary-solid")).toMatch(/light-dark\(#|^#/);
   });
 
   it("custom brand colors update the actual variables", () => {
@@ -46,7 +46,7 @@ describe("ThemeProvider", () => {
         <span>hi</span>
       </ThemeProvider>,
     );
-    const value = root(screen.getByText("hi")).style.getPropertyValue("--ks-color-primary-solid");
+    const value = root(screen.getByText("hi")).style.getPropertyValue("--nv-color-primary-solid");
     expect(value).toContain("#6c5ce7");
   });
 
@@ -69,22 +69,22 @@ describe("ThemeProvider", () => {
       </ThemeProvider>,
     );
     const el = root(screen.getByText("hi"));
-    expect(el.style.getPropertyValue("--ks-radius-base")).toBe("1rem");
-    expect(el.style.getPropertyValue("--ks-density")).toBe("0.85");
-    expect(el).toHaveAttribute("data-ks-density", "compact");
+    expect(el.style.getPropertyValue("--nv-radius-base")).toBe("1rem");
+    expect(el.style.getPropertyValue("--nv-density")).toBe("0.85");
+    expect(el).toHaveAttribute("data-nv-density", "compact");
   });
 
-  it("leaves 'system' mode to CSS and writes explicit modes as data-ks-mode", async () => {
+  it("leaves 'system' mode to CSS and writes explicit modes as data-nv-mode", async () => {
     render(
       <ThemeProvider>
         <ModeProbe />
       </ThemeProvider>,
     );
     const el = root(screen.getByTestId("mode"));
-    expect(el).not.toHaveAttribute("data-ks-mode");
+    expect(el).not.toHaveAttribute("data-nv-mode");
     expect(screen.getByTestId("mode")).toHaveTextContent("system");
     await userEvent.click(screen.getByRole("button", { name: "go dark" }));
-    expect(el).toHaveAttribute("data-ks-mode", "dark");
+    expect(el).toHaveAttribute("data-nv-mode", "dark");
     expect(screen.getByTestId("resolved")).toHaveTextContent("dark");
   });
 
@@ -105,7 +105,7 @@ describe("ThemeProvider", () => {
     );
     await userEvent.click(screen.getByRole("button", { name: "go dark" }));
     expect(window.localStorage.getItem("test-mode")).toBe("dark");
-    expect(document.documentElement).toHaveAttribute("data-ks-mode", "dark");
+    expect(document.documentElement).toHaveAttribute("data-nv-mode", "dark");
     unmount();
     render(
       <ThemeProvider storageKey="test-mode">
@@ -136,8 +136,8 @@ describe("ThemeProvider", () => {
       </ThemeProvider>,
     );
     const inner = root(screen.getByTestId("mode"));
-    expect(inner).toHaveAttribute("data-ks-theme", "sunset");
-    expect(inner).not.toHaveAttribute("data-ks-mode");
+    expect(inner).toHaveAttribute("data-nv-theme", "sunset");
+    expect(inner).not.toHaveAttribute("data-nv-mode");
     expect(screen.getByTestId("resolved")).toHaveTextContent("dark");
     expect(screen.getByTestId("dir")).toHaveTextContent("rtl");
   });
@@ -157,7 +157,7 @@ describe("ThemeProvider", () => {
         <span>calm</span>
       </ThemeProvider>,
     );
-    expect(root(screen.getByText("calm"))).toHaveAttribute("data-ks-motion", "reduce");
+    expect(root(screen.getByText("calm"))).toHaveAttribute("data-nv-motion", "reduce");
   });
 
   it("does not re-resolve when inline brand objects are recreated", () => {
@@ -182,16 +182,16 @@ describe("SSR helpers", () => {
   it("getThemeScript applies only valid stored values", () => {
     window.localStorage.setItem("k", "dark");
     new Function(getThemeScript("k"))();
-    expect(document.documentElement).toHaveAttribute("data-ks-mode", "dark");
-    document.documentElement.removeAttribute("data-ks-mode");
+    expect(document.documentElement).toHaveAttribute("data-nv-mode", "dark");
+    document.documentElement.removeAttribute("data-nv-mode");
     window.localStorage.setItem("k", "<script>");
     new Function(getThemeScript("k"))();
-    expect(document.documentElement).not.toHaveAttribute("data-ks-mode");
+    expect(document.documentElement).not.toHaveAttribute("data-nv-mode");
   });
 
   it("getThemeCss produces a scoped block with brand colors", () => {
     const css = getThemeCss("vibrant", { brand: { primary: "#0ea5e9" }, selector: ":root" });
     expect(css.startsWith(":root {")).toBe(true);
-    expect(css).toContain("--ks-color-primary-solid");
+    expect(css).toContain("--nv-color-primary-solid");
   });
 });

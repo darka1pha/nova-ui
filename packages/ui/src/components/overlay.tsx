@@ -26,8 +26,8 @@ export const TooltipContent = forwardRef<HTMLDivElement, ComponentPropsWithoutRe
         ref={ref}
         sideOffset={sideOffset}
         className={cn(
-          "z-(--ks-z-tooltip) max-w-xs rounded-sm bg-neutral px-2.5 py-1.5 text-xs font-medium text-neutral-on-solid shadow-md",
-          "data-[state=delayed-open]:animate-ks-pop-in data-[state=closed]:animate-ks-fade-out origin-(--radix-tooltip-content-transform-origin)",
+          "z-(--nv-z-tooltip) max-w-xs rounded-sm bg-neutral px-2.5 py-1.5 text-xs font-medium text-neutral-on-solid shadow-md",
+          "data-[state=delayed-open]:animate-nv-pop-in data-[state=closed]:animate-nv-fade-out origin-(--radix-tooltip-content-transform-origin)",
           className,
         )}
         {...props}
@@ -87,9 +87,9 @@ export const PopoverContent = forwardRef<HTMLDivElement, ComponentPropsWithoutRe
 /* ------------------------------------------------------- Dialog primitives */
 
 const overlay =
-  "fixed inset-0 z-(--ks-z-overlay) bg-overlay/60 backdrop-blur-[2px] data-[state=open]:animate-ks-fade-in data-[state=closed]:animate-ks-fade-out";
+  "fixed inset-0 z-(--nv-z-overlay) bg-overlay/60 backdrop-blur-[2px] data-[state=open]:animate-nv-fade-in data-[state=closed]:animate-nv-fade-out";
 
-const closeButton = `absolute end-3 top-3 inline-flex size-8 items-center justify-center rounded-sm text-foreground-muted transition-colors hover:bg-surface-hover hover:text-foreground ${focusRing} [&_svg]:size-4 [&_svg]:transition-transform [&_svg]:duration-(--ks-duration-slow) [&_svg]:ease-(--ks-ease-interactive) hover:[&_svg]:rotate-90 motion-reduce:hover:[&_svg]:rotate-0`;
+const closeButton = `absolute end-3 top-3 inline-flex size-8 items-center justify-center rounded-sm text-foreground-muted transition-colors hover:bg-surface-hover hover:text-foreground ${focusRing} [&_svg]:size-4 [&_svg]:transition-transform [&_svg]:duration-(--nv-duration-slow) [&_svg]:ease-(--nv-ease-interactive) hover:[&_svg]:rotate-90 motion-reduce:hover:[&_svg]:rotate-0`;
 
 export function DialogHeader({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return <div className={cn("flex flex-col gap-1.5 pe-8 text-start", className)} {...props} />;
@@ -104,7 +104,7 @@ export const DialogTrigger = DialogPrimitive.Trigger;
 export const DialogClose = DialogPrimitive.Close;
 
 export const DialogTitle = forwardRef<HTMLHeadingElement, ComponentPropsWithoutRef<typeof DialogPrimitive.Title>>(function DialogTitle({ className, ...props }, ref) {
-  return <DialogPrimitive.Title ref={ref} className={cn("font-display text-lg font-semibold tracking-(--ks-tracking-tight) text-foreground", className)} {...props} />;
+  return <DialogPrimitive.Title ref={ref} className={cn("font-display text-lg font-semibold tracking-(--nv-tracking-tight) text-foreground", className)} {...props} />;
 });
 
 export const DialogDescription = forwardRef<HTMLParagraphElement, ComponentPropsWithoutRef<typeof DialogPrimitive.Description>>(function DialogDescription(
@@ -115,7 +115,7 @@ export const DialogDescription = forwardRef<HTMLParagraphElement, ComponentProps
 });
 
 const dialogContent = cva(
-  "fixed left-1/2 top-1/2 z-(--ks-z-modal) flex max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] -translate-x-1/2 -translate-y-1/2 flex-col gap-4 overflow-y-auto rounded-(--ks-dialog-radius) border border-border bg-surface-raised p-6 text-foreground shadow-(--ks-dialog-shadow) outline-none data-[state=open]:animate-ks-pop-in data-[state=closed]:animate-ks-pop-out",
+  "fixed left-1/2 top-1/2 z-(--nv-z-modal) flex max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] -translate-x-1/2 -translate-y-1/2 flex-col gap-4 overflow-y-auto rounded-(--nv-dialog-radius) border border-border bg-surface-raised p-6 text-foreground shadow-(--nv-dialog-shadow) outline-none data-[state=open]:animate-nv-pop-in data-[state=closed]:animate-nv-pop-out",
   {
     variants: { size: { sm: "max-w-sm", md: "max-w-lg", lg: "max-w-2xl", xl: "max-w-4xl", full: "max-w-[calc(100vw-2rem)]" } },
     defaultVariants: { size: "md" },
@@ -200,18 +200,18 @@ export const AlertDialogCancel = forwardRef<HTMLButtonElement, ComponentPropsWit
 /* ----------------------------------------------------------- Sheet/Drawer */
 
 const sheetContent = cva(
-  "fixed z-(--ks-z-modal) flex flex-col gap-4 overflow-y-auto border-border bg-surface-raised p-6 text-foreground shadow-xl outline-none",
+  "fixed z-(--nv-z-modal) flex flex-col gap-4 overflow-y-auto border-border bg-surface-raised p-6 text-foreground shadow-xl outline-none",
   {
     variants: {
       side: {
         // Logical sides: "start"/"end" follow reading direction; left/right are physical.
-        end: "inset-y-0 end-0 h-full w-[min(100vw-3rem,28rem)] border-s data-[state=open]:animate-ks-sheet-in-right data-[state=closed]:animate-ks-sheet-out-right rtl:data-[state=open]:animate-ks-sheet-in-left rtl:data-[state=closed]:animate-ks-sheet-out-left",
-        start: "inset-y-0 start-0 h-full w-[min(100vw-3rem,28rem)] border-e data-[state=open]:animate-ks-sheet-in-left data-[state=closed]:animate-ks-sheet-out-left rtl:data-[state=open]:animate-ks-sheet-in-right rtl:data-[state=closed]:animate-ks-sheet-out-right",
-        right: "inset-y-0 right-0 h-full w-[min(100vw-3rem,28rem)] border-l data-[state=open]:animate-ks-sheet-in-right data-[state=closed]:animate-ks-sheet-out-right",
-        left: "inset-y-0 left-0 h-full w-[min(100vw-3rem,28rem)] border-r data-[state=open]:animate-ks-sheet-in-left data-[state=closed]:animate-ks-sheet-out-left",
-        top: "inset-x-0 top-0 max-h-[85dvh] border-b data-[state=open]:animate-ks-sheet-in-top data-[state=closed]:animate-ks-sheet-out-top",
+        end: "inset-y-0 end-0 h-full w-[min(100vw-3rem,28rem)] border-s data-[state=open]:animate-nv-sheet-in-right data-[state=closed]:animate-nv-sheet-out-right rtl:data-[state=open]:animate-nv-sheet-in-left rtl:data-[state=closed]:animate-nv-sheet-out-left",
+        start: "inset-y-0 start-0 h-full w-[min(100vw-3rem,28rem)] border-e data-[state=open]:animate-nv-sheet-in-left data-[state=closed]:animate-nv-sheet-out-left rtl:data-[state=open]:animate-nv-sheet-in-right rtl:data-[state=closed]:animate-nv-sheet-out-right",
+        right: "inset-y-0 right-0 h-full w-[min(100vw-3rem,28rem)] border-l data-[state=open]:animate-nv-sheet-in-right data-[state=closed]:animate-nv-sheet-out-right",
+        left: "inset-y-0 left-0 h-full w-[min(100vw-3rem,28rem)] border-r data-[state=open]:animate-nv-sheet-in-left data-[state=closed]:animate-nv-sheet-out-left",
+        top: "inset-x-0 top-0 max-h-[85dvh] border-b data-[state=open]:animate-nv-sheet-in-top data-[state=closed]:animate-nv-sheet-out-top",
         bottom:
-          "inset-x-0 bottom-0 max-h-[85dvh] rounded-t-(--ks-dialog-radius) border-t data-[state=open]:animate-ks-sheet-in-bottom data-[state=closed]:animate-ks-sheet-out-bottom",
+          "inset-x-0 bottom-0 max-h-[85dvh] rounded-t-(--nv-dialog-radius) border-t data-[state=open]:animate-nv-sheet-in-bottom data-[state=closed]:animate-nv-sheet-out-bottom",
       },
     },
     defaultVariants: { side: "end" },

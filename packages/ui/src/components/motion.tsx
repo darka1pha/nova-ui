@@ -10,10 +10,10 @@ const prefersReducedMotion = () => typeof window !== "undefined" && !!window.mat
 /* ------------------------------------------------------------------ Reveal */
 
 const revealAnimations = {
-  up: "animate-ks-reveal-up",
-  fade: "animate-ks-reveal-fade",
-  zoom: "animate-ks-reveal-zoom",
-  blur: "animate-ks-reveal-blur",
+  up: "animate-nv-reveal-up",
+  fade: "animate-nv-reveal-fade",
+  zoom: "animate-nv-reveal-zoom",
+  blur: "animate-nv-reveal-blur",
 } as const;
 
 export interface RevealProps extends HTMLAttributes<HTMLDivElement> {
@@ -149,7 +149,7 @@ export const Marquee = forwardRef<HTMLDivElement, MarqueeProps>(function Marquee
   ref,
 ) {
   const dir = useOptionalTheme()?.dir;
-  const group = "flex shrink-0 items-center gap-(--ks-marquee-gap) motion-reduce:flex-wrap motion-reduce:justify-center";
+  const group = "flex shrink-0 items-center gap-(--nv-marquee-gap) motion-reduce:flex-wrap motion-reduce:justify-center";
   return (
     <div
       ref={ref}
@@ -158,14 +158,14 @@ export const Marquee = forwardRef<HTMLDivElement, MarqueeProps>(function Marquee
         fade && "[mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]",
         className,
       )}
-      style={{ "--ks-marquee-gap": gap, "--ks-marquee-duration": `${duration}s`, ...style } as CSSProperties}
+      style={{ "--nv-marquee-gap": gap, "--nv-marquee-duration": `${duration}s`, ...style } as CSSProperties}
       {...props}
     >
       {/* The track always runs left-to-right; each copy keeps the page's text direction. */}
       <div
         dir="ltr"
         className={cn(
-          "flex w-max gap-(--ks-marquee-gap) animate-ks-marquee motion-reduce:w-full motion-reduce:animate-none",
+          "flex w-max gap-(--nv-marquee-gap) animate-nv-marquee motion-reduce:w-full motion-reduce:animate-none",
           reverse && "[animation-direction:reverse]",
           pauseOnHover && "group-hover/marquee:[animation-play-state:paused] group-focus-within/marquee:[animation-play-state:paused]",
         )}
@@ -196,8 +196,8 @@ export const GradientText = forwardRef<HTMLSpanElement, GradientTextProps>(funct
       ref={ref}
       className={cn(
         "bg-clip-text text-transparent [-webkit-text-fill-color:transparent] bg-[length:200%_auto]",
-        gradient === "vivid" ? "bg-(image:--ks-gradient-vivid)" : "bg-(image:--ks-gradient-brand)",
-        animate && "motion-safe:animate-ks-gradient-pan",
+        gradient === "vivid" ? "bg-(image:--nv-gradient-vivid)" : "bg-(image:--nv-gradient-brand)",
+        animate && "motion-safe:animate-nv-gradient-pan",
         className,
       )}
       {...props}
@@ -219,8 +219,8 @@ export interface SpotlightCardProps extends HTMLAttributes<HTMLDivElement> {
 export const SpotlightCard = forwardRef<HTMLDivElement, SpotlightCardProps>(function SpotlightCard({ color, className, style, onPointerMove, children, ...props }, ref) {
   const move = (e: PointerEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    e.currentTarget.style.setProperty("--ks-spot-x", `${e.clientX - rect.left}px`);
-    e.currentTarget.style.setProperty("--ks-spot-y", `${e.clientY - rect.top}px`);
+    e.currentTarget.style.setProperty("--nv-spot-x", `${e.clientX - rect.left}px`);
+    e.currentTarget.style.setProperty("--nv-spot-y", `${e.clientY - rect.top}px`);
     onPointerMove?.(e);
   };
   return (
@@ -228,13 +228,13 @@ export const SpotlightCard = forwardRef<HTMLDivElement, SpotlightCardProps>(func
       ref={ref}
       onPointerMove={move}
       className={cn(
-        "group/spot relative isolate overflow-hidden rounded-(--ks-card-radius) border border-border bg-surface p-(--ks-card-padding) text-foreground shadow-sm",
-        "transition-[translate,box-shadow,border-color] duration-(--ks-duration-slow) ease-(--ks-ease-interactive) hover:translate-y-(--ks-hover-lift) hover:border-primary-border hover:shadow-lg motion-reduce:hover:translate-y-0",
-        "before:pointer-events-none before:absolute before:inset-0 before:-z-10 before:opacity-0 before:transition-opacity before:duration-(--ks-duration-slow) hover:before:opacity-100",
-        "before:bg-[radial-gradient(28rem_circle_at_var(--ks-spot-x,50%)_var(--ks-spot-y,50%),color-mix(in_srgb,var(--ks-spot-color)_16%,transparent),transparent_45%)]",
+        "group/spot relative isolate overflow-hidden rounded-(--nv-card-radius) border border-border bg-surface p-(--nv-card-padding) text-foreground shadow-sm",
+        "transition-[translate,box-shadow,border-color] duration-(--nv-duration-slow) ease-(--nv-ease-interactive) hover:translate-y-(--nv-hover-lift) hover:border-primary-border hover:shadow-lg motion-reduce:hover:translate-y-0",
+        "before:pointer-events-none before:absolute before:inset-0 before:-z-10 before:opacity-0 before:transition-opacity before:duration-(--nv-duration-slow) hover:before:opacity-100",
+        "before:bg-[radial-gradient(28rem_circle_at_var(--nv-spot-x,50%)_var(--nv-spot-y,50%),color-mix(in_srgb,var(--nv-spot-color)_16%,transparent),transparent_45%)]",
         className,
       )}
-      style={{ "--ks-spot-color": color ?? "var(--ks-color-primary-solid)", ...style } as CSSProperties}
+      style={{ "--nv-spot-color": color ?? "var(--nv-color-primary-solid)", ...style } as CSSProperties}
       {...props}
     >
       {children}
@@ -260,8 +260,8 @@ export const AnimatedBorder = forwardRef<HTMLDivElement, AnimatedBorderProps>(fu
     <div
       ref={ref}
       className={cn(
-        "relative rounded-(--ks-card-radius) border-transparent bg-origin-border motion-safe:animate-ks-spin-border",
-        "[background:linear-gradient(var(--ks-color-surface),var(--ks-color-surface))_padding-box,conic-gradient(from_var(--ks-angle),var(--ks-color-primary-solid),var(--ks-color-secondary-solid),var(--ks-color-accent-solid),var(--ks-color-primary-solid))_border-box]",
+        "relative rounded-(--nv-card-radius) border-transparent bg-origin-border motion-safe:animate-nv-spin-border",
+        "[background:linear-gradient(var(--nv-color-surface),var(--nv-color-surface))_padding-box,conic-gradient(from_var(--nv-angle),var(--nv-color-primary-solid),var(--nv-color-secondary-solid),var(--nv-color-accent-solid),var(--nv-color-primary-solid))_border-box]",
         className,
       )}
       style={{ borderWidth: width, borderStyle: "solid", animationDuration: `${speed}s`, ...style }}

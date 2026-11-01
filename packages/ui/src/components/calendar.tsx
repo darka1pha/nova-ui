@@ -230,7 +230,7 @@ const CalendarCore = forwardRef<HTMLDivElement, CalendarCoreProps>(function Cale
   };
 
   const navButton = cn("inline-flex size-8 items-center justify-center rounded-md text-foreground-secondary hover:bg-surface-hover hover:text-foreground [&_svg]:size-4", focusRing, pressable, transition);
-  const slideClass = slide === null ? "" : (slide === "next") === (dir === "ltr") ? "animate-ks-slide-from-right" : "animate-ks-slide-from-left";
+  const slideClass = slide === null ? "" : (slide === "next") === (dir === "ltr") ? "animate-nv-slide-from-right" : "animate-nv-slide-from-left";
   // The focused day must be visible; otherwise the first day of the first month takes the tab stop.
   const focusVisible = visibleMonths.some((m) => sameMonth(cal, m, focused));
   const tabStop = focusVisible ? focused : viewStart;
@@ -307,7 +307,7 @@ const CalendarCore = forwardRef<HTMLDivElement, CalendarCoreProps>(function Cale
                           outside ? "text-foreground-muted" : isWeekend ? "text-danger-text" : "text-foreground",
                           !isEnd && !isDisabled && "hover:bg-primary-subtle hover:text-primary-on-subtle",
                           state.inRange && !isEnd && "text-primary-on-subtle",
-                          isEnd && "bg-primary font-semibold text-primary-on-solid shadow-glow-primary animate-ks-bounce-in",
+                          isEnd && "bg-primary font-semibold text-primary-on-solid shadow-glow-primary animate-nv-bounce-in",
                           isToday && !isEnd && "font-semibold text-primary-text after:absolute after:bottom-1 after:size-1 after:rounded-full after:bg-primary",
                           isDisabled && "cursor-not-allowed text-foreground-disabled line-through opacity-60",
                         )}
@@ -509,7 +509,7 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(functio
             }}
             className={cn(fieldVariants({ size }), "group/date flex items-center gap-2 text-start", clearable && current && "pe-9", !current && "text-foreground-muted")}
           >
-            <CalendarDays aria-hidden className="size-4 shrink-0 text-foreground-muted transition-transform duration-(--ks-duration-slow) ease-(--ks-ease-interactive) group-hover/date:scale-110 group-hover/date:text-primary-text" />
+            <CalendarDays aria-hidden className="size-4 shrink-0 text-foreground-muted transition-transform duration-(--nv-duration-slow) ease-(--nv-ease-interactive) group-hover/date:scale-110 group-hover/date:text-primary-text" />
             <span className="truncate">{text ?? placeholder}</span>
           </button>
         </PopoverTrigger>
@@ -706,7 +706,7 @@ export const DateRangePicker = forwardRef<HTMLButtonElement, DateRangePickerProp
             }}
             className={cn(fieldVariants({ size }), "group/date flex items-center gap-2 text-start", clearable && current && "pe-9", !current && "text-foreground-muted")}
           >
-            <CalendarDays aria-hidden className="size-4 shrink-0 text-foreground-muted transition-transform duration-(--ks-duration-slow) ease-(--ks-ease-interactive) group-hover/date:scale-110 group-hover/date:text-primary-text" />
+            <CalendarDays aria-hidden className="size-4 shrink-0 text-foreground-muted transition-transform duration-(--nv-duration-slow) ease-(--nv-ease-interactive) group-hover/date:scale-110 group-hover/date:text-primary-text" />
             <span className="truncate">{text ?? placeholder}</span>
           </button>
         </PopoverTrigger>

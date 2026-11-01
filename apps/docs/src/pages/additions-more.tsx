@@ -19,7 +19,7 @@ import {
   TransferList,
   TypingIndicator,
   type UploadItem,
-} from "@kaleido/ui";
+} from "@darkalpha/nova-ui";
 import { Plus, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Example } from "../docs/kit.tsx";
@@ -165,8 +165,8 @@ export function FeedbackAdditions() {
 
 /* -------------------------------------------------------------------- Data */
 
-const snippet = `import { ThemeProvider, Button } from "@kaleido/ui";
-import "@kaleido/ui/styles.css";
+const snippet = `import { ThemeProvider, Button } from "@darkalpha/nova-ui";
+import "@darkalpha/nova-ui/styles.css";
 
 export function App() {
   return (
@@ -188,7 +188,7 @@ export function DataMoreAdditions() {
       </Example>
       <Example title="ExpandableText" description="Clamped to a few lines; the toggle appears only when the text actually overflows." code={`<ExpandableText lines={2}>{review}</ExpandableText>`}>
         <ExpandableText lines={2} className="max-w-md text-sm">
-          Kaleido turned our brand color into a full light and dark theme in an afternoon. Every component picked it up, contrast was already checked, and the motion
+          Nova UI turned our brand color into a full light and dark theme in an afternoon. Every component picked it up, contrast was already checked, and the motion
           settings let us calm things down for the admin area while keeping the marketing pages lively. The forms work with react-hook-form out of the box, and the docs
           show the accessibility notes right next to each example, which made reviews much faster.
         </ExpandableText>
@@ -205,7 +205,7 @@ type ChatMessage = { id: number; from: "me" | "agent"; text: string };
 
 function ChatExample() {
   const [messages, setMessages] = useState<ChatMessage[]>([
-    { id: 1, from: "agent", text: "Hi! I'm the Kaleido assistant. How can I help?" },
+    { id: 1, from: "agent", text: "Hi! I'm the Nova UI assistant. How can I help?" },
     { id: 2, from: "me", text: "I can't find my October invoice." },
   ]);
   const [streaming, setStreaming] = useState<string | null>(null);
@@ -247,25 +247,25 @@ function ChatExample() {
     if (last?.from === m.from) last.items.push(m);
     else groups.push({ from: m.from, items: [m] });
   }
-  const agentAvatar = <Avatar name="Kaleido Assistant" size="sm" />;
+  const agentAvatar = <Avatar name="Nova UI Assistant" size="sm" />;
 
   return (
     <Example
       title="Chat"
       description="MessageList, MessageGroup, Message, ChatComposer and TypingIndicator. Send something: the assistant types, then streams a reply you can stop. The log follows new text unless you've scrolled up."
       code={`<MessageList aria-label="Support chat">
-  <MessageGroup author="Kaleido assistant" avatar={<Avatar name="Kaleido" />}>
+  <MessageGroup author="Nova UI assistant" avatar={<Avatar name="Nova UI" />}>
     <Message streaming={isStreaming}>{text}</Message>
   </MessageGroup>
 </MessageList>
 <ChatComposer onSend={send} generating={isStreaming} onStop={stop} attachments />`}
     >
-      <div className="flex h-[28rem] w-full max-w-xl flex-col gap-2 rounded-(--ks-card-radius) border border-border bg-surface p-2">
+      <div className="flex h-[28rem] w-full max-w-xl flex-col gap-2 rounded-(--nv-card-radius) border border-border bg-surface p-2">
         <MessageList aria-label="Support chat" className="flex-1">
           {groups.map((g) => (
             <MessageGroup
               key={g.items[0]?.id}
-              author={g.from === "me" ? "You" : "Kaleido assistant"}
+              author={g.from === "me" ? "You" : "Nova UI assistant"}
               side={g.from === "me" ? "end" : "start"}
               hideAuthor={g.from === "me"}
               avatar={g.from === "agent" ? agentAvatar : undefined}
@@ -278,11 +278,11 @@ function ChatExample() {
             </MessageGroup>
           ))}
           {streaming !== null ? (
-            <MessageGroup author="Kaleido assistant" avatar={agentAvatar}>
+            <MessageGroup author="Nova UI assistant" avatar={agentAvatar}>
               <Message streaming>{streaming}</Message>
             </MessageGroup>
           ) : null}
-          {typing ? <TypingIndicator label="Kaleido assistant is typing" /> : null}
+          {typing ? <TypingIndicator label="Nova UI assistant is typing" /> : null}
         </MessageList>
         <ChatComposer
           attachments
@@ -314,7 +314,7 @@ export function OverlaysMoreAdditions() {
     >
       <ul className="flex w-full max-w-sm flex-col gap-2">
         {files.map((f) => (
-          <li key={f} className="flex items-center justify-between rounded-(--ks-card-radius) border border-border bg-surface px-3 py-2 text-sm">
+          <li key={f} className="flex items-center justify-between rounded-(--nv-card-radius) border border-border bg-surface px-3 py-2 text-sm">
             {f}
             <Popconfirm
               title={`Delete “${f}”?`}

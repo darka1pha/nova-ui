@@ -1,7 +1,7 @@
 /**
  * Emits the distributable CSS files after `tsc` has built dist/.
  * - tokens.css: static tokens + the default theme on :root (no framework needed)
- * - themes.css: every preset scoped to [data-ks-theme="<id>"]
+ * - themes.css: every preset scoped to [data-nv-theme="<id>"]
  * - tailwind.css: Tailwind v4 `@theme inline` mapping for consumer builds
  * - tokens.json: resolved values for design tools and documentation
  */
@@ -27,9 +27,9 @@ import {
 const out = (file: string) => fileURLToPath(new URL(`../dist/${file}`, import.meta.url));
 mkdirSync(out("css"), { recursive: true });
 
-const header = "/* @kaleido/tokens — generated, do not edit. */\n";
+const header = "/* @darkalpha/nova-tokens — generated, do not edit. */\n";
 const defaults = getResolvedTheme(defaultTheme);
-const modeRules = `[data-ks-mode="light"] { color-scheme: light; }\n[data-ks-mode="dark"] { color-scheme: dark; }\n`;
+const modeRules = `[data-nv-mode="light"] { color-scheme: light; }\n[data-nv-mode="dark"] { color-scheme: dark; }\n`;
 
 writeFileSync(
   out("css/tokens.css"),

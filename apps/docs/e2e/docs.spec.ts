@@ -82,7 +82,7 @@ test("dialog traps focus and restores it", async ({ page }) => {
  * Breakpoint overrides inside components (`flex-col-reverse sm:flex-row`,
  * `text-3xl sm:text-4xl`) must win at their width. They lose when a second
  * Tailwind build re-emits the base utility later in the same layer, which is
- * why Tailwind apps import @kaleido/ui/tailwind.css instead of styles.css.
+ * why Tailwind apps import @darkalpha/nova-ui/tailwind.css instead of styles.css.
  */
 async function responsiveLayouts(page: Page) {
   await open(page, "layout");
@@ -121,12 +121,12 @@ test("dropdown menu works with the keyboard", async ({ page }) => {
 test("color mode persists across reloads without a flash", async ({ page }) => {
   await open(page, "home", "dark");
   // The inline head script applies the stored mode before React renders.
-  expect(await page.evaluate(() => document.documentElement.dataset.ksMode)).toBe("dark");
-  const bg = await page.evaluate(() => getComputedStyle(document.querySelector(".ks-theme") as Element).backgroundColor);
+  expect(await page.evaluate(() => document.documentElement.dataset.nvMode)).toBe("dark");
+  const bg = await page.evaluate(() => getComputedStyle(document.querySelector(".nv-theme") as Element).backgroundColor);
   await page.getByRole("radio", { name: "Light mode" }).click();
   await page.reload();
-  expect(await page.evaluate(() => window.localStorage.getItem("kaleido-docs-mode"))).toBe("light");
-  const after = await page.evaluate(() => getComputedStyle(document.querySelector(".ks-theme") as Element).backgroundColor);
+  expect(await page.evaluate(() => window.localStorage.getItem("nova-docs-mode"))).toBe("light");
+  const after = await page.evaluate(() => getComputedStyle(document.querySelector(".nv-theme") as Element).backgroundColor);
   expect(after).not.toBe(bg);
 });
 
@@ -244,7 +244,7 @@ test("react-hook-form: server errors from onSubmit land on the form and the fiel
 test("RTL mirrors layout and overlays", async ({ page }) => {
   await open(page, "overlays");
   await page.getByRole("button", { name: "Toggle text direction" }).click();
-  await expect(page.locator(".ks-theme").first()).toHaveAttribute("dir", "rtl");
+  await expect(page.locator(".nv-theme").first()).toHaveAttribute("dir", "rtl");
   const sidebar = await page.locator("aside").boundingBox();
   const main = await page.locator("main").boundingBox();
   expect(sidebar!.x).toBeGreaterThan(main!.x);
@@ -259,7 +259,7 @@ test("RTL mirrors layout and overlays", async ({ page }) => {
 test("reduced motion collapses durations @mobile", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await open(page, "home");
-  const d = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--ks-duration-normal").trim());
+  const d = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--nv-duration-normal").trim());
   // Durations are calc(<n>ms * scale) normally; reduced motion replaces them with ~0.
   expect(d).toMatch(/^\.?0?\.01ms$/);
   const marquee = await page.evaluate(() => {

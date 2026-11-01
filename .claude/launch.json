@@ -6,7 +6,7 @@
       "runtimeExecutable": "pnpm",
       "runtimeArgs": [
         "--filter",
-        "@kaleido/docs",
+        "@darkalpha/nova-docs",
         "exec",
         "vite",
         "--port",

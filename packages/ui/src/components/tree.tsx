@@ -219,7 +219,7 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
             }}
             style={{ paddingInlineStart: depth * indent + 4 }}
             className={cn(
-              "relative flex cursor-default select-none items-center gap-1.5 rounded-md pe-2 transition-colors duration-(--ks-duration-fast)",
+              "relative flex cursor-default select-none items-center gap-1.5 rounded-md pe-2 transition-colors duration-(--nv-duration-fast)",
               rowHeight,
               isSelected ? "bg-primary-subtle font-medium text-primary-on-subtle" : "text-foreground-secondary hover:bg-surface-hover hover:text-foreground",
               item.disabled && "pointer-events-none opacity-50",
@@ -240,7 +240,7 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
             <span aria-hidden className="flex size-5 shrink-0 items-center justify-center text-foreground-muted">
               {hasChildren ? (
                 <ChevronRight
-                  className={cn("size-4 transition-transform duration-(--ks-duration-normal) ease-(--ks-ease-interactive) rtl:-scale-x-100", isOpen && "rotate-90 rtl:-rotate-90")}
+                  className={cn("size-4 transition-transform duration-(--nv-duration-normal) ease-(--nv-ease-interactive) rtl:-scale-x-100", isOpen && "rotate-90 rtl:-rotate-90")}
                 />
               ) : null}
             </span>
@@ -253,7 +253,7 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
             {item.badge ? <span className="shrink-0 text-xs tabular-nums text-foreground-muted">{item.badge}</span> : null}
           </div>
           {hasChildren && isOpen ? (
-            <ul role="group" className="m-0 animate-ks-slide-down list-none p-0">
+            <ul role="group" className="m-0 animate-nv-slide-down list-none p-0">
               {renderLevel(item.children ?? [], depth + 1, item.id)}
             </ul>
           ) : null}

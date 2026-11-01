@@ -153,7 +153,7 @@ describe("Responsive Sidebar Variants", () => {
           label="App Sidebar"
           brand={{
             logo: <div data-testid="logo">Logo</div>,
-            title: "Kaleido Platform",
+            title: "Nova UI Platform",
             subtitle: "Design System",
           }}
           groups={[
@@ -187,7 +187,7 @@ describe("Responsive Sidebar Variants", () => {
       </SidebarProvider>,
     );
 
-    expect(screen.getByText("Kaleido Platform")).toBeInTheDocument();
+    expect(screen.getByText("Nova UI Platform")).toBeInTheDocument();
     expect(screen.getByText("Design System")).toBeInTheDocument();
     expect(screen.getByText("Dashboard")).toBeInTheDocument();
     expect(screen.getByText("3")).toBeInTheDocument();

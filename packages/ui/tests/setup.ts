@@ -5,7 +5,7 @@ import { afterEach } from "vitest";
 afterEach(() => {
   cleanup();
   window.localStorage.clear();
-  document.documentElement.removeAttribute("data-ks-mode");
+  document.documentElement.removeAttribute("data-nv-mode");
 });
 
 // jsdom gaps that Radix primitives rely on.

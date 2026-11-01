@@ -12,7 +12,7 @@ import {
   SegmentedControl,
   SegmentedControlItem,
   Text,
-} from "@kaleido/ui";
+} from "@darkalpha/nova-ui";
 import { ArrowRight, Check } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { CodeBlock, Page, Prose, Section } from "../docs/kit.tsx";
@@ -81,12 +81,12 @@ const create: Record<Framework, Record<Manager, string>> = {
 
 /* ------------------------------------------------------------ Code per stack */
 
-const appCode = `import { Badge, Button, Card, Input } from "@kaleido/ui";
+const appCode = `import { Badge, Button, Card, Input } from "@darkalpha/nova-ui";
 
 export function App() {
   return (
     <Card className="mx-auto mt-16 flex max-w-sm flex-col gap-4 p-6">
-      <Badge variant="success">Kaleido is working</Badge>
+      <Badge variant="success">Nova UI is working</Badge>
       <h1 className="text-xl font-semibold">Welcome back</h1>
       <Input type="email" placeholder="you@company.com" aria-label="Email" />
       <Button variant="primary">Continue</Button>
@@ -99,8 +99,8 @@ const setup: Record<Framework, { file: string; code: string; note?: ReactNode; e
     file: "src/main.tsx",
     code: `import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { ThemeProvider } from "@kaleido/ui";
-import "@kaleido/ui/styles.css";
+import { ThemeProvider } from "@darkalpha/nova-ui";
+import "@darkalpha/nova-ui/styles.css";
 import { App } from "./App";
 
 createRoot(document.getElementById("root")!).render(
@@ -119,8 +119,8 @@ createRoot(document.getElementById("root")!).render(
   },
   "next-app": {
     file: "app/layout.tsx",
-    code: `import { ThemeProvider, ThemeScript } from "@kaleido/ui";
-import "@kaleido/ui/styles.css";
+    code: `import { ThemeProvider, ThemeScript } from "@darkalpha/nova-ui";
+import "@darkalpha/nova-ui/styles.css";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -147,8 +147,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   "next-pages": {
     file: "pages/_app.tsx",
     code: `import type { AppProps } from "next/app";
-import { ThemeProvider } from "@kaleido/ui";
-import "@kaleido/ui/styles.css";
+import { ThemeProvider } from "@darkalpha/nova-ui";
+import "@darkalpha/nova-ui/styles.css";
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -167,8 +167,8 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   "react-router": {
     file: "app/root.tsx",
     code: `import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
-import { ThemeProvider, ThemeScript } from "@kaleido/ui";
-import "@kaleido/ui/styles.css";
+import { ThemeProvider, ThemeScript } from "@darkalpha/nova-ui";
+import "@darkalpha/nova-ui/styles.css";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -201,8 +201,8 @@ export default function App() {
   },
   astro: {
     file: "src/components/Island.tsx",
-    code: `import { ThemeProvider } from "@kaleido/ui";
-import "@kaleido/ui/styles.css";
+    code: `import { ThemeProvider } from "@darkalpha/nova-ui";
+import "@darkalpha/nova-ui/styles.css";
 import { App } from "./App";
 
 // Each React island needs its own provider.
@@ -264,8 +264,8 @@ function FileLabel({ children }: { children: ReactNode }) {
 }
 
 export function InstallationPage() {
-  const [framework, setFramework] = useStoredChoice<Framework>("kaleido-docs-framework", "vite", Object.keys(frameworks) as Framework[]);
-  const [pm, setPm] = useStoredChoice<Manager>("kaleido-docs-pm", "pnpm", managers);
+  const [framework, setFramework] = useStoredChoice<Framework>("nova-docs-framework", "vite", Object.keys(frameworks) as Framework[]);
+  const [pm, setPm] = useStoredChoice<Manager>("nova-docs-pm", "pnpm", managers);
   const stack = setup[framework];
 
   return (
@@ -277,11 +277,11 @@ export function InstallationPage() {
       <Section title="Before you start">
         <ul className="grid gap-2 sm:grid-cols-3">
           {[
-            ["React 18.2+ or 19", "Kaleido is a React library; react and react-dom are peer dependencies."],
+            ["React 18.2+ or 19", "Nova UI is a React library; react and react-dom are peer dependencies."],
             ["A current browser", "Chrome/Edge 123+, Firefox 120+, Safari 17.5+. No polyfills needed."],
             ["Node.js LTS", "For your build tool. Tailwind is optional: the stylesheet is precompiled."],
           ].map(([title, body]) => (
-            <li key={title} className="flex gap-2.5 rounded-(--ks-card-radius) border border-border bg-surface p-3">
+            <li key={title} className="flex gap-2.5 rounded-(--nv-card-radius) border border-border bg-surface p-3">
               <Check aria-hidden className="mt-0.5 size-4 shrink-0 text-success-text" />
               <span className="flex flex-col gap-0.5">
                 <span className="text-sm font-medium">{title}</span>
@@ -293,7 +293,7 @@ export function InstallationPage() {
       </Section>
 
       <Section title="Your setup" id="setup">
-        <div className="flex flex-col gap-4 rounded-(--ks-card-radius) border border-border bg-surface p-4">
+        <div className="flex flex-col gap-4 rounded-(--nv-card-radius) border border-border bg-surface p-4">
           <div className="flex flex-col gap-2">
             <Text size="sm" className="font-medium" id="framework-label">
               Framework
@@ -330,11 +330,11 @@ export function InstallationPage() {
             <CodeBlock language="bash" code={create[framework][pm]} />
           </Step>
 
-          <Step n={2} title="Install Kaleido">
-            <CodeBlock language="bash" code={add(pm, "@kaleido/ui")} />
+          <Step n={2} title="Install Nova UI">
+            <CodeBlock language="bash" code={add(pm, "@darkalpha/nova-ui")} />
             <Prose>
               <p>
-                <code>@kaleido/tokens</code> (the color engine and design tokens) comes with it. Nothing else is required.
+                <code>@darkalpha/nova-tokens</code> (the color engine and design tokens) comes with it. Nothing else is required.
               </p>
             </Prose>
           </Step>
@@ -350,7 +350,7 @@ export function InstallationPage() {
             ) : null}
             <Prose>
               <p>
-                Import <code>@kaleido/ui/styles.css</code> <strong>once</strong>, at the root. It only styles what's inside a <code>ThemeProvider</code>, so it won't
+                Import <code>@darkalpha/nova-ui/styles.css</code> <strong>once</strong>, at the root. It only styles what's inside a <code>ThemeProvider</code>, so it won't
                 restyle the rest of your app. <code>storageKey</code> remembers each visitor's light/dark choice.
               </p>
               {stack.note ? <p>{stack.note}</p> : null}
@@ -367,10 +367,10 @@ export function InstallationPage() {
             <Text size="sm" tone="secondary">
               You should see this card, with a focus ring when you Tab to the field and a lift when you hover the button:
             </Text>
-            <div className="rounded-(--ks-card-radius) border border-dashed border-border p-6">
+            <div className="rounded-(--nv-card-radius) border border-dashed border-border p-6">
               <Card className="mx-auto flex max-w-sm flex-col gap-4 p-6">
                 <Badge variant="success" className="w-fit">
-                  Kaleido is working
+                  Nova UI is working
                 </Badge>
                 <Heading level={4} size="sm">
                   Welcome back
@@ -394,7 +394,7 @@ export function InstallationPage() {
                   code={`import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Form, FormInput, FormSubmit } from "@kaleido/ui/react-hook-form";
+import { Form, FormInput, FormSubmit } from "@darkalpha/nova-ui/react-hook-form";
 
 const schema = z.object({ email: z.string().email("Enter a valid email") });
 
@@ -410,7 +410,7 @@ export function SignUp() {
                 />
                 <Prose>
                   <p>
-                    The bindings live in a separate entry, <code>@kaleido/ui/react-hook-form</code>, so apps that don't use it never download it. See{" "}
+                    The bindings live in a separate entry, <code>@darkalpha/nova-ui/react-hook-form</code>, so apps that don't use it never download it. See{" "}
                     <a href="#/forms-validation">Forms &amp; validation</a>.
                   </p>
                 </Prose>
@@ -425,11 +425,11 @@ export function SignUp() {
                   language="css"
                   code={`/* your main CSS file, e.g. app/globals.css or src/index.css */
 @import "tailwindcss";
-@import "@kaleido/ui/tailwind.css";`}
+@import "@darkalpha/nova-ui/tailwind.css";`}
                 />
                 <Alert variant="warning" title="Use tailwind.css instead of styles.css, not both">
-                  Remove the <code>@kaleido/ui/styles.css</code> import from step 3. With both, two Tailwind builds compete and responsive classes can stop working.
-                  Your own classes like <code>bg-primary</code> now use Kaleido's tokens and follow theme changes.
+                  Remove the <code>@darkalpha/nova-ui/styles.css</code> import from step 3. With both, two Tailwind builds compete and responsive classes can stop working.
+                  Your own classes like <code>bg-primary</code> now use Nova UI's tokens and follow theme changes.
                 </Alert>
               </div>
             </AccordionContent>
@@ -441,7 +441,7 @@ export function SignUp() {
                 <CodeBlock code={`<ThemeProvider theme="vibrant" brand={{ primary: "#6C5CE7", secondary: "#00C2A8" }} radius="lg">`} />
                 <Prose>
                   <p>
-                    Kaleido builds full light and dark scales from each color and keeps text readable (WCAG AA). Try yours in the{" "}
+                    Nova UI builds full light and dark scales from each color and keeps text readable (WCAG AA). Try yours in the{" "}
                     <a href="#/playground">Theme playground</a> and copy the result.
                   </p>
                 </Prose>
@@ -452,10 +452,10 @@ export function SignUp() {
             <AccordionTrigger>Install from this repository, without npm</AccordionTrigger>
             <AccordionContent>
               <div className="flex flex-col gap-3">
-                <CodeBlock language="bash" code={`# in the Kaleido repository\npnpm install\npnpm install:local ../path/to/my-app`} />
+                <CodeBlock language="bash" code={`# in the Nova UI repository\npnpm install\npnpm install:local ../path/to/my-app`} />
                 <Prose>
                   <p>
-                    This builds the packages, copies the tarballs into <code>my-app/vendor/kaleido/</code> and installs them with your app's package manager. Re-run it
+                    This builds the packages, copies the tarballs into <code>my-app/vendor/nova-ui/</code> and installs them with your app's package manager. Re-run it
                     after changing the library. <code>examples/vite-app</code> is set up this way.
                   </p>
                 </Prose>
@@ -466,7 +466,7 @@ export function SignUp() {
       </Section>
 
       <Section title="If something looks wrong" id="troubleshooting">
-        <ul className="flex flex-col divide-y divide-border rounded-(--ks-card-radius) border border-border bg-surface">
+        <ul className="flex flex-col divide-y divide-border rounded-(--nv-card-radius) border border-border bg-surface">
           {[
             ["Components have no styles", "The stylesheet isn't loaded, or the component is outside a ThemeProvider. Check step 3."],
             ["Buttons or fonts look slightly off", "A starter template's CSS (index.css, App.css, globals.css) is overriding the theme. Remove its body and button rules."],
@@ -491,12 +491,12 @@ export function SignUp() {
             ["#/theming", "Theming & color", "Presets, brand colors, dark mode, density and radius."],
             ["#/forms", "Components", "Every component with live examples and accessibility notes."],
             ["#/playground", "Theme playground", "Design a theme visually and copy the code."],
-            ["#/accessibility", "Accessibility", "What Kaleido handles for you, and what's still yours to check."],
+            ["#/accessibility", "Accessibility", "What Nova UI handles for you, and what's still yours to check."],
           ].map(([href, title, body]) => (
             <a
               key={href}
               href={href}
-              className="group/next flex items-start justify-between gap-3 rounded-(--ks-card-radius) border border-border bg-surface p-4 transition-colors hover:border-primary-border hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-focus-ring"
+              className="group/next flex items-start justify-between gap-3 rounded-(--nv-card-radius) border border-border bg-surface p-4 transition-colors hover:border-primary-border hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-focus-ring"
             >
               <span className="flex flex-col gap-1">
                 <span className="text-sm font-semibold">{title}</span>

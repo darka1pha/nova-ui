@@ -13,7 +13,7 @@ export async function open(page: Page, route: string, mode: "light" | "dark" = "
   });
   // Seed the stored mode once, then reload so the head script applies it like a returning visit.
   await page.goto(`/#/${route}`);
-  await page.evaluate((m) => window.localStorage.setItem("kaleido-docs-mode", m), mode);
+  await page.evaluate((m) => window.localStorage.setItem("nova-docs-mode", m), mode);
   await page.reload();
   // Pages are lazy-loaded; allow for a cold chunk under parallel workers.
   await expect(page.locator("main h1").first()).toBeVisible({ timeout: 15_000 });

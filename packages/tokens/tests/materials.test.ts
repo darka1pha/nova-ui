@@ -48,7 +48,7 @@ function evaluate(expr: string, mode: ColorMode, colors: Colors): string {
   if (!call) throw new Error(`Unsupported value: ${e}`);
   const [, fn, inner = ""] = call;
   if (fn === "var") {
-    const name = inner.trim().replace(/^--ks-color-/, "");
+    const name = inner.trim().replace(/^--nv-color-/, "");
     const value = colors[name];
     if (!value) throw new Error(`Unknown color token ${inner}`);
     return value;
@@ -80,8 +80,8 @@ describe("material surfaces", () => {
       const colors = theme[mode] as unknown as Colors;
       for (const surface of surfaces) {
         it(`${preset.id} · ${mode} · text on ${surface} meets AA`, () => {
-          const definition = tokens[`--ks-${surface}`];
-          expect(definition, `--ks-${surface} is defined`).toBeDefined();
+          const definition = tokens[`--nv-${surface}`];
+          expect(definition, `--nv-${surface} is defined`).toBeDefined();
           const bg = evaluate(definition ?? "", mode, colors);
           for (const [role, min] of Object.entries(text)) {
             const fg = colors[role] ?? "";
@@ -95,7 +95,7 @@ describe("material surfaces", () => {
   it("evaluates the real definitions (sanity check of the evaluator)", () => {
     const colors = getResolvedTheme(presets.kaveh).light as unknown as Colors;
     // Neumorphism's base is a mid-tone: darker than the sunken surface it starts from.
-    const neo = evaluate(tokens["--ks-neo-bg"] ?? "", "light", colors);
+    const neo = evaluate(tokens["--nv-neo-bg"] ?? "", "light", colors);
     expect(contrastRatio("#ffffff", neo)).toBeGreaterThan(contrastRatio("#ffffff", colors["surface-sunken"] ?? ""));
     expect(contrastRatio("#ffffff", neo)).toBeGreaterThanOrEqual(1.3);
   });

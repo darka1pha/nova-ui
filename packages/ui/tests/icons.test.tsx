@@ -50,13 +50,13 @@ describe("Icon pack", () => {
     render(<ContainerShip title="Container vessel" />);
     expect(screen.getByRole("img", { name: "Container vessel" })).toBeInTheDocument();
     render(<Icon icon={ContainerShip} label="Vessel" size="lg" />);
-    expect(screen.getByRole("img", { name: "Vessel" })).toHaveClass("ks-icon-container-ship", "size-6");
+    expect(screen.getByRole("img", { name: "Vessel" })).toHaveClass("nv-icon-container-ship", "size-6");
   });
 
   it("createIcon builds custom icons with the same contract", () => {
     const Mooring = createIcon("mooring", [["path", { d: "M4 12h16" }, "s"]]);
     const { container } = render(<Mooring variant="duotone" />);
-    expect(container.querySelector("svg")).toHaveClass("ks-icon", "ks-icon-mooring");
+    expect(container.querySelector("svg")).toHaveClass("nv-icon", "nv-icon-mooring");
     expect(container.querySelector("path")).toHaveAttribute("opacity", "0.5");
   });
 

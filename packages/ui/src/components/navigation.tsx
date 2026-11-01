@@ -29,14 +29,14 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(function Tabs({ varian
 const tabsList = {
   underline: "relative flex gap-1 border-b border-border data-[orientation=vertical]:flex-col data-[orientation=vertical]:border-b-0 data-[orientation=vertical]:border-e",
   pills: "relative flex flex-wrap gap-1 data-[orientation=vertical]:flex-col",
-  segmented: "relative inline-flex w-fit gap-1 rounded-(--ks-button-radius) bg-surface-sunken p-1",
+  segmented: "relative inline-flex w-fit gap-1 rounded-(--nv-button-radius) bg-surface-sunken p-1",
 };
 
 /** The highlight that glides to the active tab. */
 const tabsIndicator = {
   underline: "h-0.5 rounded-full bg-primary",
   pills: "rounded-full bg-primary shadow-glow-primary",
-  segmented: "rounded-[calc(var(--ks-button-radius)-2px)] bg-surface shadow-sm",
+  segmented: "rounded-[calc(var(--nv-button-radius)-2px)] bg-surface shadow-sm",
 };
 
 // Until the indicator has measured itself (and without JavaScript), the active
@@ -47,7 +47,7 @@ const tabsTrigger = {
   pills:
     "relative z-10 rounded-full px-3.5 py-1.5 text-foreground-muted hover:bg-surface-hover hover:text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-on-solid group-data-[indicator=ready]/tabslist:data-[state=active]:bg-transparent",
   segmented:
-    "relative z-10 rounded-[calc(var(--ks-button-radius)-2px)] px-3 py-1.5 text-foreground-muted hover:text-foreground data-[state=active]:bg-surface data-[state=active]:text-foreground data-[state=active]:shadow-sm group-data-[indicator=ready]/tabslist:data-[state=active]:bg-transparent group-data-[indicator=ready]/tabslist:data-[state=active]:shadow-none",
+    "relative z-10 rounded-[calc(var(--nv-button-radius)-2px)] px-3 py-1.5 text-foreground-muted hover:text-foreground data-[state=active]:bg-surface data-[state=active]:text-foreground data-[state=active]:shadow-sm group-data-[indicator=ready]/tabslist:data-[state=active]:bg-transparent group-data-[indicator=ready]/tabslist:data-[state=active]:shadow-none",
 };
 
 export const TabsList = forwardRef<HTMLDivElement, ComponentPropsWithoutRef<typeof TabsPrimitive.List>>(function TabsList({ className, children, ...props }, ref) {
@@ -81,7 +81,7 @@ export const TabsList = forwardRef<HTMLDivElement, ComponentPropsWithoutRef<type
           data-tabs-indicator=""
           className={cn(
             "pointer-events-none absolute z-0",
-            animate && "transition-[translate,width,height] duration-(--ks-duration-slow) ease-(--ks-ease-interactive) motion-reduce:transition-none",
+            animate && "transition-[translate,width,height] duration-(--nv-duration-slow) ease-(--nv-ease-interactive) motion-reduce:transition-none",
             tabsIndicator[variant],
           )}
           style={style}
@@ -109,7 +109,7 @@ export const TabsTrigger = forwardRef<HTMLButtonElement, ComponentPropsWithoutRe
 });
 
 export const TabsContent = forwardRef<HTMLDivElement, ComponentPropsWithoutRef<typeof TabsPrimitive.Content>>(function TabsContent({ className, ...props }, ref) {
-  return <TabsPrimitive.Content ref={ref} className={cn("flex-1 rounded-sm data-[state=active]:animate-ks-fade-in", focusRing, className)} {...props} />;
+  return <TabsPrimitive.Content ref={ref} className={cn("flex-1 rounded-sm data-[state=active]:animate-nv-fade-in", focusRing, className)} {...props} />;
 });
 
 /* --------------------------------------------------------------- Accordion */
@@ -141,7 +141,7 @@ export const AccordionTrigger = forwardRef<HTMLButtonElement, ComponentPropsWith
         {children}
         <ChevronDown
           aria-hidden
-          className="size-4 shrink-0 text-foreground-muted transition-[rotate,color] duration-(--ks-duration-slow) ease-(--ks-ease-interactive) group-hover:text-primary-text group-data-[state=open]:rotate-180 motion-reduce:transition-none"
+          className="size-4 shrink-0 text-foreground-muted transition-[rotate,color] duration-(--nv-duration-slow) ease-(--nv-ease-interactive) group-hover:text-primary-text group-data-[state=open]:rotate-180 motion-reduce:transition-none"
         />
       </AccordionPrimitive.Trigger>
     </AccordionPrimitive.Header>
@@ -155,7 +155,7 @@ export const AccordionContent = forwardRef<HTMLDivElement, ComponentPropsWithout
   return (
     <AccordionPrimitive.Content
       ref={ref}
-      className="overflow-hidden text-sm text-foreground-secondary data-[state=closed]:animate-ks-accordion-up data-[state=open]:animate-ks-accordion-down"
+      className="overflow-hidden text-sm text-foreground-secondary data-[state=closed]:animate-nv-accordion-up data-[state=open]:animate-nv-accordion-down"
       {...props}
     >
       <div className={cn("pb-4", className)}>{children}</div>
@@ -310,10 +310,10 @@ export const NavigationMenu = forwardRef<HTMLElement, ComponentPropsWithoutRef<t
   ref,
 ) {
   return (
-    <NavigationMenuPrimitive.Root ref={ref} className={cn("relative z-(--ks-z-dropdown) flex max-w-max flex-1 items-center justify-center", className)} {...props}>
+    <NavigationMenuPrimitive.Root ref={ref} className={cn("relative z-(--nv-z-dropdown) flex max-w-max flex-1 items-center justify-center", className)} {...props}>
       {children}
       <div className="absolute start-0 top-full flex justify-center">
-        <NavigationMenuPrimitive.Viewport className="relative mt-2 h-(--radix-navigation-menu-viewport-height) w-full origin-top overflow-hidden rounded-(--ks-popover-radius) border border-border bg-surface-raised text-foreground shadow-lg transition-[width,height] duration-(--ks-duration-normal) data-[state=open]:animate-ks-pop-in data-[state=closed]:animate-ks-pop-out sm:w-(--radix-navigation-menu-viewport-width)" />
+        <NavigationMenuPrimitive.Viewport className="relative mt-2 h-(--radix-navigation-menu-viewport-height) w-full origin-top overflow-hidden rounded-(--nv-popover-radius) border border-border bg-surface-raised text-foreground shadow-lg transition-[width,height] duration-(--nv-duration-normal) data-[state=open]:animate-nv-pop-in data-[state=closed]:animate-nv-pop-out sm:w-(--radix-navigation-menu-viewport-width)" />
       </div>
     </NavigationMenuPrimitive.Root>
   );
@@ -337,7 +337,7 @@ export const NavigationMenuTrigger = forwardRef<HTMLButtonElement, ComponentProp
   return (
     <NavigationMenuPrimitive.Trigger ref={ref} className={cn(navTrigger, "group", className)} {...props}>
       {children}
-      <ChevronDown aria-hidden className="size-3.5 transition-transform duration-(--ks-duration-normal) group-data-[state=open]:rotate-180" />
+      <ChevronDown aria-hidden className="size-3.5 transition-transform duration-(--nv-duration-normal) group-data-[state=open]:rotate-180" />
     </NavigationMenuPrimitive.Trigger>
   );
 });
@@ -346,7 +346,7 @@ export const NavigationMenuContent = forwardRef<HTMLDivElement, ComponentPropsWi
   { className, ...props },
   ref,
 ) {
-  return <NavigationMenuPrimitive.Content ref={ref} className={cn("start-0 top-0 w-full p-3 sm:absolute sm:w-auto data-[motion^=from-]:animate-ks-fade-in data-[motion^=to-]:animate-ks-fade-out", className)} {...props} />;
+  return <NavigationMenuPrimitive.Content ref={ref} className={cn("start-0 top-0 w-full p-3 sm:absolute sm:w-auto data-[motion^=from-]:animate-nv-fade-in data-[motion^=to-]:animate-nv-fade-out", className)} {...props} />;
 });
 
 export const NavigationMenuLink = forwardRef<HTMLAnchorElement, ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Link> & { variant?: "trigger" | "card" }>(

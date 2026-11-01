@@ -1,7 +1,7 @@
 import { createIcon, dot, radial } from "./create-icon.ts";
 
 /*
- * Essentials: everyday interface icons in the Kaleido style.
+ * Essentials: everyday interface icons in the Nova UI style.
  * 24px grid, 1.5px stroke, 2px safe area, soft corners. The `s` flag marks the
  * secondary part of each glyph (dimmed in duotone), `f` the closed shape that
  * takes a tint in the soft variant.

@@ -53,7 +53,7 @@ const toneDot: Record<Tone, string> = {
   info: "bg-info",
 };
 
-const badgeBase = cva("inline-flex w-fit shrink-0 items-center gap-1 whitespace-nowrap rounded-(--ks-badge-radius) border border-transparent font-semibold [&_svg]:size-3", {
+const badgeBase = cva("inline-flex w-fit shrink-0 items-center gap-1 whitespace-nowrap rounded-(--nv-badge-radius) border border-transparent font-semibold [&_svg]:size-3", {
   variants: {
     size: { sm: "h-5 px-2 text-2xs", md: "h-6 px-2.5 text-xs", lg: "h-7 px-3 text-sm" },
   },
@@ -78,11 +78,11 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(function Badge({ va
   const tone: Tone = variant === "outline" ? "neutral" : variant === "gradient" ? "primary" : variant;
   const look =
     variant === "gradient"
-      ? "bg-(image:--ks-gradient-brand) text-primary-on-solid"
+      ? "bg-(image:--nv-gradient-brand) text-primary-on-solid"
       : appearance === "glass"
-        ? "bg-(--ks-glass-bg) backdrop-blur-sm border border-(--ks-glass-border) text-foreground shadow-(--ks-shadow-glass)"
+        ? "bg-(--nv-glass-bg) backdrop-blur-sm border border-(--nv-glass-border) text-foreground shadow-(--nv-shadow-glass)"
         : appearance === "clay"
-          ? "rounded-full border-0 bg-surface text-foreground shadow-(--ks-shadow-clay)"
+          ? "rounded-full border-0 bg-surface text-foreground shadow-(--nv-shadow-clay)"
           : variant === "outline" || appearance === "outline"
             ? toneOutline[tone]
             : appearance === "solid"
@@ -154,10 +154,10 @@ export const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
       role={role ?? (variant === "danger" || variant === "warning" ? "alert" : "status")}
       // The title names the region, so "Payment failed" is what assistive tech announces first.
       aria-labelledby={title ? titleId : undefined}
-      className={cn("relative flex gap-3 rounded-lg border p-4 text-sm text-foreground animate-ks-slide-down", alertTone[variant], className)}
+      className={cn("relative flex gap-3 rounded-lg border p-4 text-sm text-foreground animate-nv-slide-down", alertTone[variant], className)}
       {...props}
     >
-      {icon === null ? null : <span data-alert-icon="" className="mt-px shrink-0 animate-ks-bounce-in [&_svg]:size-5">{icon ?? <IconGlyph aria-hidden />}</span>}
+      {icon === null ? null : <span data-alert-icon="" className="mt-px shrink-0 animate-nv-bounce-in [&_svg]:size-5">{icon ?? <IconGlyph aria-hidden />}</span>}
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         {title ? (
           <p id={titleId} className="font-semibold leading-snug">
@@ -188,7 +188,7 @@ const progressTone: Record<"primary" | "success" | "warning" | "danger" | "gradi
   success: "bg-success",
   warning: "bg-warning",
   danger: "bg-danger",
-  gradient: "bg-(image:--ks-gradient-vivid)",
+  gradient: "bg-(image:--nv-gradient-vivid)",
 };
 
 export interface ProgressProps extends Omit<ComponentPropsWithoutRef<typeof ProgressPrimitive.Root>, "value"> {
@@ -211,9 +211,9 @@ export const Progress = forwardRef<HTMLDivElement, ProgressProps>(function Progr
     >
       <ProgressPrimitive.Indicator
         className={cn(
-          "h-full rounded-full transition-[width] duration-(--ks-duration-slow) ease-(--ks-ease-out)",
+          "h-full rounded-full transition-[width] duration-(--nv-duration-slow) ease-(--nv-ease-out)",
           progressTone[tone],
-          pct === null && "w-full origin-left animate-ks-indeterminate",
+          pct === null && "w-full origin-left animate-nv-indeterminate",
         )}
         style={pct === null ? undefined : { width: `${pct}%` }}
       />
@@ -285,7 +285,7 @@ function StateLayout({ icon, title, description, actions, size = "md", className
 export const EmptyState = forwardRef<HTMLDivElement, StateProps>(function EmptyState({ icon = <Sparkles />, ...props }, ref) {
   return (
     <div ref={ref}>
-      <StateLayout icon={icon} iconClass="bg-(image:--ks-gradient-subtle) text-primary-text ring-1 ring-primary-border motion-safe:animate-ks-float" {...props} />
+      <StateLayout icon={icon} iconClass="bg-(image:--nv-gradient-subtle) text-primary-text ring-1 ring-primary-border motion-safe:animate-nv-float" {...props} />
     </div>
   );
 });

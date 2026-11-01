@@ -1,5 +1,5 @@
 /**
- * Installation verification: packs @kaleido/tokens and @kaleido/ui exactly as
+ * Installation verification: packs @darkalpha/nova-tokens and @darkalpha/nova-ui exactly as
  * they would be published, installs the tarballs into a fresh project outside
  * the workspace, and checks that a real consumer can use them:
  *   1. every package export resolves (JS, types, CSS)
@@ -14,7 +14,7 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 
 const root = resolve(import.meta.dirname, "..");
-const work = mkdtempSync(join(tmpdir(), "kaleido-verify-"));
+const work = mkdtempSync(join(tmpdir(), "nova-ui-verify-"));
 const run = (cmd, cwd = work) => execSync(cmd, { cwd, stdio: "pipe", encoding: "utf8" });
 const step = (msg) => console.log(`\n▸ ${msg}`);
 
@@ -28,7 +28,7 @@ try {
   console.log(`  ${tokens}\n  ${ui}`);
 
   const uiManifest = JSON.parse(run(`tar -xOf "${ui}" package/package.json`));
-  if (String(uiManifest.dependencies["@kaleido/tokens"]).startsWith("workspace:")) {
+  if (String(uiManifest.dependencies["@darkalpha/nova-tokens"]).startsWith("workspace:")) {
     throw new Error("workspace: protocol leaked into the published manifest");
   }
   const files = run(`tar -tf "${ui}"`).split("\n");
@@ -46,18 +46,18 @@ try {
     join(work, "package.json"),
     JSON.stringify(
       {
-        name: "kaleido-consumer",
+        name: "nova-ui-consumer",
         private: true,
         type: "module",
         dependencies: {
-          "@kaleido/tokens": `file:./${tokens}`,
-          "@kaleido/ui": `file:./${ui}`,
+          "@darkalpha/nova-tokens": `file:./${tokens}`,
+          "@darkalpha/nova-ui": `file:./${ui}`,
           react: "^19.0.0",
           "react-dom": "^19.0.0",
         },
         devDependencies: { typescript: "~6.0.0", "@types/react": "^19.0.0", "@types/react-dom": "^19.0.0" },
-        // Make @kaleido/ui's own dependency resolve to the local tarball too.
-        overrides: { "@kaleido/tokens": "$@kaleido/tokens" },
+        // Make @darkalpha/nova-ui's own dependency resolve to the local tarball too.
+        overrides: { "@darkalpha/nova-tokens": "$@darkalpha/nova-tokens" },
       },
       null,
       2,
@@ -71,14 +71,14 @@ try {
     `import { createRequire } from "node:module";
 import { readFileSync } from "node:fs";
 const require = createRequire(import.meta.url);
-for (const spec of ["@kaleido/ui/styles.css", "@kaleido/ui/themes.css", "@kaleido/ui/tailwind.css", "@kaleido/tokens/css/tokens.css", "@kaleido/tokens/tokens.json"]) {
+for (const spec of ["@darkalpha/nova-ui/styles.css", "@darkalpha/nova-ui/themes.css", "@darkalpha/nova-ui/tailwind.css", "@darkalpha/nova-tokens/css/tokens.css", "@darkalpha/nova-tokens/tokens.json"]) {
   const path = require.resolve(spec);
   const css = readFileSync(path, "utf8");
   if (css.length < 200) throw new Error(spec + " looks empty");
   console.log("  ok", spec, (css.length / 1024).toFixed(1) + " kB");
 }
-const styles = readFileSync(require.resolve("@kaleido/ui/styles.css"), "utf8");
-for (const needle of ["--ks-color-primary-solid", ".bg-primary", "light-dark("]) {
+const styles = readFileSync(require.resolve("@darkalpha/nova-ui/styles.css"), "utf8");
+for (const needle of ["--nv-color-primary-solid", ".bg-primary", "light-dark("]) {
   if (!styles.includes(needle)) throw new Error("styles.css is missing " + needle);
 }
 // Layer precedence is set by first appearance and must match Tailwind's own
@@ -86,10 +86,10 @@ for (const needle of ["--ks-color-primary-solid", ".bg-primary", "light-dark("])
 const order = ["theme", "base", "components", "utilities"].map((l) => styles.indexOf("@layer " + l));
 if (order.some((i) => i < 0) || order.some((i, n) => n > 0 && i < order[n - 1])) throw new Error("unexpected @layer order: " + order);
 console.log("  ok cascade layers in Tailwind order (theme < base < components < utilities)");
-const tokens = await import("@kaleido/tokens");
+const tokens = await import("@darkalpha/nova-tokens");
 const fails = tokens.auditContrast(tokens.getResolvedTheme("vibrant", { brand: { primary: "#ffd400" } })).filter((c) => !c.pass);
 if (fails.length) throw new Error("contrast failures: " + JSON.stringify(fails));
-console.log("  ok @kaleido/tokens runtime (brand theme resolves with 0 contrast failures)");
+console.log("  ok @darkalpha/nova-tokens runtime (brand theme resolves with 0 contrast failures)");
 `,
   );
   console.log(run("node exports.mjs").trimEnd());
@@ -99,7 +99,7 @@ console.log("  ok @kaleido/tokens runtime (brand theme resolves with 0 contrast 
     join(work, "ssr.mjs"),
     `import { createElement as h } from "react";
 import { renderToString } from "react-dom/server";
-import * as ui from "@kaleido/ui";
+import * as ui from "@darkalpha/nova-ui";
 const { ThemeProvider, ThemeScript, Button, Card, CardHeader, CardTitle, CardContent, Badge, Input, FormField, Tabs, TabsList, TabsTrigger, TabsContent,
   Dialog, DialogTrigger, DialogContent, DialogTitle, Select, SelectTrigger, SelectValue, SelectContent, SelectItem, Toaster, DataTable, Avatar, Progress, Alert, Switch, Tooltip } = ui;
 
@@ -124,7 +124,7 @@ const app = h(ThemeProvider, { theme: "ocean", brand: { primary: "#6C5CE7" }, st
 const html = renderToString(app);
 const again = renderToString(app);
 if (html !== again) throw new Error("SSR output is not deterministic");
-for (const needle of ['data-ks-theme="ocean"', "--ks-color-primary-solid:", "#6c5ce7", 'dir="rtl"', "Get started", 'role="img"', "aria-invalid"]) {
+for (const needle of ['data-nv-theme="ocean"', "--nv-color-primary-solid:", "#6c5ce7", 'dir="rtl"', "Get started", 'role="img"', "aria-invalid"]) {
   if (!html.includes(needle)) throw new Error("SSR output is missing " + needle);
 }
 const script = renderToString(h(ThemeScript, { storageKey: "mode" }));
@@ -145,7 +145,7 @@ let present = true;
 try { require.resolve("react-hook-form"); } catch { present = false; }
 if (present) throw new Error("react-hook-form should not be installed yet");
 // The main entry graph must never import react-hook-form.
-const dist = join(dirname(require.resolve("@kaleido/ui/package.json")), "dist");
+const dist = join(dirname(require.resolve("@darkalpha/nova-ui/package.json")), "dist");
 const offenders = [];
 const walk = (d) => readdirSync(d, { withFileTypes: true }).forEach((e) => {
   const p = join(d, e.name);
@@ -154,8 +154,8 @@ const walk = (d) => readdirSync(d, { withFileTypes: true }).forEach((e) => {
 });
 walk(dist);
 if (offenders.length) throw new Error("main entry references react-hook-form: " + offenders.join(", "));
-await import("@kaleido/ui");
-console.log("  ok @kaleido/ui loads and renders without react-hook-form installed");
+await import("@darkalpha/nova-ui");
+console.log("  ok @darkalpha/nova-ui loads and renders without react-hook-form installed");
 `,
   );
   console.log(run("node optional.mjs").trimEnd());
@@ -167,8 +167,8 @@ import { renderToString } from "react-dom/server";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { ThemeProvider } from "@kaleido/ui";
-import { Form, FormInput, FormCheckbox, FormSubmit, FormErrorSummary, isSchemaFieldRequired } from "@kaleido/ui/react-hook-form";
+import { ThemeProvider } from "@darkalpha/nova-ui";
+import { Form, FormInput, FormCheckbox, FormSubmit, FormErrorSummary, isSchemaFieldRequired } from "@darkalpha/nova-ui/react-hook-form";
 const schema = z.object({ email: z.string().email(), nickname: z.string().optional(), terms: z.literal(true) });
 if (!isSchemaFieldRequired(schema, "email") || isSchemaFieldRequired(schema, "nickname")) throw new Error("schema inspection failed");
 function App() {
@@ -178,7 +178,7 @@ function App() {
 }
 const html = renderToString(h(App));
 if (!html.toLowerCase().includes('novalidate') || !html.includes("Email")) throw new Error("RHF form did not render");
-console.log("  ok @kaleido/ui/react-hook-form resolves and server-renders a zod-validated form");
+console.log("  ok @darkalpha/nova-ui/react-hook-form resolves and server-renders a zod-validated form");
 `,
   );
   console.log(run("node rhf.mjs").trimEnd());
@@ -186,8 +186,8 @@ console.log("  ok @kaleido/ui/react-hook-form resolves and server-renders a zod-
   step("Type-checking a consumer file against published types");
   writeFileSync(
     join(work, "app.tsx"),
-    `import { Button, Badge, Card, Input, ThemeProvider, createTheme, registerTheme, toast, type ButtonProps, type ThemeDefinition } from "@kaleido/ui";
-import "@kaleido/ui/styles.css";
+    `import { Button, Badge, Card, Input, ThemeProvider, createTheme, registerTheme, toast, type ButtonProps, type ThemeDefinition } from "@darkalpha/nova-ui";
+import "@darkalpha/nova-ui/styles.css";
 
 const acme: ThemeDefinition = createTheme({ id: "acme", extends: "ocean", colors: { primary: "#0f766e" }, radius: "lg" });
 registerTheme(acme);
@@ -213,7 +213,7 @@ export const bad = <Button variant="rainbow" />;
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Form, FormInput, FormDatePicker, FormSubmit, formFields } from "@kaleido/ui/react-hook-form";
+import { Form, FormInput, FormDatePicker, FormSubmit, formFields } from "@darkalpha/nova-ui/react-hook-form";
 
 const schema = z.object({ email: z.string().email(), start: z.date() });
 type Values = z.infer<typeof schema>;

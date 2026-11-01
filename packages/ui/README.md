@@ -1,14 +1,14 @@
-# @kaleido/ui
+# @darkalpha/nova-ui
 
 Colorful, accessible, themeable React components.
 
 ```bash
-pnpm add @kaleido/ui
+pnpm add @darkalpha/nova-ui
 ```
 
 ```tsx
-import { Button, ThemeProvider } from "@kaleido/ui";
-import "@kaleido/ui/styles.css";
+import { Button, ThemeProvider } from "@darkalpha/nova-ui";
+import "@darkalpha/nova-ui/styles.css";
 
 <ThemeProvider theme="ocean" brand={{ primary: "#0f766e" }}>
   <Button>Get started</Button>
@@ -19,11 +19,11 @@ import "@kaleido/ui/styles.css";
 
 | Import | Contents |
 | --- | --- |
-| `@kaleido/ui` | Components, `ThemeProvider`, `ThemeScript`, hooks, `cn`, and the token API (`createTheme`, `registerTheme`, `auditContrast`…) |
-| `@kaleido/ui/styles.css` | Required once (unless you use `tailwind.css`). Tokens, a reset scoped to `.ks-theme`, and component styles. No global preflight. |
-| `@kaleido/ui/themes.css` | Optional. All presets as `[data-ks-theme="…"]` blocks for zero-JS theming. |
-| `@kaleido/ui/react-hook-form` | Optional bindings for react-hook-form (any resolver, e.g. zod). Requires `react-hook-form` ≥ 7.55; never loaded by the main entry. |
-| `@kaleido/ui/tailwind.css` | For Tailwind v4 apps, **instead of** `styles.css`: `@import "tailwindcss"; @import "@kaleido/ui/tailwind.css";` |
+| `@darkalpha/nova-ui` | Components, `ThemeProvider`, `ThemeScript`, hooks, `cn`, and the token API (`createTheme`, `registerTheme`, `auditContrast`…) |
+| `@darkalpha/nova-ui/styles.css` | Required once (unless you use `tailwind.css`). Tokens, a reset scoped to `.nv-theme`, and component styles. No global preflight. |
+| `@darkalpha/nova-ui/themes.css` | Optional. All presets as `[data-nv-theme="…"]` blocks for zero-JS theming. |
+| `@darkalpha/nova-ui/react-hook-form` | Optional bindings for react-hook-form (any resolver, e.g. zod). Requires `react-hook-form` ≥ 7.55; never loaded by the main entry. |
+| `@darkalpha/nova-ui/tailwind.css` | For Tailwind v4 apps, **instead of** `styles.css`: `@import "tailwindcss"; @import "@darkalpha/nova-ui/tailwind.css";` |
 
 ## Apps that use Tailwind CSS v4
 
@@ -31,10 +31,10 @@ Import `tailwind.css` from your CSS entry and drop the `styles.css` import:
 
 ```css
 @import "tailwindcss";
-@import "@kaleido/ui/tailwind.css";
+@import "@darkalpha/nova-ui/tailwind.css";
 ```
 
-It ships Kaleido as source (tokens, scoped base, materials, token utilities such
+It ships Nova UI as source (tokens, scoped base, materials, token utilities such
 as `bg-primary`) plus an `@source` for the components, so your build generates
 the component utilities together with yours. Loading the precompiled
 `styles.css` as well gives you two separately sorted `utilities` layers: your

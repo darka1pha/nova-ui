@@ -30,7 +30,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
-      - run: pnpm --filter @kaleido/docs exec playwright test visual.spec.ts --update-snapshots=all
+      - run: pnpm --filter @darkalpha/nova-docs exec playwright test visual.spec.ts --update-snapshots=all
       - name: Commit changed baselines
         run: |
           git config --global --add safe.directory "$GITHUB_WORKSPACE"

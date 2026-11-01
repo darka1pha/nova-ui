@@ -20,7 +20,7 @@ import {
   presets,
   useTheme,
   type ModePreference,
-} from "@kaleido/ui";
+} from "@darkalpha/nova-ui";
 import { GitPullRequest, Languages, Menu, Monitor, Moon, Sun } from "lucide-react";
 import { Suspense, useEffect, useState, type ReactNode } from "react";
 import { useRoute } from "./docs/kit.tsx";
@@ -29,10 +29,10 @@ import { pages, nav } from "./pages/index.tsx";
 function Logo() {
   return (
     <a href="#/home" className="flex items-center gap-2.5 rounded-md focus-visible:outline-2 focus-visible:outline-focus-ring">
-      <span aria-hidden className="relative size-8 overflow-hidden rounded-[10px] bg-(image:--ks-gradient-vivid) shadow-md">
+      <span aria-hidden className="relative size-8 overflow-hidden rounded-[10px] bg-(image:--nv-gradient-vivid) shadow-md">
         <span className="absolute inset-[5px] rotate-45 rounded-[5px] border-2 border-white/80" />
       </span>
-      <span className="font-display text-lg font-extrabold tracking-(--ks-tracking-tight) text-foreground">Kaleido</span>
+      <span className="font-display text-lg font-extrabold tracking-(--nv-tracking-tight) text-foreground">Nova UI</span>
       <Badge size="sm" variant="neutral" appearance="outline">
         v0.1
       </Badge>
@@ -45,7 +45,7 @@ function NavList({ current, onNavigate }: { current: string; onNavigate?: () => 
     <nav aria-label="Documentation" className="flex flex-col gap-5">
       {nav.map((group) => (
         <div key={group.title} className="flex flex-col gap-0.5">
-          <p className="px-3 pb-1 text-2xs font-semibold uppercase tracking-(--ks-tracking-wider) text-foreground-muted">{group.title}</p>
+          <p className="px-3 pb-1 text-2xs font-semibold uppercase tracking-(--nv-tracking-wider) text-foreground-muted">{group.title}</p>
           <ul className="flex flex-col gap-0.5">
             {group.items.map((item) => {
               const active = item.id === current;
@@ -56,7 +56,7 @@ function NavList({ current, onNavigate }: { current: string; onNavigate?: () => 
                     onClick={onNavigate}
                     aria-current={active ? "page" : undefined}
                     className={cn(
-                      "flex h-8 items-center gap-2 rounded-md px-3 text-sm font-medium transition-colors duration-(--ks-duration-fast) focus-visible:outline-2 focus-visible:outline-focus-ring",
+                      "flex h-8 items-center gap-2 rounded-md px-3 text-sm font-medium transition-colors duration-(--nv-duration-fast) focus-visible:outline-2 focus-visible:outline-focus-ring",
                       active ? "bg-primary-subtle text-primary-on-subtle" : "text-foreground-secondary hover:bg-surface-hover hover:text-foreground",
                     )}
                   >
@@ -167,7 +167,7 @@ export function App() {
   const Current = pages[route] ?? pages.home;
 
   return (
-    <ThemeProvider theme={theme} dir={dir} storageKey="kaleido-docs-mode" defaultMode="system">
+    <ThemeProvider theme={theme} dir={dir} storageKey="nova-docs-mode" defaultMode="system">
       <Shell theme={theme} setTheme={setTheme} dir={dir} setDir={setDir}>
         <Suspense fallback={<LoadingState title="Loading page…" className="py-24" />}>
           <Current />

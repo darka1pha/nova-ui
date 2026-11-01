@@ -74,7 +74,7 @@ export const TableRow = forwardRef<HTMLTableRowElement, HTMLAttributes<HTMLTable
   return (
     <tr
       ref={ref}
-      className={cn("border-b border-border transition-colors duration-(--ks-duration-fast) hover:bg-surface-hover/70 data-[state=selected]:bg-primary-subtle/70", className)}
+      className={cn("border-b border-border transition-colors duration-(--nv-duration-fast) hover:bg-surface-hover/70 data-[state=selected]:bg-primary-subtle/70", className)}
       {...props}
     />
   );
@@ -85,7 +85,7 @@ export const TableHead = forwardRef<HTMLTableCellElement, ThHTMLAttributes<HTMLT
     <th
       ref={ref}
       scope={scope}
-      className={cn("whitespace-nowrap text-start align-middle text-xs font-semibold uppercase tracking-(--ks-tracking-wide) text-foreground-muted", className)}
+      className={cn("whitespace-nowrap text-start align-middle text-xs font-semibold uppercase tracking-(--nv-tracking-wide) text-foreground-muted", className)}
       {...props}
     />
   );
@@ -401,7 +401,7 @@ export function DataTable<T>({
             const id = getRowId(row);
             const isSelected = selected.includes(id);
             const isExpanded = expanded.includes(id);
-            const detailId = `ks-row-${id}-details`;
+            const detailId = `nv-row-${id}-details`;
             return (
               <Fragment key={id}>
               <TableRow data-state={isSelected ? "selected" : undefined} aria-selected={selectable ? isSelected : undefined}>
@@ -415,7 +415,7 @@ export function DataTable<T>({
                       onClick={() => setExpanded((ids) => (ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id]))}
                       className={cn("-m-1 inline-flex size-7 items-center justify-center rounded-md text-foreground-muted hover:bg-surface-hover hover:text-foreground", focusRing)}
                     >
-                      <ChevronRight aria-hidden className={cn("size-4 transition-transform duration-(--ks-duration-normal) rtl:-scale-x-100", isExpanded && "rotate-90 rtl:-rotate-90")} />
+                      <ChevronRight aria-hidden className={cn("size-4 transition-transform duration-(--nv-duration-normal) rtl:-scale-x-100", isExpanded && "rotate-90 rtl:-rotate-90")} />
                     </button>
                   </TableCell>
                 ) : null}
@@ -437,7 +437,7 @@ export function DataTable<T>({
               </TableRow>
               {renderExpanded && isExpanded ? (
                 <TableRow id={detailId} className="bg-surface-sunken/50 hover:bg-surface-sunken/50">
-                  <TableCell colSpan={colSpan} className="animate-ks-slide-down">
+                  <TableCell colSpan={colSpan} className="animate-nv-slide-down">
                     {renderExpanded(row)}
                   </TableCell>
                 </TableRow>

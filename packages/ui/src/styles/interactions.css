@@ -6,40 +6,40 @@
  */
 @layer components {
   /* Lifts on hover with a soft shadow. Cards, tiles, list rows. */
-  .ks-lift {
+  .nv-lift {
     transition:
-      translate var(--ks-duration-normal) var(--ks-ease-interactive),
-      box-shadow var(--ks-duration-normal) var(--ks-ease-standard);
+      translate var(--nv-duration-normal) var(--nv-ease-interactive),
+      box-shadow var(--nv-duration-normal) var(--nv-ease-standard);
   }
-  .ks-lift:hover,
-  .ks-lift:focus-within {
-    translate: 0 var(--ks-hover-lift);
-    box-shadow: var(--ks-shadow-lg);
+  .nv-lift:hover,
+  .nv-lift:focus-within {
+    translate: 0 var(--nv-hover-lift);
+    box-shadow: var(--nv-shadow-lg);
   }
 
   /* Squashes slightly while pressed. Anything clickable. */
-  .ks-press {
-    transition: scale var(--ks-duration-fast) var(--ks-ease-interactive);
+  .nv-press {
+    transition: scale var(--nv-duration-fast) var(--nv-ease-interactive);
   }
-  .ks-press:active {
-    scale: var(--ks-press-scale);
+  .nv-press:active {
+    scale: var(--nv-press-scale);
   }
 
   /* Grows a touch on hover. Icons, avatars, thumbnails. */
-  .ks-grow {
-    transition: scale var(--ks-duration-normal) var(--ks-ease-interactive);
+  .nv-grow {
+    transition: scale var(--nv-duration-normal) var(--nv-ease-interactive);
   }
-  .ks-grow:hover {
-    scale: var(--ks-hover-scale);
+  .nv-grow:hover {
+    scale: var(--nv-hover-scale);
   }
 
   /* A light sweep across the element on hover. */
-  .ks-shine {
+  .nv-shine {
     position: relative;
     overflow: hidden;
     isolation: isolate;
   }
-  .ks-shine::after {
+  .nv-shine::after {
     content: "";
     position: absolute;
     inset: 0;
@@ -47,195 +47,195 @@
     pointer-events: none;
     background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / 0.35) 50%, transparent 70%);
     translate: -110% 0;
-    transition: translate var(--ks-duration-slowest) var(--ks-ease-out);
+    transition: translate var(--nv-duration-slowest) var(--nv-ease-out);
   }
-  .ks-shine:hover::after {
+  .nv-shine:hover::after {
     translate: 110% 0;
   }
 
-  /* Colored glow on hover, using the primary intent (or set --ks-glow). */
-  .ks-glow {
-    transition: box-shadow var(--ks-duration-normal) var(--ks-ease-standard);
+  /* Colored glow on hover, using the primary intent (or set --nv-glow). */
+  .nv-glow {
+    transition: box-shadow var(--nv-duration-normal) var(--nv-ease-standard);
   }
-  .ks-glow:hover,
-  .ks-glow:focus-visible {
-    box-shadow: var(--ks-glow, var(--ks-shadow-glow-primary));
+  .nv-glow:hover,
+  .nv-glow:focus-visible {
+    box-shadow: var(--nv-glow, var(--nv-shadow-glow-primary));
   }
 
   /* Gentle idle float. Decorative illustrations and badges. */
-  .ks-float {
-    animation: ks-float 4s ease-in-out infinite;
+  .nv-float {
+    animation: nv-float 4s ease-in-out infinite;
   }
 
   /* Animated underline that grows from the start edge. */
-  .ks-underline {
+  .nv-underline {
     background-image: linear-gradient(currentColor, currentColor);
     background-repeat: no-repeat;
     background-size: 0% 1.5px;
     background-position: 0 100%;
-    transition: background-size var(--ks-duration-slow) var(--ks-ease-out);
+    transition: background-size var(--nv-duration-slow) var(--nv-ease-out);
   }
-  [dir="rtl"] .ks-underline {
+  [dir="rtl"] .nv-underline {
     background-position: 100% 100%;
   }
-  .ks-underline:hover,
-  .ks-underline:focus-visible {
+  .nv-underline:hover,
+  .nv-underline:focus-visible {
     background-size: 100% 1.5px;
   }
 
   /* Frosted translucent glass surface */
-  .ks-glass {
-    background-color: var(--ks-glass-bg);
-    backdrop-filter: blur(var(--ks-glass-blur)) saturate(160%);
-    -webkit-backdrop-filter: blur(var(--ks-glass-blur)) saturate(160%);
-    border: 1px solid var(--ks-glass-border);
-    box-shadow: var(--ks-shadow-glass);
+  .nv-glass {
+    background-color: var(--nv-glass-bg);
+    backdrop-filter: blur(var(--nv-glass-blur)) saturate(160%);
+    -webkit-backdrop-filter: blur(var(--nv-glass-blur)) saturate(160%);
+    border: 1px solid var(--nv-glass-border);
+    box-shadow: var(--nv-shadow-glass);
   }
 
-  .ks-glass-card {
-    background-color: var(--ks-glass-bg);
-    backdrop-filter: blur(var(--ks-glass-blur)) saturate(160%);
-    -webkit-backdrop-filter: blur(var(--ks-glass-blur)) saturate(160%);
-    border: 1px solid var(--ks-glass-border);
-    box-shadow: var(--ks-shadow-glass);
-    border-radius: var(--ks-card-radius);
+  .nv-glass-card {
+    background-color: var(--nv-glass-bg);
+    backdrop-filter: blur(var(--nv-glass-blur)) saturate(160%);
+    -webkit-backdrop-filter: blur(var(--nv-glass-blur)) saturate(160%);
+    border: 1px solid var(--nv-glass-border);
+    box-shadow: var(--nv-shadow-glass);
+    border-radius: var(--nv-card-radius);
     transition:
-      background-color var(--ks-duration-fast) var(--ks-ease-standard),
-      box-shadow var(--ks-duration-normal) var(--ks-ease-standard),
-      translate var(--ks-duration-normal) var(--ks-ease-interactive);
+      background-color var(--nv-duration-fast) var(--nv-ease-standard),
+      box-shadow var(--nv-duration-normal) var(--nv-ease-standard),
+      translate var(--nv-duration-normal) var(--nv-ease-interactive);
   }
-  .ks-glass-card:hover {
-    background-color: var(--ks-glass-bg-hover);
-    box-shadow: var(--ks-shadow-lg), var(--ks-shadow-glass);
-    translate: 0 var(--ks-hover-lift);
+  .nv-glass-card:hover {
+    background-color: var(--nv-glass-bg-hover);
+    box-shadow: var(--nv-shadow-lg), var(--nv-shadow-glass);
+    translate: 0 var(--nv-hover-lift);
   }
 
   /* Tactile 3D Claymorphism: inflated cushion depth with dual inner highlights & floating drop shadow */
-  .ks-clay {
-    background-color: var(--ks-color-surface);
-    box-shadow: var(--ks-shadow-clay);
-    border-radius: var(--ks-radius-xl);
+  .nv-clay {
+    background-color: var(--nv-color-surface);
+    box-shadow: var(--nv-shadow-clay);
+    border-radius: var(--nv-radius-xl);
     border: none;
     transition:
-      box-shadow var(--ks-duration-normal) var(--ks-ease-interactive),
-      translate var(--ks-duration-normal) var(--ks-ease-interactive),
-      scale var(--ks-duration-fast) var(--ks-ease-interactive);
+      box-shadow var(--nv-duration-normal) var(--nv-ease-interactive),
+      translate var(--nv-duration-normal) var(--nv-ease-interactive),
+      scale var(--nv-duration-fast) var(--nv-ease-interactive);
   }
-  .ks-clay:hover {
-    translate: 0 var(--ks-hover-lift);
+  .nv-clay:hover {
+    translate: 0 var(--nv-hover-lift);
   }
-  .ks-clay:active {
-    box-shadow: var(--ks-shadow-clay-press);
-    scale: var(--ks-press-scale);
+  .nv-clay:active {
+    box-shadow: var(--nv-shadow-clay-press);
+    scale: var(--nv-press-scale);
   }
 
-  .ks-clay-card {
-    background-color: var(--ks-color-surface);
-    box-shadow: var(--ks-shadow-clay);
-    border-radius: var(--ks-radius-2xl);
+  .nv-clay-card {
+    background-color: var(--nv-color-surface);
+    box-shadow: var(--nv-shadow-clay);
+    border-radius: var(--nv-radius-2xl);
     border: none;
     transition:
-      box-shadow var(--ks-duration-normal) var(--ks-ease-interactive),
-      translate var(--ks-duration-normal) var(--ks-ease-interactive);
+      box-shadow var(--nv-duration-normal) var(--nv-ease-interactive),
+      translate var(--nv-duration-normal) var(--nv-ease-interactive);
   }
-  .ks-clay-card:hover {
-    translate: 0 var(--ks-hover-lift);
+  .nv-clay-card:hover {
+    translate: 0 var(--nv-hover-lift);
   }
 
-  .ks-clay-primary {
-    background-color: var(--ks-color-primary-solid);
-    color: var(--ks-color-primary-on-solid);
-    box-shadow: var(--ks-shadow-clay-primary);
-    border-radius: var(--ks-radius-xl);
+  .nv-clay-primary {
+    background-color: var(--nv-color-primary-solid);
+    color: var(--nv-color-primary-on-solid);
+    box-shadow: var(--nv-shadow-clay-primary);
+    border-radius: var(--nv-radius-xl);
     border: none;
     transition:
-      box-shadow var(--ks-duration-normal) var(--ks-ease-interactive),
-      translate var(--ks-duration-normal) var(--ks-ease-interactive),
-      scale var(--ks-duration-fast) var(--ks-ease-interactive);
+      box-shadow var(--nv-duration-normal) var(--nv-ease-interactive),
+      translate var(--nv-duration-normal) var(--nv-ease-interactive),
+      scale var(--nv-duration-fast) var(--nv-ease-interactive);
   }
-  .ks-clay-primary:hover {
-    translate: 0 var(--ks-hover-lift);
+  .nv-clay-primary:hover {
+    translate: 0 var(--nv-hover-lift);
   }
-  .ks-clay-primary:active {
-    box-shadow: var(--ks-shadow-clay-press);
-    scale: var(--ks-press-scale);
+  .nv-clay-primary:active {
+    box-shadow: var(--nv-shadow-clay-press);
+    scale: var(--nv-press-scale);
   }
 
-  .ks-clay-secondary {
-    background-color: var(--ks-color-secondary-solid);
-    color: var(--ks-color-secondary-on-solid);
-    box-shadow: var(--ks-shadow-clay-secondary);
-    border-radius: var(--ks-radius-xl);
+  .nv-clay-secondary {
+    background-color: var(--nv-color-secondary-solid);
+    color: var(--nv-color-secondary-on-solid);
+    box-shadow: var(--nv-shadow-clay-secondary);
+    border-radius: var(--nv-radius-xl);
     border: none;
   }
 
-  .ks-clay-accent {
-    background-color: var(--ks-color-accent-solid);
-    color: var(--ks-color-accent-on-solid);
-    box-shadow: var(--ks-shadow-clay-accent);
-    border-radius: var(--ks-radius-xl);
+  .nv-clay-accent {
+    background-color: var(--nv-color-accent-solid);
+    color: var(--nv-color-accent-on-solid);
+    box-shadow: var(--nv-shadow-clay-accent);
+    border-radius: var(--nv-radius-xl);
     border: none;
   }
 
   /* Neumorphism: Soft extruded and sunken material surfaces */
-  .ks-neomorph {
-    background-color: var(--ks-color-surface);
-    box-shadow: var(--ks-shadow-neomorph);
+  .nv-neomorph {
+    background-color: var(--nv-color-surface);
+    box-shadow: var(--nv-shadow-neomorph);
     border: none;
-    transition: box-shadow var(--ks-duration-normal) var(--ks-ease-standard);
+    transition: box-shadow var(--nv-duration-normal) var(--nv-ease-standard);
   }
-  .ks-neomorph:active {
-    box-shadow: var(--ks-shadow-neomorph-inset);
+  .nv-neomorph:active {
+    box-shadow: var(--nv-shadow-neomorph-inset);
   }
 
-  .ks-neomorph-inset {
-    background-color: var(--ks-color-surface-sunken);
-    box-shadow: var(--ks-shadow-neomorph-inset);
+  .nv-neomorph-inset {
+    background-color: var(--nv-color-surface-sunken);
+    box-shadow: var(--nv-shadow-neomorph-inset);
     border: none;
   }
 
   /* Radiant ambient glow halo */
-  .ks-glow-halo {
+  .nv-glow-halo {
     position: relative;
     isolation: isolate;
   }
-  .ks-glow-halo::before {
+  .nv-glow-halo::before {
     content: "";
     position: absolute;
     inset: -3px;
     z-index: -1;
     border-radius: inherit;
-    background: var(--ks-gradient-brand);
+    background: var(--nv-gradient-brand);
     filter: blur(8px);
     opacity: 0.65;
-    transition: opacity var(--ks-duration-normal) var(--ks-ease-standard), filter var(--ks-duration-normal) var(--ks-ease-standard);
+    transition: opacity var(--nv-duration-normal) var(--nv-ease-standard), filter var(--nv-duration-normal) var(--nv-ease-standard);
   }
-  .ks-glow-halo:hover::before {
+  .nv-glow-halo:hover::before {
     opacity: 0.95;
     filter: blur(12px);
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .ks-lift:hover,
-    .ks-lift:focus-within,
-    .ks-press:active,
-    .ks-grow:hover,
-    .ks-clay:hover,
-    .ks-clay:active,
-    .ks-clay-card:hover,
-    .ks-clay-primary:hover,
-    .ks-clay-primary:active,
-    .ks-glass-card:hover {
+    .nv-lift:hover,
+    .nv-lift:focus-within,
+    .nv-press:active,
+    .nv-grow:hover,
+    .nv-clay:hover,
+    .nv-clay:active,
+    .nv-clay-card:hover,
+    .nv-clay-primary:hover,
+    .nv-clay-primary:active,
+    .nv-glass-card:hover {
       translate: none;
       scale: none;
     }
-    .ks-float,
-    .ks-shine::after {
+    .nv-float,
+    .nv-shine::after {
       animation: none;
       display: none;
     }
   }
-  [data-ks-motion="reduce"] :is(.ks-lift, .ks-press, .ks-grow, .ks-clay, .ks-clay-card, .ks-clay-primary, .ks-glass-card) {
+  [data-nv-motion="reduce"] :is(.nv-lift, .nv-press, .nv-grow, .nv-clay, .nv-clay-card, .nv-clay-primary, .nv-glass-card) {
     translate: none !important;
     scale: none !important;
   }

@@ -105,7 +105,7 @@ function useFormatters<T>(formatValue?: (v: number) => string, formatIndex?: (v:
 }
 
 const seriesColor = (series: { color?: string }[], i: number) =>
-  series[i]?.color ?? (series.length === 1 ? "var(--ks-color-primary-solid)" : (chartColors[i % chartColors.length] as string));
+  series[i]?.color ?? (series.length === 1 ? "var(--nv-color-primary-solid)" : (chartColors[i % chartColors.length] as string));
 
 /** A vertical bar path: 4px rounded data end, square at the baseline. */
 function barPath(x: number, w: number, yBase: number, yEnd: number, rounded = true) {
@@ -217,7 +217,7 @@ function Tooltip({ x, width, title, rows }: { x: number; width: number; title: s
   return (
     <div
       aria-hidden
-      className="pointer-events-none absolute top-1 z-10 min-w-36 max-w-[min(16rem,calc(100%-1rem))] rounded-(--ks-popover-radius) border border-border bg-surface-raised px-3 py-2 text-xs shadow-(--ks-popover-shadow)"
+      className="pointer-events-none absolute top-1 z-10 min-w-36 max-w-[min(16rem,calc(100%-1rem))] rounded-(--nv-popover-radius) border border-border bg-surface-raised px-3 py-2 text-xs shadow-(--nv-popover-shadow)"
       style={side}
     >
       <p className="mb-1.5 font-medium text-foreground-muted">{title}</p>
@@ -339,11 +339,11 @@ function CartesianChart<T>({
           // 2px surface gap between stacked segments.
           const yBase = y(base) - (base > 0 ? 1 : 0);
           const yEnd = y(acc) + (isTop ? 0 : 1);
-          marks.push(<path key={`${i}-${si}`} d={barPath(left, barW, yBase, Math.min(yEnd, yBase), isTop)} fill={seriesColor(series, si)} opacity={dim} className="transition-opacity duration-(--ks-duration-fast)" />);
+          marks.push(<path key={`${i}-${si}`} d={barPath(left, barW, yBase, Math.min(yEnd, yBase), isTop)} fill={seriesColor(series, si)} opacity={dim} className="transition-opacity duration-(--nv-duration-fast)" />);
         } else {
           const order = rtl ? series.length - 1 - si : si;
           const x = left + order * (barW + 2);
-          marks.push(<path key={`${i}-${si}`} d={barPath(x, barW, y(0), y(v))} fill={seriesColor(series, si)} opacity={dim} className="transition-opacity duration-(--ks-duration-fast)" />);
+          marks.push(<path key={`${i}-${si}`} d={barPath(x, barW, y(0), y(v))} fill={seriesColor(series, si)} opacity={dim} className="transition-opacity duration-(--nv-duration-fast)" />);
         }
       });
     });
@@ -406,7 +406,7 @@ function CartesianChart<T>({
       // End marker on the last point (or the hovered one); a surface-colored ring keeps it legible over lines.
       const marker = active === null ? pts[pts.length - 1] : pts[active];
       if (marker) {
-        marks.push(<circle key={`m-${si}`} cx={marker.x} cy={marker.y} r={active === null ? 4 : 4.5} fill={color} stroke="var(--ks-color-surface)" strokeWidth={2} />);
+        marks.push(<circle key={`m-${si}`} cx={marker.x} cy={marker.y} r={active === null ? 4 : 4.5} fill={color} stroke="var(--nv-color-surface)" strokeWidth={2} />);
       }
     });
   }
@@ -452,7 +452,7 @@ function CartesianChart<T>({
           <svg width={width} height={height} aria-hidden className="block overflow-visible">
             {ticks.map((t) => (
               <g key={t}>
-                <line x1={plotStart} x2={plotStart + plotW} y1={y(t)} y2={y(t)} stroke="var(--ks-color-border)" strokeWidth={1} shapeRendering="crispEdges" />
+                <line x1={plotStart} x2={plotStart + plotW} y1={y(t)} y2={y(t)} stroke="var(--nv-color-border)" strokeWidth={1} shapeRendering="crispEdges" />
                 <text
                   x={rtl ? plotStart + plotW + 8 : plotStart - 8}
                   y={y(t)}
@@ -465,10 +465,10 @@ function CartesianChart<T>({
               </g>
             ))}
             {active !== null && kind !== "bar" ? (
-              <line x1={xCenter(active)} x2={xCenter(active)} y1={AXIS.top} y2={AXIS.top + plotH} stroke="var(--ks-color-border-strong)" strokeWidth={1} shapeRendering="crispEdges" />
+              <line x1={xCenter(active)} x2={xCenter(active)} y1={AXIS.top} y2={AXIS.top + plotH} stroke="var(--nv-color-border-strong)" strokeWidth={1} shapeRendering="crispEdges" />
             ) : null}
             {active !== null && kind === "bar" ? (
-              <rect x={xCenter(active) - band / 2} y={AXIS.top} width={band} height={plotH} fill="var(--ks-color-surface-hover)" opacity={0.6} />
+              <rect x={xCenter(active) - band / 2} y={AXIS.top} width={band} height={plotH} fill="var(--nv-color-surface-hover)" opacity={0.6} />
             ) : null}
             <g>{marks}</g>
             {data.map((row, i) =>
@@ -621,7 +621,7 @@ export const DonutChart = forwardRef<HTMLElement, DonutChartProps>(function Donu
           style={{ width: size, height: size }}
         >
           <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} aria-hidden className="-rotate-90">
-            <circle cx={r} cy={r} r={rMid} fill="none" stroke="var(--ks-color-surface-sunken)" strokeWidth={thickness} />
+            <circle cx={r} cy={r} r={rMid} fill="none" stroke="var(--nv-color-surface-sunken)" strokeWidth={thickness} />
             {slices.map((s) => (
               <circle
                 key={s.i}
@@ -638,7 +638,7 @@ export const DonutChart = forwardRef<HTMLElement, DonutChartProps>(function Donu
                   setKeyboard(false);
                   setActive(s.i);
                 }}
-                className="cursor-default transition-[opacity,stroke-width] duration-(--ks-duration-fast)"
+                className="cursor-default transition-[opacity,stroke-width] duration-(--nv-duration-fast)"
               />
             ))}
           </svg>

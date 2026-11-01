@@ -200,4 +200,4 @@ export {
   type MotionStyle,
   type ResolvedTheme,
   type SemanticColorName,
-} from "@kaleido/tokens";
+} from "@darkalpha/nova-tokens";

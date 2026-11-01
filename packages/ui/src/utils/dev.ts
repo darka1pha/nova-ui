@@ -9,5 +9,5 @@ const warned = new Set<string>();
 export function devWarn(message: string): void {
   if (!isDev || warned.has(message)) return;
   warned.add(message);
-  console.warn(`[kaleido] ${message}`);
+  console.warn(`[nova-ui] ${message}`);
 }

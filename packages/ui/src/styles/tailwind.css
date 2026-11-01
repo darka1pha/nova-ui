@@ -1,10 +1,10 @@
 /*
- * @kaleido/ui/tailwind.css — the whole of Kaleido for apps that run Tailwind CSS v4.
+ * @darkalpha/nova-ui/tailwind.css — the whole of Nova UI for apps that run Tailwind CSS v4.
  *   @import "tailwindcss";
- *   @import "@kaleido/ui/tailwind.css";
+ *   @import "@darkalpha/nova-ui/tailwind.css";
  * Import this INSTEAD of styles.css. It brings the tokens, the scoped base,
  * interactions, materials and the token utilities (bg-primary, rounded-lg,
- * animate-ks-*, dark:, rtl:…), and points your Tailwind at the components so
+ * animate-nv-*, dark:, rtl:…), and points your Tailwind at the components so
  * it generates their utilities itself.
  *
  * Why not styles.css as well: two Tailwind builds each emit their own sorted
@@ -15,7 +15,7 @@
  * This file ships in dist/ next to the files it imports; it is not usable
  * from src/.
  */
-@layer theme, base, components, utilities, ks-materials;
+@layer theme, base, components, utilities, nv-materials;
 
 @import "./tokens.generated.css";
 @import "./theme.generated.css";

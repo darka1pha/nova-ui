@@ -1,4 +1,4 @@
-/* A Tailwind v4 app as documented: its own build, plus Kaleido's source entry.
- * `source(none)` keeps the build to what @kaleido/ui/tailwind.css points at. */
+/* A Tailwind v4 app as documented: its own build, plus Nova UI's source entry.
+ * `source(none)` keeps the build to what @darkalpha/nova-ui/tailwind.css points at. */
 @import "tailwindcss" source(none);
 @import "../../dist/tailwind.css";

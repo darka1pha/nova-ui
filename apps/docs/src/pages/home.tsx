@@ -26,13 +26,13 @@ import {
   ThemeProvider,
   presets,
   toast,
-} from "@kaleido/ui";
+} from "@darkalpha/nova-ui";
 import { ArrowRight, Palette, Sparkles, Accessibility, Layers, Gauge, Languages } from "lucide-react";
 import { CodeBlock } from "../docs/kit.tsx";
 
 function MiniPreview({ theme }: { theme: string }) {
   return (
-    <ThemeProvider theme={theme} className="min-h-0! rounded-(--ks-card-radius) border border-border p-4">
+    <ThemeProvider theme={theme} className="min-h-0! rounded-(--nv-card-radius) border border-border p-4">
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <Text weight="semibold" size="sm">
@@ -67,7 +67,7 @@ export function HomePage() {
   return (
     <div className="flex flex-col">
       <section className="relative overflow-hidden border-b border-border">
-        <div aria-hidden className="absolute inset-0 bg-(image:--ks-gradient-glow)" />
+        <div aria-hidden className="absolute inset-0 bg-(image:--nv-gradient-glow)" />
         <div aria-hidden className="absolute -end-32 -top-32 size-96 rounded-full bg-accent/20 blur-3xl" />
         <div aria-hidden className="absolute -start-24 top-40 size-80 rounded-full bg-secondary/20 blur-3xl" />
         <div className="relative mx-auto grid max-w-6xl gap-12 px-4 py-16 sm:px-8 lg:grid-cols-[1.1fr_1fr] lg:py-24">
@@ -76,10 +76,10 @@ export function HomePage() {
               Design system for React · v0.1
             </Badge>
             <Heading level={1} size="display">
-              Interfaces that feel <span className="bg-(image:--ks-gradient-vivid) bg-clip-text text-transparent">alive</span>.
+              Interfaces that feel <span className="bg-(image:--nv-gradient-vivid) bg-clip-text text-transparent">alive</span>.
             </Heading>
             <Text size="xl" tone="secondary" className="max-w-xl">
-              Kaleido is a colorful, accessible design system built on design tokens. Bring your brand color — it builds a complete, contrast-checked theme in light and dark.
+              Nova UI is a colorful, accessible design system built on design tokens. Bring your brand color — it builds a complete, contrast-checked theme in light and dark.
             </Text>
             <div className="flex flex-wrap gap-3">
               <Button asChild size="lg" variant="gradient">
@@ -91,7 +91,7 @@ export function HomePage() {
                 <a href="#/playground">Open the playground</a>
               </Button>
             </div>
-            <CodeBlock language="bash" code="pnpm add @kaleido/ui" className="w-full max-w-md" />
+            <CodeBlock language="bash" code="pnpm add @darkalpha/nova-ui" className="w-full max-w-md" />
           </div>
 
           <Card variant="featured" className="self-center">
@@ -171,7 +171,7 @@ export function HomePage() {
         <Grid columns={3} gap={4}>
           {features.map(({ icon: Glyph, title, body }) => (
             <Card key={title} variant="outline" className="gap-3">
-              <span aria-hidden className="flex size-10 items-center justify-center rounded-lg bg-(image:--ks-gradient-subtle) text-primary-text ring-1 ring-primary-border">
+              <span aria-hidden className="flex size-10 items-center justify-center rounded-lg bg-(image:--nv-gradient-subtle) text-primary-text ring-1 ring-primary-border">
                 <Glyph className="size-5" />
               </span>
               <Heading level={3} size="xs">
@@ -183,7 +183,7 @@ export function HomePage() {
             </Card>
           ))}
         </Grid>
-        <Alert variant="primary" title="Tip: everything on this site is built with Kaleido itself." action={<Button asChild size="sm" variant="soft"><a href="#/playground">Try your brand colors</a></Button>}>
+        <Alert variant="primary" title="Tip: everything on this site is built with Nova UI itself." action={<Button asChild size="sm" variant="soft"><a href="#/playground">Try your brand colors</a></Button>}>
           Switch the preset, color mode or direction in the header — every page updates instantly.
         </Alert>
       </section>

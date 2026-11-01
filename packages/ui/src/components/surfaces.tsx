@@ -8,29 +8,29 @@ import { transition } from "./shared.ts";
 
 /* -------------------------------------------------------------------- Card */
 
-const cardVariants = cva("relative flex flex-col overflow-hidden rounded-(--ks-card-radius) text-foreground", {
+const cardVariants = cva("relative flex flex-col overflow-hidden rounded-(--nv-card-radius) text-foreground", {
   variants: {
     variant: {
       elevated: "border border-border bg-surface shadow-sm",
       outline: "border border-border bg-surface",
       filled: "bg-surface-sunken",
       /** A tinted wash from the theme's brand colors. */
-      tinted: "border border-primary-border bg-(image:--ks-gradient-subtle)",
+      tinted: "border border-primary-border bg-(image:--nv-gradient-subtle)",
       /** A gradient border that frames featured content. */
       featured:
-        "border border-transparent [background:linear-gradient(var(--ks-color-surface),var(--ks-color-surface))_padding-box,var(--ks-gradient-vivid)_border-box] shadow-md",
+        "border border-transparent [background:linear-gradient(var(--nv-color-surface),var(--nv-color-surface))_padding-box,var(--nv-gradient-vivid)_border-box] shadow-md",
       /** Frosted translucent glass with backdrop blur and specular rim highlight. */
       glass:
-        "border border-(--ks-glass-border) bg-(--ks-glass-bg) backdrop-blur-(--ks-glass-blur) backdrop-saturate-150 shadow-(--ks-shadow-glass)",
+        "border border-(--nv-glass-border) bg-(--nv-glass-bg) backdrop-blur-(--nv-glass-blur) backdrop-saturate-150 shadow-(--nv-shadow-glass)",
       /** 3D tactile inflated clay aesthetic with dual highlights and floating shadow. */
       clay:
-        "border-0 rounded-(--ks-radius-2xl) bg-(--ks-clay-bg) shadow-(--ks-shadow-clay)",
+        "border-0 rounded-(--nv-radius-2xl) bg-(--nv-clay-bg) shadow-(--nv-shadow-clay)",
       /** Soft extruded material surface extruded from the background plane. */
       neomorphic:
-        "border-0 bg-(--ks-neo-bg) shadow-(--ks-shadow-neomorph)",
+        "border-0 bg-(--nv-neo-bg) shadow-(--nv-shadow-neomorph)",
     },
     interactive: {
-      true: `cursor-pointer hover:translate-y-(--ks-hover-lift) hover:shadow-lg hover:border-border-strong active:translate-y-0 active:scale-(--ks-press-scale) ${transition} has-[:focus-visible]:translate-y-(--ks-hover-lift) has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus-ring motion-reduce:hover:translate-y-0`,
+      true: `cursor-pointer hover:translate-y-(--nv-hover-lift) hover:shadow-lg hover:border-border-strong active:translate-y-0 active:scale-(--nv-press-scale) ${transition} has-[:focus-visible]:translate-y-(--nv-hover-lift) has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus-ring motion-reduce:hover:translate-y-0`,
       false: "",
     },
   },
@@ -38,17 +38,17 @@ const cardVariants = cva("relative flex flex-col overflow-hidden rounded-(--ks-c
     {
       variant: "clay",
       interactive: true,
-      className: "active:shadow-(--ks-shadow-clay-press) active:scale-(--ks-press-scale)",
+      className: "active:shadow-(--nv-shadow-clay-press) active:scale-(--nv-press-scale)",
     },
     {
       variant: "glass",
       interactive: true,
-      className: "hover:bg-(--ks-glass-bg-hover)",
+      className: "hover:bg-(--nv-glass-bg-hover)",
     },
     {
       variant: "neomorphic",
       interactive: true,
-      className: "active:shadow-(--ks-shadow-neomorph-inset)",
+      className: "active:shadow-(--nv-shadow-neomorph-inset)",
     },
   ],
   defaultVariants: { variant: "elevated", interactive: false },
@@ -64,7 +64,7 @@ export interface CardProps extends HTMLAttributes<HTMLDivElement>, VariantProps<
  */
 export const Card = forwardRef<HTMLDivElement, CardProps>(function Card({ asChild, variant, interactive, className, ...props }, ref) {
   const Comp = asChild ? Slot.Root : "div";
-  return <Comp ref={ref} data-slot="card" data-variant={variant ?? "elevated"} className={cn(cardVariants({ variant, interactive }), !hasSections(props.children) && "gap-4 p-(--ks-card-padding)", className)} {...props} />;
+  return <Comp ref={ref} data-slot="card" data-variant={variant ?? "elevated"} className={cn(cardVariants({ variant, interactive }), !hasSections(props.children) && "gap-4 p-(--nv-card-padding)", className)} {...props} />;
 });
 
 const SECTION = Symbol.for("ks.card.section");
@@ -79,7 +79,7 @@ function section<T>(component: T): T {
 
 export const CardHeader = section(
   forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(function CardHeader({ className, ...props }, ref) {
-    return <div ref={ref} data-card-header="" className={cn("flex flex-col gap-1.5 px-(--ks-card-padding) pt-(--ks-card-padding)", className)} {...props} />;
+    return <div ref={ref} data-card-header="" className={cn("flex flex-col gap-1.5 px-(--nv-card-padding) pt-(--nv-card-padding)", className)} {...props} />;
   }),
 );
 
@@ -88,7 +88,7 @@ export const CardTitle = forwardRef<HTMLHeadingElement, HTMLAttributes<HTMLHeadi
   ref,
 ) {
   const Tag = `h${level}` as const;
-  return <Tag ref={ref} className={cn("font-display text-lg font-semibold leading-tight tracking-(--ks-tracking-tight)", className)} {...props} />;
+  return <Tag ref={ref} className={cn("font-display text-lg font-semibold leading-tight tracking-(--nv-tracking-tight)", className)} {...props} />;
 });
 
 export const CardDescription = forwardRef<HTMLParagraphElement, HTMLAttributes<HTMLParagraphElement>>(function CardDescription({ className, ...props }, ref) {
@@ -97,13 +97,13 @@ export const CardDescription = forwardRef<HTMLParagraphElement, HTMLAttributes<H
 
 export const CardContent = section(
   forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(function CardContent({ className, ...props }, ref) {
-    return <div ref={ref} className={cn("flex flex-col gap-4 p-(--ks-card-padding) [[data-card-header]+&]:pt-4", className)} {...props} />;
+    return <div ref={ref} className={cn("flex flex-col gap-4 p-(--nv-card-padding) [[data-card-header]+&]:pt-4", className)} {...props} />;
   }),
 );
 
 export const CardFooter = section(
   forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(function CardFooter({ className, ...props }, ref) {
-    return <div ref={ref} className={cn("mt-auto flex items-center gap-2 border-t border-border bg-surface-sunken/60 px-(--ks-card-padding) py-3", className)} {...props} />;
+    return <div ref={ref} className={cn("mt-auto flex items-center gap-2 border-t border-border bg-surface-sunken/60 px-(--nv-card-padding) py-3", className)} {...props} />;
   }),
 );
 
@@ -209,7 +209,7 @@ export const AvatarGroup = forwardRef<HTMLDivElement, AvatarGroupProps>(function
       ref={ref}
       role="group"
       className={cn(
-        "flex items-center -space-x-2 rtl:space-x-reverse hover:-space-x-0.5 [&>*]:rounded-full [&>*]:ring-2 [&>*]:ring-surface [&>*]:transition-[margin,translate] [&>*]:duration-(--ks-duration-slow) [&>*]:ease-(--ks-ease-interactive) [&>*:hover]:-translate-y-1 [&>*:hover]:z-10 motion-reduce:[&>*]:transition-none",
+        "flex items-center -space-x-2 rtl:space-x-reverse hover:-space-x-0.5 [&>*]:rounded-full [&>*]:ring-2 [&>*]:ring-surface [&>*]:transition-[margin,translate] [&>*]:duration-(--nv-duration-slow) [&>*]:ease-(--nv-ease-interactive) [&>*:hover]:-translate-y-1 [&>*:hover]:z-10 motion-reduce:[&>*]:transition-none",
         className,
       )}
       {...props}

@@ -12,7 +12,7 @@ import { focusRing, transition } from "./shared.ts";
 /* ------------------------------------------------------------------- Image */
 
 const shimmer =
-  "animate-ks-shimmer bg-[length:200%_100%] bg-[linear-gradient(90deg,var(--ks-color-surface-sunken)_0%,var(--ks-color-surface-active)_50%,var(--ks-color-surface-sunken)_100%)] motion-reduce:animate-none";
+  "animate-nv-shimmer bg-[length:200%_100%] bg-[linear-gradient(90deg,var(--nv-color-surface-sunken)_0%,var(--nv-color-surface-active)_50%,var(--nv-color-surface-sunken)_100%)] motion-reduce:animate-none";
 
 export interface ImageProps extends ImgHTMLAttributes<HTMLImageElement> {
   /** Required: describe the image, or pass "" for a decorative one. */
@@ -44,7 +44,7 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(function Image({ a
   return (
     <span
       data-status={status}
-      className={cn("relative block overflow-hidden rounded-(--ks-card-radius) bg-surface-sunken", status === "loading" && shimmer, wrapperClassName)}
+      className={cn("relative block overflow-hidden rounded-(--nv-card-radius) bg-surface-sunken", status === "loading" && shimmer, wrapperClassName)}
       style={ratio ? { aspectRatio: ratio } : undefined}
     >
       {status === "error" ? (
@@ -72,7 +72,7 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(function Image({ a
             onError?.(e);
           }}
           className={cn(
-            "block size-full transition-opacity duration-(--ks-duration-slow) ease-(--ks-ease-out) motion-reduce:transition-none",
+            "block size-full transition-opacity duration-(--nv-duration-slow) ease-(--nv-ease-out) motion-reduce:transition-none",
             fit === "cover" ? "object-cover" : "object-contain",
             status === "loaded" ? "opacity-100" : "opacity-0",
             className,
@@ -185,7 +185,7 @@ export function Lightbox({ images, open, onOpenChange, index: indexProp, default
   return (
     <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
       <DialogPrimitive.Portal container={container}>
-        <DialogPrimitive.Overlay className="fixed inset-0 z-(--ks-z-overlay) bg-black/85 data-[state=open]:animate-ks-fade-in data-[state=closed]:animate-ks-fade-out" />
+        <DialogPrimitive.Overlay className="fixed inset-0 z-(--nv-z-overlay) bg-black/85 data-[state=open]:animate-nv-fade-in data-[state=closed]:animate-nv-fade-out" />
         <DialogPrimitive.Content
           aria-describedby={undefined}
           onOpenAutoFocus={() => {
@@ -196,7 +196,7 @@ export function Lightbox({ images, open, onOpenChange, index: indexProp, default
             e.preventDefault();
             opener.current.focus();
           }}
-          className="fixed inset-0 z-(--ks-z-modal) flex flex-col text-white outline-none data-[state=open]:animate-ks-fade-in data-[state=closed]:animate-ks-fade-out"
+          className="fixed inset-0 z-(--nv-z-modal) flex flex-col text-white outline-none data-[state=open]:animate-nv-fade-in data-[state=closed]:animate-nv-fade-out"
           onKeyDown={(e) => {
             const back = rtl ? 1 : -1;
             const key = { ArrowLeft: index + back, ArrowRight: index - back, Home: 0, End: total - 1 }[e.key];
@@ -233,7 +233,7 @@ export function Lightbox({ images, open, onOpenChange, index: indexProp, default
                 draggable={false}
                 onClick={() => setZoomed((z) => !z)}
                 className={cn(
-                  "select-none animate-ks-fade-in",
+                  "select-none animate-nv-fade-in",
                   zoomed ? "max-w-none cursor-zoom-out" : "max-h-full max-w-full cursor-zoom-in object-contain",
                 )}
                 style={zoomed ? { width: "200%" } : undefined}
@@ -287,13 +287,13 @@ export function ImageGallery({ images, columns = 3, ratio = 4 / 3, openLabel = (
                 setIndex(i);
                 setOpen(true);
               }}
-              className={cn("group/thumb block w-full cursor-zoom-in overflow-hidden rounded-(--ks-card-radius)", focusRing)}
+              className={cn("group/thumb block w-full cursor-zoom-in overflow-hidden rounded-(--nv-card-radius)", focusRing)}
             >
               <Image
                 src={image.thumbnail ?? image.src}
                 alt=""
                 ratio={ratio}
-                className="transition-transform duration-(--ks-duration-slow) ease-(--ks-ease-out) group-hover/thumb:scale-105 motion-reduce:transition-none motion-reduce:group-hover/thumb:scale-100"
+                className="transition-transform duration-(--nv-duration-slow) ease-(--nv-ease-out) group-hover/thumb:scale-105 motion-reduce:transition-none motion-reduce:group-hover/thumb:scale-100"
               />
             </button>
           </li>

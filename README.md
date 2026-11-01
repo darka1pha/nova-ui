@@ -1,4 +1,4 @@
-# Kaleido Design System
+# Nova UI
 
 A colorful, accessible, themeable design system for React. Design tokens are the
 source of truth; a real color engine turns any brand color into a complete,
@@ -7,8 +7,8 @@ and one motion system (hover lift and glow, spring presses, animated focus,
 drawn checkmarks, gliding tab indicators) that every theme can make calmer or livelier.
 
 ```tsx
-import { Badge, Button, Card, Input, ThemeProvider } from "@kaleido/ui";
-import "@kaleido/ui/styles.css";
+import { Badge, Button, Card, Input, ThemeProvider } from "@darkalpha/nova-ui";
+import "@darkalpha/nova-ui/styles.css";
 
 export function App() {
   return (
@@ -24,15 +24,12 @@ export function App() {
 }
 ```
 
-> `@kaleido` is a placeholder scope. Rename it in the two `package.json` files,
-> `.changeset/config.json` and the import paths once the real name is chosen.
-
 ## Packages
 
 | Package | What it is |
 | --- | --- |
-| [`@kaleido/tokens`](packages/tokens) | Framework-agnostic. Primitive palettes, OKLCH color engine, WCAG contrast resolver, semantic tokens, 8 theme presets, CSS/JSON generation. Zero dependencies. |
-| [`@kaleido/ui`](packages/ui) | React components, `ThemeProvider`, the precompiled `styles.css`, an optional Tailwind v4 preset, and `themes.css` for zero-JS theming. |
+| [`@darkalpha/nova-tokens`](packages/tokens) | Framework-agnostic. Primitive palettes, OKLCH color engine, WCAG contrast resolver, semantic tokens, 8 theme presets, CSS/JSON generation. Zero dependencies. |
+| [`@darkalpha/nova-ui`](packages/ui) | React components, `ThemeProvider`, the precompiled `styles.css`, an optional Tailwind v4 preset, and `themes.css` for zero-JS theming. |
 | [`apps/docs`](apps/docs) | Documentation site and live theme playground, built on the published package output. Hosts the Playwright suites. |
 
 ## Forms: plain React, native forms, or react-hook-form + zod
@@ -49,7 +46,7 @@ bindings live in a separate entry that the main entry never imports.
 ```tsx
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Form, FormErrorSummary, FormRootError, FormInput, FormDatePicker, FormSubmit, FormError } from "@kaleido/ui/react-hook-form";
+import { Form, FormErrorSummary, FormRootError, FormInput, FormDatePicker, FormSubmit, FormError } from "@darkalpha/nova-ui/react-hook-form";
 
 const form = useForm({ resolver: zodResolver(schema), mode: "onTouched" });
 
@@ -79,14 +76,14 @@ pnpm install:local ../path/to/your-app
 ```
 
 This builds both packages, packs them exactly as they would be published, copies
-the tarballs into `<your-app>/vendor/kaleido/`, points the app's `package.json`
-at them with `file:` dependencies (plus the override that makes `@kaleido/ui`'s
-own dependency on `@kaleido/tokens` resolve locally too), and runs the app's
+the tarballs into `<your-app>/vendor/nova-ui/`, points the app's `package.json`
+at them with `file:` dependencies (plus the override that makes `@darkalpha/nova-ui`'s
+own dependency on `@darkalpha/nova-tokens` resolve locally too), and runs the app's
 package manager — npm, pnpm, yarn or bun, detected from its lockfile. The app
-keeps working if this repository moves, and you can commit `vendor/kaleido/` to
+keeps working if this repository moves, and you can commit `vendor/nova-ui/` to
 share it. Re-run the command after changing the library.
 
-- `pnpm pack:local` only produces `local-packages/kaleido-tokens.tgz` and `kaleido-ui.tgz`.
+- `pnpm pack:local` only produces `local-packages/nova-tokens.tgz` and `nova-ui.tgz`.
 - [`examples/vite-app`](examples/vite-app) is a working consumer installed this way.
 
 Verified with npm (fresh install and re-install) and pnpm 12 (fresh install and
@@ -109,14 +106,14 @@ Requires Node 20.19+ and pnpm 10+ (developed on Node 24, pnpm 12).
 
 ```
 Primitive tokens        Semantic tokens                 Component tokens
-(OKLCH scales 50–975)   (background, primary-solid,     (--ks-button-radius,
- violet, teal, coral…)   danger-on-subtle, focus-ring…)   --ks-card-padding…)
+(OKLCH scales 50–975)   (background, primary-solid,     (--nv-button-radius,
+ violet, teal, coral…)   danger-on-subtle, focus-ring…)   --nv-card-padding…)
         │                        │                               │
         └──── resolveTheme() ────┘                               │
               picks steps per mode, fixes contrast               │
                         │                                        │
              CSS custom properties  ─────────────────────────────┘
-             --ks-color-*: light-dark(<light>, <dark>)
+             --nv-color-*: light-dark(<light>, <dark>)
                         │
      Tailwind v4 @theme inline  →  utilities (bg-primary, text-foreground-muted)
                         │
@@ -140,16 +137,16 @@ Primitive tokens        Semantic tokens                 Component tokens
   hydration mismatch. Providers nest, and overlays portal into the nearest provider
   so dialogs keep the theme, mode and direction they were opened from.
 - **Styling.** Components use Tailwind utilities compiled into a precompiled
-  `styles.css` (no preflight, a reset scoped to `.ks-theme`, cascade layers in
+  `styles.css` (no preflight, a reset scoped to `.nv-theme`, cascade layers in
   Tailwind's own order). Consumers need no Tailwind; Tailwind v4 apps import
-  `@kaleido/ui/tailwind.css` instead, so their one build generates the component
+  `@darkalpha/nova-ui/tailwind.css` instead, so their one build generates the component
   utilities and the same token utilities in a single, correctly ordered layer.
-- **Motion.** Interaction tokens (`--ks-hover-lift`, `--ks-press-scale`,
-  `--ks-ease-interactive` springs written with CSS `linear()`, motion-scaled
+- **Motion.** Interaction tokens (`--nv-hover-lift`, `--nv-press-scale`,
+  `--nv-ease-interactive` springs written with CSS `linear()`, motion-scaled
   durations, intent-colored glows) come from the theme's motion personality —
   `subtle`, `standard` or `expressive` — so one Button feels calm in "minimal"
-  and lively in "berry". Plain CSS classes (`ks-lift`, `ks-press`, `ks-grow`,
-  `ks-shine`, `ks-glow`, `ks-underline`, `ks-float`) bring the same motion to
+  and lively in "berry". Plain CSS classes (`nv-lift`, `nv-press`, `nv-grow`,
+  `nv-shine`, `nv-glow`, `nv-underline`, `nv-float`) bring the same motion to
   your own elements. Everything collapses under reduced motion.
 - **Distribution.** `tsc` emits one ESM file per source module with `.d.ts` and
   source maps, preserving `"use client"` directives for React Server Components.
@@ -160,7 +157,7 @@ Primitive tokens        Semantic tokens                 Component tokens
 
 | Decision | Why | Trade-off |
 | --- | --- | --- |
-| Two packages (`tokens`, `ui`) rather than five | `tokens` has real value on its own (servers, design tools, other frameworks). A separate `theme` package would only split `ThemeProvider` from the portal/direction context every overlay needs. Shared tsconfig/eslint packages add nothing in a two-package repo. | `@kaleido/ui` re-exports the token API so most apps need a single import. |
+| Two packages (`tokens`, `ui`) rather than five | `tokens` has real value on its own (servers, design tools, other frameworks). A separate `theme` package would only split `ThemeProvider` from the portal/direction context every overlay needs. Shared tsconfig/eslint packages add nothing in a two-package repo. | `@darkalpha/nova-ui` re-exports the token API so most apps need a single import. |
 | `light-dark()` for modes | Halves the CSS, makes "system" mode zero-JS, and nested providers can force a mode with one attribute. | Needs 2024+ browsers (Chrome 123, Firefox 120, Safari 17.5). |
 | Precompiled CSS + Tailwind internally | Consumers get one stylesheet and no build plugin; the library still enjoys utility-first authoring. | ~18 kB gzip for all component styles and animations, whatever you import. |
 | Motion in CSS, not a JS animation library | Hover, press, focus and enter/exit states run on the compositor, respect reduced motion automatically and cost no JavaScript. Springs use CSS `linear()`. | Only Reveal, AnimatedNumber, ripple and the tab indicator use JS. `linear()` needs 2023+ browsers (already below the `light-dark()` floor). |
@@ -180,8 +177,8 @@ Run on 2026-10-29, Windows 11, Node 24.21, Chromium (Playwright 1.64).
 | `pnpm build` | ✅ tokens + ui build; 168 pure annotations applied |
 | `pnpm typecheck` | ✅ strict, `noUncheckedIndexedAccess`, no `any` |
 | `pnpm lint` | ✅ 0 problems (typescript-eslint strict, react-hooks) |
-| Unit tests — `@kaleido/tokens` | ✅ 27 passed (color math, WCAG reference values, scales, every preset AA, brand/override handling, CSS output, motion tokens) |
-| Unit tests — `@kaleido/ui` | ✅ 84 passed (react-hook-form + zod: schema-derived required markers, every zod message incl. `criteriaMode: "all"`, focus-on-error for composite controls, error summary links, re-validation, success messages, async submit + disabled fieldset, `FormError` server errors; plain `register()`-style use; FormData from composite controls; theme switching, brand colors, motion styles, SSR helpers, persistence, nesting, RTL, reduced motion, keyboard, focus management, forms, DataTable, toast, ripple, tab indicator, Calendar/DatePicker keyboard + RTL, PinInput paste, TagInput, FileDropzone accept/reject, Carousel ARIA, axe on every new component) |
+| Unit tests — `@darkalpha/nova-tokens` | ✅ 27 passed (color math, WCAG reference values, scales, every preset AA, brand/override handling, CSS output, motion tokens) |
+| Unit tests — `@darkalpha/nova-ui` | ✅ 84 passed (react-hook-form + zod: schema-derived required markers, every zod message incl. `criteriaMode: "all"`, focus-on-error for composite controls, error summary links, re-validation, success messages, async submit + disabled fieldset, `FormError` server errors; plain `register()`-style use; FormData from composite controls; theme switching, brand colors, motion styles, SSR helpers, persistence, nesting, RTL, reduced motion, keyboard, focus management, forms, DataTable, toast, ripple, tab indicator, Calendar/DatePicker keyboard + RTL, PinInput paste, TagInput, FileDropzone accept/reject, Carousel ARIA, axe on every new component) |
 | Local install | ✅ `install:local` into `examples/vite-app` with npm (install + re-install, tokens resolved from the local tarball, app builds and runs) and into a fresh pnpm 12 project (install + re-install) |
 | Install verification | ✅ packed tarballs → fresh npm project: exports resolve, SSR renders deterministically without browser APIs, the main entry loads with react-hook-form **not installed** (and no module imports it), the `react-hook-form` subpath server-renders a zod form once installed, consumer types check under `Bundler` and `NodeNext` with `skipLibCheck: false` (misspelled field names are type errors) |
 | Playwright functional + a11y | ✅ 54 passed: all 21 pages error-free, axe WCAG 2.2 AA **with color contrast** on 9 pages × light/dark, react-hook-form + zod (summary, focus, re-validation, axe after a failed submit, server errors), keyboard (radio, menu, dialog focus trap, date picker), hover lift/glow and press scale, gliding tab indicator, PinInput clipboard paste, persisted mode, playground, preset switching, RTL, reduced motion, mobile nav with no horizontal overflow |
@@ -220,7 +217,7 @@ Select and Combobox are dominated by Radix's positioning engine.
 | Navigation | Tabs (gliding indicator), Accordion, Collapsible, Breadcrumbs, Pagination, NavigationMenu, Sidebar, Stepper |
 | Data | Card, Avatar, AvatarGroup, Table, DataTable, DescriptionList, Stat, Timeline, Carousel, BarList, Sparkline, CalendarHeatmap, SortableList (keyboard reordering), VirtualList, Image, ImageGallery, RelativeTime, CodeBlock, ExpandableText |
 | Chat | MessageList (sticks to the bottom, "Jump to latest"), MessageGroup, Message (streaming caret), ChatComposer (auto-grow, IME-safe Enter, attachments, Stop), TypingIndicator |
-| Form bindings (`@kaleido/ui/react-hook-form`, optional) | Form, FormController, Form{Input, Textarea, NumberInput, Checkbox, Switch, RadioGroup, Select, Combobox, DatePicker, Slider, PinInput, TagInput, Rating, FileDropzone}, FormSubmit, FormReset, FormErrorSummary, FormRootError, FormSuccess, FormError, formFields |
+| Form bindings (`@darkalpha/nova-ui/react-hook-form`, optional) | Form, FormController, Form{Input, Textarea, NumberInput, Checkbox, Switch, RadioGroup, Select, Combobox, DatePicker, Slider, PinInput, TagInput, Rating, FileDropzone}, FormSubmit, FormReset, FormErrorSummary, FormRootError, FormSuccess, FormError, formFields |
 | Motion | Reveal, AnimatedNumber, Marquee, GradientText, SpotlightCard, AnimatedBorder, `useRipple` |
 
 ## Known limitations
@@ -243,7 +240,7 @@ Select and Combobox are dominated by Radix's positioning engine.
 
 ## Releasing
 
-Changesets drives versioning (`@kaleido/tokens` and `@kaleido/ui` are versioned
+Changesets drives versioning (`@darkalpha/nova-tokens` and `@darkalpha/nova-ui` are versioned
 together). Add a changeset with `pnpm changeset`. On `main`, the release workflow
 opens a "Version packages" PR; merging it publishes to npm with provenance
 (requires an `NPM_TOKEN` secret). See the Upgrading page for the semver policy.

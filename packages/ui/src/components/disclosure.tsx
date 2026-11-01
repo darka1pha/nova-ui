@@ -20,7 +20,7 @@ export const CollapsibleContent = forwardRef<HTMLDivElement, ComponentPropsWitho
   return (
     <CollapsiblePrimitive.Content
       ref={ref}
-      className={cn("overflow-hidden data-[state=closed]:animate-ks-collapsible-up data-[state=open]:animate-ks-collapsible-down", className)}
+      className={cn("overflow-hidden data-[state=closed]:animate-nv-collapsible-up data-[state=open]:animate-nv-collapsible-down", className)}
       {...props}
     />
   );
@@ -73,7 +73,7 @@ export const ScrollArea = forwardRef<HTMLDivElement, ScrollAreaProps>(function S
     <ScrollAreaPrimitive.Scrollbar
       orientation={o}
       className={cn(
-        "flex touch-none select-none p-0.5 transition-opacity duration-(--ks-duration-normal) data-[state=hidden]:opacity-0 data-[state=visible]:opacity-100",
+        "flex touch-none select-none p-0.5 transition-opacity duration-(--nv-duration-normal) data-[state=hidden]:opacity-0 data-[state=visible]:opacity-100",
         o === "vertical" ? "h-full w-2.5" : "h-2.5 flex-col",
       )}
     >

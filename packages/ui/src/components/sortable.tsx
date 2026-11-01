@@ -157,7 +157,7 @@ export function SortableList<T>({ items, getKey, getLabel, onReorder, renderItem
               }}
               data-dragging={dragging || undefined}
               className={cn(
-                "flex items-center gap-2 rounded-(--ks-card-radius) border border-border bg-surface p-2 pe-3 text-sm",
+                "flex items-center gap-2 rounded-(--nv-card-radius) border border-border bg-surface p-2 pe-3 text-sm",
                 transition,
                 dragging && "relative z-10 scale-[1.02] border-primary shadow-lg motion-reduce:scale-100",
                 itemClassName,

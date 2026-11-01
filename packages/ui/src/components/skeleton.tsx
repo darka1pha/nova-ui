@@ -15,7 +15,7 @@ export const Skeleton = forwardRef<HTMLDivElement, SkeletonProps>(function Skele
       ref={ref}
       aria-hidden
       className={cn(
-        "animate-ks-shimmer bg-[length:200%_100%] bg-[linear-gradient(90deg,var(--ks-color-surface-sunken)_0%,var(--ks-color-surface-active)_50%,var(--ks-color-surface-sunken)_100%)]",
+        "animate-nv-shimmer bg-[length:200%_100%] bg-[linear-gradient(90deg,var(--nv-color-surface-sunken)_0%,var(--nv-color-surface-active)_50%,var(--nv-color-surface-sunken)_100%)]",
         shape === "circle" && "aspect-square rounded-full",
         shape === "text" && "h-[1em] w-full rounded-sm",
         shape === "rect" && "rounded-md",

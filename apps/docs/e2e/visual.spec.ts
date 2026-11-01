@@ -10,7 +10,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 /** The preview area of the Nth example on a page. */
-const example = (page: Page, title: string) => page.locator("section").filter({ has: page.getByRole("heading", { name: title, exact: true }) }).locator(".rounded-t-\\(--ks-card-radius\\)").first();
+const example = (page: Page, title: string) => page.locator("section").filter({ has: page.getByRole("heading", { name: title, exact: true }) }).locator(".rounded-t-\\(--nv-card-radius\\)").first();
 
 const cases: [route: string, title: string][] = [
   ["actions", "Variants"],

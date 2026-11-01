@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Card, FormField, Input, Stack, Switch, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, Textarea, toast } from "@kaleido/ui";
+import { Button, Card, FormField, Input, Stack, Switch, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, Textarea, toast } from "@darkalpha/nova-ui";
 import {
   Form,
   FormCheckbox,
@@ -18,7 +18,7 @@ import {
   FormSuccess,
   FormSwitch,
   FormTagInput,
-} from "@kaleido/ui/react-hook-form";
+} from "@darkalpha/nova-ui/react-hook-form";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -124,7 +124,7 @@ function LiveSignupForm() {
 function PlainForm() {
   const [username, setUsername] = useState("");
   const [bio, setBio] = useState("");
-  const taken = ["admin", "root", "kaleido"].includes(username.trim().toLowerCase());
+  const taken = ["admin", "root", "nova"].includes(username.trim().toLowerCase());
   const tooShort = username.length > 0 && username.length < 3;
   return (
     <Card variant="outline" className="gap-0 p-0">
@@ -206,7 +206,7 @@ export function FormsValidationPage() {
         <CodeBlock language="bash" code={`pnpm add react-hook-form @hookform/resolvers zod   # only if you want them`} />
         <Prose>
           <p>
-            Import the bindings from <code>@kaleido/ui/react-hook-form</code>. That entry is separate, so apps without react-hook-form never load it. Pass your
+            Import the bindings from <code>@darkalpha/nova-ui/react-hook-form</code>. That entry is separate, so apps without react-hook-form never load it. Pass your
             schema to <code>{"<Form schema>"}</code> and required markers come from it automatically; validation stays in your resolver.
           </p>
         </Prose>
@@ -216,7 +216,7 @@ export function FormsValidationPage() {
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Form, FormErrorSummary, FormRootError, FormInput, FormSelect,
-  FormDatePicker, FormCheckbox, FormSubmit, FormError } from "@kaleido/ui/react-hook-form";
+  FormDatePicker, FormCheckbox, FormSubmit, FormError } from "@darkalpha/nova-ui/react-hook-form";
 
 const schema = z.object({
   email: z.string().email("Enter a valid email address"),

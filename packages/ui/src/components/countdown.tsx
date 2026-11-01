@@ -100,7 +100,7 @@ export const Countdown = forwardRef<HTMLDivElement, CountdownProps>(function Cou
         <span aria-hidden>{completed}</span>
       ) : variant === "blocks" ? (
         shown.map((unit) => (
-          <span key={unit} aria-hidden className="flex min-w-16 flex-col items-center gap-1 rounded-(--ks-card-radius) border border-border bg-surface px-3 py-2 shadow-xs">
+          <span key={unit} aria-hidden className="flex min-w-16 flex-col items-center gap-1 rounded-(--nv-card-radius) border border-border bg-surface px-3 py-2 shadow-xs">
             <span className="font-display text-2xl font-semibold tabular-nums leading-none">{format.digits.format(parts[unit])}</span>
             <span className="text-xs text-foreground-muted">{format.unitText(unit, parts[unit], "long")}</span>
           </span>
@@ -186,7 +186,7 @@ export const Gauge = forwardRef<HTMLDivElement, GaugeProps>(function Gauge(
           strokeLinecap="round"
           pathLength={100}
           strokeDasharray={`${pct} 100`}
-          className={cn(strokeTone[activeTone], "transition-[stroke-dasharray,stroke] duration-(--ks-duration-slow) ease-(--ks-ease-out) motion-reduce:transition-none")}
+          className={cn(strokeTone[activeTone], "transition-[stroke-dasharray,stroke] duration-(--nv-duration-slow) ease-(--nv-ease-out) motion-reduce:transition-none")}
           // A zero-length round cap still draws a dot; hide it at the minimum.
           opacity={pct === 0 ? 0 : 1}
         />

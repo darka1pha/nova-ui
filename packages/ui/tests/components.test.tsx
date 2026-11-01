@@ -83,7 +83,7 @@ describe("Button", () => {
     expect(cls).toContain("bg-danger");
     expect(cls).toContain("my-custom-class");
     expect(cls).toContain("px-10");
-    expect(cls).not.toContain("px-(--ks-control-px-lg)");
+    expect(cls).not.toContain("px-(--nv-control-px-lg)");
   });
 
   it("loading disables, sets aria-busy and shows loading text", async () => {
@@ -276,7 +276,7 @@ describe("Overlays", () => {
     expect(dialog).toHaveAccessibleDescription("Send an invite.");
     expect(dialog.contains(document.activeElement)).toBe(true);
     // Portaled into the theme's portal root, so it inherits theme variables.
-    expect(dialog.closest(".ks-theme")).not.toBeNull();
+    expect(dialog.closest(".nv-theme")).not.toBeNull();
     await userEvent.keyboard("{Escape}");
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
     expect(trigger).toHaveFocus();
@@ -525,9 +525,9 @@ describe("Accessibility (axe)", () => {
       const glass = screen.getByTestId("card-glass");
       expect(glass.className).toContain("backdrop-blur");
       const clay = screen.getByTestId("card-clay");
-      expect(clay.className).toContain("shadow-(--ks-shadow-clay)");
+      expect(clay.className).toContain("shadow-(--nv-shadow-clay)");
       const neomorph = screen.getByTestId("card-neomorph");
-      expect(neomorph.className).toContain("shadow-(--ks-shadow-neomorph)");
+      expect(neomorph.className).toContain("shadow-(--nv-shadow-neomorph)");
     });
 
     it("renders Button and Badge with glass and clay styles", () => {
@@ -541,10 +541,10 @@ describe("Accessibility (axe)", () => {
         </div>,
       );
       expect(screen.getByRole("button", { name: "Glass Button" }).className).toContain("backdrop-blur");
-      expect(screen.getByRole("button", { name: "Clay Button" }).className).toContain("shadow-(--ks-shadow-clay-primary)");
-      expect(screen.getByRole("button", { name: "Neomorph Button" }).className).toContain("shadow-(--ks-shadow-neomorph-sm)");
+      expect(screen.getByRole("button", { name: "Clay Button" }).className).toContain("shadow-(--nv-shadow-clay-primary)");
+      expect(screen.getByRole("button", { name: "Neomorph Button" }).className).toContain("shadow-(--nv-shadow-neomorph-sm)");
       expect(screen.getByText("Glass Badge").className).toContain("backdrop-blur-sm");
-      expect(screen.getByText("Clay Badge").className).toContain("shadow-(--ks-shadow-clay)");
+      expect(screen.getByText("Clay Badge").className).toContain("shadow-(--nv-shadow-clay)");
     });
 
     it("exposes slots so the theme surface setting can restyle components", () => {
@@ -557,14 +557,14 @@ describe("Accessibility (axe)", () => {
           <Input aria-label="Vessel" />
         </ThemeProvider>,
       );
-      expect(document.querySelector("[data-ks-surface]")).toHaveAttribute("data-ks-surface", "clay");
+      expect(document.querySelector("[data-nv-surface]")).toHaveAttribute("data-nv-surface", "clay");
       expect(screen.getByText("Plain card")).toHaveAttribute("data-slot", "card");
       expect(screen.getByText("Plain card")).toHaveAttribute("data-variant", "elevated");
       // Explicit material variants keep their own look; the material layer skips them.
       expect(screen.getByText("Explicit glass")).toHaveAttribute("data-variant", "glass");
       expect(screen.getByRole("button", { name: "Save" })).toHaveAttribute("data-variant", "primary");
       expect(screen.getByRole("button", { name: "Cancel" })).toHaveAttribute("data-slot", "button");
-      expect(screen.getByRole("textbox", { name: "Vessel" })).toHaveClass("ks-field");
+      expect(screen.getByRole("textbox", { name: "Vessel" })).toHaveClass("nv-field");
     });
   });
 });

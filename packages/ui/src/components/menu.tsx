@@ -25,7 +25,7 @@ const itemClass = (inset?: boolean, destructive?: boolean) =>
 
 /** Keyboard shortcut hint aligned to the end of a menu item. Visual only. */
 export function MenuShortcut({ className, ...props }: HTMLAttributes<HTMLSpanElement>) {
-  return <span className={cn("ms-auto ps-4 font-mono text-xs tracking-(--ks-tracking-wide) text-foreground-muted", className)} {...props} />;
+  return <span className={cn("ms-auto ps-4 font-mono text-xs tracking-(--nv-tracking-wide) text-foreground-muted", className)} {...props} />;
 }
 
 /* ---------------------------------------------------------------- Dropdown */

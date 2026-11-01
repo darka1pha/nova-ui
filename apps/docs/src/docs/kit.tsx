@@ -1,4 +1,4 @@
-import { Badge, Card, cn, Heading, IconButton, Text, Tooltip } from "@kaleido/ui";
+import { Badge, Card, cn, Heading, IconButton, Text, Tooltip } from "@darkalpha/nova-ui";
 import { Check, Copy } from "lucide-react";
 import { useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
 
@@ -84,7 +84,7 @@ export function CodeBlock({ code, language = "tsx", className }: { code: string;
   return (
     <div className={cn("group relative overflow-hidden rounded-lg border border-border bg-surface-sunken", className)}>
       <div className="flex items-center justify-between border-b border-border px-3 py-1">
-        <span className="font-mono text-2xs uppercase tracking-(--ks-tracking-wider) text-foreground-muted">{language}</span>
+        <span className="font-mono text-2xs uppercase tracking-(--nv-tracking-wider) text-foreground-muted">{language}</span>
         <CopyButton text={trimmed} />
       </div>
       {/* Focusable so keyboard users can scroll long lines. */}
@@ -110,8 +110,8 @@ export function Example({ title, description, code, children, className }: { tit
         </div>
       ) : null}
       <Card variant="outline" className="gap-0 overflow-visible p-0">
-        <div className={cn("relative flex flex-wrap items-center gap-3 rounded-t-(--ks-card-radius) bg-surface p-6 sm:p-8", className)}>
-          <div aria-hidden className="pointer-events-none absolute inset-0 rounded-t-(--ks-card-radius) bg-(image:--ks-gradient-glow) opacity-60" />
+        <div className={cn("relative flex flex-wrap items-center gap-3 rounded-t-(--nv-card-radius) bg-surface p-6 sm:p-8", className)}>
+          <div aria-hidden className="pointer-events-none absolute inset-0 rounded-t-(--nv-card-radius) bg-(image:--nv-gradient-glow) opacity-60" />
           <div className="relative flex w-full flex-wrap items-center gap-3">{children}</div>
         </div>
         <div className="flex items-center justify-between border-t border-border px-3 py-1.5">
@@ -125,7 +125,7 @@ export function Example({ title, description, code, children, className }: { tit
           </button>
           <CopyButton text={code.trim()} />
         </div>
-        {showCode ? <CodeBlock code={code} className="rounded-none rounded-b-(--ks-card-radius) border-0 border-t" /> : null}
+        {showCode ? <CodeBlock code={code} className="rounded-none rounded-b-(--nv-card-radius) border-0 border-t" /> : null}
       </Card>
     </section>
   );
@@ -148,7 +148,7 @@ export function PropsTable({ props, title = "Props" }: { props: PropDoc[]; title
       </Heading>
       <div className="overflow-x-auto rounded-lg border border-border">
         <table className="w-full min-w-[40rem] text-sm">
-          <thead className="bg-surface-sunken text-start text-xs uppercase tracking-(--ks-tracking-wide) text-foreground-muted">
+          <thead className="bg-surface-sunken text-start text-xs uppercase tracking-(--nv-tracking-wide) text-foreground-muted">
             <tr>
               <th scope="col" className="px-4 py-2 text-start font-semibold">Prop</th>
               <th scope="col" className="px-4 py-2 text-start font-semibold">Type</th>

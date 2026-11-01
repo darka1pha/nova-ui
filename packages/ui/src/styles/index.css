@@ -1,12 +1,12 @@
 /*
- * @kaleido/ui/styles.css
+ * @darkalpha/nova-ui/styles.css
  * Tokens + scoped base + the utilities components use. No global preflight:
- * nothing here restyles elements outside a `.ks-theme` subtree.
+ * nothing here restyles elements outside a `.nv-theme` subtree.
  */
 /* Same layer names and order as Tailwind CSS v4, so this file composes with an
  * app's own Tailwind build in either load order. Tokens live in `theme`, the
  * scoped reset in `base`. Unlayered app CSS always wins over all of them. */
-@layer theme, base, components, utilities, ks-materials;
+@layer theme, base, components, utilities, nv-materials;
 
 @import "./generated/tokens.css";
 @import "tailwindcss/theme" layer(theme);

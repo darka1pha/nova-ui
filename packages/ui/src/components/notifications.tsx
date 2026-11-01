@@ -153,7 +153,7 @@ export const NotificationCenter = forwardRef<HTMLButtonElement, NotificationCent
       <Popover open={open} onOpenChange={onOpenChange}>
         <PopoverTrigger asChild>
           <IconButton ref={ref} aria-label={triggerLabel} variant="ghost" className={cn("relative", className)}>
-            <Bell className={cn(unread > 0 && "motion-safe:group-hover/button:animate-ks-wiggle")} />
+            <Bell className={cn(unread > 0 && "motion-safe:group-hover/button:animate-nv-wiggle")} />
             {unread > 0 ? (
               <span
                 aria-hidden
@@ -210,7 +210,7 @@ export const NotificationCenter = forwardRef<HTMLButtonElement, NotificationCent
             ) : (
               groups.map((g) => (
                 <section key={g.label} aria-label={g.label}>
-                  <h3 className="sticky top-0 z-10 bg-surface-raised/95 px-4 pb-1 pt-3 text-2xs font-semibold uppercase tracking-(--ks-tracking-wider) text-foreground-muted backdrop-blur-sm">
+                  <h3 className="sticky top-0 z-10 bg-surface-raised/95 px-4 pb-1 pt-3 text-2xs font-semibold uppercase tracking-(--nv-tracking-wider) text-foreground-muted backdrop-blur-sm">
                     {g.label}
                   </h3>
                   <ul className="m-0 list-none p-0">

@@ -24,42 +24,42 @@ import { Spinner } from "./spinner.tsx";
  * hover they lift and pick up a glow in their own hue; on press they settle
  * and squash on the theme's spring. (Class names are literal so Tailwind sees them.)
  */
-const lift = "hover:translate-y-(--ks-hover-lift) active:translate-y-0 motion-reduce:hover:translate-y-0";
-const sheen = "shadow-[inset_0_1px_0_0_rgb(255_255_255/0.16),var(--ks-shadow-xs)]";
+const lift = "hover:translate-y-(--nv-hover-lift) active:translate-y-0 motion-reduce:hover:translate-y-0";
+const sheen = "shadow-[inset_0_1px_0_0_rgb(255_255_255/0.16),var(--nv-shadow-xs)]";
 
 export const buttonVariants = cva(
-  `group/button relative isolate inline-flex shrink-0 select-none items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-(--ks-button-radius) border border-transparent font-semibold [&_svg]:pointer-events-none [&_svg]:shrink-0 ${focusRing} ${transition} ${pressable} ${disabledState}`,
+  `group/button relative isolate inline-flex shrink-0 select-none items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-(--nv-button-radius) border border-transparent font-semibold [&_svg]:pointer-events-none [&_svg]:shrink-0 ${focusRing} ${transition} ${pressable} ${disabledState}`,
   {
     variants: {
       variant: {
-        primary: `bg-primary text-primary-on-solid hover:bg-primary-solid-hover active:bg-primary-solid-active ${sheen} hover:shadow-[inset_0_1px_0_0_rgb(255_255_255/0.2),var(--ks-shadow-glow-primary)] ${lift}`,
-        secondary: `bg-secondary text-secondary-on-solid hover:bg-secondary-solid-hover active:bg-secondary-solid-active ${sheen} hover:shadow-[inset_0_1px_0_0_rgb(255_255_255/0.2),var(--ks-shadow-glow-secondary)] ${lift}`,
-        accent: `bg-accent text-accent-on-solid hover:bg-accent-solid-hover active:bg-accent-solid-active ${sheen} hover:shadow-[inset_0_1px_0_0_rgb(255_255_255/0.2),var(--ks-shadow-glow-accent)] ${lift}`,
-        neutral: `bg-neutral text-neutral-on-solid hover:bg-neutral-solid-hover active:bg-neutral-solid-active ${sheen} hover:shadow-[inset_0_1px_0_0_rgb(255_255_255/0.2),var(--ks-shadow-glow-neutral)] ${lift}`,
+        primary: `bg-primary text-primary-on-solid hover:bg-primary-solid-hover active:bg-primary-solid-active ${sheen} hover:shadow-[inset_0_1px_0_0_rgb(255_255_255/0.2),var(--nv-shadow-glow-primary)] ${lift}`,
+        secondary: `bg-secondary text-secondary-on-solid hover:bg-secondary-solid-hover active:bg-secondary-solid-active ${sheen} hover:shadow-[inset_0_1px_0_0_rgb(255_255_255/0.2),var(--nv-shadow-glow-secondary)] ${lift}`,
+        accent: `bg-accent text-accent-on-solid hover:bg-accent-solid-hover active:bg-accent-solid-active ${sheen} hover:shadow-[inset_0_1px_0_0_rgb(255_255_255/0.2),var(--nv-shadow-glow-accent)] ${lift}`,
+        neutral: `bg-neutral text-neutral-on-solid hover:bg-neutral-solid-hover active:bg-neutral-solid-active ${sheen} hover:shadow-[inset_0_1px_0_0_rgb(255_255_255/0.2),var(--nv-shadow-glow-neutral)] ${lift}`,
         soft: "bg-primary-subtle text-primary-on-subtle hover:bg-primary-subtle-hover",
         outline: "border-input bg-surface text-foreground shadow-xs hover:border-foreground-muted hover:bg-surface-hover active:bg-surface-active",
         ghost: "text-foreground hover:bg-surface-hover active:bg-surface-active",
-        danger: `bg-danger text-danger-on-solid hover:bg-danger-solid-hover active:bg-danger-solid-active ${sheen} hover:shadow-[inset_0_1px_0_0_rgb(255_255_255/0.2),var(--ks-shadow-glow-danger)] ${lift}`,
-        success: `bg-success text-success-on-solid hover:bg-success-solid-hover active:bg-success-solid-active ${sheen} hover:shadow-[inset_0_1px_0_0_rgb(255_255_255/0.2),var(--ks-shadow-glow-success)] ${lift}`,
+        danger: `bg-danger text-danger-on-solid hover:bg-danger-solid-hover active:bg-danger-solid-active ${sheen} hover:shadow-[inset_0_1px_0_0_rgb(255_255_255/0.2),var(--nv-shadow-glow-danger)] ${lift}`,
+        success: `bg-success text-success-on-solid hover:bg-success-solid-hover active:bg-success-solid-active ${sheen} hover:shadow-[inset_0_1px_0_0_rgb(255_255_255/0.2),var(--nv-shadow-glow-success)] ${lift}`,
         // The gradient pans and a light sweep crosses the button on hover.
         gradient:
-          `bg-(image:--ks-gradient-vivid) bg-[length:200%_100%] bg-[position:0%_50%] text-primary-on-solid hover:bg-[position:100%_50%] ${sheen} hover:shadow-[inset_0_1px_0_0_rgb(255_255_255/0.25),var(--ks-shadow-glow-primary)] ${lift} ` +
-          "[transition-property:background-position,box-shadow,translate,scale] [transition-duration:var(--ks-duration-slowest),var(--ks-duration-normal),var(--ks-duration-slow),var(--ks-duration-slow)] " +
-          "after:pointer-events-none after:absolute after:inset-0 after:-translate-x-[110%] after:bg-[linear-gradient(110deg,transparent_30%,rgb(255_255_255/0.32)_50%,transparent_70%)] after:transition-transform after:duration-(--ks-duration-slowest) after:ease-(--ks-ease-out) hover:after:translate-x-[110%] motion-reduce:after:hidden",
+          `bg-(image:--nv-gradient-vivid) bg-[length:200%_100%] bg-[position:0%_50%] text-primary-on-solid hover:bg-[position:100%_50%] ${sheen} hover:shadow-[inset_0_1px_0_0_rgb(255_255_255/0.25),var(--nv-shadow-glow-primary)] ${lift} ` +
+          "[transition-property:background-position,box-shadow,translate,scale] [transition-duration:var(--nv-duration-slowest),var(--nv-duration-normal),var(--nv-duration-slow),var(--nv-duration-slow)] " +
+          "after:pointer-events-none after:absolute after:inset-0 after:-translate-x-[110%] after:bg-[linear-gradient(110deg,transparent_30%,rgb(255_255_255/0.32)_50%,transparent_70%)] after:transition-transform after:duration-(--nv-duration-slowest) after:ease-(--nv-ease-out) hover:after:translate-x-[110%] motion-reduce:after:hidden",
         link: "h-auto px-0 text-primary-text underline decoration-transparent underline-offset-4 hover:decoration-current active:scale-100",
         glass:
-          `bg-(--ks-glass-bg) text-foreground border border-(--ks-glass-border) backdrop-blur-(--ks-glass-blur) backdrop-saturate-150 shadow-(--ks-shadow-glass) hover:bg-(--ks-glass-bg-hover) hover:border-border-strong active:bg-surface-active ${lift}`,
+          `bg-(--nv-glass-bg) text-foreground border border-(--nv-glass-border) backdrop-blur-(--nv-glass-blur) backdrop-saturate-150 shadow-(--nv-shadow-glass) hover:bg-(--nv-glass-bg-hover) hover:border-border-strong active:bg-surface-active ${lift}`,
         clay:
-          `rounded-(--ks-radius-xl) border-0 bg-primary text-primary-on-solid shadow-(--ks-shadow-clay-primary) hover:translate-y-(--ks-hover-lift) active:translate-y-0 active:shadow-(--ks-shadow-clay-press) active:scale-(--ks-press-scale)`,
+          `rounded-(--nv-radius-xl) border-0 bg-primary text-primary-on-solid shadow-(--nv-shadow-clay-primary) hover:translate-y-(--nv-hover-lift) active:translate-y-0 active:shadow-(--nv-shadow-clay-press) active:scale-(--nv-press-scale)`,
         neomorphic:
-          `border-0 bg-(--ks-neo-bg) text-foreground shadow-(--ks-shadow-neomorph-sm) hover:text-primary-text active:shadow-(--ks-shadow-neomorph-inset) active:scale-(--ks-press-scale)`,
+          `border-0 bg-(--nv-neo-bg) text-foreground shadow-(--nv-shadow-neomorph-sm) hover:text-primary-text active:shadow-(--nv-shadow-neomorph-inset) active:scale-(--nv-press-scale)`,
       },
       size: {
-        xs: "h-(--ks-control-h-xs) px-2.5 text-xs [&_svg]:size-3.5",
-        sm: "h-(--ks-control-h-sm) px-(--ks-control-px-sm) text-sm [&_svg]:size-4",
-        md: "h-(--ks-control-h-md) px-(--ks-control-px-md) text-sm [&_svg]:size-4",
-        lg: "h-(--ks-control-h-lg) px-(--ks-control-px-lg) text-md [&_svg]:size-5",
-        xl: "h-(--ks-control-h-xl) px-7 text-lg [&_svg]:size-5",
+        xs: "h-(--nv-control-h-xs) px-2.5 text-xs [&_svg]:size-3.5",
+        sm: "h-(--nv-control-h-sm) px-(--nv-control-px-sm) text-sm [&_svg]:size-4",
+        md: "h-(--nv-control-h-md) px-(--nv-control-px-md) text-sm [&_svg]:size-4",
+        lg: "h-(--nv-control-h-lg) px-(--nv-control-px-lg) text-md [&_svg]:size-5",
+        xl: "h-(--nv-control-h-xl) px-7 text-lg [&_svg]:size-5",
       },
       fullWidth: { true: "w-full", false: "" },
     },
@@ -106,7 +106,7 @@ export function useRipple(enabled = true) {
         <span
           key={r.id}
           onAnimationEnd={() => setRipples((current) => current.filter((x) => x.id !== r.id))}
-          className="absolute animate-ks-ripple rounded-full bg-current"
+          className="absolute animate-nv-ripple rounded-full bg-current"
           style={{ left: r.x, top: r.y, width: r.size, height: r.size }}
         />
       ))}
@@ -165,10 +165,10 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       {...props}
     >
       {ink.layer}
-      {loading ? <Spinner size="sm" label={null} className="animate-ks-fade-in" /> : startIcon}
+      {loading ? <Spinner size="sm" label={null} className="animate-nv-fade-in" /> : startIcon}
       {loading && loadingText ? loadingText : children}
       {!loading && endIcon ? (
-        <span className="inline-flex transition-transform duration-(--ks-duration-slow) ease-(--ks-ease-interactive) group-hover/button:translate-x-0.5 rtl:group-hover/button:-translate-x-0.5 motion-reduce:transition-none">
+        <span className="inline-flex transition-transform duration-(--nv-duration-slow) ease-(--nv-ease-interactive) group-hover/button:translate-x-0.5 rtl:group-hover/button:-translate-x-0.5 motion-reduce:transition-none">
           {endIcon}
         </span>
       ) : null}
@@ -182,11 +182,11 @@ export interface IconButtonProps extends Omit<ButtonProps, "startIcon" | "endIco
 }
 
 const iconSizes: Record<ButtonSize, string> = {
-  xs: "w-(--ks-control-h-xs) px-0",
-  sm: "w-(--ks-control-h-sm) px-0",
-  md: "w-(--ks-control-h-md) px-0",
-  lg: "w-(--ks-control-h-lg) px-0",
-  xl: "w-(--ks-control-h-xl) px-0",
+  xs: "w-(--nv-control-h-xs) px-0",
+  sm: "w-(--nv-control-h-sm) px-0",
+  md: "w-(--nv-control-h-md) px-0",
+  lg: "w-(--nv-control-h-lg) px-0",
+  xl: "w-(--nv-control-h-xl) px-0",
 };
 
 /** A square, icon-only button. Requires `aria-label`. The icon grows slightly on hover. */
@@ -198,7 +198,7 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(functio
       ref={ref}
       size={s}
       variant={variant}
-      className={cn(iconSizes[s], "[&_svg]:transition-transform [&_svg]:duration-(--ks-duration-slow) [&_svg]:ease-(--ks-ease-interactive) hover:[&_svg]:scale-115 motion-reduce:hover:[&_svg]:scale-100", className)}
+      className={cn(iconSizes[s], "[&_svg]:transition-transform [&_svg]:duration-(--nv-duration-slow) [&_svg]:ease-(--nv-ease-interactive) hover:[&_svg]:scale-115 motion-reduce:hover:[&_svg]:scale-100", className)}
       {...props}
     />
   );
@@ -229,8 +229,8 @@ export const ButtonGroup = forwardRef<HTMLDivElement, ButtonGroupProps>(function
           orientation === "vertical" ? "flex-col" : "flex-row",
           attached
             ? orientation === "vertical"
-              ? "[&>*]:rounded-none [&>*]:hover:translate-y-0 [&>*:first-child]:rounded-t-(--ks-button-radius) [&>*:last-child]:rounded-b-(--ks-button-radius) [&>*:not(:first-child)]:-mt-px [&>*:focus-visible]:z-10"
-              : "[&>*]:rounded-none [&>*]:hover:translate-y-0 [&>*:first-child]:rounded-s-(--ks-button-radius) [&>*:last-child]:rounded-e-(--ks-button-radius) [&>*:not(:first-child)]:-ms-px [&>*:focus-visible]:z-10"
+              ? "[&>*]:rounded-none [&>*]:hover:translate-y-0 [&>*:first-child]:rounded-t-(--nv-button-radius) [&>*:last-child]:rounded-b-(--nv-button-radius) [&>*:not(:first-child)]:-mt-px [&>*:focus-visible]:z-10"
+              : "[&>*]:rounded-none [&>*]:hover:translate-y-0 [&>*:first-child]:rounded-s-(--nv-button-radius) [&>*:last-child]:rounded-e-(--nv-button-radius) [&>*:not(:first-child)]:-ms-px [&>*:focus-visible]:z-10"
             : "gap-2",
           className,
         )}
@@ -241,8 +241,8 @@ export const ButtonGroup = forwardRef<HTMLDivElement, ButtonGroupProps>(function
 });
 
 export const toggleVariants = cva(
-  `inline-flex items-center justify-center gap-2 rounded-(--ks-button-radius) text-sm font-medium [&_svg]:size-4 [&_svg]:shrink-0 ${focusRing} ${transition} ${pressable} ${disabledState} ` +
-    "data-[state=on]:bg-primary-subtle data-[state=on]:text-primary-on-subtle data-[state=on]:[&_svg]:animate-ks-bounce-in",
+  `inline-flex items-center justify-center gap-2 rounded-(--nv-button-radius) text-sm font-medium [&_svg]:size-4 [&_svg]:shrink-0 ${focusRing} ${transition} ${pressable} ${disabledState} ` +
+    "data-[state=on]:bg-primary-subtle data-[state=on]:text-primary-on-subtle data-[state=on]:[&_svg]:animate-nv-bounce-in",
   {
     variants: {
       variant: {
@@ -250,9 +250,9 @@ export const toggleVariants = cva(
         outline: "border border-input bg-surface text-foreground-secondary hover:bg-surface-hover data-[state=on]:border-primary-border",
       },
       size: {
-        sm: "h-(--ks-control-h-sm) min-w-(--ks-control-h-sm) px-2",
-        md: "h-(--ks-control-h-md) min-w-(--ks-control-h-md) px-2.5",
-        lg: "h-(--ks-control-h-lg) min-w-(--ks-control-h-lg) px-3",
+        sm: "h-(--nv-control-h-sm) min-w-(--nv-control-h-sm) px-2",
+        md: "h-(--nv-control-h-md) min-w-(--nv-control-h-md) px-2.5",
+        lg: "h-(--nv-control-h-lg) min-w-(--nv-control-h-lg) px-3",
       },
     },
     defaultVariants: { variant: "ghost", size: "md" },
@@ -276,7 +276,7 @@ export const ToggleGroup = forwardRef<HTMLDivElement, ToggleGroupProps>(function
     <ToggleGroupPrimitive.Root
       ref={ref}
       data-slot="toggle-group"
-      className={cn("inline-flex items-center gap-1 rounded-(--ks-button-radius) bg-surface-sunken p-1", className)}
+      className={cn("inline-flex items-center gap-1 rounded-(--nv-button-radius) bg-surface-sunken p-1", className)}
       {...props}
     >
       <ToggleGroupContext.Provider value={{ variant, size }}>{children}</ToggleGroupContext.Provider>

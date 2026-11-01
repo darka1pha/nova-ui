@@ -1,7 +1,7 @@
 /**
  * Compiles the distributable stylesheets with the Tailwind CLI.
  * - styles.css: tokens + base + every utility the components use (no preflight)
- * - themes.css: all presets as [data-ks-theme] blocks for zero-JS theming
+ * - themes.css: all presets as [data-nv-theme] blocks for zero-JS theming
  * - tailwind.css: the same styles as source, for apps whose own Tailwind build
  *   generates the component utilities (import it instead of styles.css)
  */

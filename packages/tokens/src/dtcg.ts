@@ -100,5 +100,5 @@ export function dtcgTokens(themes: ResolvedTheme[]): DtcgGroup {
   const prefix = (g: DtcgGroup): DtcgGroup => JSON.parse(JSON.stringify(g).replace(/"\{(color|radius)\./g, '"{primitive.$1.')) as DtcgGroup;
   const theme: DtcgGroup = {};
   for (const t of themes) theme[t.id] = { light: prefix(themeTokens(t, "light")), dark: prefix(themeTokens(t, "dark")) };
-  return { $description: "Kaleido design tokens (W3C DTCG format)", primitive: primitiveTokens(), theme };
+  return { $description: "Nova UI design tokens (W3C DTCG format)", primitive: primitiveTokens(), theme };
 }

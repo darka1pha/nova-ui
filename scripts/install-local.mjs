@@ -1,15 +1,15 @@
 /**
- * Installs Kaleido into another project on this machine — no npm registry.
+ * Installs Nova UI into another project on this machine — no npm registry.
  *
  *   node scripts/install-local.mjs <path-to-project> [--no-build]
  *   pnpm install:local ../my-app
  *
  * What it does:
- *   1. builds and packs @kaleido/tokens and @kaleido/ui (pack-local.mjs)
- *   2. copies the tarballs into <project>/vendor/kaleido/, so the project keeps
+ *   1. builds and packs @darkalpha/nova-tokens and @darkalpha/nova-ui (pack-local.mjs)
+ *   2. copies the tarballs into <project>/vendor/nova-ui/, so the project keeps
  *      working even if this repository moves
- *   3. adds `file:` dependencies plus an override so @kaleido/ui's own
- *      dependency on @kaleido/tokens also resolves to the local tarball
+ *   3. adds `file:` dependencies plus an override so @darkalpha/nova-ui's own
+ *      dependency on @darkalpha/nova-tokens also resolves to the local tarball
  *   4. runs the project's package manager (npm, pnpm, yarn or bun, detected
  *      from its lockfile)
  *
@@ -41,11 +41,11 @@ const manager = existsSync(join(project, "pnpm-lock.yaml"))
       ? "bun"
       : "npm";
 
-console.log(`▸ Packing Kaleido`);
+console.log(`▸ Packing Nova UI`);
 const tarballs = packLocal({ build: !args.includes("--no-build") });
 
-console.log(`▸ Copying tarballs into ${relative(process.cwd(), project) || "."}/vendor/kaleido`);
-const vendor = join(project, "vendor", "kaleido");
+console.log(`▸ Copying tarballs into ${relative(process.cwd(), project) || "."}/vendor/nova-ui`);
+const vendor = join(project, "vendor", "nova-ui");
 mkdirSync(vendor, { recursive: true });
 // A fresh file name per install makes every package manager re-read the
 // tarball instead of trusting the integrity hash in its lockfile.
@@ -53,29 +53,29 @@ for (const old of readdirSync(vendor)) if (old.endsWith(".tgz")) rmSync(join(ven
 const stamp = new Date().toISOString().replace(/\D/g, "").slice(0, 14);
 const names = {};
 for (const [pkg, file] of Object.entries(tarballs)) {
-  names[pkg] = `kaleido-${pkg}-${stamp}.tgz`;
+  names[pkg] = `nova-${pkg}-${stamp}.tgz`;
   copyFileSync(file, join(vendor, names[pkg]));
 }
 
 const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
-const spec = (pkg) => `file:./vendor/kaleido/${names[pkg]}`;
-manifest.dependencies = { ...manifest.dependencies, "@kaleido/tokens": spec("tokens"), "@kaleido/ui": spec("ui") };
+const spec = (pkg) => `file:./vendor/nova-ui/${names[pkg]}`;
+manifest.dependencies = { ...manifest.dependencies, "@darkalpha/nova-tokens": spec("tokens"), "@darkalpha/nova-ui": spec("ui") };
 for (const peer of ["react", "react-dom"]) {
   if (!manifest.dependencies[peer] && !manifest.devDependencies?.[peer]) manifest.dependencies[peer] = "^19.0.0";
 }
 
-// Point @kaleido/ui's dependency on @kaleido/tokens at the local tarball too.
-if (manager === "npm" || manager === "bun") manifest.overrides = { ...manifest.overrides, "@kaleido/tokens": "$@kaleido/tokens" };
-if (manager === "pnpm") manifest.pnpm = { ...manifest.pnpm, overrides: { ...manifest.pnpm?.overrides, "@kaleido/tokens": spec("tokens") } };
-if (manager === "yarn") manifest.resolutions = { ...manifest.resolutions, "@kaleido/tokens": spec("tokens") };
+// Point @darkalpha/nova-ui's dependency on @darkalpha/nova-tokens at the local tarball too.
+if (manager === "npm" || manager === "bun") manifest.overrides = { ...manifest.overrides, "@darkalpha/nova-tokens": "$@darkalpha/nova-tokens" };
+if (manager === "pnpm") manifest.pnpm = { ...manifest.pnpm, overrides: { ...manifest.pnpm?.overrides, "@darkalpha/nova-tokens": spec("tokens") } };
+if (manager === "yarn") manifest.resolutions = { ...manifest.resolutions, "@darkalpha/nova-tokens": spec("tokens") };
 writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
 
 // pnpm 10+ reads overrides from pnpm-workspace.yaml (the package.json field above is for older pnpm).
 if (manager === "pnpm") {
   const yamlPath = join(project, "pnpm-workspace.yaml");
-  const entry = `  "@kaleido/tokens": "${spec("tokens")}"`;
+  const entry = `  "@darkalpha/nova-tokens": "${spec("tokens")}"`;
   let yaml = existsSync(yamlPath) ? readFileSync(yamlPath, "utf8") : "";
-  yaml = yaml.replace(/^\s+["']?@kaleido\/tokens["']?:.*\n?/m, "");
+  yaml = yaml.replace(/^\s+["']?@darkalpha\/nova-tokens["']?:.*\n?/m, "");
   yaml = /^overrides:\s*$/m.test(yaml) ? yaml.replace(/^overrides:\s*$/m, `overrides:\n${entry}`) : `${yaml.trimEnd()}${yaml.trim() ? "\n\n" : ""}overrides:\n${entry}\n`;
   writeFileSync(yamlPath, yaml);
 }
@@ -90,9 +90,9 @@ const install = {
 execSync(install, { cwd: project, stdio: "inherit" });
 
 console.log(`
-✔ Kaleido installed in ${project}
+✔ Nova UI installed in ${project}
 
-  import { Button, ThemeProvider } from "@kaleido/ui";
-  import "@kaleido/ui/styles.css";
+  import { Button, ThemeProvider } from "@darkalpha/nova-ui";
+  import "@darkalpha/nova-ui/styles.css";
 
 Re-run this command after changing the library to update the project.`);

@@ -27,7 +27,7 @@ export interface ThemeFonts {
 export type SemanticOverrides = Partial<Record<SemanticColorName, string>>;
 
 export interface ThemeDefinition {
-  /** Unique id used for registration and `data-ks-theme`. */
+  /** Unique id used for registration and `data-nv-theme`. */
   id: string;
   label: string;
   description?: string;

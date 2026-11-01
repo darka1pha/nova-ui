@@ -19,7 +19,7 @@ import {
   toast,
   ToggleGroup,
   ToggleGroupItem,
-} from "@kaleido/ui";
+} from "@darkalpha/nova-ui";
 import { useState } from "react";
 
 /** Settings: grouped sections, each with its own save, and a separated danger zone. */

@@ -52,15 +52,15 @@ const headingVariants = cva("font-display text-foreground text-balance", {
   variants: {
     size: {
       xs: "text-md font-semibold",
-      sm: "text-lg font-semibold tracking-(--ks-tracking-tight)",
-      md: "text-xl font-semibold tracking-(--ks-tracking-tight)",
-      lg: "text-2xl font-bold tracking-(--ks-tracking-tight)",
-      xl: "text-3xl font-bold tracking-(--ks-tracking-tight) sm:text-4xl",
-      "2xl": "text-4xl font-extrabold tracking-(--ks-tracking-tighter) sm:text-5xl",
-      display: "text-5xl font-extrabold tracking-(--ks-tracking-tighter) sm:text-6xl lg:text-7xl",
+      sm: "text-lg font-semibold tracking-(--nv-tracking-tight)",
+      md: "text-xl font-semibold tracking-(--nv-tracking-tight)",
+      lg: "text-2xl font-bold tracking-(--nv-tracking-tight)",
+      xl: "text-3xl font-bold tracking-(--nv-tracking-tight) sm:text-4xl",
+      "2xl": "text-4xl font-extrabold tracking-(--nv-tracking-tighter) sm:text-5xl",
+      display: "text-5xl font-extrabold tracking-(--nv-tracking-tighter) sm:text-6xl lg:text-7xl",
     },
     gradient: {
-      true: "bg-(image:--ks-gradient-vivid) bg-clip-text text-transparent [-webkit-text-fill-color:transparent]",
+      true: "bg-(image:--nv-gradient-vivid) bg-clip-text text-transparent [-webkit-text-fill-color:transparent]",
       false: "",
     },
   },
@@ -95,7 +95,7 @@ const linkVariants = cva(`inline-flex items-center gap-1 rounded-xs font-medium 
       plain: "text-primary-text no-underline hover:underline",
       /** Underline that grows from the start edge on hover and focus. */
       animated:
-        "text-primary-text no-underline bg-[linear-gradient(currentColor,currentColor)] bg-no-repeat bg-[length:0%_1.5px] bg-[position:0_100%] rtl:bg-[position:100%_100%] hover:bg-[length:100%_1.5px] focus-visible:bg-[length:100%_1.5px] [transition-property:background-size,color] duration-(--ks-duration-slow) ease-(--ks-ease-out)",
+        "text-primary-text no-underline bg-[linear-gradient(currentColor,currentColor)] bg-no-repeat bg-[length:0%_1.5px] bg-[position:0_100%] rtl:bg-[position:100%_100%] hover:bg-[length:100%_1.5px] focus-visible:bg-[length:100%_1.5px] [transition-property:background-size,color] duration-(--nv-duration-slow) ease-(--nv-ease-out)",
     },
   },
   defaultVariants: { variant: "default" },

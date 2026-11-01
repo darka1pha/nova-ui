@@ -123,7 +123,7 @@ export function Tour({ steps, open, onOpenChange, step: stepProp, defaultStep = 
         <div
           aria-hidden
           data-tour-spotlight=""
-          className="pointer-events-none fixed z-(--ks-z-overlay) rounded-(--ks-card-radius) shadow-[0_0_0_9999px_color-mix(in_oklab,var(--ks-color-overlay)_55%,transparent)] ring-2 ring-primary transition-[top,left,width,height] duration-(--ks-duration-slow) ease-(--ks-ease-interactive) motion-reduce:transition-none"
+          className="pointer-events-none fixed z-(--nv-z-overlay) rounded-(--nv-card-radius) shadow-[0_0_0_9999px_color-mix(in_oklab,var(--nv-color-overlay)_55%,transparent)] ring-2 ring-primary transition-[top,left,width,height] duration-(--nv-duration-slow) ease-(--nv-ease-interactive) motion-reduce:transition-none"
           style={{ top: rect.top - pad, left: rect.left - pad, width: rect.width + pad * 2, height: rect.height + pad * 2 }}
         />
       ) : null}
@@ -140,7 +140,7 @@ export function Tour({ steps, open, onOpenChange, step: stepProp, defaultStep = 
             aria-describedby={bodyId}
             // A stray click shouldn't end the tour; Escape and Skip do.
             onInteractOutside={(e) => e.preventDefault()}
-            className={cn(floatingSurface, "z-(--ks-z-modal) flex w-80 max-w-[calc(100vw-2rem)] flex-col gap-3 p-4 outline-none")}
+            className={cn(floatingSurface, "z-(--nv-z-modal) flex w-80 max-w-[calc(100vw-2rem)] flex-col gap-3 p-4 outline-none")}
           >
             <div className="flex items-start justify-between gap-3">
               <h2 id={titleId} className="font-display text-md font-semibold">

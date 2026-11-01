@@ -89,10 +89,10 @@ export function CommandPalette({ title = "Command palette", children, commandPro
   return (
     <DialogPrimitive.Root {...props}>
       <DialogPrimitive.Portal container={container}>
-        <DialogPrimitive.Overlay className="fixed inset-0 z-(--ks-z-overlay) bg-overlay/50 backdrop-blur-[2px] data-[state=open]:animate-ks-fade-in data-[state=closed]:animate-ks-fade-out" />
+        <DialogPrimitive.Overlay className="fixed inset-0 z-(--nv-z-overlay) bg-overlay/50 backdrop-blur-[2px] data-[state=open]:animate-nv-fade-in data-[state=closed]:animate-nv-fade-out" />
         <DialogPrimitive.Content
           aria-describedby={undefined}
-          className="fixed left-1/2 top-[15dvh] z-(--ks-z-modal) w-[calc(100vw-2rem)] max-w-xl -translate-x-1/2 overflow-hidden rounded-(--ks-dialog-radius) border border-border bg-surface-raised shadow-xl outline-none data-[state=open]:animate-ks-pop-in data-[state=closed]:animate-ks-pop-out"
+          className="fixed left-1/2 top-[15dvh] z-(--nv-z-modal) w-[calc(100vw-2rem)] max-w-xl -translate-x-1/2 overflow-hidden rounded-(--nv-dialog-radius) border border-border bg-surface-raised shadow-xl outline-none data-[state=open]:animate-nv-pop-in data-[state=closed]:animate-nv-pop-out"
         >
           <VisuallyHiddenPrimitive.Root asChild>
             <DialogPrimitive.Title>{title}</DialogPrimitive.Title>

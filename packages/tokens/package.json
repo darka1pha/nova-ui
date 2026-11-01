@@ -1,7 +1,7 @@
 {
-  "name": "@kaleido/tokens",
+  "name": "@darkalpha/nova-tokens",
   "version": "0.2.0",
-  "description": "Design tokens, color engine and theme definitions for the Kaleido design system. Framework-agnostic.",
+  "description": "Design tokens, color engine and theme definitions for the Nova UI design system. Framework-agnostic.",
   "license": "MIT",
   "author": "DarkAlpha",
   "homepage": "https://github.com/darka1pha/Kaleido#readme",

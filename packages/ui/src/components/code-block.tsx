@@ -62,7 +62,7 @@ export const CodeBlock = forwardRef<HTMLElement, CodeBlockProps>(function CodeBl
     <figure
       ref={ref}
       aria-labelledby={hasHeader ? captionId : undefined}
-      className={cn("group/code relative overflow-hidden rounded-(--ks-card-radius) border border-border bg-surface-sunken text-sm", className)}
+      className={cn("group/code relative overflow-hidden rounded-(--nv-card-radius) border border-border bg-surface-sunken text-sm", className)}
       {...props}
     >
       {hasHeader ? (

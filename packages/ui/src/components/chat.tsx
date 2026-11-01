@@ -85,7 +85,7 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(function
           atBottom.current = el.scrollHeight - el.scrollTop - el.clientHeight < 48;
           if (atBottom.current) setShowJump(false);
         }}
-        className={cn("min-h-0 flex-1 overflow-y-auto overscroll-contain rounded-(--ks-card-radius)", focusRing)}
+        className={cn("min-h-0 flex-1 overflow-y-auto overscroll-contain rounded-(--nv-card-radius)", focusRing)}
         {...props}
       >
         <div ref={content} className="flex flex-col gap-4 p-4">
@@ -97,7 +97,7 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(function
           type="button"
           onClick={() => scrollToBottom("smooth")}
           className={cn(
-            "absolute bottom-3 left-1/2 inline-flex -translate-x-1/2 items-center gap-1.5 rounded-full border border-border bg-surface-raised px-3 py-1.5 text-xs font-medium shadow-md hover:bg-surface-hover animate-ks-pop-in [&_svg]:size-3.5",
+            "absolute bottom-3 left-1/2 inline-flex -translate-x-1/2 items-center gap-1.5 rounded-full border border-border bg-surface-raised px-3 py-1.5 text-xs font-medium shadow-md hover:bg-surface-hover animate-nv-pop-in [&_svg]:size-3.5",
             focusRing,
           )}
         >
@@ -288,7 +288,7 @@ export const ChatComposer = forwardRef<HTMLTextAreaElement, ChatComposerProps>(f
     <form
       onSubmit={send}
       className={cn(
-        "ks-field flex flex-col gap-2 rounded-(--ks-card-radius) border border-input bg-surface p-2 shadow-xs focus-within:border-focus-ring focus-within:ring-3 focus-within:ring-focus-ring/25",
+        "nv-field flex flex-col gap-2 rounded-(--nv-card-radius) border border-input bg-surface p-2 shadow-xs focus-within:border-focus-ring focus-within:ring-3 focus-within:ring-focus-ring/25",
         transition,
         disabled && "opacity-60",
         className,

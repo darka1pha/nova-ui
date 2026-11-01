@@ -1,4 +1,4 @@
-import { Badge, Button, Card, cn, EmptyState, Heading, Kbd, SearchInput, Slider, Text, toast, ToggleGroup, ToggleGroupItem, Tooltip } from "@kaleido/ui";
+import { Badge, Button, Card, cn, EmptyState, Heading, Kbd, SearchInput, Slider, Text, toast, ToggleGroup, ToggleGroupItem, Tooltip } from "@darkalpha/nova-ui";
 import {
   Anchor,
   BillOfLading,
@@ -13,8 +13,8 @@ import {
   Tugboat,
   type IconComponent,
   type IconVariant,
-} from "@kaleido/ui/icons";
-import { iconCatalog, iconCategories, type IconEntry } from "@kaleido/ui/icons/catalog";
+} from "@darkalpha/nova-ui/icons";
+import { iconCatalog, iconCategories, type IconEntry } from "@darkalpha/nova-ui/icons/catalog";
 import { createElement, useDeferredValue, useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { CodeBlock, Example, Page, Prose, Section } from "../docs/kit.tsx";
@@ -141,12 +141,12 @@ function IconExplorer() {
         onClick={() => setSelectedName(entry.name)}
         onDoubleClick={() => copy(jsxSnippet(entry.name, variant, size, stroke), entry.name)}
         className={cn(
-          "group/tile relative flex h-24 min-w-0 flex-col items-center justify-center gap-2 rounded-xl border p-2 outline-none transition-[background-color,border-color,box-shadow,transform] duration-(--ks-duration-fast)",
+          "group/tile relative flex h-24 min-w-0 flex-col items-center justify-center gap-2 rounded-xl border p-2 outline-none transition-[background-color,border-color,box-shadow,transform] duration-(--nv-duration-fast)",
           "focus-visible:ring-3 focus-visible:ring-focus-ring/40",
           active ? "border-primary-border bg-primary-subtle shadow-xs" : "border-transparent hover:border-border hover:bg-surface-hover",
         )}
       >
-        <entry.component size={size} strokeWidth={stroke} variant={variant} className={cn("transition-transform duration-(--ks-duration-normal) ease-(--ks-ease-interactive) group-hover/tile:scale-110", colorClass)} />
+        <entry.component size={size} strokeWidth={stroke} variant={variant} className={cn("transition-transform duration-(--nv-duration-normal) ease-(--nv-ease-interactive) group-hover/tile:scale-110", colorClass)} />
         <span className={cn("w-full truncate text-center text-2xs", active ? "font-semibold text-primary-on-subtle" : "text-foreground-muted group-hover/tile:text-foreground")}>
           {entry.name}
         </span>
@@ -158,7 +158,7 @@ function IconExplorer() {
     <Card variant="outline" className="@container gap-0 overflow-visible p-0">
       {/* Toolbar */}
       {/* Sticky only when wide; on narrow screens it would eat a third of the viewport. */}
-      <div className="z-10 flex flex-col gap-3 @min-[40rem]:sticky @min-[40rem]:top-14 rounded-t-(--ks-card-radius) border-b border-border bg-surface/90 p-3 backdrop-blur-md sm:p-4">
+      <div className="z-10 flex flex-col gap-3 @min-[40rem]:sticky @min-[40rem]:top-14 rounded-t-(--nv-card-radius) border-b border-border bg-surface/90 p-3 backdrop-blur-md sm:p-4">
         <div className="flex flex-wrap items-center gap-3">
           <div className="relative min-w-56 flex-1">
             <SearchInput
@@ -296,7 +296,7 @@ function IconExplorer() {
 
 function IconInspector({ entry, variant, size, stroke, colorClass }: { entry: IconEntry; variant: IconVariant; size: number; stroke: number; colorClass?: string }) {
   const Glyph = entry.component;
-  const importLine = `import { ${entry.name} } from "@kaleido/ui/icons";`;
+  const importLine = `import { ${entry.name} } from "@darkalpha/nova-ui/icons";`;
   const jsx = jsxSnippet(entry.name, variant, size, stroke);
   const [justCopied, setJustCopied] = useState<string | null>(null);
   useEffect(() => {
@@ -335,15 +335,15 @@ function IconInspector({ entry, variant, size, stroke, colorClass }: { entry: Ic
         // Narrow: a floating "mini player" pinned to the bottom of the explorer while it's in view.
         "sticky bottom-3 z-10 mx-3 mb-3 rounded-xl border border-border bg-surface/95 p-3 shadow-lg backdrop-blur-md",
         // Wide: a side column with every detail.
-        "@min-[40rem]:static @min-[40rem]:m-0 @min-[40rem]:rounded-none @min-[40rem]:rounded-ee-(--ks-card-radius) @min-[40rem]:border-0 @min-[40rem]:border-s @min-[40rem]:border-border @min-[40rem]:bg-surface-sunken/60 @min-[40rem]:p-4 @min-[40rem]:shadow-none @min-[40rem]:backdrop-blur-none",
+        "@min-[40rem]:static @min-[40rem]:m-0 @min-[40rem]:rounded-none @min-[40rem]:rounded-ee-(--nv-card-radius) @min-[40rem]:border-0 @min-[40rem]:border-s @min-[40rem]:border-border @min-[40rem]:bg-surface-sunken/60 @min-[40rem]:p-4 @min-[40rem]:shadow-none @min-[40rem]:backdrop-blur-none",
       )}
     >
       <div className="flex flex-wrap items-center gap-3 @min-[40rem]:sticky @min-[40rem]:top-[15rem] @min-[40rem]:flex-col @min-[40rem]:flex-nowrap @min-[40rem]:items-stretch @min-[40rem]:gap-4">
         <div className="relative flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-border bg-surface @min-[40rem]:aspect-[4/3] @min-[40rem]:size-auto">
           {/* 24-unit grid behind the preview: one cell per unit, safe area outlined. */}
-          <div aria-hidden className="absolute hidden size-36 bg-[linear-gradient(var(--ks-color-border)_1px,transparent_1px),linear-gradient(90deg,var(--ks-color-border)_1px,transparent_1px)] bg-size-[6px_6px] opacity-60 @min-[40rem]:block" />
+          <div aria-hidden className="absolute hidden size-36 bg-[linear-gradient(var(--nv-color-border)_1px,transparent_1px),linear-gradient(90deg,var(--nv-color-border)_1px,transparent_1px)] bg-size-[6px_6px] opacity-60 @min-[40rem]:block" />
           <div aria-hidden className="absolute hidden size-[7.5rem] rounded-sm border border-dashed border-primary-border @min-[40rem]:block" />
-          <Glyph key={`${entry.name}-${variant}`} size={144} strokeWidth={stroke} variant={variant} className={cn("relative size-8 animate-ks-pop-in @min-[40rem]:size-36", colorClass)} />
+          <Glyph key={`${entry.name}-${variant}`} size={144} strokeWidth={stroke} variant={variant} className={cn("relative size-8 animate-nv-pop-in @min-[40rem]:size-36", colorClass)} />
         </div>
 
         <div className="hidden items-center justify-between gap-2 @min-[40rem]:flex">
@@ -424,12 +424,12 @@ export function IconsPage() {
       <Section title="Install and use">
         <Prose>
           <p>
-            Icons ship with <code>@kaleido/ui</code> under their own entry point. Each icon is a separate export, so your bundle only includes the ones you
+            Icons ship with <code>@darkalpha/nova-ui</code> under their own entry point. Each icon is a separate export, so your bundle only includes the ones you
             import. They inherit <code>currentColor</code>, so text color utilities and component colors just work.
           </p>
         </Prose>
         <CodeBlock
-          code={`import { ContainerShip, PortCrane, Search } from "@kaleido/ui/icons";
+          code={`import { ContainerShip, PortCrane, Search } from "@darkalpha/nova-ui/icons";
 
 <ContainerShip />                         // 24px, linear
 <PortCrane variant="duotone" size={20} />
@@ -462,7 +462,7 @@ export function IconsPage() {
         </Example>
         <Example
           title="Set defaults once with IconProvider"
-          description="Size, stroke and variant cascade to every Kaleido icon inside the provider. Props on an individual icon still win."
+          description="Size, stroke and variant cascade to every Nova UI icon inside the provider. Props on an individual icon still win."
           code={`<IconProvider variant="duotone" size={20}>
   <Sidebar>…</Sidebar>
 </IconProvider>`}
@@ -522,7 +522,7 @@ export function IconsPage() {
           </p>
         </Prose>
         <CodeBlock
-          code={`import { createIcon } from "@kaleido/ui/icons";
+          code={`import { createIcon } from "@darkalpha/nova-ui/icons";
 
 export const MooringLine = createIcon("mooring-line", [
   ["ellipse", { cx: 12, cy: 6, rx: 5, ry: 2 }, "f"],

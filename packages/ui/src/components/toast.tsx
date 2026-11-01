@@ -43,7 +43,7 @@ function update(id: string, patch: Partial<ToastRecord>) {
  */
 export function toast(options: ToastOptions | string, rest: Omit<ToastOptions, "title"> = {}): string {
   const opts = typeof options === "string" ? { ...rest, title: options } : options;
-  const id = opts.id ?? `ks-toast-${++counter}`;
+  const id = opts.id ?? `nv-toast-${++counter}`;
   const existing = toasts.some((t) => t.id === id);
   toasts = existing ? toasts.map((t) => (t.id === id ? { ...t, ...opts, id, open: true } : t)) : [...toasts, { ...opts, id, open: true }].slice(-5);
   emit();
@@ -82,7 +82,7 @@ const countdown: Record<ToastVariant, string> = {
 };
 
 const accent: Record<ToastVariant, string> = {
-  default: "before:bg-(image:--ks-gradient-brand)",
+  default: "before:bg-(image:--nv-gradient-brand)",
   success: "before:bg-success",
   warning: "before:bg-warning",
   danger: "before:bg-danger",
@@ -115,7 +115,7 @@ export function Toaster({ position = "bottom-end", label = "Notifications ({hotk
   const viewport = (
     <ToastPrimitive.Viewport
       label={label}
-      className={cn("fixed z-(--ks-z-toast) m-0 flex w-full max-w-sm list-none flex-col gap-2 p-4 outline-none", positions[position], position.startsWith("top") ? "flex-col-reverse" : "")}
+      className={cn("fixed z-(--nv-z-toast) m-0 flex w-full max-w-sm list-none flex-col gap-2 p-4 outline-none", positions[position], position.startsWith("top") ? "flex-col-reverse" : "")}
     />
   );
 
@@ -140,16 +140,16 @@ export function Toaster({ position = "bottom-end", label = "Notifications ({hotk
               "group/toast relative flex w-full items-start gap-3 overflow-hidden rounded-lg border border-border bg-surface-raised p-4 ps-5 text-foreground shadow-lg",
               "before:absolute before:inset-y-0 before:start-0 before:w-1",
               accent[variant],
-              "data-[state=open]:animate-ks-pop-in data-[state=closed]:animate-ks-fade-out",
-              "data-[swipe=move]:translate-x-(--radix-toast-swipe-move-x) data-[swipe=cancel]:translate-x-0 data-[swipe=end]:animate-ks-fade-out",
+              "data-[state=open]:animate-nv-pop-in data-[state=closed]:animate-nv-fade-out",
+              "data-[swipe=move]:translate-x-(--radix-toast-swipe-move-x) data-[swipe=cancel]:translate-x-0 data-[swipe=end]:animate-nv-fade-out",
             )}
           >
-            {icons[variant] ? <span className="mt-0.5 shrink-0 animate-ks-bounce-in [&_svg]:size-5">{icons[variant]}</span> : null}
+            {icons[variant] ? <span className="mt-0.5 shrink-0 animate-nv-bounce-in [&_svg]:size-5">{icons[variant]}</span> : null}
             {Number.isFinite(t.duration ?? 5000) ? (
               <span
                 aria-hidden
                 className={cn(
-                  "absolute inset-x-0 bottom-0 h-0.5 origin-left animate-ks-countdown opacity-60 rtl:origin-right group-hover/toast:[animation-play-state:paused] group-focus-within/toast:[animation-play-state:paused] motion-reduce:hidden",
+                  "absolute inset-x-0 bottom-0 h-0.5 origin-left animate-nv-countdown opacity-60 rtl:origin-right group-hover/toast:[animation-play-state:paused] group-focus-within/toast:[animation-play-state:paused] motion-reduce:hidden",
                   countdown[variant],
                 )}
                 style={{ animationDuration: `${t.duration ?? 5000}ms` }}

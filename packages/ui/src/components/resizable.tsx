@@ -88,7 +88,7 @@ const isPanel = (node: ReactNode): node is ReactElement<ResizablePanelProps> => 
 function readSaved(key: string | undefined, count: number): number[] | null {
   if (!key) return null;
   try {
-    const parsed = JSON.parse(window.localStorage.getItem(`ks-resizable:${key}`) ?? "null") as unknown;
+    const parsed = JSON.parse(window.localStorage.getItem(`nv-resizable:${key}`) ?? "null") as unknown;
     if (Array.isArray(parsed) && parsed.length === count && parsed.every((n) => typeof n === "number")) return parsed as number[];
   } catch {
     /* storage unavailable or corrupt: fall back to defaults */
@@ -133,7 +133,7 @@ export const ResizablePanelGroup = forwardRef<HTMLDivElement, ResizablePanelGrou
       onLayout?.(next);
       if (autoSaveId) {
         try {
-          window.localStorage.setItem(`ks-resizable:${autoSaveId}`, JSON.stringify(next));
+          window.localStorage.setItem(`nv-resizable:${autoSaveId}`, JSON.stringify(next));
         } catch {
           /* storage may be blocked; the layout still works for this visit */
         }
@@ -357,7 +357,7 @@ export const ResizableHandle = forwardRef<HTMLDivElement, ResizableHandleProps>(
       onKeyDown={onKeyDown}
       onDoubleClick={() => group.toggleCollapse(index)}
       className={cn(
-        "group/handle relative flex shrink-0 touch-none items-center justify-center bg-border outline-none transition-colors duration-(--ks-duration-fast)",
+        "group/handle relative flex shrink-0 touch-none items-center justify-center bg-border outline-none transition-colors duration-(--nv-duration-fast)",
         horizontal ? "w-px cursor-col-resize" : "h-px cursor-row-resize",
         // A wider invisible hit area than the 1px line.
         horizontal ? "after:absolute after:inset-y-0 after:-inset-x-1.5" : "after:absolute after:inset-x-0 after:-inset-y-1.5",

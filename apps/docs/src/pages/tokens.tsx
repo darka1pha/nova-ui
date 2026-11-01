@@ -1,5 +1,5 @@
-import { primitives } from "@kaleido/tokens";
-import { Badge, SearchInput, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, Tooltip, contrastRatio, useTheme, type SemanticColorName } from "@kaleido/ui";
+import { primitives } from "@darkalpha/nova-tokens";
+import { Badge, SearchInput, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, Tooltip, contrastRatio, useTheme, type SemanticColorName } from "@darkalpha/nova-ui";
 import { useMemo, useState } from "react";
 import { CopyButton, Page, Prose, Section } from "../docs/kit.tsx";
 
@@ -23,7 +23,7 @@ export function TokensPage() {
       <Section title="Semantic colors">
         <Prose>
           <p>
-            Use them as CSS variables (<code>var(--ks-color-primary-solid)</code>) or, with the Tailwind preset, as utilities (<code>bg-primary</code>,{" "}
+            Use them as CSS variables (<code>var(--nv-color-primary-solid)</code>) or, with the Tailwind preset, as utilities (<code>bg-primary</code>,{" "}
             <code>text-primary-on-subtle</code>, <code>border-border-strong</code>). <code>solid</code> maps to the bare intent name.
           </p>
         </Prose>
@@ -53,8 +53,8 @@ export function TokensPage() {
                 </TableCell>
                 <TableCell>
                   <span className="inline-flex items-center gap-1 font-mono text-xs text-foreground-muted">
-                    --ks-color-{name}
-                    <CopyButton text={`var(--ks-color-${name})`} label="Copy variable" />
+                    --nv-color-{name}
+                    <CopyButton text={`var(--nv-color-${name})`} label="Copy variable" />
                   </span>
                 </TableCell>
               </TableRow>
@@ -92,11 +92,11 @@ export function TokensPage() {
       <Section title="Scales">
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="flex flex-col gap-2">
-            <Badge variant="neutral" className="w-fit">Radius (from --ks-radius-base)</Badge>
+            <Badge variant="neutral" className="w-fit">Radius (from --nv-radius-base)</Badge>
             <div className="flex flex-wrap items-end gap-3">
               {["xs", "sm", "md", "lg", "xl", "2xl", "full"].map((r) => (
                 <div key={r} className="flex flex-col items-center gap-1">
-                  <div className="size-12 border-2 border-primary bg-primary-subtle" style={{ borderRadius: `var(--ks-radius-${r})` }} />
+                  <div className="size-12 border-2 border-primary bg-primary-subtle" style={{ borderRadius: `var(--nv-radius-${r})` }} />
                   <code className="text-2xs text-foreground-muted">{r}</code>
                 </div>
               ))}
@@ -106,7 +106,7 @@ export function TokensPage() {
             <Badge variant="neutral" className="w-fit">Elevation</Badge>
             <div className="flex flex-wrap gap-4 p-2">
               {["xs", "sm", "md", "lg", "xl"].map((s) => (
-                <div key={s} className="flex size-14 items-center justify-center rounded-md bg-surface-raised text-2xs font-semibold text-foreground-muted" style={{ boxShadow: `var(--ks-shadow-${s})` }}>
+                <div key={s} className="flex size-14 items-center justify-center rounded-md bg-surface-raised text-2xs font-semibold text-foreground-muted" style={{ boxShadow: `var(--nv-shadow-${s})` }}>
                   {s}
                 </div>
               ))}
@@ -138,7 +138,7 @@ export function TokensPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {[...Object.entries(primitives.duration).map(([k, v]) => [`--ks-duration-${k}`, v]), ...Object.entries(primitives.easing).map(([k, v]) => [`--ks-ease-${k}`, v])].map(([k, v]) => (
+                {[...Object.entries(primitives.duration).map(([k, v]) => [`--nv-duration-${k}`, v]), ...Object.entries(primitives.easing).map(([k, v]) => [`--nv-ease-${k}`, v])].map(([k, v]) => (
                   <TableRow key={k}>
                     <TableCell className="font-mono text-xs">{k}</TableCell>
                     <TableCell className="font-mono text-xs text-foreground-secondary">{v}</TableCell>

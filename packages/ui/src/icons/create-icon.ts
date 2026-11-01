@@ -43,7 +43,7 @@ export interface IconComponentProps extends Omit<SVGProps<SVGSVGElement>, "ref">
 }
 
 export type IconComponent = ForwardRefExoticComponent<IconComponentProps & RefAttributes<SVGSVGElement>> & {
-  /** kebab-case name, also the `ks-icon-<name>` class. */
+  /** kebab-case name, also the `nv-icon-<name>` class. */
   iconName: string;
 };
 
@@ -51,7 +51,7 @@ type IconDefaults = Pick<IconComponentProps, "size" | "strokeWidth" | "variant" 
 
 const IconDefaultsContext = createContext<IconDefaults>({});
 
-/** Sets default size, stroke and variant for every Kaleido icon inside it. */
+/** Sets default size, stroke and variant for every Nova UI icon inside it. */
 export function IconProvider({ children, ...defaults }: IconDefaults & { children: ReactNode }) {
   const parent = useContext(IconDefaultsContext);
   return createElement(IconDefaultsContext.Provider, { value: { ...parent, ...defaults } }, children);
@@ -61,10 +61,10 @@ const SECONDARY_OPACITY = 0.5;
 const SOFT_FILL_OPACITY = 0.16;
 
 /**
- * Builds an icon on the Kaleido grid: 24×24, 1.5px round strokes, `currentColor`,
+ * Builds an icon on the Nova UI grid: 24×24, 1.5px round strokes, `currentColor`,
  * with `linear`, `duotone` and `soft` variants driven by per-element flags.
  *
- * @param name kebab-case name, used for the `ks-icon-<name>` class.
+ * @param name kebab-case name, used for the `nv-icon-<name>` class.
  */
 export function createIcon(name: string, elements: IconElement[]): IconComponent {
   const Icon = forwardRef<SVGSVGElement, IconComponentProps>(function Icon(props, ref) {
@@ -111,7 +111,7 @@ export function createIcon(name: string, elements: IconElement[]): IconComponent
         role: labelled ? "img" : undefined,
         focusable: "false",
         "data-variant": variant,
-        className: cn("ks-icon", `ks-icon-${name}`, className),
+        className: cn("nv-icon", `nv-icon-${name}`, className),
         ...rest,
       },
       title ? createElement("title", null, title) : null,

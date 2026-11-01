@@ -5,26 +5,26 @@
  * using the theme's interactive easing, so focus moves are easy to follow.
  */
 export const focusRing =
-  "outline-none focus-visible:outline-2 focus-visible:outline-offset-(--ks-focus-ring-offset) focus-visible:outline-focus-ring focus-visible:animate-ks-focus-in";
+  "outline-none focus-visible:outline-2 focus-visible:outline-offset-(--nv-focus-ring-offset) focus-visible:outline-focus-ring focus-visible:animate-nv-focus-in";
 
 export const disabledState = "disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50";
 
 /** Colors fade on the standard curve; movement (translate/scale) uses the theme's spring. */
 export const transition =
-  "transition-[color,background-color,border-color,box-shadow,opacity,translate,scale,filter] [transition-duration:var(--ks-duration-fast),var(--ks-duration-fast),var(--ks-duration-fast),var(--ks-duration-normal),var(--ks-duration-fast),var(--ks-duration-slow),var(--ks-duration-slow),var(--ks-duration-normal)] [transition-timing-function:var(--ks-ease-standard),var(--ks-ease-standard),var(--ks-ease-standard),var(--ks-ease-standard),var(--ks-ease-standard),var(--ks-ease-interactive),var(--ks-ease-interactive),var(--ks-ease-standard)] motion-reduce:transition-none";
+  "transition-[color,background-color,border-color,box-shadow,opacity,translate,scale,filter] [transition-duration:var(--nv-duration-fast),var(--nv-duration-fast),var(--nv-duration-fast),var(--nv-duration-normal),var(--nv-duration-fast),var(--nv-duration-slow),var(--nv-duration-slow),var(--nv-duration-normal)] [transition-timing-function:var(--nv-ease-standard),var(--nv-ease-standard),var(--nv-ease-standard),var(--nv-ease-standard),var(--nv-ease-standard),var(--nv-ease-interactive),var(--nv-ease-interactive),var(--nv-ease-standard)] motion-reduce:transition-none";
 
 /** Shrinks slightly while pressed. */
-export const pressable = "active:scale-(--ks-press-scale) motion-reduce:active:scale-100";
+export const pressable = "active:scale-(--nv-press-scale) motion-reduce:active:scale-100";
 
 /** Floating surfaces: menus, popovers, selects, comboboxes. */
 export const floatingSurface =
-  "z-(--ks-z-popover) overflow-hidden rounded-(--ks-popover-radius) border border-border bg-surface-raised text-foreground shadow-(--ks-popover-shadow) " +
-  "data-[state=open]:animate-ks-pop-in data-[state=closed]:animate-ks-pop-out origin-(--radix-popper-transform-origin)";
+  "z-(--nv-z-popover) overflow-hidden rounded-(--nv-popover-radius) border border-border bg-surface-raised text-foreground shadow-(--nv-popover-shadow) " +
+  "data-[state=open]:animate-nv-pop-in data-[state=closed]:animate-nv-pop-out origin-(--radix-popper-transform-origin)";
 
 /** A selectable row inside a floating surface. The highlight slides in rather than blinking. */
 export const menuItem =
-  "relative flex min-h-8 cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-[background-color,color,padding] duration-(--ks-duration-fast) ease-(--ks-ease-standard) " +
+  "relative flex min-h-8 cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-[background-color,color,padding] duration-(--nv-duration-fast) ease-(--nv-ease-standard) " +
   "data-[highlighted]:bg-primary-subtle data-[highlighted]:text-primary-on-subtle data-[highlighted]:ps-2.5 " +
-  "data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:transition-transform [&_svg]:duration-(--ks-duration-normal) data-[highlighted]:[&_svg]:scale-110";
+  "data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:transition-transform [&_svg]:duration-(--nv-duration-normal) data-[highlighted]:[&_svg]:scale-110";
 
 export type Size = "sm" | "md" | "lg";

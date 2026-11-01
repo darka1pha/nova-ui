@@ -146,7 +146,7 @@ export function staticVariables(): Record<string, string> {
   vars[p("gradient-vivid")] = `linear-gradient(120deg, ${v("color-primary-solid")} 0%, ${v("color-secondary-solid")} 55%, ${v("color-accent-solid")} 100%)`;
   vars[p("gradient-subtle")] = `linear-gradient(135deg, ${v("color-primary-subtle")} 0%, ${v("color-secondary-subtle")} 50%, ${v("color-accent-subtle")} 100%)`;
   vars[p("gradient-conic")] =
-    `conic-gradient(from var(--ks-angle, 0deg), ${v("color-primary-solid")}, ${v("color-secondary-solid")}, ${v("color-accent-solid")}, ${v("color-primary-solid")})`;
+    `conic-gradient(from var(--nv-angle, 0deg), ${v("color-primary-solid")}, ${v("color-secondary-solid")}, ${v("color-accent-solid")}, ${v("color-primary-solid")})`;
   vars[p("gradient-mesh")] =
     `radial-gradient(at 15% 20%, color-mix(in srgb, ${v("color-primary-solid")} 30%, transparent) 0, transparent 50%), radial-gradient(at 85% 10%, color-mix(in srgb, ${v("color-accent-solid")} 25%, transparent) 0, transparent 45%), radial-gradient(at 60% 90%, color-mix(in srgb, ${v("color-secondary-solid")} 25%, transparent) 0, transparent 50%)`;
   vars[p("gradient-glow")] = `radial-gradient(60% 60% at 50% 0%, color-mix(in srgb, ${v("color-primary-solid")} 22%, transparent) 0%, transparent 100%)`;
@@ -182,7 +182,7 @@ export function staticVariables(): Record<string, string> {
  * A custom property that references another is resolved on the element that
  * declares it, and descendants inherit the result. Declared only on `:root`,
  * these would freeze to the outer theme's colors, radius and density, so a
- * nested ThemeProvider (or a `[data-ks-theme]` element) would keep the parent's
+ * nested ThemeProvider (or a `[data-nv-theme]` element) would keep the parent's
  * gradients and materials. Re-declaring them on every theme root makes each
  * one recompute from its own inputs.
  */
@@ -191,7 +191,7 @@ export function derivedVariables(): Record<string, string> {
 }
 
 /** Selector for every element that sets a theme; derived tokens are re-declared here. */
-export const THEME_ROOT_SELECTOR = ":where(.ks-theme, [data-ks-theme])";
+export const THEME_ROOT_SELECTOR = ":where(.nv-theme, [data-nv-theme])";
 
 export function cssBlock(selector: string, vars: Record<string, string>, extra = ""): string {
   const body = Object.entries(vars)
@@ -200,8 +200,8 @@ export function cssBlock(selector: string, vars: Record<string, string>, extra =
   return `${selector} {\n${body}${extra ? `\n${extra}` : ""}\n}\n`;
 }
 
-/** Complete CSS for a theme scoped to a selector, e.g. `[data-ks-theme="ocean"]`. */
-export function themeCss(theme: ResolvedTheme, selector = `[data-ks-theme="${theme.id}"]`): string {
+/** Complete CSS for a theme scoped to a selector, e.g. `[data-nv-theme="ocean"]`. */
+export function themeCss(theme: ResolvedTheme, selector = `[data-nv-theme="${theme.id}"]`): string {
   return cssBlock(selector, themeVariables(theme));
 }
 

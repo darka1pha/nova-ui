@@ -51,13 +51,13 @@ import {
   presets,
   type DataTableColumn,
   type PresetName,
-} from "@kaleido/ui";
+} from "@darkalpha/nova-ui";
 import {
   type Density,
   type RadiusPreset,
   type ShadowStyle,
   type SurfaceStyle,
-} from "@kaleido/tokens";
+} from "@darkalpha/nova-tokens";
 import {
   Anchor,
   CheckCircle2,
@@ -353,7 +353,7 @@ export function TemplatePage() {
                 onClick={() => setActivePreset(pId)}
                 aria-pressed={isSelected}
                 className={cn(
-                  "flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-semibold transition-all duration-(--ks-duration-fast)",
+                  "flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-semibold transition-all duration-(--nv-duration-fast)",
                   isSelected
                     ? "bg-primary text-primary-on-solid shadow-sm scale-105"
                     : "bg-surface-sunken text-foreground-secondary hover:bg-surface-hover hover:text-foreground",
@@ -462,18 +462,18 @@ export function TemplatePage() {
         density={activeDensity}
         surface={activeSurface}
       >
-        <div className="relative flex min-h-[720px] w-full flex-col overflow-hidden rounded-2xl border border-border bg-surface text-foreground shadow-xl transition-all duration-(--ks-duration-slow)">
+        <div className="relative flex min-h-[720px] w-full flex-col overflow-hidden rounded-2xl border border-border bg-surface text-foreground shadow-xl transition-all duration-(--nv-duration-slow)">
           <SidebarProvider defaultOpen className="flex h-full min-h-[720px] flex-row w-full bg-surface-sunken">
             {/* Sidebar Navigation */}
             <ResponsiveSidebar
               label="Kaveh Fleet Portal"
               brand={{
                 logo: (
-                  <span className="flex size-8 items-center justify-center rounded-xl bg-primary text-primary-on-solid font-bold shadow-sm animate-ks-pop-in">
+                  <span className="flex size-8 items-center justify-center rounded-xl bg-primary text-primary-on-solid font-bold shadow-sm animate-nv-pop-in">
                     {activePreset === "kaveh" ? <Anchor className="size-4" /> : <Package className="size-4" />}
                   </span>
                 ),
-                title: activePreset === "kaveh" ? "Kaveh Marine Services" : "Kaleido Logistics",
+                title: activePreset === "kaveh" ? "Kaveh Marine Services" : "Nova UI Logistics",
                 subtitle: activePreset === "kaveh" ? "Since 1948 · Port & Marine" : "Enterprise Global Suite",
               }}
               groups={[
@@ -608,7 +608,7 @@ export function TemplatePage() {
               </header>
 
               {/* Dynamic View Body */}
-              <div key={activeView} className="p-4 sm:p-6 flex flex-col gap-6 animate-ks-fade-in animate-ks-slide-up">
+              <div key={activeView} className="p-4 sm:p-6 flex flex-col gap-6 animate-nv-fade-in animate-nv-slide-up">
                 {activeView === "dashboard" && (
                   <>
                     {/* Key Metrics */}

@@ -23,7 +23,7 @@ import {
   Text,
   Tour,
   VirtualList,
-} from "@kaleido/ui";
+} from "@darkalpha/nova-ui";
 import { Columns3, LayoutGrid, List } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { Example } from "../docs/kit.tsx";
@@ -89,7 +89,7 @@ export function FormsAdditions() {
   const [brand, setBrand] = useState("#6d4aff");
   const [phone, setPhone] = useState("");
   const [valid, setValid] = useState(false);
-  const [name, setName] = useState("Kaleido launch");
+  const [name, setName] = useState("Nova UI launch");
   return (
     <>
       <Example
@@ -119,7 +119,7 @@ export function FormsAdditions() {
       </Example>
       <Example
         title="ColorPicker and ColorInput"
-        description="Saturation/brightness area, hue, hex, swatches and an eyedropper where supported, with a live WCAG contrast check and the tonal scale Kaleido's engine would build from the color."
+        description="Saturation/brightness area, hue, hex, swatches and an eyedropper where supported, with a live WCAG contrast check and the tonal scale Nova UI's engine would build from the color."
         code={`<ColorInput value={brand} onValueChange={setBrand} showScale />
 <ColorPicker value={brand} onValueChange={setBrand} showScale />`}
         className="items-start"
@@ -360,7 +360,7 @@ export function OverlaysAdditions() {
         <Button id="tour-new" variant="primary">
           New project
         </Button>
-        <input id="tour-search" aria-label="Search projects" placeholder="Search projects…" className="h-9 rounded-(--ks-input-radius) border border-input bg-surface px-3 text-sm" />
+        <input id="tour-search" aria-label="Search projects" placeholder="Search projects…" className="h-9 rounded-(--nv-input-radius) border border-input bg-surface px-3 text-sm" />
         <Button id="tour-share" variant="outline">
           Share
         </Button>

@@ -42,15 +42,15 @@ const wrap = (ui: React.ReactNode, props: Partial<React.ComponentProps<typeof Th
 describe("motion tokens", () => {
   it("motionStyle sets the interaction tokens", () => {
     wrap(<span>x</span>, { motionStyle: "expressive" });
-    const root = screen.getByText("x").closest(".ks-theme") as HTMLElement;
-    expect(root).toHaveAttribute("data-ks-motion-style", "expressive");
-    expect(root.style.getPropertyValue("--ks-press-scale")).toBe("0.94");
-    expect(root.style.getPropertyValue("--ks-ease-interactive")).toMatch(/^linear\(/);
+    const root = screen.getByText("x").closest(".nv-theme") as HTMLElement;
+    expect(root).toHaveAttribute("data-nv-motion-style", "expressive");
+    expect(root.style.getPropertyValue("--nv-press-scale")).toBe("0.94");
+    expect(root.style.getPropertyValue("--nv-ease-interactive")).toMatch(/^linear\(/);
   });
 
   it("presets carry their own motion personality", () => {
     wrap(<span>calm</span>, { theme: "minimal" });
-    expect(screen.getByText("calm").closest(".ks-theme")).toHaveAttribute("data-ks-motion-style", "subtle");
+    expect(screen.getByText("calm").closest(".nv-theme")).toHaveAttribute("data-nv-motion-style", "subtle");
   });
 
   it("Button ripple spawns an ink element on press and cleans it up", () => {
@@ -58,9 +58,9 @@ describe("motion tokens", () => {
     wrap(<Button ripple>Tap</Button>);
     const btn = screen.getByRole("button", { name: "Tap" });
     fireEvent.pointerDown(btn, { clientX: 10, clientY: 10 });
-    expect(btn.querySelector(".animate-ks-ripple")).not.toBeNull();
+    expect(btn.querySelector(".animate-nv-ripple")).not.toBeNull();
     act(() => vi.advanceTimersByTime(1100));
-    expect(btn.querySelector(".animate-ks-ripple")).toBeNull();
+    expect(btn.querySelector(".animate-nv-ripple")).toBeNull();
     vi.useRealTimers();
   });
 
@@ -127,11 +127,11 @@ describe("Chip, CopyButton, Rating", () => {
   it("CopyButton writes to the clipboard and announces it", async () => {
     const writeText = vi.fn().mockResolvedValue(undefined);
     Object.defineProperty(navigator, "clipboard", { value: { writeText }, configurable: true });
-    wrap(<CopyButton value="npm i kaleido" label="Copy" />);
+    wrap(<CopyButton value="npm i @darkalpha/nova-ui" label="Copy" />);
     await act(async () => {
       fireEvent.click(screen.getByRole("button", { name: /Copy/ }));
     });
-    expect(writeText).toHaveBeenCalledWith("npm i kaleido");
+    expect(writeText).toHaveBeenCalledWith("npm i @darkalpha/nova-ui");
     expect(await screen.findByRole("status")).toHaveTextContent("Copied");
   });
 

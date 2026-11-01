@@ -78,6 +78,6 @@ export const SEMANTIC_COLOR_NAMES: readonly SemanticColorName[] = [
 ];
 
 /** CSS custom property prefix for every token emitted by the system. */
-export const CSS_PREFIX = "ks";
+export const CSS_PREFIX = "nv";
 
 export const colorVar = (name: SemanticColorName) => `--${CSS_PREFIX}-color-${name}` as const;

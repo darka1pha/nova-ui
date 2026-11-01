@@ -4,7 +4,7 @@
  * raw and gzip sizes. Proves tree-shaking: importing Button must not pull in
  * DataTable or cmdk.
  *
- * Usage: pnpm --filter @kaleido/ui build && node scripts/size-report.ts
+ * Usage: pnpm --filter @darkalpha/nova-ui build && node scripts/size-report.ts
  */
 import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -28,7 +28,7 @@ const cases: Record<string, string> = {
   "Everything": "*",
 };
 
-const work = mkdtempSync(join(tmpdir(), "kaleido-size-"));
+const work = mkdtempSync(join(tmpdir(), "nova-ui-size-"));
 const rows: [string, number, number][] = [];
 
 try {

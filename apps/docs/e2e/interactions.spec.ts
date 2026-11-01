@@ -78,7 +78,7 @@ test.describe("TimeInput", () => {
 
 test.describe("Resizable panels", () => {
   test("drag, collapse by dragging, and expand back to the earlier size", async ({ page }) => {
-    await page.addInitScript(() => window.localStorage.removeItem("ks-resizable:docs-fleet"));
+    await page.addInitScript(() => window.localStorage.removeItem("nv-resizable:docs-fleet"));
     await open(page, "layout");
     const handle = page.getByRole("separator", { name: "Resize Vessels" });
     await handle.scrollIntoViewIfNeeded();

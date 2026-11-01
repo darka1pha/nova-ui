@@ -6,7 +6,7 @@ import { cn } from "../utils/cn.ts";
 const sizes = { xs: "size-3", sm: "size-4", md: "size-5", lg: "size-6", xl: "size-8" } as const;
 
 export interface IconProps extends Omit<LucideProps, "size" | "ref"> {
-  /** A Kaleido icon (`@kaleido/ui/icons`), any Lucide icon, or your own with the same props. */
+  /** A Nova UI icon (`@darkalpha/nova-ui/icons`), any Lucide icon, or your own with the same props. */
   icon: IconComponent | LucideIcon;
   size?: keyof typeof sizes;
   /** Accessible name. Omit for decorative icons (hidden from assistive tech). */

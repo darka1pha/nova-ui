@@ -124,8 +124,8 @@ export function FieldMessage({ status, messages, className, ...props }: FieldMes
   const Item = single ? "p" : "li";
   const items = messages.map((m, i) => (
     // Keyed by text so a new message re-runs the entrance animation.
-    <Item key={keyOf(m, i)} className="flex items-start gap-1.5 animate-ks-slide-down">
-      <svg viewBox="0 0 16 16" aria-hidden className="mt-0.5 size-3.5 shrink-0 fill-current animate-ks-bounce-in">
+    <Item key={keyOf(m, i)} className="flex items-start gap-1.5 animate-nv-slide-down">
+      <svg viewBox="0 0 16 16" aria-hidden className="mt-0.5 size-3.5 shrink-0 fill-current animate-nv-bounce-in">
         {icons[status]}
       </svg>
       <span>{m}</span>
@@ -166,14 +166,14 @@ export interface FormFieldProps extends Omit<HTMLAttributes<HTMLDivElement>, "ch
  * Wraps a control with its label, description and messages, wiring up ids and
  * ARIA so every form is accessible by default. Works with any state source:
  * plain React state, native forms, or react-hook-form (see
- * `@kaleido/ui/react-hook-form`). Error beats warning beats success.
+ * `@darkalpha/nova-ui/react-hook-form`). Error beats warning beats success.
  */
 export const FormField = forwardRef<HTMLDivElement, FormFieldProps>(function FormField(
   { label, description, error, warning, success, required = false, optional, disabled = false, id, inline = false, className, children, ...props },
   ref,
 ) {
   const auto = useId();
-  const controlId = id ?? `ks-field-${auto}`;
+  const controlId = id ?? `nv-field-${auto}`;
   const errors = toList(error);
   const warnings = toList(warning);
   const successes = toList(success);
@@ -248,7 +248,7 @@ export interface FieldsetProps extends FieldsetHTMLAttributes<HTMLFieldSetElemen
 export const Fieldset = forwardRef<HTMLFieldSetElement, FieldsetProps>(function Fieldset({ legend, description, error, className, children, ...props }, ref) {
   const errors = toList(error);
   const auto = useId();
-  const errorId = `ks-fieldset-${auto}-error`;
+  const errorId = `nv-fieldset-${auto}-error`;
   return (
     <fieldset
       ref={ref}

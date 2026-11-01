@@ -125,7 +125,7 @@ export function VirtualList<T>({
       tabIndex={0}
       onScroll={(e) => setScrollTop(e.currentTarget.scrollTop)}
       style={{ height }}
-      className={cn("relative overflow-y-auto overscroll-contain rounded-(--ks-card-radius)", focusRing, className)}
+      className={cn("relative overflow-y-auto overscroll-contain rounded-(--nv-card-radius)", focusRing, className)}
     >
       <div role="list" aria-label={ariaLabel} style={{ position: "relative", height: total * itemHeight }}>
         {rows}

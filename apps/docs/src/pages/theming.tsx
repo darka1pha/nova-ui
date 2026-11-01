@@ -1,4 +1,4 @@
-import { Badge, Button, Card, Grid, Text, ThemeProvider, presets } from "@kaleido/ui";
+import { Badge, Button, Card, Grid, Text, ThemeProvider, presets } from "@darkalpha/nova-ui";
 import { CodeBlock, Page, Prose, Section } from "../docs/kit.tsx";
 
 export function ThemingPage() {
@@ -6,15 +6,15 @@ export function ThemingPage() {
     <Page
       eyebrow="Foundations"
       title="Theming & color"
-      lead="Every color in Kaleido comes from a semantic role. Themes decide what those roles look like — components never hardcode a palette."
+      lead="Every color in Nova UI comes from a semantic role. Themes decide what those roles look like — components never hardcode a palette."
     >
       <Section title="How color flows">
         <Prose>
           <p>
             <strong>Primitive tokens</strong> are 12-step tonal scales (50 → 975) generated in OKLCH for even, perceptual steps. <strong>Semantic tokens</strong>{" "}
             describe purpose — <code>background</code>, <code>surface-raised</code>, <code>primary-solid</code>, <code>danger-on-subtle</code>,{" "}
-            <code>focus-ring</code> — and resolve to a primitive per mode. <strong>Component tokens</strong> such as <code>--ks-button-radius</code> or{" "}
-            <code>--ks-card-padding</code> are narrow knobs that default to global tokens.
+            <code>focus-ring</code> — and resolve to a primitive per mode. <strong>Component tokens</strong> such as <code>--nv-button-radius</code> or{" "}
+            <code>--nv-card-padding</code> are narrow knobs that default to global tokens.
           </p>
           <p>
             Each intent (<code>primary</code>, <code>secondary</code>, <code>accent</code>, <code>neutral</code>, <code>success</code>, <code>warning</code>,{" "}
@@ -27,7 +27,7 @@ export function ThemingPage() {
       <Section title="Presets">
         <Grid columns={2} gap={4}>
           {Object.values(presets).map((p) => (
-            <ThemeProvider key={p.id} theme={p.id} className="min-h-0! rounded-(--ks-card-radius)">
+            <ThemeProvider key={p.id} theme={p.id} className="min-h-0! rounded-(--nv-card-radius)">
               <Card variant="outline" className="h-full gap-3">
                 <div className="flex items-center justify-between">
                   <Text weight="bold" className="font-display">{p.label}</Text>
@@ -87,7 +87,7 @@ export function ThemingPage() {
 
       <Section title="Creating and registering a theme">
         <CodeBlock
-          code={`import { createTheme, registerTheme } from "@kaleido/ui";
+          code={`import { createTheme, registerTheme } from "@darkalpha/nova-ui";
 
 export const acme = createTheme({
   id: "acme",
@@ -124,7 +124,7 @@ registerTheme(acme);            // then <ThemeProvider theme="acme">`}
       <Section title="Modern surface styles (Glassmorphism, Claymorphism, Neumorphism)">
         <Prose>
           <p>
-            Kaleido ships with first-class surface materiality primitives. You can activate them through component variants (<code>&lt;Card variant="glass"&gt;</code>, <code>&lt;Button variant="clay"&gt;</code>) or compose them on any element with utility classes (<code>.ks-glass</code>, <code>.ks-clay</code>, <code>.ks-neomorph</code>, <code>.ks-glow-halo</code>).
+            Nova UI ships with first-class surface materiality primitives. You can activate them through component variants (<code>&lt;Card variant="glass"&gt;</code>, <code>&lt;Button variant="clay"&gt;</code>) or compose them on any element with utility classes (<code>.nv-glass</code>, <code>.nv-clay</code>, <code>.nv-neomorph</code>, <code>.nv-glow-halo</code>).
           </p>
         </Prose>
 
@@ -185,23 +185,23 @@ registerTheme(acme);            // then <ThemeProvider theme="acme">`}
 <Badge appearance="clay">Tactile Pill</Badge>
 
 // Universal CSS classes
-<div className="ks-glass p-6 rounded-xl">...</div>
-<div className="ks-clay p-6">...</div>
-<div className="ks-neomorph p-6 rounded-2xl">...</div>
-<div className="ks-glow-halo">...</div>`}
+<div className="nv-glass p-6 rounded-xl">...</div>
+<div className="nv-clay p-6">...</div>
+<div className="nv-neomorph p-6 rounded-2xl">...</div>
+<div className="nv-glow-halo">...</div>`}
         />
       </Section>
 
       <Section title="Zero-JavaScript theming">
         <CodeBlock
-          code={`import "@kaleido/ui/styles.css";
-import "@kaleido/ui/themes.css";   // every preset as [data-ks-theme] blocks
+          code={`import "@darkalpha/nova-ui/styles.css";
+import "@darkalpha/nova-ui/themes.css";   // every preset as [data-nv-theme] blocks
 
-<div class="ks-theme" data-ks-theme="forest" data-ks-mode="dark">…</div>`}
+<div class="nv-theme" data-nv-theme="forest" data-nv-mode="dark">…</div>`}
         />
         <CodeBlock
           code={`// Or generate CSS for a custom theme on the server
-import { getThemeCss } from "@kaleido/ui";
+import { getThemeCss } from "@darkalpha/nova-ui";
 const css = getThemeCss("acme", { brand: { primary: "#0f766e" }, selector: ":root" });`}
         />
       </Section>

@@ -68,7 +68,7 @@ const gridVariants = cva("grid", {
       3: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
       4: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4",
       6: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-6",
-      auto: "grid-cols-[repeat(auto-fill,minmax(min(100%,var(--ks-grid-min,16rem)),1fr))]",
+      auto: "grid-cols-[repeat(auto-fill,minmax(min(100%,var(--nv-grid-min,16rem)),1fr))]",
     },
   },
   defaultVariants: { gap: 4, columns: "auto" },
@@ -86,7 +86,7 @@ export const Grid = forwardRef<HTMLDivElement, GridProps>(function Grid({ asChil
     <Comp
       ref={ref}
       className={cn(gridVariants({ gap, columns }), className)}
-      style={minColumnWidth ? { ["--ks-grid-min" as string]: minColumnWidth, ...style } : style}
+      style={minColumnWidth ? { ["--nv-grid-min" as string]: minColumnWidth, ...style } : style}
       {...props}
     />
   );

@@ -1,4 +1,4 @@
-import { primitives } from "@kaleido/tokens";
+import { primitives } from "@darkalpha/nova-tokens";
 import {
   AnimatedBorder,
   AnimatedNumber,
@@ -27,7 +27,7 @@ import {
   Text,
   ThemeProvider,
   type MotionStyle,
-} from "@kaleido/ui";
+} from "@darkalpha/nova-ui";
 import { ArrowRight, Boxes, Cloud, Cpu, Gem, Globe, Layers, Rocket, Sparkles, Zap } from "lucide-react";
 import { useState } from "react";
 import { CodeBlock, Example, Page, Prose, Section } from "../docs/kit.tsx";
@@ -35,7 +35,7 @@ import { CodeBlock, Example, Page, Prose, Section } from "../docs/kit.tsx";
 function MotionSample({ style }: { style: MotionStyle }) {
   const [tab, setTab] = useState("a");
   return (
-    <ThemeProvider motionStyle={style} className="min-h-0! rounded-(--ks-card-radius) border border-border p-4">
+    <ThemeProvider motionStyle={style} className="min-h-0! rounded-(--nv-card-radius) border border-border p-4">
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <Text weight="semibold" className="capitalize">
@@ -100,8 +100,8 @@ export function MotionPage() {
         <Prose>
           <p>
             Themes set <code>motion</code>; any provider can override it with <code>motionStyle</code>. It controls how far things lift on hover (
-            <code>--ks-hover-lift</code>), how much they squash when pressed (<code>--ks-press-scale</code>), the spring curve (
-            <code>--ks-ease-interactive</code>) and a duration multiplier (<code>--ks-motion-scale</code>). Try the controls below — same components, three
+            <code>--nv-hover-lift</code>), how much they squash when pressed (<code>--nv-press-scale</code>), the spring curve (
+            <code>--nv-ease-interactive</code>) and a duration multiplier (<code>--nv-motion-scale</code>). Try the controls below — same components, three
             personalities.
           </p>
         </Prose>
@@ -124,7 +124,7 @@ export function MotionPage() {
           <TableBody>
             {[
               ["Hover", "Filled buttons lift and glow in their own hue; cards lift; icons grow or nudge; menu rows slide their highlight."],
-              ["Press", "Buttons, toggles, chips and checkboxes squash to --ks-press-scale on the theme's spring. Optional ink ripple."],
+              ["Press", "Buttons, toggles, chips and checkboxes squash to --nv-press-scale on the theme's spring. Optional ink ripple."],
               ["Focus", "The focus ring pops in from a wider offset so keyboard users can follow where focus went."],
               ["Selection", "Checkmarks draw themselves, radio dots and toggled icons spring in, switch thumbs stretch while pressed."],
               ["Navigation", "Tab indicators glide between tabs; calendar months slide in from the direction you travel."],
@@ -147,28 +147,28 @@ export function MotionPage() {
           </p>
         </Prose>
         <Example
-          code={`<div className="ks-lift">Lift</div>
-<button className="ks-press">Press</button>
-<img className="ks-grow" />
-<a className="ks-underline">Underline</a>
-<div className="ks-shine">Shine</div>
-<button className="ks-glow">Glow</button>
-<span className="ks-float">Float</span>`}
+          code={`<div className="nv-lift">Lift</div>
+<button className="nv-press">Press</button>
+<img className="nv-grow" />
+<a className="nv-underline">Underline</a>
+<div className="nv-shine">Shine</div>
+<button className="nv-glow">Glow</button>
+<span className="nv-float">Float</span>`}
         >
           {[
-            ["ks-lift", "Lift"],
-            ["ks-press", "Press"],
-            ["ks-grow", "Grow"],
-            ["ks-shine", "Shine"],
-            ["ks-glow", "Glow"],
-            ["ks-float", "Float"],
+            ["nv-lift", "Lift"],
+            ["nv-press", "Press"],
+            ["nv-grow", "Grow"],
+            ["nv-shine", "Shine"],
+            ["nv-glow", "Glow"],
+            ["nv-float", "Float"],
           ].map(([cls, label]) => (
             <button key={cls} type="button" className={`${cls} rounded-lg border border-border bg-surface px-5 py-3 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-focus-ring`}>
               {label}
               <code className="ms-2 text-2xs text-foreground-muted">.{cls}</code>
             </button>
           ))}
-          <a href="#/motion" className="ks-underline text-sm font-semibold text-primary-text">
+          <a href="#/motion" className="nv-underline text-sm font-semibold text-primary-text">
             Animated underline
           </a>
         </Example>
@@ -242,7 +242,7 @@ export function MotionPage() {
                   Move your pointer across me.
                 </Text>
               </SpotlightCard>
-              <AnimatedBorder className="flex flex-col gap-2 p-(--ks-card-padding)">
+              <AnimatedBorder className="flex flex-col gap-2 p-(--nv-card-padding)">
                 <Badge variant="gradient" className="w-fit">
                   Most popular
                 </Badge>
@@ -278,7 +278,7 @@ export function MotionPage() {
           <TableBody>
             {(["motion-scale", "hover-lift", "hover-scale", "press-scale"] as const).map((k) => (
               <TableRow key={k}>
-                <TableCell className="font-mono text-xs">--ks-{k}</TableCell>
+                <TableCell className="font-mono text-xs">--nv-{k}</TableCell>
                 {(["subtle", "standard", "expressive"] as const).map((s) => (
                   <TableCell key={s} className="font-mono text-xs">
                     {primitives.motionStyles[s][k]}
@@ -288,19 +288,19 @@ export function MotionPage() {
             ))}
             {Object.entries(primitives.duration).map(([k, v]) => (
               <TableRow key={k}>
-                <TableCell className="font-mono text-xs">--ks-duration-{k}</TableCell>
+                <TableCell className="font-mono text-xs">--nv-duration-{k}</TableCell>
                 <TableCell colSpan={3} className="font-mono text-xs text-foreground-secondary">
-                  {v} × --ks-motion-scale
+                  {v} × --nv-motion-scale
                 </TableCell>
               </TableRow>
             ))}
             {["standard", "out", "in", "inOut", "emphasized", "spring", "bounce"].map((k) => (
               <TableRow key={k}>
-                <TableCell className="font-mono text-xs">--ks-ease-{k}</TableCell>
+                <TableCell className="font-mono text-xs">--nv-ease-{k}</TableCell>
                 <TableCell colSpan={3}>
                   <span className="flex items-center gap-3">
                     <span className="relative h-2 w-40 rounded-full bg-surface-active">
-                      <span className="ks-ease-demo absolute top-1/2 size-3 -translate-y-1/2 rounded-full bg-primary" style={{ animationTimingFunction: `var(--ks-ease-${k})` }} />
+                      <span className="nv-ease-demo absolute top-1/2 size-3 -translate-y-1/2 rounded-full bg-primary" style={{ animationTimingFunction: `var(--nv-ease-${k})` }} />
                     </span>
                     <code className="truncate text-2xs text-foreground-muted">{k === "spring" || k === "bounce" ? "linear(…) spring" : (primitives.easing as Record<string, string>)[k]}</code>
                   </span>
@@ -308,11 +308,11 @@ export function MotionPage() {
               </TableRow>
             ))}
             {[
-              ["--ks-shadow-glow-{intent}", "Colored glow per intent (primary, secondary, accent, success, danger…)"],
-              ["--ks-focus-glow", "Soft halo around focused or hovered controls"],
-              ["--ks-blur-sm … xl", "4px · 12px · 24px · 48px"],
-              ["--ks-gradient-mesh", "Layered radial gradients in theme colors"],
-              ["--ks-stagger", "40ms — default step for staggered lists"],
+              ["--nv-shadow-glow-{intent}", "Colored glow per intent (primary, secondary, accent, success, danger…)"],
+              ["--nv-focus-glow", "Soft halo around focused or hovered controls"],
+              ["--nv-blur-sm … xl", "4px · 12px · 24px · 48px"],
+              ["--nv-gradient-mesh", "Layered radial gradients in theme colors"],
+              ["--nv-stagger", "40ms — default step for staggered lists"],
             ].map(([k, v]) => (
               <TableRow key={k}>
                 <TableCell className="font-mono text-xs">{k}</TableCell>

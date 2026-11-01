@@ -1,6 +1,6 @@
 "use client";
 
-import { contrastRatio, generateScale, normalizeHex, palette, parseHex, SCALE_STEPS, toHex, WCAG, type Rgb } from "@kaleido/tokens";
+import { contrastRatio, generateScale, normalizeHex, palette, parseHex, SCALE_STEPS, toHex, WCAG, type Rgb } from "@darkalpha/nova-tokens";
 import { Check, Pipette, X } from "lucide-react";
 import { Popover as PopoverPrimitive } from "radix-ui";
 import { forwardRef, useEffect, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from "react";
@@ -67,7 +67,7 @@ const defaultLabels: ColorPickerLabels = {
   scale: "Generated tonal scale",
 };
 
-/** The 600 step of every Kaleido palette: vivid, and readable on white. */
+/** The 600 step of every Nova UI palette: vivid, and readable on white. */
 export const defaultSwatches: readonly string[] = (["violet", "blue", "sky", "teal", "green", "lime", "amber", "orange", "coral", "red", "pink", "magenta", "slate", "ink"] as const).map((name) => palette[name][600]);
 
 /* -------------------------------------------------------------- ColorPicker */
@@ -81,7 +81,7 @@ export interface ColorPickerProps {
   swatches?: readonly string[];
   /** Backgrounds to show WCAG contrast against. `[]` hides the check. */
   contrastWith?: readonly string[];
-  /** Preview the 12-step tonal scale Kaleido would generate from this color. */
+  /** Preview the 12-step tonal scale Nova UI would generate from this color. */
   showScale?: boolean;
   labels?: Partial<ColorPickerLabels>;
   disabled?: boolean;
@@ -91,7 +91,7 @@ export interface ColorPickerProps {
 /**
  * An inline color picker: saturation/brightness area, hue slider, hex field,
  * swatches, eyedropper (where supported), a live WCAG contrast check and an
- * optional preview of the tonal scale Kaleido's color engine builds from it.
+ * optional preview of the tonal scale Nova UI's color engine builds from it.
  * Every part works with the keyboard; Shift moves in bigger steps.
  */
 export const ColorPicker = forwardRef<HTMLDivElement, ColorPickerProps>(function ColorPicker(
@@ -128,7 +128,7 @@ export const ColorPicker = forwardRef<HTMLDivElement, ColorPickerProps>(function
       <SaturationArea hsv={hsv} onChange={update} label={labels.area} valueText={labels.areaValue} disabled={disabled} />
       <HueSlider hsv={hsv} onChange={update} label={labels.hue} disabled={disabled} />
       <div className="flex items-center gap-2">
-        <span aria-hidden className="size-8 shrink-0 rounded-(--ks-input-radius) border border-border shadow-xs" style={{ background: hex }} />
+        <span aria-hidden className="size-8 shrink-0 rounded-(--nv-input-radius) border border-border shadow-xs" style={{ background: hex }} />
         <Input
           size="sm"
           aria-label={labels.hex}
@@ -162,7 +162,7 @@ export const ColorPicker = forwardRef<HTMLDivElement, ColorPickerProps>(function
                 // Cancelled with Escape.
               }
             }}
-            className={cn("inline-flex size-8 shrink-0 items-center justify-center rounded-(--ks-input-radius) border border-border text-foreground-muted hover:bg-surface-hover hover:text-foreground [&_svg]:size-4", transition, focusRing)}
+            className={cn("inline-flex size-8 shrink-0 items-center justify-center rounded-(--nv-input-radius) border border-border text-foreground-muted hover:bg-surface-hover hover:text-foreground [&_svg]:size-4", transition, focusRing)}
           >
             <Pipette />
           </button>
@@ -244,7 +244,7 @@ function SaturationArea({ hsv, onChange, label, valueText, disabled }: { hsv: Hs
     // The area is a picture of the color space; its axes are physical, so it doesn't mirror in RTL.
     <div
       dir="ltr"
-      className="relative h-40 w-full touch-none rounded-(--ks-input-radius) select-none"
+      className="relative h-40 w-full touch-none rounded-(--nv-input-radius) select-none"
       style={{ background: `linear-gradient(to top, #000, transparent), linear-gradient(to right, #fff, hsl(${hsv.h} 100% 50%))` }}
       {...drag}
     >

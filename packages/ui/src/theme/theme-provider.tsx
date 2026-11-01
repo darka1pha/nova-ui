@@ -15,7 +15,7 @@ import {
   type SurfaceStyle,
   type ThemeDefinition,
   type ThemeFonts,
-} from "@kaleido/tokens";
+} from "@darkalpha/nova-tokens";
 import { Direction } from "radix-ui";
 import {
   createContext,
@@ -179,8 +179,8 @@ export function ThemeProvider({
       if (storageKey) {
         try {
           window.localStorage.setItem(storageKey, next);
-          if (next === "system") delete document.documentElement.dataset.ksMode;
-          else document.documentElement.dataset.ksMode = next;
+          if (next === "system") delete document.documentElement.dataset.nvMode;
+          else document.documentElement.dataset.nvMode = next;
         } catch {
           /* storage unavailable (private mode, quota) — preference stays in memory */
         }
@@ -233,17 +233,17 @@ export function ThemeProvider({
           {...rest}
           dir={dirProp ?? (parent ? undefined : dir)}
           lang={localeProp ?? rest.lang}
-          data-ks-theme={resolved.id}
-          data-ks-mode={explicitMode}
-          data-ks-motion={motion === "reduce" ? "reduce" : undefined}
-          data-ks-density={density ?? resolved.density}
-          data-ks-motion-style={motionStyle ?? resolved.motion}
-          data-ks-surface={surface ?? resolved.surface}
-          className={className ? `ks-theme ${className}` : "ks-theme"}
+          data-nv-theme={resolved.id}
+          data-nv-mode={explicitMode}
+          data-nv-motion={motion === "reduce" ? "reduce" : undefined}
+          data-nv-density={density ?? resolved.density}
+          data-nv-motion-style={motionStyle ?? resolved.motion}
+          data-nv-surface={surface ?? resolved.surface}
+          className={className ? `nv-theme ${className}` : "nv-theme"}
           style={{ ...(vars as CSSProperties), ...style }}
         >
           {children}
-          <div data-ks-portal-root="" ref={setPortalContainer} />
+          <div data-nv-portal-root="" ref={setPortalContainer} />
         </div>
       </Direction.Provider>
     </ThemeContext.Provider>

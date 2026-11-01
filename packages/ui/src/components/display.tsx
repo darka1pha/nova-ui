@@ -63,12 +63,12 @@ export const CircularProgress = forwardRef<HTMLDivElement, CircularProgressProps
       style={{ width: size, height: size }}
       {...props}
     >
-      <svg viewBox={`0 0 ${size} ${size}`} className={cn("-rotate-90", pct === null && "animate-ks-spin")} aria-hidden>
+      <svg viewBox={`0 0 ${size} ${size}`} className={cn("-rotate-90", pct === null && "animate-nv-spin")} aria-hidden>
         <defs>
           <linearGradient id={gradientId} x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="var(--ks-color-primary-solid)" />
-            <stop offset="55%" stopColor="var(--ks-color-secondary-solid)" />
-            <stop offset="100%" stopColor="var(--ks-color-accent-solid)" />
+            <stop offset="0%" stopColor="var(--nv-color-primary-solid)" />
+            <stop offset="55%" stopColor="var(--nv-color-secondary-solid)" />
+            <stop offset="100%" stopColor="var(--nv-color-accent-solid)" />
           </linearGradient>
         </defs>
         <circle cx={size / 2} cy={size / 2} r={r} fill="none" strokeWidth={thickness} className="stroke-surface-active" />
@@ -83,7 +83,7 @@ export const CircularProgress = forwardRef<HTMLDivElement, CircularProgressProps
           strokeDasharray={100}
           strokeDashoffset={pct === null ? 72 : 100 - pct}
           stroke={tone === "gradient" ? `url(#${gradientId})` : undefined}
-          className={cn(ringStroke[tone], "transition-[stroke-dashoffset] duration-(--ks-duration-slowest) ease-(--ks-ease-out)")}
+          className={cn(ringStroke[tone], "transition-[stroke-dashoffset] duration-(--nv-duration-slowest) ease-(--nv-ease-out)")}
         />
       </svg>
       {label ?? (showValue && pct !== null) ? (
@@ -131,13 +131,13 @@ export const Stepper = forwardRef<HTMLOListElement, StepperProps>(function Stepp
               "relative z-10 flex size-8 shrink-0 items-center justify-center rounded-full border-2 text-sm font-semibold",
               transition,
               state === "complete" && "border-primary bg-primary text-primary-on-solid",
-              state === "current" && "border-primary bg-surface text-primary-text motion-safe:animate-ks-ring-pulse",
+              state === "current" && "border-primary bg-surface text-primary-text motion-safe:animate-nv-ring-pulse",
               state === "upcoming" && "border-border-strong bg-surface text-foreground-muted",
             )}
           >
             {state === "complete" ? (
               <svg viewBox="0 0 16 16" aria-hidden className="size-4 fill-none stroke-current stroke-[2.5] [stroke-linecap:round] [stroke-linejoin:round]">
-                <path d="M3.5 8.5 6.5 11.5 12.5 4.5" pathLength={24} strokeDasharray={24} className="animate-ks-check-draw" />
+                <path d="M3.5 8.5 6.5 11.5 12.5 4.5" pathLength={24} strokeDasharray={24} className="animate-nv-check-draw" />
               </svg>
             ) : (
               i + 1
@@ -165,7 +165,7 @@ export const Stepper = forwardRef<HTMLOListElement, StepperProps>(function Stepp
               >
                 <span
                   className={cn(
-                    "absolute inset-0 bg-primary transition-transform duration-(--ks-duration-slowest) ease-(--ks-ease-out)",
+                    "absolute inset-0 bg-primary transition-transform duration-(--nv-duration-slowest) ease-(--nv-ease-out)",
                     vertical ? "origin-top" : "origin-left rtl:origin-right",
                     state === "complete" ? "scale-100" : vertical ? "scale-y-0" : "scale-x-0",
                   )}
@@ -230,7 +230,7 @@ export const Timeline = forwardRef<HTMLOListElement, TimelineProps>(function Tim
             aria-hidden
             className={cn(
               "relative z-10 flex size-8 shrink-0 items-center justify-center rounded-full ring-1 ring-border [&_svg]:size-4",
-              "transition-[scale] duration-(--ks-duration-slow) ease-(--ks-ease-interactive) group-hover/item:scale-110 motion-reduce:group-hover/item:scale-100",
+              "transition-[scale] duration-(--nv-duration-slow) ease-(--nv-ease-interactive) group-hover/item:scale-110 motion-reduce:group-hover/item:scale-100",
               timelineDot[item.tone ?? "neutral"],
             )}
           >
@@ -266,11 +266,11 @@ export interface SparklineProps extends Omit<HTMLAttributes<HTMLDivElement>, "ch
 }
 
 const sparkStroke: Record<Exclude<Tone, "gradient">, string> = {
-  primary: "var(--ks-color-primary-solid)",
-  success: "var(--ks-color-success-solid)",
-  warning: "var(--ks-color-warning-solid)",
-  danger: "var(--ks-color-danger-solid)",
-  info: "var(--ks-color-info-solid)",
+  primary: "var(--nv-color-primary-solid)",
+  success: "var(--nv-color-success-solid)",
+  warning: "var(--nv-color-warning-solid)",
+  danger: "var(--nv-color-danger-solid)",
+  info: "var(--nv-color-info-solid)",
 };
 
 /** A tiny trend line that draws itself in. */
@@ -286,7 +286,7 @@ export const Sparkline = forwardRef<HTMLDivElement, SparklineProps>(function Spa
   return (
     <div ref={ref} role="img" aria-label={label} className={cn("w-full", className)} {...props}>
       {/* Wipes in left-to-right; a clip works with the non-scaling stroke where dash tricks would break. */}
-      <svg viewBox={`0 0 ${w} ${height}`} preserveAspectRatio="none" className="block w-full overflow-visible animate-ks-wipe" style={{ height }} aria-hidden>
+      <svg viewBox={`0 0 ${w} ${height}`} preserveAspectRatio="none" className="block w-full overflow-visible animate-nv-wipe" style={{ height }} aria-hidden>
         <defs>
           <linearGradient id={gradientId} x1="0" x2="0" y1="0" y2="1">
             <stop offset="0%" stopColor={color} stopOpacity={0.28} />
@@ -334,8 +334,8 @@ export const Stat = forwardRef<HTMLDivElement, StatProps>(function Stat(
       data-slot="card"
       data-variant="elevated"
       className={cn(
-        "group/stat flex flex-col gap-2 rounded-(--ks-card-radius) border border-border bg-surface p-(--ks-card-padding) shadow-sm",
-        "transition-[translate,box-shadow] duration-(--ks-duration-slow) ease-(--ks-ease-interactive) hover:translate-y-(--ks-hover-lift) hover:shadow-md motion-reduce:hover:translate-y-0",
+        "group/stat flex flex-col gap-2 rounded-(--nv-card-radius) border border-border bg-surface p-(--nv-card-padding) shadow-sm",
+        "transition-[translate,box-shadow] duration-(--nv-duration-slow) ease-(--nv-ease-interactive) hover:translate-y-(--nv-hover-lift) hover:shadow-md motion-reduce:hover:translate-y-0",
         className,
       )}
       {...props}
@@ -343,12 +343,12 @@ export const Stat = forwardRef<HTMLDivElement, StatProps>(function Stat(
       <div className="flex items-center justify-between gap-2">
         <p className="text-sm font-medium text-foreground-muted">{label}</p>
         {icon ? (
-          <span aria-hidden className="flex size-8 items-center justify-center rounded-md bg-primary-subtle text-primary-text transition-transform duration-(--ks-duration-slow) ease-(--ks-ease-interactive) group-hover/stat:rotate-[-8deg] group-hover/stat:scale-110 [&_svg]:size-4">
+          <span aria-hidden className="flex size-8 items-center justify-center rounded-md bg-primary-subtle text-primary-text transition-transform duration-(--nv-duration-slow) ease-(--nv-ease-interactive) group-hover/stat:rotate-[-8deg] group-hover/stat:scale-110 [&_svg]:size-4">
             {icon}
           </span>
         ) : null}
       </div>
-      <p className="font-display text-3xl font-bold tracking-(--ks-tracking-tight) text-foreground">
+      <p className="font-display text-3xl font-bold tracking-(--nv-tracking-tight) text-foreground">
         {typeof value === "number" ? <AnimatedNumber value={value} format={format} locale={locale} /> : value}
       </p>
       {deltaText || helpText ? (
@@ -369,10 +369,10 @@ export const Stat = forwardRef<HTMLDivElement, StatProps>(function Stat(
 
 /* ------------------------------------------------------------------ Banner */
 
-const bannerVariants = cva("relative flex w-full items-center justify-center gap-3 px-4 py-2.5 text-sm animate-ks-slide-down", {
+const bannerVariants = cva("relative flex w-full items-center justify-center gap-3 px-4 py-2.5 text-sm animate-nv-slide-down", {
   variants: {
     variant: {
-      gradient: "bg-(image:--ks-gradient-vivid) bg-[length:200%_100%] text-primary-on-solid motion-safe:animate-ks-gradient-pan",
+      gradient: "bg-(image:--nv-gradient-vivid) bg-[length:200%_100%] text-primary-on-solid motion-safe:animate-nv-gradient-pan",
       primary: "bg-primary text-primary-on-solid",
       info: "bg-info-subtle text-info-on-subtle border-b border-info-border",
       warning: "bg-warning-subtle text-warning-on-subtle border-b border-warning-border",
@@ -587,7 +587,7 @@ export const Carousel = forwardRef<HTMLElement, CarouselProps>(function Carousel
             >
               <span
                 className={cn(
-                  "h-2 rounded-full transition-[width,background-color] duration-(--ks-duration-slow) ease-(--ks-ease-interactive)",
+                  "h-2 rounded-full transition-[width,background-color] duration-(--nv-duration-slow) ease-(--nv-ease-interactive)",
                   i === index ? "w-6 bg-primary" : "w-2 bg-border-strong group-hover/dot:bg-foreground-muted",
                 )}
               />

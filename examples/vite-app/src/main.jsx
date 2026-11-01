@@ -13,12 +13,12 @@ import {
   ThemeProvider,
   Toaster,
   toast,
-} from "@kaleido/ui";
-import "@kaleido/ui/styles.css";
+} from "@darkalpha/nova-ui";
+import "@darkalpha/nova-ui/styles.css";
 import { StrictMode, useState } from "react";
 import { createRoot } from "react-dom/client";
 
-// This app installs Kaleido from local tarballs (no npm registry):
+// This app installs Nova UI from local tarballs (no npm registry):
 //   node ../../scripts/install-local.mjs .
 function App() {
   const [date, setDate] = useState(null);
@@ -27,7 +27,7 @@ function App() {
       <main style={{ maxWidth: 720, margin: "0 auto", padding: 32, display: "grid", gap: 24 }}>
         <AnimatedBorder style={{ padding: 24 }}>
           <Badge variant="gradient">Installed locally</Badge>
-          <h1 style={{ margin: "12px 0 0" }}>Kaleido works without npm</h1>
+          <h1 style={{ margin: "12px 0 0" }}>Nova UI works without npm</h1>
         </AnimatedBorder>
         <Card>
           <CardHeader>

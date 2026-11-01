@@ -1,4 +1,4 @@
-# @kaleido/tokens
+# @darkalpha/nova-tokens
 
 ## 0.2.0
 

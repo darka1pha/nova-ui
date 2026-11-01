@@ -25,12 +25,12 @@ import { transition } from "./shared.ts";
 
 /** The shared look of every text-entry control. */
 export const fieldVariants = cva(
-  // `ks-field` marks every text-entry control for theme materials (glass, clay, neomorphic).
-  `ks-field w-full min-w-0 rounded-(--ks-input-radius) border border-input bg-surface text-foreground shadow-xs ${transition} ` +
+  // `nv-field` marks every text-entry control for theme materials (glass, clay, neomorphic).
+  `nv-field w-full min-w-0 rounded-(--nv-input-radius) border border-input bg-surface text-foreground shadow-xs ${transition} ` +
     "placeholder:text-foreground-muted placeholder:opacity-80 outline-none " +
     "hover:border-foreground-muted focus-visible:border-focus-ring focus-visible:ring-3 focus-visible:ring-focus-ring/25 " +
     // Invalid fields shake once when the error appears (FormField adds text, so it's not color alone).
-    "aria-invalid:border-danger-text aria-invalid:focus-visible:ring-danger-text/25 aria-invalid:animate-ks-shake " +
+    "aria-invalid:border-danger-text aria-invalid:focus-visible:ring-danger-text/25 aria-invalid:animate-nv-shake " +
     // Warning and valid states come from FormField (warning / success props, or a validated RHF field).
     "data-[status=warning]:border-warning-text data-[status=warning]:focus-visible:ring-warning-text/25 data-[status=valid]:border-success-text data-[status=valid]:focus-visible:ring-success-text/25 " +
     "disabled:cursor-not-allowed disabled:bg-surface-sunken disabled:opacity-60 [&:is(input,textarea):read-only]:bg-surface-sunken",
@@ -40,9 +40,9 @@ export const fieldVariants = cva(
       // merged class list. With `px-*` both classes survive and whichever stylesheet the consumer's
       // Tailwind emits last wins, which can put the text under a leading icon.
       size: {
-        sm: "h-(--ks-control-h-sm) ps-2.5 pe-2.5 text-sm",
-        md: "h-(--ks-control-h-md) ps-3 pe-3 text-sm",
-        lg: "h-(--ks-control-h-lg) ps-4 pe-4 text-md",
+        sm: "h-(--nv-control-h-sm) ps-2.5 pe-2.5 text-sm",
+        md: "h-(--nv-control-h-md) ps-3 pe-3 text-sm",
+        lg: "h-(--nv-control-h-lg) ps-4 pe-4 text-md",
       },
     },
     defaultVariants: { size: "md" },
@@ -295,7 +295,7 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(functi
         }}
         {...fieldProps}
       />
-      <div className="absolute inset-y-px end-px flex flex-col overflow-hidden rounded-e-(--ks-input-radius) border-s border-border">
+      <div className="absolute inset-y-px end-px flex flex-col overflow-hidden rounded-e-(--nv-input-radius) border-s border-border">
         <button type="button" tabIndex={-1} aria-label={incrementLabel} className={stepper} disabled={disabled || readOnly || atMax} onClick={() => stepBy(step)}>
           <Plus />
         </button>

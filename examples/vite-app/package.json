@@ -1,5 +1,5 @@
 {
-  "name": "kaleido-vite-example",
+  "name": "nova-ui-vite-example",
   "private": true,
   "type": "module",
   "scripts": {
@@ -10,14 +10,14 @@
   "dependencies": {
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "@kaleido/tokens": "file:./vendor/kaleido/kaleido-tokens-20261029070709.tgz",
-    "@kaleido/ui": "file:./vendor/kaleido/kaleido-ui-20261029070709.tgz"
+    "@darkalpha/nova-tokens": "file:./vendor/nova-ui/nova-tokens-20261029070709.tgz",
+    "@darkalpha/nova-ui": "file:./vendor/nova-ui/nova-ui-20261029070709.tgz"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^6.1.2",
     "vite": "^8.3.5"
   },
   "overrides": {
-    "@kaleido/tokens": "$@kaleido/tokens"
+    "@darkalpha/nova-tokens": "$@darkalpha/nova-tokens"
   }
 }

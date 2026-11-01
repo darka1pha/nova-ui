@@ -1,7 +1,7 @@
 import { createIcon, dot, wave } from "./create-icon.ts";
 
 /*
- * Shipping & marine icons in the Kaleido style: 24px grid, 1.5px stroke,
+ * Shipping & marine icons in the Nova UI style: 24px grid, 1.5px stroke,
  * soft corners. Vessels share one hull curve and water uses one wave, so the
  * set reads as a family. `s` = secondary (dimmed in duotone), `f` = tinted in soft.
  */

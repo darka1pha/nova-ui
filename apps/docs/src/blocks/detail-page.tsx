@@ -11,8 +11,8 @@ import {
   TabsList,
   TabsTrigger,
   Timeline,
-} from "@kaleido/ui";
-import { Anchor, BillOfLading, ContainerShip, CustomsStamp } from "@kaleido/ui/icons";
+} from "@darkalpha/nova-ui";
+import { Anchor, BillOfLading, ContainerShip, CustomsStamp } from "@darkalpha/nova-ui/icons";
 import { FileDown, MoreHorizontal } from "lucide-react";
 
 /** A detail page: breadcrumbs, identity and actions, key figures, then tabbed detail. */

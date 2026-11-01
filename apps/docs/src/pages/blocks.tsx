@@ -1,4 +1,4 @@
-import { Card, cn, Text, ToggleGroup, ToggleGroupItem } from "@kaleido/ui";
+import { Card, cn, Text, ToggleGroup, ToggleGroupItem } from "@darkalpha/nova-ui";
 import { useState, type ReactNode } from "react";
 import { VesselDetailBlock } from "../blocks/detail-page.tsx";
 import detailSource from "../blocks/detail-page.tsx?raw";
@@ -46,7 +46,7 @@ export function BlocksPage() {
       wide
       eyebrow="Start"
       title="Blocks"
-      lead="Whole screens assembled from Kaleido components: copy one, then change the content. Every block follows the theme, mode, density, material and locale you set on the provider."
+      lead="Whole screens assembled from Nova UI components: copy one, then change the content. Every block follows the theme, mode, density, material and locale you set on the provider."
     >
       <Prose>
         <p>

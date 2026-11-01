@@ -109,7 +109,7 @@ export const easing = {
 
 /**
  * Motion personalities. A theme picks one; components read the resulting
- * interaction tokens (`--ks-hover-lift`, `--ks-press-scale`…), so the same
+ * interaction tokens (`--nv-hover-lift`, `--nv-press-scale`…), so the same
  * Button feels calm in "minimal" and lively in "berry".
  */
 export const motionStyles = {

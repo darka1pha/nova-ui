@@ -7,12 +7,12 @@ export interface ThemeScriptProps {
 
 /**
  * Returns the inline script source that applies a stored color mode to
- * `<html data-ks-mode>` before first paint. Useful for frameworks that inject
+ * `<html data-nv-mode>` before first paint. Useful for frameworks that inject
  * head content as strings.
  */
 export function getThemeScript(storageKey: string): string {
   const key = JSON.stringify(storageKey);
-  return `(function(){try{var m=localStorage.getItem(${key});if(m==="light"||m==="dark")document.documentElement.setAttribute("data-ks-mode",m);}catch(e){}})();`;
+  return `(function(){try{var m=localStorage.getItem(${key});if(m==="light"||m==="dark")document.documentElement.setAttribute("data-nv-mode",m);}catch(e){}})();`;
 }
 
 /**

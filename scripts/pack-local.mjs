@@ -1,8 +1,8 @@
 /**
  * Builds the libraries and writes installable tarballs with stable names to
  * ./local-packages:
- *   local-packages/kaleido-tokens.tgz
- *   local-packages/kaleido-ui.tgz
+ *   local-packages/nova-tokens.tgz
+ *   local-packages/nova-ui.tgz
  *
  * Usage: node scripts/pack-local.mjs [--no-build]
  * The tarballs are exactly what `npm publish` would upload, so any project on
@@ -24,9 +24,9 @@ export function packLocal({ build = true } = {}) {
   const result = {};
   for (const pkg of ["tokens", "ui"]) {
     execSync(`pnpm pack --pack-destination "${outDir}"`, { cwd: join(root, "packages", pkg), stdio: "pipe" });
-    const file = readdirSync(outDir).find((f) => f.startsWith(`kaleido-${pkg}-`) && f.endsWith(".tgz"));
+    const file = readdirSync(outDir).find((f) => f.startsWith(`darkalpha-nova-${pkg}-`) && f.endsWith(".tgz"));
     if (!file) throw new Error(`pnpm pack produced no tarball for ${pkg}`);
-    const stable = join(outDir, `kaleido-${pkg}.tgz`);
+    const stable = join(outDir, `nova-${pkg}.tgz`);
     renameSync(join(outDir, file), stable);
     result[pkg] = stable;
   }

@@ -1,7 +1,7 @@
-/* The docs app is a normal Tailwind v4 consumer of Kaleido: tailwind.css replaces
+/* The docs app is a normal Tailwind v4 consumer of Nova UI: tailwind.css replaces
  * styles.css, so this one build generates the components' utilities and ours. */
 @import "tailwindcss";
-@import "@kaleido/ui/tailwind.css";
+@import "@darkalpha/nova-ui/tailwind.css";
 
 @source "../src";
 
@@ -12,24 +12,24 @@ body,
 }
 body {
   margin: 0;
-  background: var(--ks-color-background);
+  background: var(--nv-color-background);
 }
-.ks-theme {
+.nv-theme {
   min-height: 100dvh;
 }
 
 /* Easing demo dots on the Motion page. */
-.ks-ease-demo {
+.nv-ease-demo {
   left: 0;
-  animation: ks-docs-ease 1.8s infinite alternate;
+  animation: nv-docs-ease 1.8s infinite alternate;
 }
-@keyframes ks-docs-ease {
+@keyframes nv-docs-ease {
   to {
     left: calc(100% - 0.75rem);
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .ks-ease-demo {
+  .nv-ease-demo {
     animation: none;
   }
 }

@@ -261,7 +261,7 @@ export const Sidebar = forwardRef<HTMLElement, SidebarProps>(function Sidebar(
       data-variant={variant}
       data-side={side}
       className={cn(
-        "group/sidebar relative flex shrink-0 flex-col overflow-x-hidden transition-[width,transform,opacity,padding] duration-(--ks-duration-slow) ease-(--ks-ease-interactive)",
+        "group/sidebar relative flex shrink-0 flex-col overflow-x-hidden transition-[width,transform,opacity,padding] duration-(--nv-duration-slow) ease-(--nv-ease-interactive)",
         widthClass,
         variantClass,
         isCollapsed && collapsible === "icon" ? "p-1.5" : "p-3",
@@ -302,7 +302,7 @@ export const SidebarTrigger = forwardRef<HTMLButtonElement, SidebarTriggerProps>
       }}
       className={cn(
         buttonVariants({ variant: "ghost", size: "sm" }),
-        "group/trigger size-8 p-0 text-foreground-secondary hover:bg-surface-hover hover:text-foreground active:scale-95 transition-all duration-(--ks-duration-normal) ease-(--ks-ease-interactive)",
+        "group/trigger size-8 p-0 text-foreground-secondary hover:bg-surface-hover hover:text-foreground active:scale-95 transition-all duration-(--nv-duration-normal) ease-(--nv-ease-interactive)",
         focusRing,
         className,
       )}
@@ -311,7 +311,7 @@ export const SidebarTrigger = forwardRef<HTMLButtonElement, SidebarTriggerProps>
       {icon ?? (
         <PanelLeft
           className={cn(
-            "size-4 transition-transform duration-(--ks-duration-slow) ease-(--ks-ease-interactive) group-hover/trigger:scale-110",
+            "size-4 transition-transform duration-(--nv-duration-slow) ease-(--nv-ease-interactive) group-hover/trigger:scale-110",
             !isOpen && "rotate-180",
           )}
         />
@@ -359,7 +359,7 @@ export const SidebarInset = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivEle
       ref={ref}
       data-slot="sidebar-inset"
       className={cn(
-        "relative flex min-h-screen flex-1 flex-col overflow-y-auto bg-surface-raised transition-[margin] duration-(--ks-duration-slow) ease-(--ks-ease-interactive)",
+        "relative flex min-h-screen flex-1 flex-col overflow-y-auto bg-surface-raised transition-[margin] duration-(--nv-duration-slow) ease-(--nv-ease-interactive)",
         "md:m-2 md:rounded-2xl md:border md:border-border md:shadow-xs",
         className,
       )}
@@ -400,7 +400,7 @@ export function SidebarGroupLabel({
   return (
     <Comp
       className={cn(
-        "flex h-7 shrink-0 items-center px-2 text-2xs font-semibold uppercase tracking-(--ks-tracking-wider) text-foreground-muted outline-none transition-[margin,opacity] duration-(--ks-duration-normal) ease-(--ks-ease-interactive)",
+        "flex h-7 shrink-0 items-center px-2 text-2xs font-semibold uppercase tracking-(--nv-tracking-wider) text-foreground-muted outline-none transition-[margin,opacity] duration-(--nv-duration-normal) ease-(--nv-ease-interactive)",
         // Collapsed to the icon rail, the label turns into a hairline divider between groups.
         "group-data-[collapsible=icon]/sidebar:mx-2 group-data-[collapsible=icon]/sidebar:my-1 group-data-[collapsible=icon]/sidebar:h-px group-data-[collapsible=icon]/sidebar:overflow-hidden group-data-[collapsible=icon]/sidebar:bg-border group-data-[collapsible=icon]/sidebar:p-0 group-data-[collapsible=icon]/sidebar:text-transparent",
         className,
@@ -443,7 +443,7 @@ export function SidebarMenuItem({ className, ...props }: HTMLAttributes<HTMLLIEl
 }
 
 const sidebarMenuButtonVariants = cva(
-  `peer/menu-button group/menu-btn relative flex w-full items-center gap-2.5 rounded-md p-2 text-start font-medium outline-none ${transition} ${focusRing} [&_svg]:size-4 [&_svg]:shrink-0 [&>svg]:transition-transform [&>svg]:duration-(--ks-duration-normal) [&>svg]:ease-(--ks-ease-interactive) hover:[&>svg]:scale-110 active:scale-(--ks-press-scale,0.98) disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50`,
+  `peer/menu-button group/menu-btn relative flex w-full items-center gap-2.5 rounded-md p-2 text-start font-medium outline-none ${transition} ${focusRing} [&_svg]:size-4 [&_svg]:shrink-0 [&>svg]:transition-transform [&>svg]:duration-(--nv-duration-normal) [&>svg]:ease-(--nv-ease-interactive) hover:[&>svg]:scale-110 active:scale-(--nv-press-scale,0.98) disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50`,
   {
     variants: {
       variant: {
@@ -457,7 +457,7 @@ const sidebarMenuButtonVariants = cva(
       },
       isActive: {
         // A slim indicator bar on the leading edge plus a tinted fill; the icon picks up the brand color.
-        true: "bg-primary-subtle text-primary-on-subtle font-semibold hover:bg-primary-subtle-hover [&_svg]:text-primary-text before:absolute before:inset-y-2 before:-start-0.5 before:w-1 before:rounded-full before:bg-primary-solid before:animate-ks-bounce-in group-data-[collapsible=icon]/sidebar:before:hidden",
+        true: "bg-primary-subtle text-primary-on-subtle font-semibold hover:bg-primary-subtle-hover [&_svg]:text-primary-text before:absolute before:inset-y-2 before:-start-0.5 before:w-1 before:rounded-full before:bg-primary-solid before:animate-nv-bounce-in group-data-[collapsible=icon]/sidebar:before:hidden",
         false: "",
       },
     },
@@ -577,10 +577,10 @@ export const SidebarMenuSubButton = forwardRef<
       data-active={isActive ? "true" : "false"}
       aria-current={isActive ? "page" : undefined}
       className={cn(
-        "relative flex h-8 w-full items-center gap-2 rounded-md px-2 text-start text-xs font-medium text-foreground-secondary hover:bg-surface-hover hover:text-foreground transition-colors duration-(--ks-duration-fast) ease-(--ks-ease-interactive) active:scale-(--ks-press-scale,0.98) [&_svg]:size-3.5 [&_svg]:shrink-0",
+        "relative flex h-8 w-full items-center gap-2 rounded-md px-2 text-start text-xs font-medium text-foreground-secondary hover:bg-surface-hover hover:text-foreground transition-colors duration-(--nv-duration-fast) ease-(--nv-ease-interactive) active:scale-(--nv-press-scale,0.98) [&_svg]:size-3.5 [&_svg]:shrink-0",
         // The active sub item lights up its segment of the guide line.
         isActive &&
-          "text-primary-text font-semibold before:absolute before:inset-y-1.5 before:-start-[calc(0.625rem+1px)] before:w-0.5 before:rounded-full before:bg-primary-solid before:animate-ks-bounce-in",
+          "text-primary-text font-semibold before:absolute before:inset-y-1.5 before:-start-[calc(0.625rem+1px)] before:w-0.5 before:rounded-full before:bg-primary-solid before:animate-nv-bounce-in",
         focusRing,
         className,
       )}
@@ -726,7 +726,7 @@ function ResponsiveSidebarEntry({ item }: { item: ResponsiveSidebarNavItem }) {
               <ChevronRight
                 aria-hidden
                 className={cn(
-                  "text-foreground-muted transition-transform duration-(--ks-duration-normal) ease-(--ks-ease-interactive) rtl:-scale-x-100 group-data-[collapsible=icon]/sidebar:hidden",
+                  "text-foreground-muted transition-transform duration-(--nv-duration-normal) ease-(--nv-ease-interactive) rtl:-scale-x-100 group-data-[collapsible=icon]/sidebar:hidden",
                   subOpen && !isCollapsed && "rotate-90 rtl:-rotate-90",
                 )}
               />
@@ -939,16 +939,16 @@ export const DualSidebar = forwardRef<HTMLElement, DualSidebarProps>(function Du
                     item.onClick?.();
                   }}
                   className={cn(
-                    "relative flex size-11 items-center justify-center rounded-xl transition-all duration-(--ks-duration-normal) ease-(--ks-ease-interactive) active:scale-95",
+                    "relative flex size-11 items-center justify-center rounded-xl transition-all duration-(--nv-duration-normal) ease-(--nv-ease-interactive) active:scale-95",
                     focusRing,
                     isSelected
-                      ? "bg-primary text-primary-on-solid shadow-glow-primary scale-105 animate-ks-pop-in"
+                      ? "bg-primary text-primary-on-solid shadow-glow-primary scale-105 animate-nv-pop-in"
                       : "text-foreground-secondary hover:bg-surface-hover hover:text-foreground hover:scale-105",
                   )}
                 >
                   {item.icon}
                   {item.badge ? (
-                    <span className="absolute -top-1 -end-1 flex size-4 items-center justify-center rounded-full bg-danger text-[10px] font-bold text-danger-on-solid animate-ks-pulse">
+                    <span className="absolute -top-1 -end-1 flex size-4 items-center justify-center rounded-full bg-danger text-[10px] font-bold text-danger-on-solid animate-nv-pulse">
                       {item.badge}
                     </span>
                   ) : null}

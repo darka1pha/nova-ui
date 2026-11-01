@@ -46,7 +46,7 @@ export const SegmentedControl = forwardRef<HTMLDivElement, SegmentedControlProps
         orientation="horizontal"
         data-indicator={rect ? "ready" : undefined}
         className={cn(
-          "group/segmented relative gap-1 rounded-(--ks-button-radius) bg-surface-sunken p-1",
+          "group/segmented relative gap-1 rounded-(--nv-button-radius) bg-surface-sunken p-1",
           fullWidth ? "flex w-full [&>[role=radio]]:flex-1" : "inline-flex w-fit",
           className,
         )}
@@ -57,8 +57,8 @@ export const SegmentedControl = forwardRef<HTMLDivElement, SegmentedControlProps
           <span
             aria-hidden
             className={cn(
-              "pointer-events-none absolute top-0 z-0 rounded-[calc(var(--ks-button-radius)-2px)] bg-surface shadow-sm",
-              animate && "transition-[translate,width] duration-(--ks-duration-slow) ease-(--ks-ease-interactive) motion-reduce:transition-none",
+              "pointer-events-none absolute top-0 z-0 rounded-[calc(var(--nv-button-radius)-2px)] bg-surface shadow-sm",
+              animate && "transition-[translate,width] duration-(--nv-duration-slow) ease-(--nv-ease-interactive) motion-reduce:transition-none",
             )}
             // Offsets are physical, so anchor to the physical left edge even in RTL.
             style={{ left: 0, width: rect.w, height: rect.h, translate: `${rect.x}px ${rect.y}px` }}
@@ -80,8 +80,8 @@ export const SegmentedControlItem = forwardRef<HTMLButtonElement, SegmentedContr
     <RadioGroupPrimitive.Item
       ref={ref}
       className={cn(
-        "relative z-10 inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-[calc(var(--ks-button-radius)-2px)] font-medium text-foreground-muted",
-        "transition-colors duration-(--ks-duration-fast) hover:text-foreground data-[state=checked]:text-foreground",
+        "relative z-10 inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-[calc(var(--nv-button-radius)-2px)] font-medium text-foreground-muted",
+        "transition-colors duration-(--nv-duration-fast) hover:text-foreground data-[state=checked]:text-foreground",
         // Until the indicator has measured itself (and without JavaScript), the checked item carries its own highlight.
         "data-[state=checked]:bg-surface data-[state=checked]:shadow-sm group-data-[indicator=ready]/segmented:data-[state=checked]:bg-transparent group-data-[indicator=ready]/segmented:data-[state=checked]:shadow-none",
         itemSize[size],

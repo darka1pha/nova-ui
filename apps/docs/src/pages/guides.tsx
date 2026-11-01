@@ -16,7 +16,7 @@ import {
   Stat,
   Text,
   ThemeProvider,
-} from "@kaleido/ui";
+} from "@darkalpha/nova-ui";
 import { ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { CodeBlock, Example, Page, Prose, Section } from "../docs/kit.tsx";
@@ -53,7 +53,7 @@ export function AccessibilityPage() {
       </Section>
       <Section title="Checking your own themes">
         <CodeBlock
-          code={`import { auditContrast, getResolvedTheme } from "@kaleido/ui";
+          code={`import { auditContrast, getResolvedTheme } from "@darkalpha/nova-ui";
 
 test("our brand theme is accessible", () => {
   const theme = getResolvedTheme("vibrant", { brand: { primary: "#e11d48" } });
@@ -206,19 +206,19 @@ export function StylingPage() {
         <CodeBlock
           language="css"
           code={`/* Pill-shaped buttons and roomier cards, everywhere */
-.ks-theme {
-  --ks-button-radius: var(--ks-radius-full);
-  --ks-card-padding: 2rem;
-  --ks-input-radius: var(--ks-radius-sm);
-  --ks-dialog-shadow: var(--ks-shadow-lg);
+.nv-theme {
+  --nv-button-radius: var(--nv-radius-full);
+  --nv-card-padding: 2rem;
+  --nv-input-radius: var(--nv-radius-sm);
+  --nv-dialog-shadow: var(--nv-shadow-lg);
 }`}
         />
         <Prose>
           <p>
-            Available component tokens: <code>--ks-button-radius</code>, <code>--ks-input-radius</code>, <code>--ks-card-radius</code>,{" "}
-            <code>--ks-card-padding</code>, <code>--ks-dialog-radius</code>, <code>--ks-dialog-shadow</code>, <code>--ks-popover-radius</code>,{" "}
-            <code>--ks-popover-shadow</code>, <code>--ks-badge-radius</code>, <code>--ks-control-h-*</code>, <code>--ks-control-px-*</code>,{" "}
-            <code>--ks-focus-ring-width</code>, <code>--ks-focus-ring-offset</code>.
+            Available component tokens: <code>--nv-button-radius</code>, <code>--nv-input-radius</code>, <code>--nv-card-radius</code>,{" "}
+            <code>--nv-card-padding</code>, <code>--nv-dialog-radius</code>, <code>--nv-dialog-shadow</code>, <code>--nv-popover-radius</code>,{" "}
+            <code>--nv-popover-shadow</code>, <code>--nv-badge-radius</code>, <code>--nv-control-h-*</code>, <code>--nv-control-px-*</code>,{" "}
+            <code>--nv-focus-ring-width</code>, <code>--nv-focus-ring-offset</code>.
           </p>
         </Prose>
       </Section>
@@ -237,13 +237,13 @@ export function StylingPage() {
           </p>
           <p>
             Responsive classes work the same way (<code>className="sm:flex-col"</code>). In a Tailwind app this relies on one build generating both your
-            utilities and the components': import <code>@kaleido/ui/tailwind.css</code> instead of <code>styles.css</code> (see Getting started).
+            utilities and the components': import <code>@darkalpha/nova-ui/tailwind.css</code> instead of <code>styles.css</code> (see Getting started).
           </p>
         </Prose>
       </Section>
       <Section title="4. Extending variants">
         <CodeBlock
-          code={`import { Button, buttonVariants, cn, type ButtonProps } from "@kaleido/ui";
+          code={`import { Button, buttonVariants, cn, type ButtonProps } from "@darkalpha/nova-ui";
 
 // Wrap, don't fork: a project-specific variant built from tokens.
 export function UpgradeButton(props: ButtonProps) {
@@ -269,7 +269,7 @@ export function CustomComponentsPage() {
     <Page eyebrow="Guides" title="Custom components" lead="Build project-specific components with the same tokens, utilities and patterns as the library.">
       <Example
         title="A stat card built from tokens"
-        code={`import { Card, cn } from "@kaleido/ui";
+        code={`import { Card, cn } from "@darkalpha/nova-ui";
 
 export function StatCard({ label, value, delta }: { label: string; value: string; delta: number }) {
   const up = delta >= 0;
@@ -305,7 +305,7 @@ export function StatCard({ label, value, delta }: { label: string; value: string
               Use semantic utilities (<code>bg-surface</code>, <code>text-foreground-muted</code>, <code>border-border</code>) — never raw hex or palette names.
             </li>
             <li>
-              Without Tailwind, use variables directly: <code>background: var(--ks-color-primary-subtle)</code>.
+              Without Tailwind, use variables directly: <code>background: var(--nv-color-primary-subtle)</code>.
             </li>
             <li>
               Reuse <code>buttonVariants</code>, <code>fieldVariants</code> and <code>cn</code> instead of copying classes.
@@ -323,9 +323,9 @@ export function StatCard({ label, value, delta }: { label: string; value: string
         <CodeBlock
           language="css"
           code={`/* Project tokens should reference system tokens, so they follow themes and modes. */
-.ks-theme {
-  --app-sidebar-bg: var(--ks-color-surface-sunken);
-  --app-highlight: color-mix(in oklab, var(--ks-color-accent-solid) 18%, transparent);
+.nv-theme {
+  --app-sidebar-bg: var(--nv-color-surface-sunken);
+  --app-highlight: color-mix(in oklab, var(--nv-color-accent-solid) 18%, transparent);
 }`}
         />
         <Prose>
@@ -342,7 +342,7 @@ export function StatCard({ label, value, delta }: { label: string; value: string
 
 export function MigrationPage() {
   return (
-    <Page eyebrow="Guides" title="Upgrading" lead="Kaleido follows semantic versioning. Releases are managed with Changesets and every change is listed in the package changelogs.">
+    <Page eyebrow="Guides" title="Upgrading" lead="Nova UI follows semantic versioning. Releases are managed with Changesets and every change is listed in the package changelogs.">
       <Section title="Versioning policy">
         <Prose>
           <ul>
@@ -358,12 +358,12 @@ export function MigrationPage() {
             </li>
           </ul>
           <p>
-            <code>@kaleido/tokens</code> and <code>@kaleido/ui</code> are versioned together, so you never need to match versions by hand.
+            <code>@darkalpha/nova-tokens</code> and <code>@darkalpha/nova-ui</code> are versioned together, so you never need to match versions by hand.
           </p>
         </Prose>
       </Section>
       <Section title="Upgrading">
-        <CodeBlock language="bash" code={`pnpm up @kaleido/ui@latest\n# then run your type check — removed or renamed props surface as TypeScript errors`} />
+        <CodeBlock language="bash" code={`pnpm up @darkalpha/nova-ui@latest\n# then run your type check — removed or renamed props surface as TypeScript errors`} />
       </Section>
       <Section title="0.x → 1.0 (planned)">
         <Alert variant="info" title="Pre-1.0">
@@ -376,12 +376,12 @@ export function MigrationPage() {
 
 export function TroubleshootingPage() {
   const items: [string, string][] = [
-    ["Components look unstyled", "Import \"@kaleido/ui/styles.css\" once at your app root, and render components inside <ThemeProvider> (the scoped reset and font apply under .ks-theme)."],
+    ["Components look unstyled", "Import \"@darkalpha/nova-ui/styles.css\" once at your app root, and render components inside <ThemeProvider> (the scoped reset and font apply under .nv-theme)."],
     ["A dialog or menu ignores my theme", "Overlays portal into the nearest ThemeProvider. If you render your own Radix portal, pass container={usePortalContainer()} or use <Portal>."],
     ["Dark mode flashes on load", "When using storageKey, render <ThemeScript storageKey=\"…\" /> in <head>. Without storageKey, 'system' mode is pure CSS and cannot flash."],
-    ["Hydration warning on <html>", "Add suppressHydrationWarning to <html>; ThemeScript sets data-ks-mode before React hydrates."],
-    ["My Tailwind classes like bg-primary don't exist", "Import \"@kaleido/ui/tailwind.css\" after \"tailwindcss\" in your CSS entry (Tailwind v4), in place of styles.css."],
-    ["Responsive layouts ignore the breakpoint (a dialog footer stays stacked on desktop)", "Your app runs Tailwind and also loads \"@kaleido/ui/styles.css\": two builds each sort their own utilities, so your sheet's base utility (flex-col) can follow the library's sm:flex-row and win at every width. Import \"@kaleido/ui/tailwind.css\" after \"tailwindcss\" instead of styles.css, so one build orders everything."],
+    ["Hydration warning on <html>", "Add suppressHydrationWarning to <html>; ThemeScript sets data-nv-mode before React hydrates."],
+    ["My Tailwind classes like bg-primary don't exist", "Import \"@darkalpha/nova-ui/tailwind.css\" after \"tailwindcss\" in your CSS entry (Tailwind v4), in place of styles.css."],
+    ["Responsive layouts ignore the breakpoint (a dialog footer stays stacked on desktop)", "Your app runs Tailwind and also loads \"@darkalpha/nova-ui/styles.css\": two builds each sort their own utilities, so your sheet's base utility (flex-col) can follow the library's sm:flex-row and win at every width. Import \"@darkalpha/nova-ui/tailwind.css\" after \"tailwindcss\" instead of styles.css, so one build orders everything."],
     ["My className doesn't override", "Check for a conflicting variant prop; tailwind-merge resolves conflicts within the same utility group. For plain CSS, unlayered rules always win over the library's layered CSS."],
     ["Brand color looks darker than my hex", "Text on it would fail 4.5:1, so the resolver chose a nearby readable tone. In development a warning lists every adjustment; see the playground's Contrast tab."],
     ["Colors don't switch in an old browser", "light-dark() requires 2024+ browsers. For older targets, set an explicit mode — explicit light/dark still works where color-scheme is supported."],
@@ -407,8 +407,8 @@ export function ContributingPage() {
         <CodeBlock
           language="text"
           code={`packages/
-  tokens/   @kaleido/tokens — primitives, color engine, semantic resolver, presets, CSS generation
-  ui/       @kaleido/ui     — React components, ThemeProvider, styles.css build
+  tokens/   @darkalpha/nova-tokens — primitives, color engine, semantic resolver, presets, CSS generation
+  ui/       @darkalpha/nova-ui     — React components, ThemeProvider, styles.css build
 apps/
   docs/     this site + theme playground + Playwright suites
 scripts/    install verification and bundle size report`}

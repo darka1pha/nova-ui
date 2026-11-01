@@ -137,7 +137,7 @@ export const PinInput = forwardRef<HTMLDivElement, PinInputProps>(function PinIn
             className={cn(
               fieldVariants(),
               "size-11 px-0 text-center font-mono text-lg font-semibold caret-primary-text",
-              "focus-visible:scale-105 data-[filled]:border-primary-border data-[filled]:bg-primary-subtle/40 data-[filled]:animate-ks-bounce-in motion-reduce:focus-visible:scale-100",
+              "focus-visible:scale-105 data-[filled]:border-primary-border data-[filled]:bg-primary-subtle/40 data-[filled]:animate-nv-bounce-in motion-reduce:focus-visible:scale-100",
             )}
           />
         );
@@ -203,7 +203,7 @@ export const TagInput = forwardRef<HTMLDivElement, TagInputProps>(function TagIn
       onClick={() => inputRef.current?.focus()}
       className={cn(
         fieldVariants(),
-        "flex h-auto min-h-(--ks-control-h-md) cursor-text flex-wrap items-center gap-1.5 px-2 py-1.5 focus-within:border-focus-ring focus-within:ring-3 focus-within:ring-focus-ring/25",
+        "flex h-auto min-h-(--nv-control-h-md) cursor-text flex-wrap items-center gap-1.5 px-2 py-1.5 focus-within:border-focus-ring focus-within:ring-3 focus-within:ring-focus-ring/25",
         disabled && "pointer-events-none opacity-60",
         className,
       )}
@@ -211,7 +211,7 @@ export const TagInput = forwardRef<HTMLDivElement, TagInputProps>(function TagIn
     >
       {name ? tags.map((tag) => <input key={`h-${tag}`} type="hidden" name={name} value={tag} />) : null}
       {tags.map((tag) => (
-        <Chip key={tag} size="sm" className="animate-ks-bounce-in" onRemove={() => update(tags.filter((t) => t !== tag))} disabled={field.disabled}>
+        <Chip key={tag} size="sm" className="animate-nv-bounce-in" onRemove={() => update(tags.filter((t) => t !== tag))} disabled={field.disabled}>
           {tag}
         </Chip>
       ))}
@@ -371,7 +371,7 @@ export const FileDropzone = forwardRef<HTMLDivElement, FileDropzoneProps>(functi
         >
           <span
             aria-hidden
-            className="flex size-12 items-center justify-center rounded-full bg-(image:--ks-gradient-subtle) text-primary-text ring-1 ring-primary-border transition-transform duration-(--ks-duration-slow) ease-(--ks-ease-interactive) group-hover/drop:-translate-y-1 group-data-[dragging]/drop:animate-ks-bounce-in group-data-[dragging]/drop:scale-110 [&_svg]:size-6"
+            className="flex size-12 items-center justify-center rounded-full bg-(image:--nv-gradient-subtle) text-primary-text ring-1 ring-primary-border transition-transform duration-(--nv-duration-slow) ease-(--nv-ease-interactive) group-hover/drop:-translate-y-1 group-data-[dragging]/drop:animate-nv-bounce-in group-data-[dragging]/drop:scale-110 [&_svg]:size-6"
           >
             <UploadCloud />
           </span>
@@ -401,7 +401,7 @@ export const FileDropzone = forwardRef<HTMLDivElement, FileDropzoneProps>(functi
       {files.length ? (
         <ul className="flex flex-col gap-2" aria-live="polite">
           {files.map((file, i) => (
-            <li key={`${file.name}-${i}`} className="flex items-center gap-3 rounded-md border border-border bg-surface p-2 ps-3 text-sm animate-ks-slide-down">
+            <li key={`${file.name}-${i}`} className="flex items-center gap-3 rounded-md border border-border bg-surface p-2 ps-3 text-sm animate-nv-slide-down">
               <FileText aria-hidden className="size-4 shrink-0 text-primary-text" />
               <span className="min-w-0 flex-1 truncate font-medium">{file.name}</span>
               <span className="shrink-0 text-xs tabular-nums text-foreground-muted">{formatBytes(file.size)}</span>

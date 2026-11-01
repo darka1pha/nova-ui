@@ -57,7 +57,7 @@ import {
   Timeline,
   toast,
   type DateRange,
-} from "@kaleido/ui";
+} from "@darkalpha/nova-ui";
 import { AlignCenter, AlignLeft, AlignRight, Anchor, Bold, Building2, ChevronsUpDown, Italic, Printer, Share2, CircleCheck, Container, DollarSign, GitCommit, Package, Ship, Truck, Users } from "lucide-react";
 import { useState } from "react";
 import { Example, PropsTable } from "../docs/kit.tsx";
@@ -70,11 +70,11 @@ export function ActionsExtras() {
       <Example
         title="CopyButton"
         description="The icon morphs into a check and a live region announces the copy."
-        code={`<CopyButton value="pnpm add @kaleido/ui" label="Copy command" />
+        code={`<CopyButton value="pnpm add @darkalpha/nova-ui" label="Copy command" />
 <CopyButton value={apiKey} aria-label="Copy API key" />`}
       >
-        <CopyButton value="pnpm add @kaleido/ui" label="Copy command" />
-        <CopyButton value="sk_test_kaleido" aria-label="Copy API key" variant="ghost" />
+        <CopyButton value="pnpm add @darkalpha/nova-ui" label="Copy command" />
+        <CopyButton value="sk_test_nova" aria-label="Copy API key" variant="ghost" />
       </Example>
       <Example
         title="Chip"
@@ -304,11 +304,11 @@ export function FeedbackExtras() {
         title="Banner"
         description="A page-level announcement. The gradient variant pans slowly."
         code={`<Banner variant="gradient" action={<Button size="xs">Learn more</Button>} onDismiss={hide}>
-  Kaleido 1.0 is here
+  Nova UI 1.0 is here
 </Banner>`}
         className="p-0! sm:p-0!"
       >
-        <Stack gap={0} className="w-full overflow-hidden rounded-t-(--ks-card-radius)">
+        <Stack gap={0} className="w-full overflow-hidden rounded-t-(--nv-card-radius)">
           {banner ? (
             <Banner
               onDismiss={() => setBanner(false)}
@@ -318,7 +318,7 @@ export function FeedbackExtras() {
                 </Button>
               }
             >
-              Kaleido 1.0 is here — motion, 25 new components and local installs.
+              Nova UI 1.0 is here — motion, 25 new components and local installs.
             </Banner>
           ) : (
             <div className="p-4">
@@ -537,7 +537,7 @@ export function NavigationExtras() {
         <Collapsible className="w-64">
           <div className="flex items-center justify-between rounded-md border border-border px-3 py-2">
             <Text size="sm" weight="semibold">
-              kaleido/ui — 4 files
+              nova-ui — 4 files
             </Text>
             <CollapsibleTrigger asChild>
               <Button size="xs" variant="ghost" aria-label="Toggle files">
@@ -647,7 +647,7 @@ export function DataExtras() {
             ))}
           </div>
         </ScrollArea>
-        <AspectRatio ratio={16 / 9} className="w-72 bg-(image:--ks-gradient-mesh) ring-1 ring-border">
+        <AspectRatio ratio={16 / 9} className="w-72 bg-(image:--nv-gradient-mesh) ring-1 ring-border">
           <div className="flex size-full items-center justify-center font-display text-lg font-bold text-foreground">16 : 9</div>
         </AspectRatio>
       </Example>

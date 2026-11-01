@@ -27,7 +27,7 @@ const inner = [
   `npm install -g --silent ${pnpm}`,
   "pnpm install --frozen-lockfile",
   "pnpm build",
-  `status=0; CI=1 pnpm --filter @kaleido/docs exec playwright test ${args} || status=$?`,
+  `status=0; CI=1 pnpm --filter @darkalpha/nova-docs exec playwright test ${args} || status=$?`,
   "if [ -d apps/docs/e2e/__screenshots__/linux ]; then rm -rf /out/linux && cp -r apps/docs/e2e/__screenshots__/linux /out/; fi",
   "exit $status",
 ].join("\n");

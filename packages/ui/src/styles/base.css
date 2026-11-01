@@ -1,81 +1,81 @@
 @layer base {
   /* Scoped mini-reset: only inside a ThemeProvider, never on the host page. */
-  .ks-theme,
-  .ks-theme *,
-  .ks-theme ::before,
-  .ks-theme ::after {
+  .nv-theme,
+  .nv-theme *,
+  .nv-theme ::before,
+  .nv-theme ::after {
     box-sizing: border-box;
-    border: 0 solid var(--ks-color-border);
+    border: 0 solid var(--nv-color-border);
   }
 
-  .ks-theme {
-    background-color: var(--ks-color-background);
-    color: var(--ks-color-foreground);
-    font-family: var(--ks-font-sans);
-    font-size: var(--ks-text-md);
-    line-height: var(--ks-leading-normal);
+  .nv-theme {
+    background-color: var(--nv-color-background);
+    color: var(--nv-color-foreground);
+    font-family: var(--nv-font-sans);
+    font-size: var(--nv-text-md);
+    line-height: var(--nv-leading-normal);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    accent-color: var(--ks-color-primary-solid);
+    accent-color: var(--nv-color-primary-solid);
   }
 
-  .ks-theme :where(button, input, select, textarea) {
+  .nv-theme :where(button, input, select, textarea) {
     font: inherit;
     color: inherit;
     letter-spacing: inherit;
     margin: 0;
   }
-  .ks-theme :where(button, [role="button"]) {
+  .nv-theme :where(button, [role="button"]) {
     background: transparent;
     cursor: pointer;
   }
-  .ks-theme :where(button:disabled, [aria-disabled="true"]) {
+  .nv-theme :where(button:disabled, [aria-disabled="true"]) {
     cursor: not-allowed;
   }
-  .ks-theme :where(h1, h2, h3, h4, h5, h6, p, figure, blockquote, dl, dd) {
+  .nv-theme :where(h1, h2, h3, h4, h5, h6, p, figure, blockquote, dl, dd) {
     margin: 0;
   }
-  .ks-theme :where(ul, ol) {
+  .nv-theme :where(ul, ol) {
     margin: 0;
     padding: 0;
   }
-  .ks-theme :where(img, svg, video, canvas) {
+  .nv-theme :where(img, svg, video, canvas) {
     display: block;
     max-width: 100%;
   }
-  .ks-theme :where(svg) {
+  .nv-theme :where(svg) {
     max-width: none;
   }
-  .ks-theme :where(table) {
+  .nv-theme :where(table) {
     border-collapse: collapse;
   }
-  .ks-theme ::selection {
-    background-color: var(--ks-color-selection);
+  .nv-theme ::selection {
+    background-color: var(--nv-color-selection);
   }
-  .ks-theme :where(:focus-visible) {
-    outline: var(--ks-focus-ring-width) solid var(--ks-color-focus-ring);
-    outline-offset: var(--ks-focus-ring-offset);
+  .nv-theme :where(:focus-visible) {
+    outline: var(--nv-focus-ring-width) solid var(--nv-color-focus-ring);
+    outline-offset: var(--nv-focus-ring-offset);
   }
-  .ks-theme [data-ks-portal-root] {
+  .nv-theme [data-nv-portal-root] {
     display: contents;
   }
 
   /* Reduced motion: collapse durations so state still changes, without travel. */
   @media (prefers-reduced-motion: reduce) {
     :where(:root) {
-      --ks-duration-instant: 0.01ms;
-      --ks-duration-fast: 0.01ms;
-      --ks-duration-normal: 0.01ms;
-      --ks-duration-slow: 0.01ms;
-      --ks-duration-slower: 0.01ms;
+      --nv-duration-instant: 0.01ms;
+      --nv-duration-fast: 0.01ms;
+      --nv-duration-normal: 0.01ms;
+      --nv-duration-slow: 0.01ms;
+      --nv-duration-slower: 0.01ms;
     }
   }
-  [data-ks-motion="reduce"] {
-    --ks-duration-instant: 0.01ms;
-    --ks-duration-fast: 0.01ms;
-    --ks-duration-normal: 0.01ms;
-    --ks-duration-slow: 0.01ms;
-    --ks-duration-slower: 0.01ms;
+  [data-nv-motion="reduce"] {
+    --nv-duration-instant: 0.01ms;
+    --nv-duration-fast: 0.01ms;
+    --nv-duration-normal: 0.01ms;
+    --nv-duration-slow: 0.01ms;
+    --nv-duration-slower: 0.01ms;
   }
 }

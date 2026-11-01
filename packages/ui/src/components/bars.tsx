@@ -26,7 +26,7 @@ export const Menubar = forwardRef<HTMLDivElement, ComponentPropsWithoutRef<typeo
   return (
     <MenubarPrimitive.Root
       ref={ref}
-      className={cn("flex h-10 w-fit items-center gap-0.5 rounded-(--ks-button-radius) border border-border bg-surface p-1 shadow-xs", className)}
+      className={cn("flex h-10 w-fit items-center gap-0.5 rounded-(--nv-button-radius) border border-border bg-surface p-1 shadow-xs", className)}
       {...props}
     />
   );
@@ -164,7 +164,7 @@ export const Toolbar = forwardRef<HTMLDivElement, ComponentPropsWithoutRef<typeo
       ref={ref}
       orientation={orientation}
       className={cn(
-        "flex w-fit gap-1 rounded-(--ks-button-radius) border border-border bg-surface p-1 shadow-xs",
+        "flex w-fit gap-1 rounded-(--nv-button-radius) border border-border bg-surface p-1 shadow-xs",
         orientation === "vertical" ? "flex-col items-stretch" : "flex-wrap items-center",
         className,
       )}
@@ -187,7 +187,7 @@ export const ToolbarLink = forwardRef<HTMLAnchorElement, ComponentPropsWithoutRe
   return (
     <ToolbarPrimitive.Link
       ref={ref}
-      className={cn("inline-flex h-(--ks-control-h-sm) items-center rounded-(--ks-button-radius) px-2 text-sm font-medium text-primary-text underline-offset-4 hover:underline", focusRing, className)}
+      className={cn("inline-flex h-(--nv-control-h-sm) items-center rounded-(--nv-button-radius) px-2 text-sm font-medium text-primary-text underline-offset-4 hover:underline", focusRing, className)}
       {...props}
     />
   );

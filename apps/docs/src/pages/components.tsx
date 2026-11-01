@@ -147,7 +147,7 @@ import {
   presets,
   toast,
   type DataTableColumn,
-} from "@kaleido/ui";
+} from "@darkalpha/nova-ui";
 import {
   AlignCenter,
   AlignLeft,
@@ -221,7 +221,7 @@ export function LayoutPage() {
             Something went wrong
           </Text>
           <Text>
-            <Link href="#/layout">Inline link</Link> · <Code>pnpm add @kaleido/ui</Code> · <Kbd>Ctrl</Kbd> <Kbd>K</Kbd>
+            <Link href="#/layout">Inline link</Link> · <Code>pnpm add @darkalpha/nova-ui</Code> · <Kbd>Ctrl</Kbd> <Kbd>K</Kbd>
           </Text>
         </Stack>
       </Example>
@@ -581,7 +581,7 @@ export function FormsPage() {
           </FormField>
           <FormField label="New password" description="Long passphrases beat clever substitutions.">
             <PasswordInput
-              defaultValue="Kaleido-2026"
+              defaultValue="NovaUI-2026"
               showStrength
               requirements={[passwordRequirements.minLength(10), passwordRequirements.uppercase(), passwordRequirements.number(), passwordRequirements.symbol()]}
             />
@@ -721,7 +721,7 @@ export function FeedbackPage() {
             A new version is available. <a href="#/migration">See what changed</a>.
           </Alert>
           <Alert variant="success" title="Deployed successfully" onDismiss={() => toast("Dismissed")}>
-            Your site is live at kaleido.dev.
+            Your site is live at novaui.dev.
           </Alert>
           <Alert variant="warning" title="Review required" />
           <Alert
@@ -956,7 +956,7 @@ export function OverlaysPage() {
             <DrawerTitle>Share</DrawerTitle>
             <DrawerDescription>Anyone with the link can view.</DrawerDescription>
             <Inline>
-              <Input readOnly value="https://kaleido.dev/s/x7Hk" aria-label="Share link" className="flex-1" />
+              <Input readOnly value="https://novaui.dev/s/x7Hk" aria-label="Share link" className="flex-1" />
               <Button startIcon={<Copy />}>Copy</Button>
             </Inline>
           </DrawerContent>
@@ -1073,7 +1073,7 @@ function InteractiveSidebarShowcase() {
     switch (activePage) {
       case "dashboard":
         return (
-          <div className="flex flex-col gap-4 animate-ks-fade-in animate-ks-slide-up">
+          <div className="flex flex-col gap-4 animate-nv-fade-in animate-nv-slide-up">
             <div className="flex flex-col gap-1">
               <Heading level={3} size="xs">Workspace Overview</Heading>
               <Text size="xs" tone="muted">Key telemetry and operational health for current cycle</Text>
@@ -1109,7 +1109,7 @@ function InteractiveSidebarShowcase() {
 
       case "inbox":
         return (
-          <div className="flex flex-col gap-3 animate-ks-fade-in animate-ks-slide-up">
+          <div className="flex flex-col gap-3 animate-nv-fade-in animate-nv-slide-up">
             <div className="flex items-center justify-between">
               <div className="flex flex-col">
                 <Heading level={3} size="xs">Notifications & Messages</Heading>
@@ -1139,7 +1139,7 @@ function InteractiveSidebarShowcase() {
                     </div>
                     <Text size="xs" tone="muted" className="truncate">{msg.desc}</Text>
                   </div>
-                  {msg.unread ? <span className="size-2 rounded-full bg-primary shrink-0 animate-ks-pulse" /> : null}
+                  {msg.unread ? <span className="size-2 rounded-full bg-primary shrink-0 animate-nv-pulse" /> : null}
                 </Card>
               ))}
             </div>
@@ -1148,7 +1148,7 @@ function InteractiveSidebarShowcase() {
 
       case "analytics":
         return (
-          <div className="flex flex-col gap-4 animate-ks-fade-in animate-ks-slide-up">
+          <div className="flex flex-col gap-4 animate-nv-fade-in animate-nv-slide-up">
             <div className="flex flex-col gap-1">
               <Heading level={3} size="xs">Usage & Telemetry</Heading>
               <Text size="xs" tone="muted">API requests and component render volume by module</Text>
@@ -1157,11 +1157,11 @@ function InteractiveSidebarShowcase() {
               <BarList
                 aria-label="Component usage"
                 data={[
-                  { label: "@kaleido/ui: ResponsiveSidebar", value: 6840 },
-                  { label: "@kaleido/ui: Button & Actions", value: 5410 },
-                  { label: "@kaleido/tokens: Color Engine", value: 4230 },
-                  { label: "@kaleido/ui: Forms & Select", value: 3120 },
-                  { label: "@kaleido/ui: Charts & Sparkline", value: 2090 },
+                  { label: "@darkalpha/nova-ui: ResponsiveSidebar", value: 6840 },
+                  { label: "@darkalpha/nova-ui: Button & Actions", value: 5410 },
+                  { label: "@darkalpha/nova-tokens: Color Engine", value: 4230 },
+                  { label: "@darkalpha/nova-ui: Forms & Select", value: 3120 },
+                  { label: "@darkalpha/nova-ui: Charts & Sparkline", value: 2090 },
                 ]}
               />
             </Card>
@@ -1170,14 +1170,14 @@ function InteractiveSidebarShowcase() {
 
       case "projects":
         return (
-          <div className="flex flex-col gap-3 animate-ks-fade-in animate-ks-slide-up">
+          <div className="flex flex-col gap-3 animate-nv-fade-in animate-nv-slide-up">
             <div className="flex items-center justify-between">
               <Heading level={3} size="xs">Active Projects</Heading>
               <Button size="xs" variant="primary">New project</Button>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
-                { name: "Kaleido UI Components", progress: 92, status: "Active", badge: "primary" as const },
+                { name: "Nova UI UI Components", progress: 92, status: "Active", badge: "primary" as const },
                 { name: "Design Tokens & Engine", progress: 100, status: "Complete", badge: "success" as const },
                 { name: "Playwright Regression Suite", progress: 84, status: "Testing", badge: "warning" as const },
                 { name: "Mobile App Navigation", progress: 65, status: "In Progress", badge: "neutral" as const },
@@ -1204,7 +1204,7 @@ function InteractiveSidebarShowcase() {
 
       case "team":
         return (
-          <div className="flex flex-col gap-3 animate-ks-fade-in animate-ks-slide-up">
+          <div className="flex flex-col gap-3 animate-nv-fade-in animate-nv-slide-up">
             <div className="flex items-center justify-between">
               <Heading level={3} size="xs">Team Members</Heading>
               <Badge size="sm" variant="primary">4 Online</Badge>
@@ -1233,7 +1233,7 @@ function InteractiveSidebarShowcase() {
 
       case "settings":
         return (
-          <div className="flex flex-col gap-4 animate-ks-fade-in animate-ks-slide-up">
+          <div className="flex flex-col gap-4 animate-nv-fade-in animate-nv-slide-up">
             <div className="flex flex-col gap-1">
               <Heading level={3} size="xs">Preferences & Configuration</Heading>
               <Text size="xs" tone="muted">Manage your workspace navigation behavior and notifications</Text>
@@ -1313,14 +1313,14 @@ function InteractiveSidebarShowcase() {
 
       {/* Interactive Render Container */}
       <ThemeProvider theme={demoTheme} mode={demoMode}>
-        <div className="relative flex h-[540px] w-full flex-col overflow-hidden rounded-2xl border border-border bg-surface text-foreground shadow-md transition-colors duration-(--ks-duration-normal)">
+        <div className="relative flex h-[540px] w-full flex-col overflow-hidden rounded-2xl border border-border bg-surface text-foreground shadow-md transition-colors duration-(--nv-duration-normal)">
           {sidebarVariant === "inset" ? (
             <SidebarProvider defaultOpen className="h-full min-h-0 flex-row w-full bg-surface-sunken">
               <ResponsiveSidebar
                 label="App Navigation"
                 brand={{
-                  logo: <span className="flex size-7 items-center justify-center rounded-lg bg-primary text-primary-on-solid font-bold text-xs shadow-xs animate-ks-pop-in">K</span>,
-                  title: "Kaleido Studio",
+                  logo: <span className="flex size-7 items-center justify-center rounded-lg bg-primary text-primary-on-solid font-bold text-xs shadow-xs animate-nv-pop-in">K</span>,
+                  title: "Nova UI Studio",
                   subtitle: `${demoTheme.charAt(0).toUpperCase() + demoTheme.slice(1)} Edition`,
                 }}
                 groups={[
@@ -1485,7 +1485,7 @@ export function NavigationPage() {
         <Accordion type="single" collapsible className="w-full" defaultValue="a">
           <AccordionItem value="a">
             <AccordionTrigger>Can I use my own brand colors?</AccordionTrigger>
-            <AccordionContent>Yes — pass them to ThemeProvider. Kaleido generates complete scales and keeps contrast accessible.</AccordionContent>
+            <AccordionContent>Yes — pass them to ThemeProvider. Nova UI generates complete scales and keeps contrast accessible.</AccordionContent>
           </AccordionItem>
           <AccordionItem value="b">
             <AccordionTrigger>Does it work with Next.js?</AccordionTrigger>
@@ -1493,7 +1493,7 @@ export function NavigationPage() {
           </AccordionItem>
           <AccordionItem value="c">
             <AccordionTrigger>Do I need Tailwind?</AccordionTrigger>
-            <AccordionContent>No. styles.css is precompiled. If you do use Tailwind v4, import @kaleido/ui/tailwind.css instead, so your build generates the component styles and shares the tokens.</AccordionContent>
+            <AccordionContent>No. styles.css is precompiled. If you do use Tailwind v4, import @darkalpha/nova-ui/tailwind.css instead, so your build generates the component styles and shares the tokens.</AccordionContent>
           </AccordionItem>
         </Accordion>
       </Example>
@@ -1509,7 +1509,7 @@ export function NavigationPage() {
           <Breadcrumbs>
             <BreadcrumbItem href="#/home">Home</BreadcrumbItem>
             <BreadcrumbItem href="#/navigation">Projects</BreadcrumbItem>
-            <BreadcrumbItem current>Kaleido</BreadcrumbItem>
+            <BreadcrumbItem current>Nova UI</BreadcrumbItem>
           </Breadcrumbs>
           <Pagination page={page} pageCount={12} onPageChange={setPage} />
         </Stack>
@@ -1565,7 +1565,7 @@ export function NavigationPage() {
     label="App Navigation"
     brand={{
       logo: <span className="flex size-7 items-center justify-center rounded-lg bg-primary text-primary-on-solid font-bold">K</span>,
-      title: "Kaleido Studio",
+      title: "Nova UI Studio",
       subtitle: "Enterprise",
     }}
     groups={[
@@ -1604,7 +1604,7 @@ export function NavigationPage() {
       <SidebarTrigger />
       <Text weight="medium" size="sm">Active Page View</Text>
     </header>
-    <main className="p-6 animate-ks-fade-in animate-ks-slide-up">
+    <main className="p-6 animate-nv-fade-in animate-nv-slide-up">
       {/* Page view content */}
     </main>
   </SidebarInset>
@@ -1822,7 +1822,7 @@ export function DataPage() {
       <Example
         title="BarList"
         description="A labelled horizontal bar list that reads as a plain list. chartColors are the eight validated series colors, in the order charts use them."
-        code={`import { BarList, chartColors } from "@kaleido/ui";
+        code={`import { BarList, chartColors } from "@darkalpha/nova-ui";
 <BarList data={[{ label: "Direct", value: 4120 }, …]} />`}
       >
         <Grid columns={2} gap={6} className="w-full">

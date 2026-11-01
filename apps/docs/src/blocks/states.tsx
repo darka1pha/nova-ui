@@ -1,5 +1,5 @@
-import { Button, Card, EmptyState, ErrorState } from "@kaleido/ui";
-import { Waves } from "@kaleido/ui/icons";
+import { Button, Card, EmptyState, ErrorState } from "@darkalpha/nova-ui";
+import { Waves } from "@darkalpha/nova-ui/icons";
 import { Plus, RotateCw, SearchX } from "lucide-react";
 
 /** Empty and error states: first use, no matches, and a failed load, each with a next step. */

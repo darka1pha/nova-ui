@@ -1,4 +1,4 @@
-import { Button, Card, Checkbox, FormField, Heading, Input, PasswordInput, Separator, Text } from "@kaleido/ui";
+import { Button, Card, Checkbox, FormField, Heading, Input, PasswordInput, Separator, Text } from "@darkalpha/nova-ui";
 import { Anchor, KeyRound } from "lucide-react";
 import { useState, type FormEvent } from "react";
 
@@ -16,7 +16,7 @@ export function SignInBlock() {
   };
 
   return (
-    <div className="flex min-h-[34rem] w-full items-center justify-center bg-(image:--ks-gradient-subtle) p-6">
+    <div className="flex min-h-[34rem] w-full items-center justify-center bg-(image:--nv-gradient-subtle) p-6">
       <Card className="w-full max-w-sm gap-6 p-8">
         <div className="flex flex-col items-center gap-3 text-center">
           <span className="flex size-11 items-center justify-center rounded-xl bg-primary text-primary-on-solid shadow-glow-primary">

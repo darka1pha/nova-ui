@@ -54,7 +54,7 @@ export const Chip = forwardRef<HTMLSpanElement, ChipProps>(function Chip(
         <span
           aria-hidden
           className={cn(
-            "inline-flex overflow-hidden transition-[width,opacity] duration-(--ks-duration-slow) ease-(--ks-ease-interactive)",
+            "inline-flex overflow-hidden transition-[width,opacity] duration-(--nv-duration-slow) ease-(--nv-ease-interactive)",
             isSelected ? "w-4 opacity-100" : "w-0 opacity-0",
           )}
         >
@@ -92,7 +92,7 @@ export const Chip = forwardRef<HTMLSpanElement, ChipProps>(function Chip(
           onClick={onRemove}
           aria-label={removeLabel ?? (label ? `Remove ${label}` : "Remove")}
           className={cn(
-            "inline-flex size-5 items-center justify-center rounded-full text-foreground-muted hover:bg-danger-subtle hover:text-danger-on-subtle [&_svg]:size-3 [&_svg]:transition-transform [&_svg]:duration-(--ks-duration-slow) [&_svg]:ease-(--ks-ease-interactive) hover:[&_svg]:rotate-90",
+            "inline-flex size-5 items-center justify-center rounded-full text-foreground-muted hover:bg-danger-subtle hover:text-danger-on-subtle [&_svg]:size-3 [&_svg]:transition-transform [&_svg]:duration-(--nv-duration-slow) [&_svg]:ease-(--nv-ease-interactive) hover:[&_svg]:rotate-90",
             focusRing,
             transition,
           )}
@@ -148,8 +148,8 @@ export const CopyButton = forwardRef<HTMLButtonElement, CopyButtonProps>(functio
       {...props}
     >
       <span className="relative inline-flex size-4 items-center justify-center">
-        <Copy aria-hidden className={cn("absolute transition-[scale,opacity] duration-(--ks-duration-slow) ease-(--ks-ease-interactive)", copied ? "scale-0 opacity-0" : "scale-100 opacity-100")} />
-        <Check aria-hidden className={cn("absolute text-success-text transition-[scale,opacity] duration-(--ks-duration-slow) ease-(--ks-ease-interactive)", copied ? "scale-100 opacity-100" : "scale-0 opacity-0")} />
+        <Copy aria-hidden className={cn("absolute transition-[scale,opacity] duration-(--nv-duration-slow) ease-(--nv-ease-interactive)", copied ? "scale-0 opacity-0" : "scale-100 opacity-100")} />
+        <Check aria-hidden className={cn("absolute text-success-text transition-[scale,opacity] duration-(--nv-duration-slow) ease-(--nv-ease-interactive)", copied ? "scale-100 opacity-100" : "scale-0 opacity-0")} />
       </span>
       {iconOnly ? null : copied ? copiedLabel : label}
       <span role="status" className="sr-only">
@@ -227,7 +227,7 @@ export const Rating = forwardRef<HTMLDivElement, RatingProps>(function Rating(
               aria-hidden
               className={cn(
                 starSizes[size],
-                "rounded-sm transition-[scale,color,fill] duration-(--ks-duration-slow) ease-(--ks-ease-interactive) group-hover/star:scale-125 peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-focus-ring peer-checked:animate-ks-bounce-in motion-reduce:group-hover/star:scale-100",
+                "rounded-sm transition-[scale,color,fill] duration-(--nv-duration-slow) ease-(--nv-ease-interactive) group-hover/star:scale-125 peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-focus-ring peer-checked:animate-nv-bounce-in motion-reduce:group-hover/star:scale-100",
                 filled ? "fill-warning text-warning-text" : "fill-transparent text-border-strong",
               )}
             />

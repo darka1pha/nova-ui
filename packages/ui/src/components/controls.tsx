@@ -8,7 +8,7 @@ import { disabledState, focusRing, pressable, transition } from "./shared.ts";
 
 const checkable =
   `peer inline-flex shrink-0 items-center justify-center border border-input bg-surface text-primary-on-solid shadow-xs ${transition} ${focusRing} ${pressable} ${disabledState} ` +
-  "hover:border-foreground-muted hover:shadow-focus-glow aria-invalid:border-danger-text aria-invalid:animate-ks-shake " +
+  "hover:border-foreground-muted hover:shadow-focus-glow aria-invalid:border-danger-text aria-invalid:animate-nv-shake " +
   "data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=indeterminate]:border-primary data-[state=indeterminate]:bg-primary";
 
 export type CheckboxProps = ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root> & { size?: "sm" | "md" };
@@ -19,7 +19,7 @@ export const Checkbox = forwardRef<HTMLButtonElement, CheckboxProps>(function Ch
   return (
     <CheckboxPrimitive.Root
       ref={ref}
-      className={cn(checkable, "rounded-[calc(var(--ks-radius-sm)+1px)]", size === "sm" ? "size-4" : "size-5", className)}
+      className={cn(checkable, "rounded-[calc(var(--nv-radius-sm)+1px)]", size === "sm" ? "size-4" : "size-5", className)}
       {...fieldProps}
     >
       <CheckboxPrimitive.Indicator className="group/indicator flex items-center justify-center">
@@ -29,9 +29,9 @@ export const Checkbox = forwardRef<HTMLButtonElement, CheckboxProps>(function Ch
             d="M3.5 8.5 6.5 11.5 12.5 4.5"
             pathLength={24}
             strokeDasharray={24}
-            className="animate-ks-check-draw group-data-[state=indeterminate]/indicator:hidden"
+            className="animate-nv-check-draw group-data-[state=indeterminate]/indicator:hidden"
           />
-          <path d="M4 8h8" pathLength={24} strokeDasharray={24} className="hidden animate-ks-check-draw group-data-[state=indeterminate]/indicator:block" />
+          <path d="M4 8h8" pathLength={24} strokeDasharray={24} className="hidden animate-nv-check-draw group-data-[state=indeterminate]/indicator:block" />
         </svg>
       </CheckboxPrimitive.Indicator>
     </CheckboxPrimitive.Root>
@@ -63,7 +63,7 @@ export const Radio = forwardRef<HTMLButtonElement, RadioProps>(function Radio({ 
       className={cn(checkable, "size-5 rounded-full data-[state=checked]:bg-surface", className)}
       {...props}
     >
-      <RadioGroupPrimitive.Indicator className="size-2.5 rounded-full bg-primary animate-ks-bounce-in" />
+      <RadioGroupPrimitive.Indicator className="size-2.5 rounded-full bg-primary animate-nv-bounce-in" />
     </RadioGroupPrimitive.Item>
   );
 });
@@ -96,7 +96,7 @@ export const Switch = forwardRef<HTMLButtonElement, SwitchProps>(function Switch
       <SwitchPrimitive.Thumb
         className={cn(
           // The thumb stretches while pressed and springs across when toggled.
-          "pointer-events-none block rounded-full bg-white shadow-sm transition-[translate,width] duration-(--ks-duration-slow) ease-(--ks-ease-interactive) motion-reduce:transition-none",
+          "pointer-events-none block rounded-full bg-white shadow-sm transition-[translate,width] duration-(--nv-duration-slow) ease-(--nv-ease-interactive) motion-reduce:transition-none",
           switchSizes[size].thumb,
         )}
       />
@@ -124,7 +124,7 @@ export const Slider = forwardRef<HTMLSpanElement, SliderProps>(function Slider({
       {...props}
     >
       <SliderPrimitive.Track className="relative h-1.5 w-full grow overflow-hidden rounded-full bg-surface-active data-[orientation=vertical]:h-full data-[orientation=vertical]:w-1.5">
-        <SliderPrimitive.Range className="absolute h-full bg-(image:--ks-gradient-brand) data-[orientation=vertical]:w-full" />
+        <SliderPrimitive.Range className="absolute h-full bg-(image:--nv-gradient-brand) data-[orientation=vertical]:w-full" />
       </SliderPrimitive.Track>
       {Array.from({ length: count }, (_, i) => (
         <SliderPrimitive.Thumb
@@ -132,7 +132,7 @@ export const Slider = forwardRef<HTMLSpanElement, SliderProps>(function Slider({
           aria-label={thumbLabels?.[i]}
           className={cn(
             // A soft halo grows on hover and while dragging.
-            "block size-5 cursor-grab rounded-full border-2 border-primary bg-surface shadow-md hover:scale-110 hover:shadow-[0_0_0_6px_color-mix(in_srgb,var(--ks-color-primary-solid)_18%,transparent)] active:cursor-grabbing active:scale-125 active:shadow-[0_0_0_9px_color-mix(in_srgb,var(--ks-color-primary-solid)_22%,transparent)] motion-reduce:hover:scale-100 motion-reduce:active:scale-100",
+            "block size-5 cursor-grab rounded-full border-2 border-primary bg-surface shadow-md hover:scale-110 hover:shadow-[0_0_0_6px_color-mix(in_srgb,var(--nv-color-primary-solid)_18%,transparent)] active:cursor-grabbing active:scale-125 active:shadow-[0_0_0_9px_color-mix(in_srgb,var(--nv-color-primary-solid)_22%,transparent)] motion-reduce:hover:scale-100 motion-reduce:active:scale-100",
             transition,
             focusRing,
           )}
