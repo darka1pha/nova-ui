@@ -1,8 +1,29 @@
 {
   "name": "@kaleido/ui",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Colorful, accessible, themeable React components for the Kaleido design system.",
   "license": "MIT",
+  "author": "DarkAlpha",
+  "homepage": "https://github.com/darka1pha/Kaleido#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/darka1pha/Kaleido.git",
+    "directory": "packages/ui"
+  },
+  "bugs": {
+    "url": "https://github.com/darka1pha/Kaleido/issues"
+  },
+  "keywords": [
+    "react",
+    "components",
+    "design-system",
+    "ui",
+    "accessible",
+    "a11y",
+    "theme",
+    "tailwind",
+    "radix"
+  ],
   "type": "module",
   "sideEffects": [
     "**/*.css"

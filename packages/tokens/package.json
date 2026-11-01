@@ -1,11 +1,35 @@
 {
   "name": "@kaleido/tokens",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Design tokens, color engine and theme definitions for the Kaleido design system. Framework-agnostic.",
   "license": "MIT",
+  "author": "DarkAlpha",
+  "homepage": "https://github.com/darka1pha/Kaleido#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/darka1pha/Kaleido.git",
+    "directory": "packages/tokens"
+  },
+  "bugs": {
+    "url": "https://github.com/darka1pha/Kaleido/issues"
+  },
+  "keywords": [
+    "design-tokens",
+    "design-system",
+    "oklch",
+    "color",
+    "theme",
+    "wcag",
+    "contrast",
+    "dtcg"
+  ],
   "type": "module",
   "sideEffects": false,
-  "files": ["dist", "src", "README.md"],
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
