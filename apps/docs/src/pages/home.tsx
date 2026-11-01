@@ -83,7 +83,7 @@ export function HomePage() {
             </Text>
             <div className="flex flex-wrap gap-3">
               <Button asChild size="lg" variant="gradient">
-                <a href="#/getting-started">
+                <a href="#/installation">
                   Get started <ArrowRight className="rtl:-scale-x-100" />
                 </a>
               </Button>

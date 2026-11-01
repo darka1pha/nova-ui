@@ -4,6 +4,12 @@ import { CodeBlock, Page, Prose, Section } from "../docs/kit.tsx";
 export function GettingStartedPage() {
   return (
     <Page eyebrow="Start" title="Getting started" lead="Install the package, import one stylesheet, wrap your app in a ThemeProvider and start building.">
+      <Alert variant="primary" title="New here? Follow the step-by-step installation guide.">
+        It tailors every command and file to your framework and package manager.{" "}
+        <a className="font-medium underline" href="#/installation">
+          Open the installation guide
+        </a>
+      </Alert>
       <Section title="1. Install">
         <CodeBlock language="bash" code={`pnpm add @kaleido/ui\n# or: npm install @kaleido/ui · yarn add @kaleido/ui`} />
         <Prose>

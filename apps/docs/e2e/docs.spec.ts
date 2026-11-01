@@ -3,6 +3,7 @@ import { axe, open } from "./helpers.ts";
 
 const routes = [
   "home",
+  "installation",
   "getting-started",
   "playground",
   "template",
@@ -39,7 +40,7 @@ test.describe("every page renders without errors", () => {
 
 test.describe("axe (WCAG 2.2 AA, including color contrast)", () => {
   for (const mode of ["light", "dark"] as const) {
-    for (const route of ["home", "motion", "actions", "forms", "forms-validation", "feedback", "navigation", "data", "playground", "layout", "icons", "blocks", "i18n"]) {
+    for (const route of ["home", "installation", "motion", "actions", "forms", "forms-validation", "feedback", "navigation", "data", "playground", "layout", "icons", "blocks", "i18n"]) {
       test(`${route} · ${mode}`, async ({ page }) => {
         await open(page, route, mode);
         expect(await axe(page)).toEqual([]);

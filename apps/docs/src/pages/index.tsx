@@ -12,6 +12,7 @@ export const nav: { title: string; items: { id: string; label: string; badge?: s
     title: "Start",
     items: [
       { id: "home", label: "Overview" },
+      { id: "installation", label: "Installation", badge: "New" },
       { id: "getting-started", label: "Getting started" },
       { id: "playground", label: "Theme playground", badge: "Live" },
       { id: "template", label: "Template preview", badge: "New" },
@@ -56,6 +57,7 @@ export const nav: { title: string; items: { id: string; label: string; badge?: s
 
 export const pages: Record<string, LazyExoticComponent<ComponentType>> & { home: LazyExoticComponent<ComponentType> } = {
   home: page(() => import("./home.tsx"), "HomePage"),
+  installation: page(() => import("./installation.tsx"), "InstallationPage"),
   "getting-started": page(() => import("./getting-started.tsx"), "GettingStartedPage"),
   playground: page(() => import("./playground.tsx"), "PlaygroundPage"),
   template: page(() => import("./template.tsx"), "TemplatePage"),
