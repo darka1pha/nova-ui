@@ -31,17 +31,23 @@ export interface SortableItemState {
 }
 
 export interface SortableListProps<T> {
+  /** The items, in their current order. */
   items: readonly T[];
+  /** A stable key per item. */
   getKey: (item: T) => string | number;
   /** Plain-text name of an item, used for the handle label and announcements. */
   getLabel: (item: T) => string;
   /** Called once per drop with the new order. */
   onReorder: (items: T[], move: { from: number; to: number }) => void;
+  /** Renders an item; `state` tells you if it's being dragged. */
   renderItem: (item: T, state: SortableItemState) => ReactNode;
+  /** Names the list for screen readers. */
   "aria-label"?: string;
+  /** Screen-reader announcements for pick up, move and drop, for localization. */
   messages?: Partial<SortableMessages>;
   disabled?: boolean;
   className?: string;
+  /** Classes for each item's wrapper. */
   itemClassName?: string;
 }
 
@@ -50,6 +56,45 @@ const move = <T,>(list: readonly T[], from: number, to: number) => {
   next.splice(to, 0, ...next.splice(from, 1));
   return next;
 };
+
+/**
+ * Slides rows from where they were to their new slots whenever the order changes
+ * (FLIP with the Web Animations API). Interrupted moves continue from where the row
+ * is on screen. Timing follows the theme's motion tokens, read from `list`'s
+ * computed animation duration and easing, so reduced motion turns it off.
+ */
+function useReorderAnimation(list: HTMLElement | null, rows: Map<string | number, HTMLElement>, order: string) {
+  // Layout offsets from the list's corner: page scrolling and the picked-up row's scale don't count as movement.
+  const layout = useRef(new Map<string | number, { x: number; y: number }>());
+  useLayoutEffect(() => {
+    if (!list) return;
+    const style = getComputedStyle(list);
+    const duration = parseFloat(style.animationDuration) * (style.animationDuration.endsWith("ms") ? 1 : 1000);
+    const animate = duration >= 1 && typeof Element.prototype.animate === "function";
+    const next = new Map<string | number, { x: number; y: number }>();
+    rows.forEach((row, key) => {
+      const visual = row.getBoundingClientRect();
+      row.getAnimations?.().forEach((a) => {
+        if (a.id === "nv-reorder") a.cancel();
+      });
+      const rect = row.getBoundingClientRect();
+      // Rows share the list's offsetParent (the list isn't positioned).
+      const now = { x: row.offsetLeft - list.offsetLeft, y: row.offsetTop - list.offsetTop };
+      next.set(key, now);
+      const before = layout.current.get(key);
+      if (!animate || !before) return;
+      // Where the row appeared just before this change: its old slot plus any slide still in flight.
+      const dx = before.x + (visual.left - rect.left) - now.x;
+      const dy = before.y + (visual.top - rect.top) - now.y;
+      if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) return;
+      const slide = row.animate([{ translate: `${dx}px ${dy}px` }, { translate: "0 0" }], { duration, easing: style.animationTimingFunction, composite: "add" });
+      slide.id = "nv-reorder";
+    });
+    layout.current = next;
+    // `order` is the dependency: rows only move when it changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [list, order]);
+}
 
 interface Drag {
   key: string | number;
@@ -61,7 +106,8 @@ interface Drag {
 /**
  * A list people can reorder by dragging a handle or with the keyboard (Space to
  * pick up, arrows to move, Space to drop, Escape to cancel). Every step is
- * announced through a live region. No drag-and-drop library needed.
+ * announced through a live region, and rows slide to their new places (not
+ * under reduced motion). No drag-and-drop library needed.
  */
 export function SortableList<T>({ items, getKey, getLabel, onReorder, renderItem, "aria-label": ariaLabel, messages: messagesProp, disabled = false, className, itemClassName }: SortableListProps<T>) {
   const messages = { ...defaultMessages, ...messagesProp };
@@ -70,7 +116,9 @@ export function SortableList<T>({ items, getKey, getLabel, onReorder, renderItem
   const rows = useRef(new Map<string | number, HTMLLIElement>());
   const handles = useRef(new Map<string | number, HTMLButtonElement>());
   const instructionsId = useId();
+  const [list, setList] = useState<HTMLUListElement | null>(null);
   const shown = drag ? move(items, drag.from, drag.to) : items;
+  useReorderAnimation(list, rows.current, JSON.stringify(shown.map(getKey)));
   const total = items.length;
   const labelAt = (index: number) => getLabel(items[index] as T);
 
@@ -144,7 +192,12 @@ export function SortableList<T>({ items, getKey, getLabel, onReorder, renderItem
 
   return (
     <>
-      <ul aria-label={ariaLabel} className={cn("flex flex-col gap-2", className)}>
+      <ul
+        ref={setList}
+        aria-label={ariaLabel}
+        // The reorder slide reads its timing from these (no animation-name, so nothing else runs).
+        className={cn("flex flex-col gap-2 [animation-duration:var(--nv-duration-normal)] [animation-timing-function:var(--nv-ease-interactive)]", className)}
+      >
         {shown.map((item, index) => {
           const key = getKey(item);
           const dragging = drag?.key === key;

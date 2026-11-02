@@ -153,6 +153,75 @@ describe("SortableList", () => {
     await waitFor(() => expect(onReorder).toHaveBeenCalledWith([fruits[1], fruits[0], fruits[2]], { from: 0, to: 1 }));
   });
 
+  describe("reorder animation", () => {
+    // jsdom has no layout or Web Animations: place rows by DOM order and record animate() calls.
+    function stubBrowser(duration: string) {
+      const animate = vi.fn(() => ({ id: "", cancel: vi.fn() }) as unknown as Animation);
+      // `scroll` shifts everything, like scrolling the page between renders.
+      const page = { scroll: 0 };
+      const slot = (el: HTMLElement) => (el.tagName === "LI" ? [...(el.parentElement?.children ?? [])].indexOf(el) : 0);
+      const restore = [
+        vi.spyOn(HTMLElement.prototype, "offsetTop", "get").mockImplementation(function (this: HTMLElement) {
+          return slot(this) * 40;
+        }),
+        vi.spyOn(HTMLElement.prototype, "offsetLeft", "get").mockReturnValue(0),
+        vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function (this: HTMLElement) {
+          const top = slot(this) * 40 - page.scroll;
+          return { top, left: 0, height: 40, width: 200, bottom: top + 40, right: 200, x: 0, y: top, toJSON: () => ({}) };
+        }),
+        (() => {
+          const real = window.getComputedStyle.bind(window);
+          return vi.spyOn(window, "getComputedStyle").mockImplementation((el, pseudo) => {
+            const style = real(el, pseudo);
+            if ((el as Element).tagName !== "UL") return style;
+            const timing: Record<string, string> = { animationDuration: duration, animationTimingFunction: "ease" };
+            return new Proxy(style, { get: (target, prop) => (typeof prop === "string" && prop in timing ? timing[prop] : Reflect.get(target, prop, target)) });
+          });
+        })(),
+      ];
+      Element.prototype.animate = animate;
+      return {
+        animate,
+        page,
+        restore: () => {
+          restore.forEach((r) => r.mockRestore());
+          delete (Element.prototype as Partial<Element>).animate;
+        },
+      };
+    }
+
+    it("slides moved rows from their old slots", async () => {
+      const browser = stubBrowser("0.24s");
+      try {
+        wrap(<Fruits />);
+        expect(browser.animate).not.toHaveBeenCalled();
+        screen.getByRole("button", { name: "Reorder Apple" }).focus();
+        await userEvent.keyboard(" ");
+        browser.page.scroll = 300;
+        await userEvent.keyboard("{ArrowDown}");
+        // Apple moved down a slot and Banana up one; Cherry stayed put, even though the page scrolled.
+        const slides = browser.animate.mock.calls.map((call) => (call as unknown as [Keyframe[], KeyframeAnimationOptions]));
+        expect(slides.map(([frames]) => frames[0]?.translate).sort()).toEqual(["0px -40px", "0px 40px"]);
+        expect(slides[0]?.[1]).toMatchObject({ duration: 240, easing: "ease" });
+      } finally {
+        browser.restore();
+      }
+    });
+
+    it("doesn't animate under reduced motion", async () => {
+      const browser = stubBrowser("0.01ms");
+      try {
+        wrap(<Fruits />);
+        screen.getByRole("button", { name: "Reorder Apple" }).focus();
+        await userEvent.keyboard(" {ArrowDown}");
+        expect(order()).toEqual(["Banana", "Apple", "Cherry"]);
+        expect(browser.animate).not.toHaveBeenCalled();
+      } finally {
+        browser.restore();
+      }
+    });
+  });
+
   it("has no axe violations", async () => {
     const { container } = wrap(<Fruits />);
     expect(await axeViolations(container)).toEqual([]);
