@@ -62,6 +62,8 @@ export const Masonry = forwardRef<HTMLDivElement, MasonryProps>(function Masonry
   const [count, setCount] = useState(() => resolveColumns(columns, 0));
   const [layout, setLayout] = useState<Layout | null>(null);
   const columnsKey = JSON.stringify(columns);
+  // Re-pack when children are added, removed, replaced or reordered, not only when the count changes.
+  const order = items.map((item, i) => (item as { key?: string | null }).key ?? i).join("|");
 
   useIsoLayoutEffect(() => {
     const el = root.current;
@@ -86,7 +88,7 @@ export const Masonry = forwardRef<HTMLDivElement, MasonryProps>(function Masonry
     observer.observe(el);
     cells.current.forEach((c) => c && observer.observe(c));
     return () => observer.disconnect();
-  }, [columnsKey, items.length, gap]);
+  }, [columnsKey, order, gap]);
 
   // The packed layout is only valid for the column count it was made for.
   const packed = layout && layout.count === count ? layout : null;

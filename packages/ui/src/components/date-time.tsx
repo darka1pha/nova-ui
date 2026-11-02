@@ -113,7 +113,7 @@ export const DateTimePicker = forwardRef<HTMLButtonElement, DateTimePickerProps>
 
   return (
     <div className={cn("relative w-full", className)}>
-      {name ? <input type="hidden" name={name} value={current ? toLocalIso(current) : ""} /> : null}
+      {name ? <input type="hidden" name={name} value={current ? toLocalIso(current) : ""} disabled={field.disabled} /> : null}
       <Popover
         open={open}
         onOpenChange={(next) => {

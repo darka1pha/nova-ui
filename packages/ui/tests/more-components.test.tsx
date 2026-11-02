@@ -53,6 +53,17 @@ describe("MultiSelect", () => {
     expect(screen.getByRole("option", { name: "Banana" })).toHaveAttribute("aria-disabled", "true");
   });
 
+  it("submits nothing when disabled", () => {
+    const { container } = wrap(
+      <FormField label="Fruit" disabled>
+        <MultiSelect options={fruits} name="fruit" defaultValue={["apple"]} />
+      </FormField>,
+    );
+    const inputs = [...container.querySelectorAll<HTMLInputElement>('input[name="fruit"]')];
+    expect(inputs).toHaveLength(1);
+    expect(inputs[0]).toBeDisabled();
+  });
+
   it("has no axe violations", async () => {
     const { container } = wrap(
       <FormField label="Fruit">
@@ -80,6 +91,11 @@ describe("DateTimePicker", () => {
     await userEvent.click(screen.getByRole("button", { name: "Done" }));
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(screen.getByRole("combobox", { name: "Starts" })).toHaveTextContent(/Jun 20, 2026/);
+  });
+
+  it("submits nothing when disabled", () => {
+    const { container } = wrap(<DateTimePicker aria-label="When" name="when" defaultValue={new Date(2026, 5, 15, 9, 0)} disabled />);
+    expect(container.querySelector('input[name="when"]')).toBeDisabled();
   });
 
   it("uses defaultTime for a fresh value and clamps to max", async () => {
@@ -146,6 +162,23 @@ describe("KanbanBoard", () => {
     expect(screen.getByRole("button", { name: "Move Write spec" })).toHaveFocus();
   });
 
+  it("finishes a pointer drag into another column after the card remounts", () => {
+    const onMove = vi.fn();
+    wrap(<Board onMove={onMove} />);
+    // jsdom has no layout: give each column's list a box, 300px wide, side by side.
+    screen.getAllByRole("region").forEach((region, c) => {
+      const list = region.querySelector("ul") as HTMLUListElement;
+      list.getBoundingClientRect = () => ({ left: c * 300, right: c * 300 + 280, top: 0, bottom: 400, width: 280, height: 400, x: c * 300, y: 0, toJSON: () => ({}) });
+    });
+    fireEvent.pointerDown(screen.getByRole("button", { name: "Move Write spec" }), { button: 0 });
+    // Into the empty "Done" column: the card moves to another list, so its handle remounts.
+    fireEvent.pointerMove(window, { clientX: 700, clientY: 50 });
+    expect(titles(screen.getByRole("region", { name: "Done" }))).toEqual(["Write spec"]);
+    fireEvent.pointerUp(window);
+    expect(onMove).toHaveBeenCalledOnce();
+    expect(onMove.mock.calls[0]?.[0].map((c: KanbanColumn<Card>) => c.items.map((i) => i.id))).toEqual([["b"], ["c"], ["a"]]);
+  });
+
   it("cancels with Escape and mirrors arrows in RTL", async () => {
     const onMove = vi.fn();
     wrap(<Board onMove={onMove} />, { dir: "rtl" });
@@ -174,6 +207,36 @@ describe("Masonry", () => {
       </Masonry>,
     );
     expect(screen.getAllByText(/one|two|three|four/).map((p) => p.textContent)).toEqual(["one", "two", "three", "four"]);
+  });
+
+  it("re-packs when children are reordered", () => {
+    // jsdom has no layout: an item's height is the number in its text.
+    const height = vi.spyOn(HTMLElement.prototype, "offsetHeight", "get").mockImplementation(function (this: HTMLElement) {
+      return Number(this.textContent) || 0;
+    });
+    try {
+      const view = (order: number[]) => (
+        <ThemeProvider>
+          <Masonry columns={2} gap={0}>
+            {order.map((h) => (
+              <p key={h}>{h}</p>
+            ))}
+          </Masonry>
+        </ThemeProvider>
+      );
+      const { rerender } = render(view([100, 50, 30]));
+      const top = (h: number) => (screen.getByText(String(h)).parentElement as HTMLElement).style.top;
+      // 30 goes under 50, the shorter column.
+      expect(top(30)).toBe("50px");
+      rerender(view([50, 100, 30]));
+      expect(top(100)).toBe("0px");
+      expect(top(30)).toBe("50px");
+      rerender(view([30, 50, 100]));
+      // Same count, new order: 100 now goes under 30.
+      expect(top(100)).toBe("30px");
+    } finally {
+      height.mockRestore();
+    }
   });
 
   it("renders as a grid on the server", () => {
@@ -258,6 +321,15 @@ describe("SignaturePad", () => {
     expect(container.querySelector('input[name="sig"]')).toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "Draw instead" }));
     expect(screen.getByRole("button", { name: "Undo" })).toBeDisabled();
+  });
+
+  it("submits nothing when disabled", () => {
+    const { container } = wrap(
+      <FormField label="Signature" disabled>
+        <SignaturePad name="sig" />
+      </FormField>,
+    );
+    expect(container.querySelector('input[name="sig"]')).toBeDisabled();
   });
 
   it("records strokes from the pointer", () => {

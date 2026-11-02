@@ -127,7 +127,8 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(funct
         }
       }}
     >
-      {name ? current.map((v) => <input key={v} type="hidden" name={name} value={v} />) : null}
+      {/* Disabled fields submit nothing, like native controls. */}
+      {name ? current.map((v) => <input key={v} type="hidden" name={name} value={v} disabled={disabled} />) : null}
       <PopoverAnchor asChild>
         <div
           data-disabled={disabled || undefined}

@@ -185,7 +185,7 @@ export const SignaturePad = forwardRef<SignaturePadApi, SignaturePadProps>(funct
 
   return (
     <div className={cn("flex flex-col gap-2", className)} {...props}>
-      {name ? <input type="hidden" name={name} value={dataUrl} /> : null}
+      {name ? <input type="hidden" name={name} value={dataUrl} disabled={field.disabled} /> : null}
       <div className="relative">
         <canvas
           ref={canvas}

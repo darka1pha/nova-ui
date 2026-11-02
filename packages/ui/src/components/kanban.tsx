@@ -1,7 +1,7 @@
 "use client";
 
 import { GripVertical } from "lucide-react";
-import { useId, useLayoutEffect, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from "react";
 import { cn } from "../utils/cn.ts";
 import { focusRing, transition } from "./shared.ts";
 
@@ -184,10 +184,9 @@ export function KanbanBoard<T>({
   const onPointerDown = (e: PointerEvent<HTMLButtonElement>, column: number, index: number, item: T) => {
     if (disabled || e.button !== 0 || drag) return;
     e.preventDefault();
-    e.currentTarget.setPointerCapture?.(e.pointerId);
     setDrag({ key: getKey(item), from: { column, index }, to: { column, index }, via: "pointer" });
   };
-  const onPointerMove = (e: PointerEvent<HTMLButtonElement>) => {
+  const onPointerMove = (e: { clientX: number; clientY: number }) => {
     if (drag?.via !== "pointer") return;
     // The column whose box is horizontally nearest the pointer.
     let column = drag.to.column;
@@ -211,6 +210,26 @@ export function KanbanBoard<T>({
     }
     if (column !== drag.to.column || index !== drag.to.index) setDrag({ ...drag, to: { column, index } });
   };
+
+  // Moving into another column remounts the card (and its handle), which drops pointer
+  // capture, so a pointer drag listens on the window until it ends.
+  const pointer = useRef({ move: onPointerMove, up: () => {}, cancel: () => {} });
+  pointer.current = { move: onPointerMove, up: () => drag && commit(drag), cancel: () => cancel() };
+  const pointerDragging = drag?.via === "pointer";
+  useEffect(() => {
+    if (!pointerDragging) return;
+    const move = (e: globalThis.PointerEvent) => pointer.current.move(e);
+    const up = () => pointer.current.up();
+    const cancelDrag = () => pointer.current.cancel();
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+    window.addEventListener("pointercancel", cancelDrag);
+    return () => {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+      window.removeEventListener("pointercancel", cancelDrag);
+    };
+  }, [pointerDragging]);
 
   return (
     <>
@@ -276,9 +295,6 @@ export function KanbanBoard<T>({
                         aria-pressed={dragging}
                         onKeyDown={(e) => onKeyDown(e, c, index, item)}
                         onPointerDown={(e) => onPointerDown(e, c, index, item)}
-                        onPointerMove={onPointerMove}
-                        onPointerUp={() => drag?.via === "pointer" && commit(drag)}
-                        onPointerCancel={() => drag && cancel()}
                         onBlur={() => {
                           if (drag?.via !== "keyboard" || drag.key !== key) return;
                           setTimeout(() => {
