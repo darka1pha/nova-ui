@@ -1,0 +1,25 @@
+{
+  "name": "nova-ui-next-example",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "^16.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "@darkalpha/nova-tokens": "file:./vendor/nova-ui/nova-tokens-20261102050224.tgz",
+    "@darkalpha/nova-ui": "file:./vendor/nova-ui/nova-ui-20261102050224.tgz"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "~6.0.0"
+  },
+  "overrides": {
+    "@darkalpha/nova-tokens": "$@darkalpha/nova-tokens"
+  }
+}
