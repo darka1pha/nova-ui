@@ -27,4 +27,11 @@ export const menuItem =
   "data-[highlighted]:bg-primary-subtle data-[highlighted]:text-primary-on-subtle data-[highlighted]:ps-2.5 " +
   "data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:transition-transform [&_svg]:duration-(--nv-duration-normal) data-[highlighted]:[&_svg]:scale-110";
 
+/**
+ * Room at the start of a menuItem for a check/radio indicator (or to line up with
+ * those rows). It keeps the highlight nudge, which would otherwise reset the
+ * padding and slide the label under the indicator.
+ */
+export const menuItemInset = "ps-8 data-[highlighted]:ps-8.5";
+
 export type Size = "sm" | "md" | "lg";

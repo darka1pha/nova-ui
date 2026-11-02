@@ -6,7 +6,7 @@ import { forwardRef, type ComponentPropsWithoutRef } from "react";
 import { cn } from "../utils/cn.ts";
 import { toggleVariants } from "./button.tsx";
 import { usePortalContainer } from "./portal.tsx";
-import { floatingSurface, focusRing, menuItem, transition } from "./shared.ts";
+import { floatingSurface, focusRing, menuItem, menuItemInset, transition } from "./shared.ts";
 
 /*
  * Menubar (application menus: File, Edit, View…) and Toolbar (a row of
@@ -16,7 +16,7 @@ import { floatingSurface, focusRing, menuItem, transition } from "./shared.ts";
  */
 
 const menuContent = `${floatingSurface} min-w-52 p-1`;
-const indicatorItem = `${menuItem} ps-8`;
+const indicatorItem = `${menuItem} ${menuItemInset}`;
 const indicator = "absolute start-2 flex size-4 items-center justify-center";
 
 /* ----------------------------------------------------------------- Menubar */
@@ -73,7 +73,7 @@ export const MenubarItem = forwardRef<HTMLDivElement, ComponentPropsWithoutRef<t
     return (
       <MenubarPrimitive.Item
         ref={ref}
-        className={cn(menuItem, inset && "ps-8", destructive && "text-danger-text data-[highlighted]:bg-danger-subtle data-[highlighted]:text-danger-on-subtle", className)}
+        className={cn(menuItem, inset && menuItemInset, destructive && "text-danger-text data-[highlighted]:bg-danger-subtle data-[highlighted]:text-danger-on-subtle", className)}
         {...props}
       />
     );
@@ -129,7 +129,7 @@ export const MenubarSeparator = forwardRef<HTMLDivElement, ComponentPropsWithout
 export const MenubarSubTrigger = forwardRef<HTMLDivElement, ComponentPropsWithoutRef<typeof MenubarPrimitive.SubTrigger> & { inset?: boolean }>(
   function MenubarSubTrigger({ className, inset, children, ...props }, ref) {
     return (
-      <MenubarPrimitive.SubTrigger ref={ref} className={cn(menuItem, "data-[state=open]:bg-surface-hover", inset && "ps-8", className)} {...props}>
+      <MenubarPrimitive.SubTrigger ref={ref} className={cn(menuItem, "data-[state=open]:bg-surface-hover", inset && menuItemInset, className)} {...props}>
         {children}
         <ChevronRight className="ms-auto text-foreground-muted rtl:-scale-x-100" />
       </MenubarPrimitive.SubTrigger>

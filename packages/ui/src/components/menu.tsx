@@ -5,12 +5,12 @@ import { ContextMenu as ContextMenuPrimitive, DropdownMenu as DropdownMenuPrimit
 import { forwardRef, type ComponentPropsWithoutRef, type HTMLAttributes } from "react";
 import { cn } from "../utils/cn.ts";
 import { usePortalContainer } from "./portal.tsx";
-import { floatingSurface, menuItem } from "./shared.ts";
+import { floatingSurface, menuItem, menuItemInset } from "./shared.ts";
 
 const content = `${floatingSurface} min-w-48 p-1 max-h-(--radix-dropdown-menu-content-available-height)`;
 const label = "px-2 py-1.5 text-xs font-semibold text-foreground-muted";
 const separator = "-mx-1 my-1 h-px bg-border";
-const indicatorItem = `${menuItem} ps-8`;
+const indicatorItem = `${menuItem} ${menuItemInset}`;
 const indicator = "absolute start-2 flex size-4 items-center justify-center";
 
 interface ItemExtras {
@@ -21,7 +21,7 @@ interface ItemExtras {
 }
 
 const itemClass = (inset?: boolean, destructive?: boolean) =>
-  cn(menuItem, inset && "ps-8", destructive && "text-danger-text data-[highlighted]:bg-danger-subtle data-[highlighted]:text-danger-on-subtle");
+  cn(menuItem, inset && menuItemInset, destructive && "text-danger-text data-[highlighted]:bg-danger-subtle data-[highlighted]:text-danger-on-subtle");
 
 /** Keyboard shortcut hint aligned to the end of a menu item. Visual only. */
 export function MenuShortcut({ className, ...props }: HTMLAttributes<HTMLSpanElement>) {

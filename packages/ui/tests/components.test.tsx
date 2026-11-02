@@ -36,6 +36,7 @@ import {
   DialogTitle,
   DialogTrigger,
   DropdownMenu,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
@@ -325,6 +326,26 @@ describe("Overlays", () => {
     expect(within(menu).getAllByRole("menuitem")).toHaveLength(2);
     await userEvent.keyboard("{Enter}");
     expect(onSelect).toHaveBeenCalled();
+  });
+
+  it("checkbox and inset menu items keep room for the indicator while highlighted", async () => {
+    wrap(
+      <DropdownMenu defaultOpen>
+        <DropdownMenuTrigger>Columns</DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuCheckboxItem checked>Customer</DropdownMenuCheckboxItem>
+          <DropdownMenuItem inset>Reset</DropdownMenuItem>
+          <DropdownMenuItem>Plain</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>,
+    );
+    // The hover nudge used to reset padding to ps-2.5, sliding the label under the check.
+    for (const name of ["Customer", "Reset"]) {
+      const item = await screen.findByRole(name === "Customer" ? "menuitemcheckbox" : "menuitem", { name });
+      expect(item.className).toContain("data-[highlighted]:ps-8.5");
+      expect(item.className).not.toContain("data-[highlighted]:ps-2.5");
+    }
+    expect(screen.getByRole("menuitem", { name: "Plain" }).className).toContain("data-[highlighted]:ps-2.5");
   });
 });
 
