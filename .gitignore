@@ -12,3 +12,5 @@ examples/*/vendor
 examples/*/node_modules
 examples/*/dist
 examples/*/package-lock.json
+examples/*/.next
+examples/*/next-env.d.ts
