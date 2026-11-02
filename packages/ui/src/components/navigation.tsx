@@ -168,6 +168,7 @@ export const AccordionContent = forwardRef<HTMLDivElement, ComponentPropsWithout
 export interface BreadcrumbsProps extends HTMLAttributes<HTMLElement> {
   /** Accessible name for the landmark. */
   label?: string;
+  /** Drawn between items. Defaults to a chevron that flips in RTL. */
   separator?: ReactNode;
 }
 
@@ -216,13 +217,18 @@ export const BreadcrumbItem = forwardRef<HTMLAnchorElement, BreadcrumbItemProps>
 /* -------------------------------------------------------------- Pagination */
 
 export interface PaginationProps extends Omit<HTMLAttributes<HTMLElement>, "onChange"> {
+  /** The current page, starting at 1. */
   page: number;
+  /** Total number of pages. */
   pageCount: number;
+  /** Called with the page to show. */
   onPageChange: (page: number) => void;
   /** Pages shown on each side of the current one. */
   siblings?: number;
   label?: string;
+  /** Accessible name of the previous button. */
   previousLabel?: string;
+  /** Accessible name of the next button. */
   nextLabel?: string;
   /** Accessible label for a page button, e.g. (n) => `Page ${n}`. */
   pageLabel?: (page: number) => string;

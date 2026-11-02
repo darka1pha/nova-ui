@@ -32,11 +32,15 @@ export interface NotificationCategory {
 }
 
 export interface NotificationCenterProps {
+  /** The notifications, newest first. */
   items: NotificationItem[];
   /** Extra filters next to All and Unread. */
   categories?: NotificationCategory[];
+  /** Called when one notification is marked read or unread. */
   onMarkRead?: (id: string, read: boolean) => void;
+  /** Called by the Mark all as read button. */
   onMarkAllRead?: () => void;
+  /** Called when a notification is removed. */
   onDismiss?: (id: string) => void;
   /** Called when the item body is activated. */
   onItemClick?: (item: NotificationItem) => void;

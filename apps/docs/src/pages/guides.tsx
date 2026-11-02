@@ -438,6 +438,20 @@ pnpm changeset      # describe your change for the changelog`}
           </Prose>
         </Card>
       </Section>
+      <Section title="Documenting a component">
+        <Prose>
+          <p>
+            Each component has its own page at <code>#/components/&lt;id&gt;</code>. To add one, write an <code>&lt;Name&gt;Examples</code> function in{" "}
+            <code>apps/docs/src/examples/</code> and add an entry to <code>apps/docs/src/docs/registry.ts</code> with its category, summary, the exports
+            to document and any accessibility notes.
+          </p>
+          <p>
+            The API reference is generated from the TypeScript source: types, required flags and defaults come from the code, and descriptions come from
+            each prop's JSDoc. Write a <code>/** … */</code> comment on every prop of your own; common props such as <code>value</code>, <code>open</code>{" "}
+            and <code>asChild</code> share a standard description.
+          </p>
+        </Prose>
+      </Section>
     </Page>
   );
 }

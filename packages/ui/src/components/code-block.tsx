@@ -21,10 +21,13 @@ function parseLines(spec: string | readonly number[] | undefined): Set<number> {
 }
 
 export interface CodeBlockProps extends Omit<HTMLAttributes<HTMLElement>, "children"> {
+  /** The source to show and copy. */
   code: string;
   /** Shown in the header, e.g. "tsx". Also set as `data-language` for highlighters. */
   language?: string;
+  /** Shown in the header. */
   filename?: ReactNode;
+  /** Number each line. */
   showLineNumbers?: boolean;
   /** Lines to emphasize: "1,3-5" or [1, 3, 4, 5]. */
   highlightLines?: string | readonly number[];
@@ -37,7 +40,9 @@ export interface CodeBlockProps extends Omit<HTMLAttributes<HTMLElement>, "child
    * raw text and 1-based line number. Defaults to the plain text.
    */
   renderLine?: (line: string, lineNumber: number) => ReactNode;
+  /** Accessible name of the copy button. */
   copyLabel?: string;
+  /** Announced after copying. */
   copiedLabel?: string;
   /** Hide the copy button. */
   hideCopy?: boolean;
@@ -121,10 +126,15 @@ export const CodeBlock = forwardRef<HTMLElement, CodeBlockProps>(function CodeBl
 export interface ExpandableTextProps extends HTMLAttributes<HTMLDivElement> {
   /** Lines shown while collapsed. */
   lines?: number;
+  /** Show all the text on first render. */
   defaultExpanded?: boolean;
+  /** Controlled expanded state. */
   expanded?: boolean;
+  /** Called when it expands or collapses. */
   onExpandedChange?: (expanded: boolean) => void;
+  /** Text of the expand button. */
   moreLabel?: string;
+  /** Text of the collapse button. */
   lessLabel?: string;
 }
 

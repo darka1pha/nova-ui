@@ -116,19 +116,25 @@ export interface ComboboxOption {
 }
 
 export interface ComboboxProps {
+  /** The choices: `{ value, label, disabled? }`. */
   options: ComboboxOption[];
   value?: string | null;
   defaultValue?: string | null;
   onValueChange?: (value: string | null) => void;
   placeholder?: string;
+  /** Placeholder of the search field in the list. */
   searchPlaceholder?: string;
+  /** Shown when nothing matches the search. */
   emptyMessage?: ReactNode;
   disabled?: boolean;
   size?: "sm" | "md" | "lg";
   className?: string;
   id?: string;
+  /** Accessible name, when there's no visible label. */
   "aria-label"?: string;
+  /** Ids of elements that describe the field. Set for you inside FormField. */
   "aria-describedby"?: string;
+  /** Marks the field invalid. Set for you inside FormField. */
   "aria-invalid"?: boolean;
   required?: boolean;
   /** Allow deselecting the current option by choosing it again. */

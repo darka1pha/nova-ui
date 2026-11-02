@@ -15,8 +15,11 @@ export interface PopconfirmProps {
   description?: ReactNode;
   /** May be async: the confirm button shows a spinner until it settles. Throw to keep it open with the error's message. */
   onConfirm: () => unknown;
+  /** Called when cancelled, by the button, Escape or an outside click. */
   onCancel?: () => void;
+  /** Text of the confirm button. */
   confirmLabel?: string;
+  /** Text of the cancel button. */
   cancelLabel?: string;
   /** `danger` styles the confirm button red and focuses Cancel first. */
   tone?: "danger" | "primary";

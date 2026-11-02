@@ -28,7 +28,9 @@ export interface InlineEditProps {
   validate?: (value: string) => string | undefined;
   /** How the value looks when not editing. Defaults to the text itself. */
   renderValue?: (value: string) => ReactNode;
+  /** Accessible name of the edit button. */
   editLabel?: string;
+  /** Announced while an async onSave is pending. */
   savingLabel?: string;
   disabled?: boolean;
   className?: string;

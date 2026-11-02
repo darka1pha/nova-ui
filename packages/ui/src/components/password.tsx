@@ -59,7 +59,9 @@ const meterText = ["text-danger-text", "text-danger-text", "text-warning-text", 
 export interface PasswordInputProps extends Omit<InputProps, "type"> {
   /** Controlled visibility. */
   visible?: boolean;
+  /** Show the password on first render. */
   defaultVisible?: boolean;
+  /** Called when the password is shown or hidden. */
   onVisibleChange?: (visible: boolean) => void;
   /** Show a strength meter under the field. */
   showStrength?: boolean;
@@ -73,10 +75,13 @@ export interface PasswordInputProps extends Omit<InputProps, "type"> {
   requirements?: PasswordRequirement[];
   /** Screen-reader text after each requirement. */
   requirementMetLabel?: string;
+  /** Spoken after a requirement that isn't met yet. */
   requirementUnmetLabel?: string;
   /** Warning shown while Caps Lock is on. `false` turns it off. */
   capsLockWarning?: ReactNode | false;
+  /** Accessible name of the toggle while the password is hidden. */
   showLabel?: string;
+  /** Accessible name of the toggle while the password is shown. */
   hideLabel?: string;
   /** Classes for the wrapper around the field, meter and checklist. */
   wrapperClassName?: string;

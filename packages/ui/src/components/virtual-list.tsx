@@ -10,23 +10,30 @@ export interface VirtualListApi {
 }
 
 export interface VirtualListProps<T> {
+  /** All items; only those in view are rendered. */
   items: readonly T[];
   /** Fixed row height in px. */
   itemHeight: number;
   /** Viewport height: px, or any CSS length (then measured). */
   height: number | string;
+  /** Renders one row. */
   renderItem: (item: T, index: number) => ReactNode;
+  /** A stable key per row. Defaults to the index. */
   getKey?: (item: T, index: number) => string | number;
   /** Rows rendered beyond each edge, so fast scrolling doesn't flash blank. */
   overscan?: number;
   /** Load more: called when the last `endReachedThreshold` rows come into view. Called once per list length. */
   onEndReached?: () => void;
+  /** How many rows before the end onEndReached fires. */
   endReachedThreshold?: number;
   /** Shown after the last row, e.g. a Spinner while loading more. */
   footer?: ReactNode;
+  /** Gives you `scrollToIndex(index, align)`. */
   apiRef?: Ref<VirtualListApi>;
+  /** Names the list for screen readers. */
   "aria-label"?: string;
   className?: string;
+  /** Classes for each row. */
   itemClassName?: string;
 }
 

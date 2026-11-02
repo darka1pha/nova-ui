@@ -26,7 +26,9 @@ const textVariants = cva("", {
       info: "text-info-text",
       inherit: "",
     },
+    /** Font weight. */
     weight: { regular: "font-normal", medium: "font-medium", semibold: "font-semibold", bold: "font-bold" },
+    /** Clip to one line with an ellipsis. */
     truncate: { true: "truncate", false: "" },
   },
   defaultVariants: { size: "md", tone: "default", weight: "regular" },
@@ -35,6 +37,7 @@ const textVariants = cva("", {
 type TextElement = "p" | "span" | "div" | "label" | "small" | "strong" | "em";
 
 export interface TextProps extends HTMLAttributes<HTMLElement>, VariantProps<typeof textVariants> {
+  /** The element to render. */
   as?: TextElement;
   asChild?: boolean;
 }
@@ -59,6 +62,7 @@ const headingVariants = cva("font-display text-foreground text-balance", {
       "2xl": "text-4xl font-extrabold tracking-(--nv-tracking-tighter) sm:text-5xl",
       display: "text-5xl font-extrabold tracking-(--nv-tracking-tighter) sm:text-6xl lg:text-7xl",
     },
+    /** Fill the text with the theme's vivid gradient. */
     gradient: {
       true: "bg-(image:--nv-gradient-vivid) bg-clip-text text-transparent [-webkit-text-fill-color:transparent]",
       false: "",

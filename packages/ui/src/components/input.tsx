@@ -202,7 +202,9 @@ export interface NumberInputProps extends Omit<InputProps, "type" | "value" | "d
   locale?: string;
   /** Round committed values to this many decimals (e.g. 2 for cents). */
   precision?: number;
+  /** Accessible name of the plus button. */
   incrementLabel?: string;
+  /** Accessible name of the minus button. */
   decrementLabel?: string;
 }
 

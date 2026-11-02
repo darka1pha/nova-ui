@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { axe, open } from "./helpers.ts";
+import { axe, componentIds, open } from "./helpers.ts";
 
 const routes = [
   "home",
@@ -12,14 +12,7 @@ const routes = [
   "tokens",
   "motion",
   "icons",
-  "layout",
-  "actions",
-  "forms",
   "forms-validation",
-  "feedback",
-  "overlays",
-  "navigation",
-  "data",
   "accessibility",
   "i18n",
   "styling",
@@ -28,9 +21,12 @@ const routes = [
   "troubleshooting",
   "contributing",
 ];
+// Category overviews, then one page per component.
+const categories = ["layout", "actions", "forms", "feedback", "overlays", "navigation", "data", "animation"];
+const componentRoutes = componentIds().map((id) => `components/${id}`);
 
 test.describe("every page renders without errors", () => {
-  for (const route of routes) {
+  for (const route of [...routes, ...categories, ...componentRoutes]) {
     test(route, async ({ page }) => {
       const errors = await open(page, route);
       expect(errors).toEqual([]);
@@ -40,7 +36,7 @@ test.describe("every page renders without errors", () => {
 
 test.describe("axe (WCAG 2.2 AA, including color contrast)", () => {
   for (const mode of ["light", "dark"] as const) {
-    for (const route of ["home", "installation", "motion", "actions", "forms", "forms-validation", "feedback", "navigation", "data", "playground", "layout", "icons", "blocks", "i18n"]) {
+    for (const route of ["home", "installation", "motion", "forms-validation", "playground", "icons", "blocks", "i18n", "actions", ...componentRoutes]) {
       test(`${route} · ${mode}`, async ({ page }) => {
         await open(page, route, mode);
         expect(await axe(page)).toEqual([]);
@@ -50,7 +46,7 @@ test.describe("axe (WCAG 2.2 AA, including color contrast)", () => {
 });
 
 test("radio selection follows arrow keys", async ({ page }) => {
-  await open(page, "forms");
+  await open(page, "components/radio-group");
   const pro = page.getByRole("radio", { name: "Pro" });
   await expect(pro).toBeChecked();
   await pro.focus();
@@ -64,7 +60,7 @@ test("radio selection follows arrow keys", async ({ page }) => {
 });
 
 test("dialog traps focus and restores it", async ({ page }) => {
-  await open(page, "overlays");
+  await open(page, "components/dialog");
   const trigger = page.getByRole("button", { name: "Edit profile" });
   await trigger.click();
   const dialog = page.getByRole("dialog", { name: "Edit profile" });
@@ -85,14 +81,14 @@ test("dialog traps focus and restores it", async ({ page }) => {
  * why Tailwind apps import @darkalpha/nova-ui/tailwind.css instead of styles.css.
  */
 async function responsiveLayouts(page: Page) {
-  await open(page, "layout");
+  await open(page, "components/typography");
   const heading = await page.getByRole("heading", { level: 3, name: "Section heading" }).evaluate((h) => getComputedStyle(h).fontSize);
-  await open(page, "feedback");
+  await open(page, "components/empty-state");
   const columns = await page.getByText("No projects yet").first().evaluate((el) => {
     const grid = el.closest(".grid");
     return grid ? getComputedStyle(grid).gridTemplateColumns.split(" ").length : 0;
   });
-  await open(page, "overlays");
+  await open(page, "components/dialog");
   await page.getByRole("button", { name: "Edit profile" }).click();
   const footer = page.getByRole("dialog", { name: "Edit profile" }).getByRole("button", { name: "Save changes" }).locator("..");
   const direction = await footer.evaluate((el) => getComputedStyle(el).flexDirection);
@@ -108,7 +104,7 @@ test("component breakpoints collapse at phone width @mobile", async ({ page }) =
 });
 
 test("dropdown menu works with the keyboard", async ({ page }) => {
-  await open(page, "actions");
+  await open(page, "components/dropdown-menu");
   await page.getByRole("button", { name: "Options" }).focus();
   await page.keyboard.press("Enter");
   await expect(page.getByRole("menu")).toBeVisible();
@@ -141,7 +137,7 @@ test("playground brand colors update the live preview", async ({ page }) => {
 });
 
 test("switching presets restyles components", async ({ page }) => {
-  await open(page, "actions");
+  await open(page, "components/button");
   const primary = page.getByRole("button", { name: "Primary", exact: true }).first();
   const before = await primary.evaluate((el) => getComputedStyle(el).backgroundColor);
   await page.getByRole("combobox", { name: "Theme preset" }).click();
@@ -150,7 +146,7 @@ test("switching presets restyles components", async ({ page }) => {
 });
 
 test("hover lifts and glows a primary button; press squashes it", async ({ page }) => {
-  await open(page, "actions");
+  await open(page, "components/button");
   const btn = page.getByRole("button", { name: "Primary", exact: true }).first();
   await btn.hover();
   await expect(btn).toHaveCSS("translate", "0px -2px");
@@ -161,7 +157,7 @@ test("hover lifts and glows a primary button; press squashes it", async ({ page 
 });
 
 test("tab indicator glides to the selected tab", async ({ page }) => {
-  await open(page, "navigation");
+  await open(page, "components/tabs");
   const list = page.getByRole("tablist", { name: "pills tabs" });
   const indicator = list.locator("[data-tabs-indicator]");
   await expect(list).toHaveAttribute("data-indicator", "ready");
@@ -171,7 +167,7 @@ test("tab indicator glides to the selected tab", async ({ page }) => {
 });
 
 test("date picker: keyboard selection and focus return", async ({ page }) => {
-  await open(page, "forms");
+  await open(page, "components/date-picker");
   const field = page.getByLabel("Check-in");
   await field.click();
   const grid = page.getByRole("dialog").getByRole("grid");
@@ -192,7 +188,7 @@ test("date picker: keyboard selection and focus return", async ({ page }) => {
 
 test("pin input fills every box from a paste", async ({ page, context }) => {
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
-  await open(page, "forms");
+  await open(page, "components/pin-input");
   const boxes = page.getByRole("group", { name: "Verification code" }).getByRole("textbox");
   await page.evaluate(() => navigator.clipboard.writeText("123456"));
   await boxes.first().focus();
@@ -242,7 +238,7 @@ test("react-hook-form: server errors from onSubmit land on the form and the fiel
 });
 
 test("RTL mirrors layout and overlays", async ({ page }) => {
-  await open(page, "overlays");
+  await open(page, "components/sheet");
   await page.getByRole("button", { name: "Toggle text direction" }).click();
   await expect(page.locator(".nv-theme").first()).toHaveAttribute("dir", "rtl");
   const sidebar = await page.locator("aside").boundingBox();

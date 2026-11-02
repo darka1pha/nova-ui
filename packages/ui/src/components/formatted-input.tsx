@@ -16,6 +16,7 @@ import { floatingSurface, menuItem } from "./shared.ts";
 export interface CurrencyInputProps extends Omit<NumberInputProps, "formatOptions" | "precision"> {
   /** ISO 4217 code, e.g. "USD", "EUR", "IRR". */
   currency: string;
+  /** How the currency is written: `symbol` (€), `narrowSymbol`, `code` (EUR) or `name`. */
   currencyDisplay?: Intl.NumberFormatOptions["currencyDisplay"];
 }
 
@@ -117,9 +118,13 @@ export interface PhoneInputProps extends Omit<InputProps, "value" | "defaultValu
   value?: string;
   defaultValue?: string;
   onValueChange?: (value: string, details: PhoneValueDetails) => void;
+  /** Controlled country (ISO 3166 alpha-2, e.g. "US"). Pair with onCountryChange. */
   country?: string;
+  /** Initial country when uncontrolled. Pasting a number with a + prefix switches it. */
   defaultCountry?: string;
+  /** Called with the new country code when it changes. */
   onCountryChange?: (country: string) => void;
+  /** Countries offered in the picker. Defaults to the built-in list. */
   countries?: PhoneCountry[];
   /** Accessible name prefix for the country picker. */
   countryLabel?: string;

@@ -36,20 +36,23 @@ const permissions = [
   { value: "api", label: "API access" },
 ];
 
-export function FormsMoreAdditions() {
+export function FileUploadListExamples() {
+  return (
+    <UploadsExample />
+  );
+}
+
+export function TransferListExamples() {
   const [granted, setGranted] = useState(["read", "comment"]);
   return (
-    <>
-      <Example
-        title="TransferList"
-        description="Check items and move them across. Each side has check-all, search and a count; moves are announced. Posts the selected values with native forms."
-        code={`<TransferList items={permissions} value={granted} onValueChange={setGranted}
+    <Example
+      title="TransferList"
+      description="Check items and move them across. Each side has check-all, search and a count; moves are announced. Posts the selected values with native forms."
+      code={`<TransferList items={permissions} value={granted} onValueChange={setGranted}
   searchable labels={{ available: "Available", selected: "Granted" }} name="permissions" />`}
-      >
-        <TransferList className="w-full" items={permissions} value={granted} onValueChange={setGranted} searchable listHeight={220} labels={{ available: "Available", selected: "Granted" }} />
-      </Example>
-      <UploadsExample />
-    </>
+    >
+      <TransferList className="w-full" items={permissions} value={granted} onValueChange={setGranted} searchable listHeight={220} labels={{ available: "Available", selected: "Granted" }} />
+    </Example>
   );
 }
 
@@ -111,55 +114,58 @@ function UploadsExample() {
 
 /* ---------------------------------------------------------------- Feedback */
 
-export function FeedbackAdditions() {
+export function GaugeExamples() {
   const [load, setLoad] = useState(72);
+  return (
+    <Example
+      title="Gauge"
+      description="A dial for one value in a range, with optional color bands. It's a meter for assistive tech and always prints the value."
+      code={`<Gauge aria-label="CPU usage" value={72} label="CPU"
+  bands={[{ upTo: 60, tone: "success" }, { upTo: 85, tone: "warning" }, { upTo: 100, tone: "danger" }]} />`}
+    >
+      <Stack gap={4} className="items-center">
+        <div className="flex flex-wrap items-end gap-6">
+          <Gauge
+            aria-label="CPU usage"
+            value={load}
+            label="CPU"
+            bands={[
+              { upTo: 60, tone: "success" },
+              { upTo: 85, tone: "warning" },
+              { upTo: 100, tone: "danger" },
+            ]}
+          />
+          <Gauge aria-label="Storage used" value={38.4} max={50} size={120} thickness={10} label="of 50 GB" formatValue={(v) => `${v.toFixed(1)} GB`} />
+        </div>
+        <Slider className="w-56" value={[load]} onValueChange={([v]) => setLoad(v ?? 0)} thumbLabels={["CPU usage"]} />
+      </Stack>
+    </Example>
+  );
+}
+
+export function CountdownExamples() {
   const launch = useMemo(() => Date.now() + ((3 * 24 + 5) * 60 + 42) * 60_000 + 18_000, []);
   const soon = useMemo(() => Date.now() + 12_000, []);
   const [fired, setFired] = useState(false);
   return (
-    <>
-      <Example
-        title="Gauge"
-        description="A dial for one value in a range, with optional color bands. It's a meter for assistive tech and always prints the value."
-        code={`<Gauge aria-label="CPU usage" value={72} label="CPU"
-  bands={[{ upTo: 60, tone: "success" }, { upTo: 85, tone: "warning" }, { upTo: 100, tone: "danger" }]} />`}
-      >
-        <Stack gap={4} className="items-center">
-          <div className="flex flex-wrap items-end gap-6">
-            <Gauge
-              aria-label="CPU usage"
-              value={load}
-              label="CPU"
-              bands={[
-                { upTo: 60, tone: "success" },
-                { upTo: 85, tone: "warning" },
-                { upTo: 100, tone: "danger" },
-              ]}
-            />
-            <Gauge aria-label="Storage used" value={38.4} max={50} size={120} thickness={10} label="of 50 GB" formatValue={(v) => `${v.toFixed(1)} GB`} />
-          </div>
-          <Slider className="w-56" value={[load]} onValueChange={([v]) => setLoad(v ?? 0)} thumbLabels={["CPU usage"]} />
-        </Stack>
-      </Example>
-      <Example
-        title="Countdown"
-        description="Time left until a moment, with localized unit labels. The screen-reader label updates once a minute so it isn't noisy."
-        code={`<Countdown to={launchDate} onComplete={() => setLive(true)} completed="We're live!" />
+    <Example
+      title="Countdown"
+      description="Time left until a moment, with localized unit labels. The screen-reader label updates once a minute so it isn't noisy."
+      code={`<Countdown to={launchDate} onComplete={() => setLive(true)} completed="We're live!" />
 <Countdown to={launchDate} variant="inline" showSeconds={false} />`}
-      >
-        <Stack gap={4}>
-          <Countdown to={launch} />
-          <Text size="sm">
-            Sale ends in <Countdown to={launch} variant="inline" showSeconds={false} />
-          </Text>
-          <Text size="sm">
-            Short one: <Countdown to={soon} variant="inline" completed="Done!" onComplete={() => setFired(true)} />
-            {fired ? <span className="text-foreground-muted"> · onComplete fired</span> : null}
-          </Text>
-          <Countdown to={launch} locale="fa-IR" />
-        </Stack>
-      </Example>
-    </>
+    >
+      <Stack gap={4}>
+        <Countdown to={launch} />
+        <Text size="sm">
+          Sale ends in <Countdown to={launch} variant="inline" showSeconds={false} />
+        </Text>
+        <Text size="sm">
+          Short one: <Countdown to={soon} variant="inline" completed="Done!" onComplete={() => setFired(true)} />
+          {fired ? <span className="text-foreground-muted"> · onComplete fired</span> : null}
+        </Text>
+        <Countdown to={launch} locale="fa-IR" />
+      </Stack>
+    </Example>
   );
 }
 
@@ -176,25 +182,33 @@ export function App() {
   );
 }`;
 
-export function DataMoreAdditions() {
+export function CodeBlockExamples() {
   return (
-    <>
-      <Example
-        title="CodeBlock"
-        description="Header, copy button, line numbers and highlighted lines. No highlighter bundled: pass renderLine to plug in Shiki or Prism."
-        code={`<CodeBlock code={source} language="tsx" filename="App.tsx" showLineNumbers highlightLines="5-7" />`}
-      >
-        <CodeBlock className="w-full" code={snippet} language="tsx" filename="App.tsx" showLineNumbers highlightLines="5-7" />
-      </Example>
-      <Example title="ExpandableText" description="Clamped to a few lines; the toggle appears only when the text actually overflows." code={`<ExpandableText lines={2}>{review}</ExpandableText>`}>
-        <ExpandableText lines={2} className="max-w-md text-sm">
-          Nova UI turned our brand color into a full light and dark theme in an afternoon. Every component picked it up, contrast was already checked, and the motion
-          settings let us calm things down for the admin area while keeping the marketing pages lively. The forms work with react-hook-form out of the box, and the docs
-          show the accessibility notes right next to each example, which made reviews much faster.
-        </ExpandableText>
-      </Example>
-      <ChatExample />
-    </>
+    <Example
+      title="CodeBlock"
+      description="Header, copy button, line numbers and highlighted lines. No highlighter bundled: pass renderLine to plug in Shiki or Prism."
+      code={`<CodeBlock code={source} language="tsx" filename="App.tsx" showLineNumbers highlightLines="5-7" />`}
+    >
+      <CodeBlock className="w-full" code={snippet} language="tsx" filename="App.tsx" showLineNumbers highlightLines="5-7" />
+    </Example>
+  );
+}
+
+export function ExpandableTextExamples() {
+  return (
+    <Example title="ExpandableText" description="Clamped to a few lines; the toggle appears only when the text actually overflows." code={`<ExpandableText lines={2}>{review}</ExpandableText>`}>
+      <ExpandableText lines={2} className="max-w-md text-sm">
+        Nova UI turned our brand color into a full light and dark theme in an afternoon. Every component picked it up, contrast was already checked, and the motion
+        settings let us calm things down for the admin area while keeping the marketing pages lively. The forms work with react-hook-form out of the box, and the docs
+        show the accessibility notes right next to each example, which made reviews much faster.
+      </ExpandableText>
+    </Example>
+  );
+}
+
+export function ChatExamples() {
+  return (
+    <ChatExample />
   );
 }
 
@@ -301,7 +315,7 @@ function ChatExample() {
 
 /* ---------------------------------------------------------------- Overlays */
 
-export function OverlaysMoreAdditions() {
+export function PopconfirmExamples() {
   const [files, setFiles] = useState(["Q3 report.pdf", "Old logo.svg"]);
   return (
     <Example

@@ -38,13 +38,16 @@ export interface TimeInputProps extends Omit<HTMLAttributes<HTMLDivElement>, "de
   locale?: string;
   size?: "sm" | "md" | "lg";
   disabled?: boolean;
+  /** Focusable and readable, but not editable. */
   readOnly?: boolean;
+  /** Show a button that empties the field. */
   clearable?: boolean;
   /** Submits "HH:mm" with native forms via a hidden input. */
   name?: string;
   id?: string;
   "aria-invalid"?: boolean;
   required?: boolean;
+  /** Called when focus leaves the field. */
   onBlur?: () => void;
   labels?: { hour?: string; minute?: string; period?: string; clear?: string };
 }

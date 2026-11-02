@@ -74,6 +74,7 @@ const IndexContext = createContext<number>(-1);
 const round = (n: number) => Math.round(n * 100) / 100;
 
 export interface ResizablePanelGroupProps extends HTMLAttributes<HTMLDivElement> {
+  /** Lay panels out side by side (`horizontal`) or stacked (`vertical`). */
   direction?: "horizontal" | "vertical";
   /** Called with the sizes (%) after every change. */
   onLayout?: (sizes: number[]) => void;

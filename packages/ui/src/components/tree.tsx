@@ -19,14 +19,19 @@ export interface TreeItem {
 export interface TreeViewProps extends Omit<HTMLAttributes<HTMLUListElement>, "onSelect"> {
   /** Accessible name for the tree. */
   label: string;
+  /** The tree: each item has an id, a label and optional children. */
   items: TreeItem[];
   /** Controlled ids of expanded branches. */
   expanded?: string[];
+  /** Ids of the items open on first render. */
   defaultExpanded?: string[];
+  /** Called with the ids of the open items. */
   onExpandedChange?: (ids: string[]) => void;
   /** Controlled selected id. */
   selected?: string | null;
+  /** Id of the item selected on first render. */
   defaultSelected?: string | null;
+  /** Called with the id and item that was selected. */
   onSelectedChange?: (id: string, item: TreeItem) => void;
   /** Row height. */
   size?: "sm" | "md";

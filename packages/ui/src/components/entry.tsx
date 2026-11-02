@@ -22,12 +22,14 @@ import { focusRing, transition } from "./shared.ts";
 /* ---------------------------------------------------------------- PinInput */
 
 export interface PinInputProps extends Omit<HTMLAttributes<HTMLDivElement>, "onChange" | "defaultValue"> {
+  /** Number of boxes. */
   length?: number;
   value?: string;
   defaultValue?: string;
   onValueChange?: (value: string) => void;
   /** Called once every box is filled. */
   onComplete?: (value: string) => void;
+  /** `numeric` brings up the number pad on phones and accepts digits only. */
   type?: "numeric" | "alphanumeric";
   /** Hide characters (like a password). */
   mask?: boolean;
@@ -252,10 +254,13 @@ export const TagInput = forwardRef<HTMLDivElement, TagInputProps>(function TagIn
 export interface FileDropzoneProps extends Omit<HTMLAttributes<HTMLDivElement>, "onChange" | "title"> {
   /** Native accept string, e.g. "image/*,.pdf". */
   accept?: string;
+  /** Accept more than one file. */
   multiple?: boolean;
   /** Maximum size per file in bytes. */
   maxSize?: number;
+  /** Controlled list of chosen files. Pair with onFilesChange. */
   files?: File[];
+  /** Called with the accepted files after a drop or a pick. */
   onFilesChange?: (files: File[]) => void;
   /** Called with files that were rejected and why. */
   onReject?: (rejections: { file: File; reason: "type" | "size" }[]) => void;

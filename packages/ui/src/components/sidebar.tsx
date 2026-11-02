@@ -62,10 +62,15 @@ export interface SidebarProviderProps extends HTMLAttributes<HTMLDivElement> {
   defaultOpen?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  /** Open the mobile drawer on first render. */
   defaultOpenMobile?: boolean;
+  /** Controlled open state of the mobile drawer. */
   openMobile?: boolean;
+  /** Called when the mobile drawer opens or closes. */
   onOpenMobileChange?: (open: boolean) => void;
+  /** Width in px below which the sidebar becomes a drawer. */
   mobileBreakpoint?: number;
+  /** Key that toggles the sidebar with Ctrl/Cmd (default `b`), or `false` to turn the shortcut off. */
   keyboardShortcut?: string | boolean;
 }
 
@@ -455,6 +460,7 @@ const sidebarMenuButtonVariants = cva(
         md: "h-9 text-sm px-2.5",
         lg: "h-11 text-base px-3 [&_svg]:size-5",
       },
+      /** Marks the current page (aria-current="page"). */
       isActive: {
         // A slim indicator bar on the leading edge plus a tinted fill; the icon picks up the brand color.
         true: "bg-primary-subtle text-primary-on-subtle font-semibold hover:bg-primary-subtle-hover [&_svg]:text-primary-text before:absolute before:inset-y-2 before:-start-0.5 before:w-1 before:rounded-full before:bg-primary-solid before:animate-nv-bounce-in group-data-[collapsible=icon]/sidebar:before:hidden",
@@ -473,6 +479,7 @@ export interface SidebarMenuButtonProps
   extends ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof sidebarMenuButtonVariants> {
   asChild?: boolean;
+  /** Shown beside the icon while the sidebar is collapsed. */
   tooltip?: string | ReactNode;
 }
 
@@ -603,7 +610,9 @@ export function SidebarSection({ title, className, children, ...props }: HTMLAtt
 
 export interface SidebarItemProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
   icon?: ReactNode;
+  /** Count or label at the end of the item. */
   badge?: ReactNode;
+  /** Marks the current page (aria-current="page"). */
   active?: boolean;
   size?: "sm" | "md";
   asChild?: boolean;
@@ -669,13 +678,16 @@ export interface ResponsiveSidebarGroup {
 }
 
 export interface ResponsiveSidebarProps extends SidebarProps {
+  /** Logo, title and subtitle at the top; `href` makes it a link. */
   brand?: {
     logo?: ReactNode;
     title: ReactNode;
     subtitle?: ReactNode;
     href?: string;
   };
+  /** Navigation sections, each with a label and its items. */
   groups?: ResponsiveSidebarGroup[];
+  /** The signed-in person, shown at the bottom. */
   footerUser?: {
     name: string;
     email?: string;
@@ -861,10 +873,15 @@ export interface DualSidebarRailItem {
 }
 
 export interface DualSidebarProps extends SidebarProps {
+  /** Icons in the narrow rail; each opens its own panel. */
   railItems: DualSidebarRailItem[];
+  /** Content at the top of the rail, e.g. a logo. */
   railHeader?: ReactNode;
+  /** Content at the bottom of the rail. */
   railFooter?: ReactNode;
+  /** Content at the top of the panel. */
   panelHeader?: ReactNode;
+  /** Content at the bottom of the panel. */
   panelFooter?: ReactNode;
   title?: string;
 }
@@ -980,6 +997,7 @@ export const RailSidebar = DualSidebar;
 /* --------------------------------------------------- 3. FloatingSidebar ---- */
 
 export interface FloatingSidebarProps extends SidebarProps {
+  /** Show a floating button that opens the sidebar when it's collapsed. */
   floatingTrigger?: boolean;
 }
 

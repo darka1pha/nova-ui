@@ -238,6 +238,7 @@ export const FormField = forwardRef<HTMLDivElement, FormFieldProps>(function For
 });
 
 export interface FieldsetProps extends FieldsetHTMLAttributes<HTMLFieldSetElement> {
+  /** Names the group; read out before each control in it. */
   legend: ReactNode;
   description?: ReactNode;
   /** Group-level error (e.g. "Choose at least one"). Announced politely. */

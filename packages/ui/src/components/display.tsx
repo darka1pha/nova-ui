@@ -37,10 +37,12 @@ export interface CircularProgressProps extends Omit<HTMLAttributes<HTMLDivElemen
   max?: number;
   /** Diameter in px. */
   size?: number;
+  /** Stroke width in px. */
   thickness?: number;
   tone?: Tone;
   /** Content in the middle; defaults to the percentage when determinate. */
   label?: ReactNode;
+  /** Print the percentage in the middle. */
   showValue?: boolean;
 }
 
@@ -101,6 +103,7 @@ export interface StepperStep {
 }
 
 export interface StepperProps extends Omit<HTMLAttributes<HTMLOListElement>, "onChange"> {
+  /** The steps, each with a title and optional description. */
   steps: StepperStep[];
   /** Index of the current step. Steps before it are complete. */
   current: number;
@@ -216,6 +219,7 @@ export interface TimelineItem {
 }
 
 export interface TimelineProps extends HTMLAttributes<HTMLOListElement> {
+  /** Events in order: title, description, time, tone and icon. */
   items: TimelineItem[];
 }
 
@@ -256,10 +260,12 @@ export const Timeline = forwardRef<HTMLOListElement, TimelineProps>(function Tim
 /* -------------------------------------------------------------- Sparkline */
 
 export interface SparklineProps extends Omit<HTMLAttributes<HTMLDivElement>, "children"> {
+  /** The values, oldest first. */
   data: number[];
   /** Accessible summary, e.g. "Revenue, last 12 weeks, up 18%". */
   label: string;
   tone?: Exclude<Tone, "gradient">;
+  /** Height in px. */
   height?: number;
   /** Shade the area under the line. */
   area?: boolean;
@@ -306,11 +312,13 @@ export interface StatProps extends HTMLAttributes<HTMLDivElement> {
   label: ReactNode;
   /** A number counts up with AnimatedNumber; any other node renders as-is. */
   value: number | ReactNode;
+  /** Intl.NumberFormat options for a numeric value, e.g. currency. */
   format?: Intl.NumberFormatOptions;
   /** Percentage change; positive renders as an increase. */
   delta?: number;
   /** For metrics where down is good (churn, latency). */
   invertDelta?: boolean;
+  /** Small text under the value, e.g. "vs last month". */
   helpText?: ReactNode;
   icon?: ReactNode;
   /** Optional trend data rendered as a Sparkline. */
@@ -384,8 +392,11 @@ const bannerVariants = cva("relative flex w-full items-center justify-center gap
 });
 
 export interface BannerProps extends HTMLAttributes<HTMLDivElement>, VariantProps<typeof bannerVariants> {
+  /** A button or link after the message. */
   action?: ReactNode;
+  /** Shows a close button; called when it's pressed. */
   onDismiss?: () => void;
+  /** Accessible name of the close button. */
   dismissLabel?: string;
 }
 
@@ -416,9 +427,11 @@ export interface CarouselProps extends HTMLAttributes<HTMLElement> {
   label: string;
   /** Slide width as CSS, e.g. "100%", "80%" or "18rem". */
   slideSize?: string;
+  /** Space between slides as CSS, e.g. "1rem". */
   gap?: string;
   /** Advance automatically (pauses on hover/focus; off under reduced motion). */
   autoPlay?: number | false;
+  /** Show a dot per slide under the track. */
   showDots?: boolean;
   labels?: { previous?: string; next?: string; goTo?: (n: number) => string; slide?: (n: number, total: number) => string };
   children: ReactNode;

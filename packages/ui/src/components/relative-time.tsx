@@ -48,6 +48,7 @@ function nextTick(time: number, now: number) {
 }
 
 export interface RelativeTimeProps extends Omit<HTMLAttributes<HTMLTimeElement>, "children"> {
+  /** The moment: a Date, an ISO string or a timestamp. */
   date: RelativeTimeInput;
   /** BCP 47 locale; defaults to the ThemeProvider's, then the browser's. */
   locale?: string;

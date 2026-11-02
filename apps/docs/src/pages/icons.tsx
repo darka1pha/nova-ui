@@ -17,6 +17,7 @@ import {
 import { iconCatalog, iconCategories, type IconEntry } from "@darkalpha/nova-ui/icons/catalog";
 import { createElement, useDeferredValue, useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+import { ApiSection } from "../docs/api.tsx";
 import { CodeBlock, Example, Page, Prose, Section } from "../docs/kit.tsx";
 
 /* ----------------------------------------------------------------- Helpers */
@@ -548,6 +549,7 @@ export const MooringLine = createIcon("mooring-line", [
           ))}
         </Card>
       </Section>
+      <ApiSection parts={["Icon"]} />
     </Page>
   );
 }

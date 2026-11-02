@@ -58,6 +58,7 @@ export const HoverCardContent = forwardRef<HTMLDivElement, ComponentPropsWithout
 export interface ScrollAreaProps extends ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.Root> {
   /** Which scrollbars to render. */
   orientation?: "vertical" | "horizontal" | "both";
+  /** Classes for the scrolling viewport inside the root. */
   viewportClassName?: string;
 }
 

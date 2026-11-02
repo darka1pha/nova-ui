@@ -29,7 +29,9 @@ export interface MessageListApi {
 export interface MessageListProps extends HTMLAttributes<HTMLDivElement> {
   /** Required: names the conversation for screen readers, e.g. "Chat with Support". */
   "aria-label": string;
+  /** Text of the button that appears when new messages arrive while scrolled up. */
   jumpLabel?: string;
+  /** Gives you `scrollToBottom()`. */
   apiRef?: Ref<MessageListApi>;
 }
 
@@ -116,6 +118,7 @@ const SideContext = createContext<"start" | "end">("start");
 export interface MessageGroupProps extends HTMLAttributes<HTMLDivElement> {
   /** Shown above the bubbles and used as the group's accessible name. */
   author: string;
+  /** Shown once beside the group. */
   avatar?: ReactNode;
   /** `end` for the current user (right in LTR), `start` for everyone else. */
   side?: "start" | "end";
@@ -150,7 +153,9 @@ export const MessageGroup = forwardRef<HTMLDivElement, MessageGroupProps>(functi
 export interface MessageProps extends HTMLAttributes<HTMLDivElement> {
   /** Text arriving token by token: shows a caret and holds announcements until done. */
   streaming?: boolean;
+  /** Delivery state of a sent message. */
   status?: "sending" | "sent" | "error";
+  /** Custom text for the status, e.g. a timestamp. */
   statusLabel?: ReactNode;
   /** Shown under the bubble on hover or focus, e.g. Copy and Retry. */
   actions?: ReactNode;
@@ -194,6 +199,7 @@ export const Message = forwardRef<HTMLDivElement, MessageProps>(function Message
 export interface TypingIndicatorProps extends HTMLAttributes<HTMLDivElement> {
   /** Spoken (and shown, unless `hideLabel`) text, e.g. "Mina is typing". */
   label?: string;
+  /** Show only the dots; the label is still announced. */
   hideLabel?: boolean;
 }
 
@@ -237,12 +243,15 @@ export interface ChatComposerProps extends Omit<HTMLAttributes<HTMLFormElement>,
   onSend: (message: { text: string; files: File[] }) => unknown;
   /** A reply is being generated: the send button becomes Stop. */
   generating?: boolean;
+  /** Called by the Stop button while `generating`. */
   onStop?: () => void;
   placeholder?: string;
   disabled?: boolean;
   /** Show the attach button; `accept` is the native filter. */
   attachments?: boolean;
+  /** Native file filter for attachments, e.g. "image/*". */
   accept?: string;
+  /** Maximum characters, with a live counter beside the send button. */
   maxLength?: number;
   /** Extra controls left of the send button, e.g. a model picker. */
   toolbar?: ReactNode;

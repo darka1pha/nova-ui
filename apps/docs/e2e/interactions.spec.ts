@@ -11,7 +11,7 @@ const exampleSection = (page: Page, title: string) => page.locator("section").fi
 
 test.describe("Carousel", () => {
   test("previous and next work when several slides are visible", async ({ page }) => {
-    await open(page, "data");
+    await open(page, "components/carousel");
     const carousel = page.getByRole("region", { name: "Featured themes" });
     await carousel.scrollIntoViewIfNeeded();
     const previous = carousel.getByRole("button", { name: "Previous slide" });
@@ -40,7 +40,7 @@ test.describe("Carousel", () => {
 
 test.describe("TimeInput", () => {
   async function eta(page: Page) {
-    await open(page, "forms");
+    await open(page, "components/time-input");
     const field = page.getByRole("group", { name: "ETA" });
     await field.scrollIntoViewIfNeeded();
     return { field, hours: field.getByRole("spinbutton", { name: "Hours" }), minutes: field.getByRole("spinbutton", { name: "Minutes" }), stored: page.locator("input[name=eta]") };
@@ -79,7 +79,7 @@ test.describe("TimeInput", () => {
 test.describe("Resizable panels", () => {
   test("drag, collapse by dragging, and expand back to the earlier size", async ({ page }) => {
     await page.addInitScript(() => window.localStorage.removeItem("nv-resizable:docs-fleet"));
-    await open(page, "layout");
+    await open(page, "components/resizable");
     const handle = page.getByRole("separator", { name: "Resize Vessels" });
     await handle.scrollIntoViewIfNeeded();
     const size = async () => Number(await handle.getAttribute("aria-valuenow"));
@@ -113,7 +113,7 @@ test.describe("DateRangePicker", () => {
   });
 
   test("a preset applies and two calendar clicks pick a range", async ({ page }) => {
-    await open(page, "forms");
+    await open(page, "components/date-range-picker");
     const trigger = page.getByRole("combobox", { name: "Voyage window" });
     await trigger.scrollIntoViewIfNeeded();
     await trigger.click();
@@ -137,7 +137,7 @@ test.describe("DateRangePicker", () => {
 
 test.describe("TreeView", () => {
   test("arrows, type-ahead cycling and selection", async ({ page }) => {
-    await open(page, "navigation");
+    await open(page, "components/tree-view");
     const tree = page.getByRole("tree", { name: "Ports" });
     await tree.scrollIntoViewIfNeeded();
     const item = (name: string) => tree.getByRole("treeitem", { name: new RegExp(`^${name}`) });
@@ -158,7 +158,7 @@ test.describe("TreeView", () => {
 
 test.describe("Menubar and Toolbar", () => {
   async function fileMenu(page: Page): Promise<Locator> {
-    await open(page, "navigation");
+    await open(page, "components/menubar");
     const file = page.getByRole("menubar").getByRole("menuitem", { name: "File" });
     await file.scrollIntoViewIfNeeded();
     return file;
@@ -186,7 +186,7 @@ test.describe("Menubar and Toolbar", () => {
   });
 
   test("toolbar keeps one tab stop and toggles with Space", async ({ page }) => {
-    await open(page, "navigation");
+    await open(page, "components/toolbar");
     const toolbar = page.getByRole("toolbar", { name: "Report formatting" });
     await toolbar.scrollIntoViewIfNeeded();
     await toolbar.getByRole("button", { name: "Bold" }).click();
@@ -203,7 +203,7 @@ test.describe("Menubar and Toolbar", () => {
 
 test.describe("NotificationCenter", () => {
   test("filters, marks read and announces arrivals", async ({ page }) => {
-    await open(page, "feedback");
+    await open(page, "components/notification-center");
     const section = exampleSection(page, "NotificationCenter");
     await section.scrollIntoViewIfNeeded();
     const bell = section.getByRole("button", { name: /^Notifications/ });

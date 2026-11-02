@@ -29,11 +29,14 @@ export interface TourLabels {
 const defaultLabels: TourLabels = { back: "Back", next: "Next", done: "Done", skip: "Skip tour", progress: (s, n) => `Step ${s} of ${n}` };
 
 export interface TourProps {
+  /** The stops: each a target (selector, element or function), a title and content. */
   steps: readonly TourStep[];
   open: boolean;
   onOpenChange: (open: boolean) => void;
   step?: number;
+  /** Starting step when uncontrolled. */
   defaultStep?: number;
+  /** Called with the new step index. */
   onStepChange?: (step: number) => void;
   /** Called when the last step's Done is pressed (not on skip). */
   onFinish?: () => void;

@@ -12,6 +12,7 @@ export interface BarListItem {
 }
 
 export interface BarListProps extends HTMLAttributes<HTMLDivElement> {
+  /** Rows: `{ name, value, href?, icon? }`, sorted as given. */
   data: BarListItem[];
   /** Formats values for display and screen readers. */
   formatValue?: (value: number) => string;

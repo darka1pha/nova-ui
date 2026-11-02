@@ -12,36 +12,37 @@ test.beforeEach(async ({ page }) => {
 /** The preview area of the Nth example on a page. */
 const example = (page: Page, title: string) => page.locator("section").filter({ has: page.getByRole("heading", { name: title, exact: true }) }).locator(".rounded-t-\\(--nv-card-radius\\)").first();
 
-const cases: [route: string, title: string][] = [
-  ["actions", "Variants"],
-  ["actions", "Sizes"],
-  ["forms", "Checkbox, Radio and Switch"],
-  ["forms", "Input sizes, groups and states"],
-  ["feedback", "Alert"],
-  ["feedback", "Badge"],
-  ["navigation", "Tabs"],
-  ["data", "Card"],
-  ["forms", "DatePicker and Calendar"],
-  ["forms", "PinInput"],
-  ["forms", "Rating"],
-  ["feedback", "CircularProgress"],
-  ["navigation", "Stepper"],
-  ["data", "Stat and Sparkline"],
-  ["data", "Timeline"],
-  ["actions", "Chip"],
+// The category prefix keeps screenshot names stable from when categories were single pages.
+const cases: [category: string, component: string, title: string][] = [
+  ["actions", "button", "Variants"],
+  ["actions", "button", "Sizes"],
+  ["forms", "checkbox", "Checkbox"],
+  ["forms", "input", "Input sizes, groups and states"],
+  ["feedback", "alert", "Alert"],
+  ["feedback", "badge", "Badge"],
+  ["navigation", "tabs", "Tabs"],
+  ["data", "card", "Card"],
+  ["forms", "date-picker", "DatePicker and Calendar"],
+  ["forms", "pin-input", "PinInput"],
+  ["forms", "rating", "Rating"],
+  ["feedback", "circular-progress", "CircularProgress"],
+  ["navigation", "stepper", "Stepper"],
+  ["data", "stat", "Stat and Sparkline"],
+  ["data", "timeline", "Timeline"],
+  ["actions", "chip", "Chip"],
 ];
 
 for (const mode of ["light", "dark"] as const) {
   test.describe(`visual · ${mode}`, () => {
-    for (const [route, title] of cases) {
-      test(`${route} › ${title}`, async ({ page }) => {
-        await open(page, route, mode);
-        await expect(example(page, title)).toHaveScreenshot(`${route}-${title.replace(/\W+/g, "-").toLowerCase()}-${mode}.png`);
+    for (const [category, component, title] of cases) {
+      test(`${category} › ${title}`, async ({ page }) => {
+        await open(page, `components/${component}`, mode);
+        await expect(example(page, title)).toHaveScreenshot(`${category}-${title.replace(/\W+/g, "-").toLowerCase()}-${mode}.png`);
       });
     }
 
     test("focus ring on primary button", async ({ page }) => {
-      await open(page, "actions", mode);
+      await open(page, "components/button", mode);
       const btn = page.getByRole("button", { name: "Primary", exact: true }).first();
       await btn.focus();
       await page.keyboard.press("Shift+Tab");

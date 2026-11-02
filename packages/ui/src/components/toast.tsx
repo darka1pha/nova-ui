@@ -105,6 +105,7 @@ export interface ToasterProps {
   position?: "top-start" | "top-center" | "top-end" | "bottom-start" | "bottom-center" | "bottom-end";
   /** Accessible label for the notification region. Use "{hotkey}" for the shortcut. */
   label?: string;
+  /** Accessible name of each toast's close button. */
   closeLabel?: string;
 }
 

@@ -111,9 +111,11 @@ export interface CopyButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonEle
   value: string;
   /** Visible label; omit for an icon-only button (then pass aria-label or keep the default). */
   label?: ReactNode;
+  /** Shown and announced after copying. */
   copiedLabel?: string;
   variant?: ButtonVariant;
   size?: ButtonSize;
+  /** Called after the value was copied. */
   onCopied?: () => void;
 }
 

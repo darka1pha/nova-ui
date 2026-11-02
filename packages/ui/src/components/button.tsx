@@ -61,6 +61,7 @@ export const buttonVariants = cva(
         lg: "h-(--nv-control-h-lg) px-(--nv-control-px-lg) text-md [&_svg]:size-5",
         xl: "h-(--nv-control-h-xl) px-7 text-lg [&_svg]:size-5",
       },
+      /** Stretch to the width of the container. */
       fullWidth: { true: "w-full", false: "" },
     },
     compoundVariants: [{ variant: "link", className: "h-auto px-0" }],
@@ -122,6 +123,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, Va
   loading?: boolean;
   /** Replaces the label while loading, e.g. "Saving…". */
   loadingText?: string;
+  /** Icon before the label. */
   startIcon?: ReactNode;
   /** Nudges forward on hover — ideal for arrows ("Continue →"). */
   endIcon?: ReactNode;

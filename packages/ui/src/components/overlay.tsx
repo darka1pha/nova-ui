@@ -227,7 +227,9 @@ export const SheetHeader = DialogHeader;
 export const SheetFooter = DialogFooter;
 
 export interface SheetContentProps extends ComponentPropsWithoutRef<typeof DialogPrimitive.Content>, VariantProps<typeof sheetContent> {
+  /** Leave out the close button, e.g. when the content has its own. */
   hideClose?: boolean;
+  /** Accessible name of the close button. */
   closeLabel?: string;
 }
 

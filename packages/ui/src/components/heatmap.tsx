@@ -10,6 +10,7 @@ export interface HeatmapDatum {
 }
 
 export interface CalendarHeatmapProps {
+  /** Values per day: `{ date, value }`. Missing days count as zero. */
   data: readonly HeatmapDatum[];
   /** Last day shown. Defaults to today. */
   end?: Date | string;
@@ -27,6 +28,7 @@ export interface CalendarHeatmapProps {
   /** Legend words; `false` hides the legend. */
   legend?: { less: string; more: string } | false;
   locale?: string;
+  /** Names the chart, e.g. "Contributions in the last year". */
   "aria-label": string;
   className?: string;
 }

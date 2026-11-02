@@ -4,6 +4,7 @@ import {
   EmptyState,
   LoadingState,
   IconButton,
+  SearchInput,
   Select,
   SelectContent,
   SelectItem,
@@ -22,10 +23,10 @@ import {
   useTheme,
   type ModePreference,
 } from "@darkalpha/nova-ui";
-import { GitPullRequest, Languages, Menu, Monitor, Moon, SearchX, Sun } from "lucide-react";
+import { ChevronRight, GitPullRequest, Languages, Menu, Monitor, Moon, SearchX, Sun } from "lucide-react";
 import { Suspense, useEffect, useState, type ReactNode } from "react";
 import { releaseLabel, useRoute } from "./docs/kit.tsx";
-import { pages, nav } from "./pages/index.tsx";
+import { nav, resolveRoute, routeLabel, type NavItem } from "./pages/index.tsx";
 
 function Logo() {
   return (
@@ -42,39 +43,86 @@ function Logo() {
   );
 }
 
+const linkClass = (active: boolean) =>
+  cn(
+    "flex h-8 items-center gap-2 rounded-md px-3 text-sm font-medium transition-colors duration-(--nv-duration-fast) focus-visible:outline-2 focus-visible:outline-focus-ring",
+    active ? "bg-primary-subtle text-primary-on-subtle" : "text-foreground-secondary hover:bg-surface-hover hover:text-foreground",
+  );
+
+function NavLink({ item, current, onNavigate, expandable, expanded }: { item: NavItem; current: string; onNavigate?: () => void; expandable?: boolean; expanded?: boolean }) {
+  const active = item.id === current;
+  return (
+    <a href={`#/${item.id}`} onClick={onNavigate} aria-current={active ? "page" : undefined} className={linkClass(active)}>
+      {expandable ? <ChevronRight aria-hidden className={cn("-ms-1 size-3.5 shrink-0 transition-transform rtl:-scale-x-100", expanded && "rotate-90 rtl:rotate-90")} /> : null}
+      {item.label}
+      {item.badge ? (
+        <Badge size="sm" variant="gradient" className="ms-auto">
+          {item.badge}
+        </Badge>
+      ) : null}
+    </a>
+  );
+}
+
 function NavList({ current, onNavigate }: { current: string; onNavigate?: () => void }) {
+  const [filter, setFilter] = useState("");
+  const query = filter.trim().toLowerCase();
+  const matches = query
+    ? nav.flatMap((g) => g.items.flatMap((i) => i.children ?? [])).filter((c) => `${c.label} ${c.keywords ?? ""}`.toLowerCase().includes(query))
+    : [];
   return (
     <nav aria-label="Documentation" className="flex flex-col gap-5">
-      {nav.map((group) => (
-        <div key={group.title} className="flex flex-col gap-0.5">
-          <p className="px-3 pb-1 text-2xs font-semibold uppercase tracking-(--nv-tracking-wider) text-foreground-muted">{group.title}</p>
-          <ul className="flex flex-col gap-0.5">
-            {group.items.map((item) => {
-              const active = item.id === current;
-              return (
-                <li key={item.id}>
-                  <a
-                    href={`#/${item.id}`}
-                    onClick={onNavigate}
-                    aria-current={active ? "page" : undefined}
-                    className={cn(
-                      "flex h-8 items-center gap-2 rounded-md px-3 text-sm font-medium transition-colors duration-(--nv-duration-fast) focus-visible:outline-2 focus-visible:outline-focus-ring",
-                      active ? "bg-primary-subtle text-primary-on-subtle" : "text-foreground-secondary hover:bg-surface-hover hover:text-foreground",
-                    )}
-                  >
-                    {item.label}
-                    {item.badge ? (
-                      <Badge size="sm" variant="gradient" className="ms-auto">
-                        {item.badge}
-                      </Badge>
+      <SearchInput
+        size="sm"
+        value={filter}
+        onChange={(e) => setFilter(e.target.value)}
+        onClear={() => setFilter("")}
+        placeholder="Find a component"
+        aria-label="Find a component"
+      />
+      {query ? (
+        <ul className="flex flex-col gap-0.5" aria-label="Matching components">
+          {matches.map((item) => (
+            <li key={item.id}>
+              <NavLink
+                item={item}
+                current={current}
+                onNavigate={() => {
+                  setFilter("");
+                  onNavigate?.();
+                }}
+              />
+            </li>
+          ))}
+          {matches.length === 0 ? <li className="px-3 text-sm text-foreground-muted">No components match.</li> : null}
+        </ul>
+      ) : (
+        nav.map((group) => (
+          <div key={group.title} className="flex flex-col gap-0.5">
+            <p className="px-3 pb-1 text-2xs font-semibold uppercase tracking-(--nv-tracking-wider) text-foreground-muted">{group.title}</p>
+            <ul className="flex flex-col gap-0.5">
+              {group.items.map((item) => {
+                // Only the current category is expanded, so the list stays short.
+                const expanded = !!item.children && (item.id === current || item.children.some((c) => c.id === current));
+                return (
+                  <li key={item.id}>
+                    <NavLink item={item} current={current} onNavigate={onNavigate} expandable={!!item.children} expanded={expanded} />
+                    {expanded ? (
+                      <ul className="ms-4 mt-0.5 flex flex-col gap-0.5 border-s border-border ps-2">
+                        {(item.children ?? []).map((child) => (
+                          <li key={child.id}>
+                            <NavLink item={child} current={current} onNavigate={onNavigate} />
+                          </li>
+                        ))}
+                      </ul>
                     ) : null}
-                  </a>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      ))}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ))
+      )}
     </nav>
   );
 }
@@ -102,7 +150,7 @@ function Shell({ theme, setTheme, dir, setDir, children }: { theme: string; setT
   useEffect(() => {
     window.scrollTo({ top: 0 });
     // A distinct title per page, for tabs, history and screen readers (WCAG 2.4.2).
-    const label = route === "home" ? undefined : (nav.flatMap((g) => g.items).find((i) => i.id === route)?.label ?? "Page not found");
+    const label = route === "home" ? undefined : (routeLabel(route) ?? "Page not found");
     document.title = label ? `${label} · Nova UI` : "Nova UI";
   }, [route]);
 
@@ -192,13 +240,13 @@ export function App() {
   const [theme, setTheme] = useState("vibrant");
   const [dir, setDir] = useState<"ltr" | "rtl">("ltr");
   const route = useRoute();
-  const Current = pages[route];
+  const current = resolveRoute(route);
 
   return (
     <ThemeProvider theme={theme} dir={dir} storageKey="nova-docs-mode" defaultMode="system">
       <Shell theme={theme} setTheme={setTheme} dir={dir} setDir={setDir}>
         <Suspense fallback={<LoadingState title="Loading page…" className="py-24" />}>
-          {Current ? <Current /> : <NotFound />}
+          {current ?? <NotFound />}
         </Suspense>
       </Shell>
       <Toaster />

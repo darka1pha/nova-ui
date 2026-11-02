@@ -34,6 +34,7 @@ export const DescriptionList = forwardRef<HTMLDListElement, DescriptionListProps
 });
 
 export interface DescriptionItemProps extends Omit<HTMLAttributes<HTMLDivElement>, "title"> {
+  /** The label (the <dt>). */
   term: ReactNode;
   /** Span every column (long values like notes or addresses). */
   fullWidth?: boolean;

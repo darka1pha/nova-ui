@@ -47,6 +47,7 @@ export const Stack = forwardRef<HTMLDivElement, StackProps>(function Stack({ asC
 });
 
 const inlineVariants = cva("flex flex-row", {
+  /** Let items wrap onto more lines when they run out of room. */
   variants: { gap, align, justify, wrap: { true: "flex-wrap", false: "flex-nowrap" } },
   defaultVariants: { gap: 2, align: "center", wrap: true },
 });
@@ -62,6 +63,7 @@ export const Inline = forwardRef<HTMLDivElement, InlineProps>(function Inline({ 
 const gridVariants = cva("grid", {
   variants: {
     gap,
+    /** Column count, collapsing to fewer columns on small screens. `auto` fits as many columns of `minColumnWidth` as there's room for. */
     columns: {
       1: "grid-cols-1",
       2: "grid-cols-1 sm:grid-cols-2",

@@ -1,4 +1,5 @@
 import { Badge, Button, Card, Grid, Text, ThemeProvider, presets } from "@darkalpha/nova-ui";
+import { ApiSection } from "../docs/api.tsx";
 import { CodeBlock, Page, Prose, Section } from "../docs/kit.tsx";
 
 export function ThemingPage() {
@@ -205,6 +206,7 @@ import { getThemeCss } from "@darkalpha/nova-ui";
 const css = getThemeCss("acme", { brand: { primary: "#0f766e" }, selector: ":root" });`}
         />
       </Section>
+      <ApiSection parts={["ThemeProvider", "ThemeScript"]} />
     </Page>
   );
 }

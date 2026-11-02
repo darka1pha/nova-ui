@@ -1,8 +1,15 @@
 import { expect, type Page } from "@playwright/test";
+import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
 const axePath = require.resolve("axe-core/axe.min.js");
+
+/** Every component page id, read from the docs registry (`{ id: "button", … }`). */
+export function componentIds(): string[] {
+  const source = readFileSync(new URL("../src/docs/registry.ts", import.meta.url), "utf8");
+  return [...source.matchAll(/\{ id: "([\w-]+)", name:/g)].map((m) => m[1]!);
+}
 
 /** Opens a docs route with a fixed color mode and fails on any console error. */
 export async function open(page: Page, route: string, mode: "light" | "dark" = "light") {

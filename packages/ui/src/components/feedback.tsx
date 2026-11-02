@@ -134,6 +134,7 @@ export interface AlertProps extends Omit<HTMLAttributes<HTMLDivElement>, "title"
   action?: ReactNode;
   /** Shows a dismiss button. */
   onDismiss?: () => void;
+  /** Accessible name of the close button. */
   dismissLabel?: string;
 }
 
@@ -224,6 +225,7 @@ export const Progress = forwardRef<HTMLDivElement, ProgressProps>(function Progr
 /* ---------------------------------------------------------- StatusIndicator */
 
 export interface StatusIndicatorProps extends HTMLAttributes<HTMLSpanElement> {
+  /** The state, shown as a colored dot next to the label. */
   status: "online" | "away" | "busy" | "offline" | "success" | "warning" | "danger" | "info";
   /** Visible text. Always provide it, or an aria-label, so status is not color-only. */
   label?: ReactNode;

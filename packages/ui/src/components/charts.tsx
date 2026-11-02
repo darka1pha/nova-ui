@@ -44,9 +44,11 @@ export interface ChartSeries<T> {
 interface BaseChartProps<T> extends Omit<HTMLAttributes<HTMLElement>, "title"> {
   /** Accessible name for the chart and its table, e.g. "Monthly TEU by terminal". */
   label: string;
+  /** One object per x value, e.g. `{ month: "Jan", revenue: 4200 }`. */
   data: T[];
   /** Field of each row used for the category / x axis. */
   index: keyof T & string;
+  /** The keys of `data` to plot, each with a label and an optional color. */
   series: ChartSeries<T>[];
   /** Plot height in px (axes included). */
   height?: number;
@@ -540,12 +542,15 @@ export interface DonutChartDatum {
 
 export interface DonutChartProps extends Omit<HTMLAttributes<HTMLElement>, "title"> {
   label: string;
+  /** Slices: `{ label, value, color? }`. */
   data: DonutChartDatum[];
   /** Diameter in px. */
   size?: number;
+  /** Formats values in the legend, tooltip and data table. */
   formatValue?: (value: number) => string;
   /** Text under the total in the center (defaults to "Total"). */
   centerLabel?: string;
+  /** Show a button that swaps the chart for its data table. */
   tableToggle?: boolean;
   labels?: BaseChartProps<unknown>["labels"];
 }

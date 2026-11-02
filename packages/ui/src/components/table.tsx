@@ -27,6 +27,7 @@ import { Skeleton } from "./skeleton.tsx";
 export interface TableProps extends HTMLAttributes<HTMLTableElement> {
   /** Tighter rows for data-dense screens. */
   density?: "compact" | "comfortable";
+  /** Shade every other row. */
   striped?: boolean;
   /** Keep the header visible while the container scrolls. */
   stickyHeader?: boolean;
@@ -127,20 +128,27 @@ export interface SortState {
 }
 
 export interface DataTableProps<T> extends Omit<TableProps, "children"> {
+  /** The rows. For server-driven tables, the current page only. */
   data: T[];
+  /** Column definitions: id, header, cell renderer, and optional sortable, align and width. */
   columns: DataTableColumn<T>[];
   /** Stable key per row. */
   getRowId: (row: T) => string;
   /** Controlled sort. Omit for built-in client-side sorting. */
   sort?: SortState | null;
+  /** Called with the new sort, or null when cleared. */
   onSortChange?: (sort: SortState | null) => void;
   /** Enables row selection checkboxes. */
   selectable?: boolean;
+  /** Controlled selected row ids. */
   selectedIds?: string[];
+  /** Called with the selected row ids. */
   onSelectionChange?: (ids: string[]) => void;
+  /** Show skeleton rows instead of data. */
   loading?: boolean;
   /** Shown when `data` is empty and not loading. */
   empty?: ReactNode;
+  /** A caption under the table, which also names it for screen readers. */
   caption?: ReactNode;
   /** Accessible labels (for localization). */
   labels?: {
@@ -162,12 +170,14 @@ export interface DataTableProps<T> extends Omit<TableProps, "children"> {
   searchable?: boolean;
   /** Controlled search text. */
   search?: string;
+  /** Called with the search text as it's typed. */
   onSearchChange?: (search: string) => void;
 
   /** Rows per page. Enables pagination. */
   pageSize?: number;
   /** Controlled page (1-based). */
   page?: number;
+  /** Called with the new page. */
   onPageChange?: (page: number) => void;
   /**
    * Total rows on the server. Pass it with controlled `page` and the current
@@ -179,7 +189,9 @@ export interface DataTableProps<T> extends Omit<TableProps, "children"> {
   columnToggle?: boolean;
   /** Controlled hidden column ids. */
   hiddenColumns?: string[];
+  /** Ids of columns hidden on first render. */
   defaultHiddenColumns?: string[];
+  /** Called with the hidden column ids. */
   onHiddenColumnsChange?: (ids: string[]) => void;
 
   /** Content shown under a row when it is expanded. Adds an expand toggle per row. */

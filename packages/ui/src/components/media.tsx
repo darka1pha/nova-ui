@@ -19,9 +19,11 @@ export interface ImageProps extends ImgHTMLAttributes<HTMLImageElement> {
   alt: string;
   /** Width / height, e.g. 16 / 9. Reserves space so the page doesn't jump. */
   ratio?: number;
+  /** How the image fills its box. */
   fit?: "cover" | "contain";
   /** Shown if the image fails to load. Defaults to an icon and the alt text. */
   fallback?: ReactNode;
+  /** Classes for the wrapper that holds the placeholder and the image. */
   wrapperClassName?: string;
 }
 
@@ -113,11 +115,15 @@ const defaultLabels: LightboxLabels = {
 };
 
 export interface LightboxProps {
+  /** Images with alt text and an optional caption. */
   images: readonly LightboxImage[];
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /** Controlled index of the image shown. */
   index?: number;
+  /** Image shown first when uncontrolled. */
   defaultIndex?: number;
+  /** Called with the new index when people move between images. */
   onIndexChange?: (index: number) => void;
   /** Wrap from the last image to the first. */
   loop?: boolean;
@@ -260,7 +266,9 @@ export function Lightbox({ images, open, onOpenChange, index: indexProp, default
 /* ----------------------------------------------------------- ImageGallery */
 
 export interface ImageGalleryProps extends Pick<LightboxProps, "loop" | "labels"> {
+  /** Images with alt text; `thumbnail` is used in the grid if given. */
   images: readonly (LightboxImage & { thumbnail?: string })[];
+  /** Columns in the grid. */
   columns?: 2 | 3 | 4;
   /** Thumbnail width / height. */
   ratio?: number;

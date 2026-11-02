@@ -132,9 +132,11 @@ export interface GaugeProps extends Omit<HTMLAttributes<HTMLDivElement>, "childr
   tone?: GaugeTone;
   /** Diameter in px. */
   size?: number;
+  /** Arc width in px. */
   thickness?: number;
   /** Text under the value, e.g. "CPU". */
   label?: ReactNode;
+  /** Formats the value in the middle. Defaults to a rounded percentage. */
   formatValue?: (value: number) => string;
   /** Required: what the gauge measures, e.g. "CPU usage". */
   "aria-label": string;

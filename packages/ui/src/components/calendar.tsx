@@ -88,6 +88,7 @@ export interface CalendarProps extends Omit<HTMLAttributes<HTMLDivElement>, "onC
   defaultMonth?: Date;
   min?: Date;
   max?: Date;
+  /** Return true to make a day unselectable, e.g. weekends or holidays. */
   isDateDisabled?: (date: Date) => boolean;
   /** BCP 47 locale for month/weekday names and the first day of the week. */
   locale?: string;
@@ -427,6 +428,7 @@ export interface DatePickerProps extends Omit<CalendarProps, "className" | "defa
   format?: Intl.DateTimeFormatOptions;
   /** Show a button that clears the date. */
   clearable?: boolean;
+  /** Called when the clear button empties the field. */
   onClear?: () => void;
   size?: "sm" | "md" | "lg";
   className?: string;
@@ -605,7 +607,9 @@ export interface DateRangePickerProps extends Omit<RangeCalendarProps, "classNam
    * This month and Last month; pass your own, or `false` to hide them.
    */
   presets?: DateRangePreset[] | false;
+  /** Show a button that empties the range. */
   clearable?: boolean;
+  /** Called when the clear button empties the range. */
   onClear?: () => void;
   size?: "sm" | "md" | "lg";
   className?: string;
@@ -617,6 +621,7 @@ export interface DateRangePickerProps extends Omit<RangeCalendarProps, "classNam
   required?: boolean;
   /** Submits the range with native forms as `${name}Start` and `${name}End` (YYYY-MM-DD). */
   name?: string;
+  /** Called when focus leaves the field and its popover. */
   onBlur?: () => void;
   labels?: RangeCalendarProps["labels"] & { presets?: string; clear?: string };
 }

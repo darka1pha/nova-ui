@@ -2,6 +2,7 @@ import { forwardRef, type HTMLAttributes } from "react";
 import { cn } from "../utils/cn.ts";
 
 export interface SkeletonProps extends HTMLAttributes<HTMLDivElement> {
+  /** `text` matches a line of text, `circle` an avatar, `rect` anything else. */
   shape?: "rect" | "text" | "circle";
 }
 

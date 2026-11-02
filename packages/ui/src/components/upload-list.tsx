@@ -75,6 +75,7 @@ const iconFor = (type = "") =>
             : File;
 
 export interface FileUploadListProps {
+  /** Files and their state: progress, done, or error with a retry. */
   items: readonly UploadItem[];
   /** Shown while uploading or queued. Without it, no cancel button. */
   onCancel?: (id: string) => void;

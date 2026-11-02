@@ -29,6 +29,7 @@ const cardVariants = cva("relative flex flex-col overflow-hidden rounded-(--nv-c
       neomorphic:
         "border-0 bg-(--nv-neo-bg) shadow-(--nv-shadow-neomorph)",
     },
+    /** Lift and highlight on hover, for cards that are links or buttons. */
     interactive: {
       true: `cursor-pointer hover:translate-y-(--nv-hover-lift) hover:shadow-lg hover:border-border-strong active:translate-y-0 active:scale-(--nv-press-scale) ${transition} has-[:focus-visible]:translate-y-(--nv-hover-lift) has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus-ring motion-reduce:hover:translate-y-0`,
       false: "",
@@ -118,6 +119,7 @@ const avatarVariants = cva("relative inline-flex shrink-0 select-none items-cent
       lg: "size-12 text-md",
       xl: "size-16 text-lg",
     },
+    /** Round for people, square for teams and organizations. */
     shape: { circle: "rounded-full", square: "rounded-md" },
   },
   defaultVariants: { size: "md", shape: "circle" },
@@ -148,6 +150,7 @@ const initialsOf = (name: string) =>
     .join("");
 
 export interface AvatarProps extends ComponentPropsWithoutRef<typeof AvatarPrimitive.Root>, VariantProps<typeof avatarVariants> {
+  /** Image URL. Falls back to initials from `name` while loading or on error. */
   src?: string;
   /** Person or entity name: used for alt text, initials and the fallback color. */
   name: string;

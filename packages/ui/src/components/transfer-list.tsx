@@ -46,11 +46,13 @@ const defaultLabels: TransferListLabels = {
 };
 
 export interface TransferListProps {
+  /** Every item, on either side: `{ value, label, disabled? }`. */
   items: readonly TransferItem[];
   /** Values on the right ("selected") side, in order. */
   value?: string[];
   defaultValue?: string[];
   onValueChange?: (value: string[]) => void;
+  /** Add a filter field above each list. */
   searchable?: boolean;
   labels?: Partial<TransferListLabels>;
   /** Height of each list. */
