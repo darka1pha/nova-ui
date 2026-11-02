@@ -91,6 +91,12 @@ export { CurrencyInput, PhoneInput, phoneCountries, formatPhoneNumber, parsePhon
 export { SegmentedControl, SegmentedControlItem, type SegmentedControlProps, type SegmentedControlItemProps } from "./components/segmented.tsx";
 export { InlineEdit, type InlineEditProps } from "./components/inline-edit.tsx";
 export { SortableList, type SortableListProps, type SortableItemState, type SortableMessages } from "./components/sortable.tsx";
+export { MultiSelect, type MultiSelectProps, type MultiSelectLabels } from "./components/multi-select.tsx";
+export { DateTimePicker, type DateTimePickerProps, type DateTimePickerLabels } from "./components/date-time.tsx";
+export { SignaturePad, type SignaturePadProps, type SignaturePadApi, type SignaturePadLabels } from "./components/signature-pad.tsx";
+export { KanbanBoard, type KanbanBoardProps, type KanbanColumn, type KanbanMove, type KanbanItemState, type KanbanMessages } from "./components/kanban.tsx";
+export { Masonry, type MasonryProps, type MasonryColumns } from "./components/masonry.tsx";
+export { InfiniteScroll, type InfiniteScrollProps, type InfiniteScrollLabels } from "./components/infinite-scroll.tsx";
 // Data display
 export { DescriptionList, DescriptionItem, type DescriptionListProps, type DescriptionItemProps } from "./components/description-list.tsx";
 export { RelativeTime, formatRelativeTime, type RelativeTimeProps, type RelativeTimeInput } from "./components/relative-time.tsx";

@@ -74,7 +74,9 @@ const subscribe = (l: () => void) => {
   return () => listeners.delete(l);
 };
 const getSnapshot = () => toasts;
-const getServerSnapshot = (): ToastRecord[] => [];
+// One shared empty list: React requires the server snapshot to be the same value on every call.
+const noToasts: ToastRecord[] = [];
+const getServerSnapshot = () => noToasts;
 
 const icons: Record<ToastVariant, ReactNode> = {
   default: null,
