@@ -4,6 +4,7 @@ import { AlertTriangle, CheckCircle2, Info, X, XCircle } from "lucide-react";
 import { Toast as ToastPrimitive } from "radix-ui";
 import { useSyncExternalStore, type ReactNode } from "react";
 import { cn } from "../utils/cn.ts";
+import { useOptionalTheme } from "../theme/theme-provider.tsx";
 import { usePortalContainer } from "./portal.tsx";
 import { focusRing } from "./shared.ts";
 import { createPortal } from "react-dom";
@@ -31,10 +32,19 @@ let toasts: ToastRecord[] = [];
 const listeners = new Set<() => void>();
 const emit = () => listeners.forEach((l) => l());
 let counter = 0;
+/** At most this many toasts are open at once; the oldest make way for new ones. */
+const MAX_OPEN = 5;
 
-function update(id: string, patch: Partial<ToastRecord>) {
-  toasts = toasts.map((t) => (t.id === id ? { ...t, ...patch } : t));
+/** Closes toasts, then drops them once their exit animation has played (unless reopened). */
+function close(shouldClose: (t: ToastRecord) => boolean) {
+  const ids = new Set(toasts.filter((t) => t.open && shouldClose(t)).map((t) => t.id));
+  if (ids.size === 0) return;
+  toasts = toasts.map((t) => (ids.has(t.id) ? { ...t, open: false } : t));
   emit();
+  setTimeout(() => {
+    toasts = toasts.filter((t) => !ids.has(t.id) || t.open);
+    emit();
+  }, 400);
 }
 
 /**
@@ -45,18 +55,19 @@ export function toast(options: ToastOptions | string, rest: Omit<ToastOptions, "
   const opts = typeof options === "string" ? { ...rest, title: options } : options;
   const id = opts.id ?? `nv-toast-${++counter}`;
   const existing = toasts.some((t) => t.id === id);
-  toasts = existing ? toasts.map((t) => (t.id === id ? { ...t, ...opts, id, open: true } : t)) : [...toasts, { ...opts, id, open: true }].slice(-5);
+  toasts = existing ? toasts.map((t) => (t.id === id ? { ...t, ...opts, id, open: true } : t)) : [...toasts, { ...opts, id, open: true }];
   emit();
+  // Count only open toasts: closing ones are still animating out and must not
+  // push a long-lived (e.g. `duration: Infinity`) toast off the stack.
+  const overflow = new Set(toasts.filter((t) => t.open).slice(0, -MAX_OPEN).map((t) => t.id));
+  close((t) => overflow.has(t.id));
   return id;
 }
 toast.success = (title: ReactNode, rest: Omit<ToastOptions, "title" | "variant"> = {}) => toast({ ...rest, title, variant: "success" });
 toast.error = (title: ReactNode, rest: Omit<ToastOptions, "title" | "variant"> = {}) => toast({ ...rest, title, variant: "danger" });
 toast.warning = (title: ReactNode, rest: Omit<ToastOptions, "title" | "variant"> = {}) => toast({ ...rest, title, variant: "warning" });
 toast.info = (title: ReactNode, rest: Omit<ToastOptions, "title" | "variant"> = {}) => toast({ ...rest, title, variant: "info" });
-toast.dismiss = (id?: string) => {
-  toasts = toasts.map((t) => (id === undefined || t.id === id ? { ...t, open: false } : t));
-  emit();
-};
+toast.dismiss = (id?: string) => close((t) => id === undefined || t.id === id);
 
 const subscribe = (l: () => void) => {
   listeners.add(l);
@@ -110,7 +121,9 @@ const positions: Record<NonNullable<ToasterProps["position"]>, string> = {
 export function Toaster({ position = "bottom-end", label = "Notifications ({hotkey})", closeLabel = "Dismiss notification" }: ToasterProps) {
   const items = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const container = usePortalContainer();
-  const swipe = position.endsWith("start") ? "left" : position.endsWith("center") ? (position.startsWith("top") ? "up" : "down") : "right";
+  // "start" and "end" are logical: in RTL the start edge is on the right.
+  const rtl = useOptionalTheme()?.dir === "rtl";
+  const swipe = position.endsWith("center") ? (position.startsWith("top") ? "up" : "down") : position.endsWith("start") !== rtl ? "left" : "right";
 
   const viewport = (
     <ToastPrimitive.Viewport
@@ -130,11 +143,7 @@ export function Toaster({ position = "bottom-end", label = "Notifications ({hotk
             duration={t.duration ?? 5000}
             type={variant === "danger" ? "foreground" : "background"}
             onOpenChange={(open) => {
-              update(t.id, { open });
-              if (!open) setTimeout(() => {
-                toasts = toasts.filter((x) => x.id !== t.id || x.open);
-                emit();
-              }, 400);
+              if (!open) close((x) => x.id === t.id);
             }}
             className={cn(
               "group/toast relative flex w-full items-start gap-3 overflow-hidden rounded-lg border border-border bg-surface-raised p-4 ps-5 text-foreground shadow-lg",

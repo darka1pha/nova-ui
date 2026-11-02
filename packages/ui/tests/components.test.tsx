@@ -464,6 +464,17 @@ describe("Feedback", () => {
     toast.dismiss();
   });
 
+  it("dismissed toasts don't push an open one off the stack", async () => {
+    wrap(<Toaster />);
+    toast("Pinned", { duration: Infinity });
+    for (let i = 1; i <= 5; i++) toast.dismiss(toast(`Brief ${i}`));
+    toast("Newest");
+    // Counting the 5 closing toasts, "Newest" used to evict "Pinned".
+    expect(await screen.findByText("Pinned")).toBeInTheDocument();
+    expect(screen.getByText("Newest")).toBeInTheDocument();
+    toast.dismiss();
+  });
+
   it("Avatar falls back to initials and AvatarGroup counts overflow", () => {
     wrap(
       <AvatarGroup max={2}>

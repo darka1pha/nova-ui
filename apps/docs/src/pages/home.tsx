@@ -28,7 +28,7 @@ import {
   toast,
 } from "@darkalpha/nova-ui";
 import { ArrowRight, Palette, Sparkles, Accessibility, Layers, Gauge, Languages } from "lucide-react";
-import { CodeBlock } from "../docs/kit.tsx";
+import { CodeBlock, releaseLabel } from "../docs/kit.tsx";
 
 function MiniPreview({ theme }: { theme: string }) {
   return (
@@ -73,7 +73,7 @@ export function HomePage() {
         <div className="relative mx-auto grid max-w-6xl gap-12 px-4 py-16 sm:px-8 lg:grid-cols-[1.1fr_1fr] lg:py-24">
           <div className="flex flex-col items-start gap-6">
             <Badge variant="primary" dot>
-              Design system for React · v0.1
+              Design system for React · {releaseLabel}
             </Badge>
             <Heading level={1} size="display">
               Interfaces that feel <span className="bg-(image:--nv-gradient-vivid) bg-clip-text text-transparent">alive</span>.

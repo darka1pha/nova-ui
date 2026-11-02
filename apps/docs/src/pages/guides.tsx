@@ -367,7 +367,7 @@ export function MigrationPage() {
       </Section>
       <Section title="0.x → 1.0 (planned)">
         <Alert variant="info" title="Pre-1.0">
-          0.x minors may contain small breaking changes, always called out in the changelog. Pin a minor range (<code>~0.1.0</code>) until 1.0.
+          0.x minors may contain small breaking changes, always called out in the changelog. Pin a minor range (<code>~{__NOVA_VERSION__.replace(/\.\d+$/, ".0")}</code>) until 1.0.
         </Alert>
       </Section>
     </Page>

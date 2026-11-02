@@ -1,6 +1,7 @@
 import {
   Badge,
   Button,
+  EmptyState,
   LoadingState,
   IconButton,
   Select,
@@ -21,20 +22,21 @@ import {
   useTheme,
   type ModePreference,
 } from "@darkalpha/nova-ui";
-import { GitPullRequest, Languages, Menu, Monitor, Moon, Sun } from "lucide-react";
+import { GitPullRequest, Languages, Menu, Monitor, Moon, SearchX, Sun } from "lucide-react";
 import { Suspense, useEffect, useState, type ReactNode } from "react";
-import { useRoute } from "./docs/kit.tsx";
+import { releaseLabel, useRoute } from "./docs/kit.tsx";
 import { pages, nav } from "./pages/index.tsx";
 
 function Logo() {
   return (
-    <a href="#/home" className="flex items-center gap-2.5 rounded-md focus-visible:outline-2 focus-visible:outline-focus-ring">
-      <span aria-hidden className="relative size-8 overflow-hidden rounded-[10px] bg-(image:--nv-gradient-vivid) shadow-md">
+    <a href="#/home" className="flex shrink-0 items-center gap-2.5 rounded-md focus-visible:outline-2 focus-visible:outline-focus-ring">
+      <span aria-hidden className="relative size-8 shrink-0 overflow-hidden rounded-[10px] bg-(image:--nv-gradient-vivid) shadow-md">
         <span className="absolute inset-[5px] rotate-45 rounded-[5px] border-2 border-white/80" />
       </span>
-      <span className="font-display text-lg font-extrabold tracking-(--nv-tracking-tight) text-foreground">Nova UI</span>
-      <Badge size="sm" variant="neutral" appearance="outline">
-        v0.1
+      <span className="whitespace-nowrap font-display text-lg font-extrabold tracking-(--nv-tracking-tight) text-foreground">Nova UI</span>
+      {/* Dropped on phones, where the header has no room for it. */}
+      <Badge size="sm" variant="neutral" appearance="outline" className="max-sm:hidden">
+        {releaseLabel}
       </Badge>
     </a>
   );
@@ -99,20 +101,30 @@ function Shell({ theme, setTheme, dir, setDir, children }: { theme: string; setT
   const [menuOpen, setMenuOpen] = useState(false);
   useEffect(() => {
     window.scrollTo({ top: 0 });
+    // A distinct title per page, for tabs, history and screen readers (WCAG 2.4.2).
+    const label = route === "home" ? undefined : (nav.flatMap((g) => g.items).find((i) => i.id === route)?.label ?? "Page not found");
+    document.title = label ? `${label} · Nova UI` : "Nova UI";
   }, [route]);
 
   return (
     <div className="flex min-h-dvh flex-col">
-      <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:start-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-surface focus:px-4 focus:py-2 focus:shadow-lg">
+      {/* Focus <main> directly: following "#main" would change the hash, which is the router. */}
+      <a
+        href="#main"
+        onClick={(e) => {
+          e.preventDefault();
+          document.getElementById("main")?.focus();
+        }}
+        className="sr-only focus:not-sr-only focus:fixed focus:start-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-surface focus:px-4 focus:py-2 focus:shadow-lg">
         Skip to content
       </a>
       <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur-md">
-        <div className="mx-auto flex h-16 max-w-[90rem] items-center gap-3 px-4 sm:px-6">
+        <div className="mx-auto flex h-16 max-w-[90rem] items-center gap-2 px-4 sm:gap-3 sm:px-6">
           <IconButton aria-label="Open navigation" className="lg:hidden" onClick={() => setMenuOpen(true)}>
             <Menu />
           </IconButton>
           <Logo />
-          <div className="ms-auto flex items-center gap-2">
+          <div className="ms-auto flex items-center gap-1 sm:gap-2">
             <Select value={theme} onValueChange={setTheme}>
               <SelectTrigger size="sm" aria-label="Theme preset" className="hidden w-36 sm:flex">
                 <SelectValue />
@@ -144,7 +156,7 @@ function Shell({ theme, setTheme, dir, setDir, children }: { theme: string; setT
         <aside className="sticky top-16 hidden h-[calc(100dvh-4rem)] w-64 shrink-0 overflow-y-auto border-e border-border px-3 py-6 lg:block">
           <NavList current={route} />
         </aside>
-        <main id="main" className="min-w-0 flex-1">
+        <main id="main" tabIndex={-1} className="min-w-0 flex-1 outline-none">
           {children}
         </main>
       </div>
@@ -160,17 +172,33 @@ function Shell({ theme, setTheme, dir, setDir, children }: { theme: string; setT
   );
 }
 
+function NotFound() {
+  return (
+    <EmptyState
+      icon={<SearchX />}
+      title="Page not found"
+      description="There's no page at this address. It may have moved, or the link has a typo."
+      actions={
+        <Button asChild>
+          <a href="#/home">Back to the overview</a>
+        </Button>
+      }
+      className="py-24"
+    />
+  );
+}
+
 export function App() {
   const [theme, setTheme] = useState("vibrant");
   const [dir, setDir] = useState<"ltr" | "rtl">("ltr");
   const route = useRoute();
-  const Current = pages[route] ?? pages.home;
+  const Current = pages[route];
 
   return (
     <ThemeProvider theme={theme} dir={dir} storageKey="nova-docs-mode" defaultMode="system">
       <Shell theme={theme} setTheme={setTheme} dir={dir} setDir={setDir}>
         <Suspense fallback={<LoadingState title="Loading page…" className="py-24" />}>
-          <Current />
+          {Current ? <Current /> : <NotFound />}
         </Suspense>
       </Shell>
       <Toaster />

@@ -2,6 +2,9 @@ import { Badge, Card, cn, Heading, IconButton, Text, Tooltip } from "@darkalpha/
 import { Check, Copy } from "lucide-react";
 import { useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
 
+/** "0.2.0" → "v0.2": the release line the docs describe. */
+export const releaseLabel = `v${__NOVA_VERSION__.split(".").slice(0, 2).join(".")}`;
+
 /** "primary" → "Primary". */
 export const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 

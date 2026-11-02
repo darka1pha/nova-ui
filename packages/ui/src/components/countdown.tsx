@@ -21,7 +21,7 @@ export function splitDuration(ms: number): Record<Unit, number> {
   return out;
 }
 
-export interface CountdownProps extends Omit<HTMLAttributes<HTMLDivElement>, "children"> {
+export interface CountdownProps extends Omit<HTMLAttributes<HTMLSpanElement>, "children"> {
   /** The moment it counts down to. */
   to: Date | string | number;
   /** Called once when it reaches zero. */
@@ -39,8 +39,9 @@ export interface CountdownProps extends Omit<HTMLAttributes<HTMLDivElement>, "ch
  * Time left until a moment, ticking every second (or minute without seconds).
  * Unit labels come from Intl, so they're localized. It's a `role="timer"`
  * whose accessible name updates once a minute, so screen readers aren't flooded.
+ * Renders a `<span>`, so it can sit inside a sentence ("Sale ends in …").
  */
-export const Countdown = forwardRef<HTMLDivElement, CountdownProps>(function Countdown(
+export const Countdown = forwardRef<HTMLSpanElement, CountdownProps>(function Countdown(
   { to, onComplete, variant = "blocks", showSeconds = true, completed, locale: localeProp, className, ...props },
   ref,
 ) {
@@ -88,7 +89,7 @@ export const Countdown = forwardRef<HTMLDivElement, CountdownProps>(function Cou
   const spoken = new Intl.ListFormat(locale, { type: "unit", style: "long" }).format(spokenUnits.map((u) => format.full(u, parts[u])));
 
   return (
-    <div
+    <span
       ref={ref}
       role="timer"
       aria-label={done && typeof completed === "string" ? completed : spoken}
@@ -113,7 +114,7 @@ export const Countdown = forwardRef<HTMLDivElement, CountdownProps>(function Cou
           </span>
         ))
       )}
-    </div>
+    </span>
   );
 });
 

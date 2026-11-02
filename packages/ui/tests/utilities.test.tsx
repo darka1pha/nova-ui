@@ -110,6 +110,8 @@ describe("Countdown", () => {
       const onComplete = vi.fn();
       wrap(<Countdown to="2026-10-29T10:01:02Z" locale="en" onComplete={onComplete} completed="Started!" />);
       const timer = screen.getByRole("timer");
+      // Inline, so it can sit inside a sentence without invalid <p><div> nesting.
+      expect(timer.tagName).toBe("SPAN");
       expect(timer).toHaveAccessibleName("0 hours, 1 minute");
       expect(timer).toHaveTextContent("01minute02seconds");
       // Ticks land just after each second boundary.
