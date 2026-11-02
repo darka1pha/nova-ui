@@ -40,9 +40,8 @@ Status as of 2026-11-02, after a full project check at `0.2.0`.
    finger. Add the `y` translate for those positions and a Playwright test with a touch drag.
 3. **Add a React 18 CI job.** The peer range includes 18.2+, but only 19 is tested. A matrix
    job that installs `react@18` / `react-dom@18` and runs `pnpm test` is enough.
-4. **Repository name.** The packages point at `github.com/darka1pha/Kaleido`. Rename the GitHub
-   repository to match Nova UI (GitHub redirects the old URL), then update `homepage`,
-   `repository` and `bugs` in both `package.json` files.
+4. ~~**Repository name.**~~ Done: the repository is now `github.com/darka1pha/nova-ui` (the old
+   `Kaleido` URL redirects), and both `package.json` files point at it.
 
 ## P1: catch this class of bug automatically
 
