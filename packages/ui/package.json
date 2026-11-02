@@ -4,14 +4,14 @@
   "description": "Colorful, accessible, themeable React components for the Nova UI design system.",
   "license": "MIT",
   "author": "DarkAlpha",
-  "homepage": "https://github.com/darka1pha/Kaleido#readme",
+  "homepage": "https://github.com/darka1pha/nova-ui#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/darka1pha/Kaleido.git",
+    "url": "git+https://github.com/darka1pha/nova-ui.git",
     "directory": "packages/ui"
   },
   "bugs": {
-    "url": "https://github.com/darka1pha/Kaleido/issues"
+    "url": "https://github.com/darka1pha/nova-ui/issues"
   },
   "keywords": [
     "react",
