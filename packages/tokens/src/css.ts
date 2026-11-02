@@ -55,6 +55,7 @@ export function themeVariables(theme: ResolvedTheme): Record<string, string> {
   for (const [size, value] of Object.entries(SHADOWS[theme.shadow])) vars[p(`shadow-${size}`)] = value;
   for (const [key, value] of Object.entries(scales.motionStyles[theme.motion])) vars[p(key)] = value;
   vars[p("surface-style")] = theme.surface;
+  for (const [name, value] of Object.entries(theme.gradients ?? {})) if (value) vars[p(`gradient-${name}`)] = value;
   return vars;
 }
 

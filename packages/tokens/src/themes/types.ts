@@ -26,6 +26,17 @@ export interface ThemeFonts {
 
 export type SemanticOverrides = Partial<Record<SemanticColorName, string>>;
 
+/** Decorative gradient tokens, emitted as `--nv-gradient-<name>`. */
+export type GradientName = "brand" | "vivid" | "subtle" | "conic" | "mesh" | "glow";
+
+/**
+ * Hand-made gradients that replace the ones derived from the theme's colors.
+ * Values are CSS `<image>`s; use `light-dark()` in color stops to differ by mode.
+ * `brand` and `vivid` sit behind `primary-on-solid` text, so every stop must keep
+ * that text readable.
+ */
+export type ThemeGradients = Partial<Record<GradientName, string>>;
+
 export interface ThemeDefinition {
   /** Unique id used for registration and `data-nv-theme`. */
   id: string;
@@ -44,6 +55,8 @@ export interface ThemeDefinition {
   preferredMode?: ColorMode;
   /** Per-mode semantic overrides, applied after automatic derivation. */
   overrides?: Partial<Record<ColorMode, SemanticOverrides>>;
+  /** Custom decorative gradients. Omitted ones are derived from the theme's colors. */
+  gradients?: ThemeGradients;
 }
 
 /** The colors a consumer can pass to rebrand any theme. */
@@ -73,6 +86,8 @@ export interface ResolvedTheme {
   motion: MotionStyle;
   fonts: Required<ThemeFonts>;
   preferredMode: ColorMode | undefined;
+  /** The theme's hand-made gradients (empty when derived, or when rebranded). */
+  gradients: ThemeGradients;
   adjustments: ContrastAdjustment[];
   warnings: string[];
 }

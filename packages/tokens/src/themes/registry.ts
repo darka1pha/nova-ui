@@ -12,7 +12,7 @@ const registry = new Map<string, ThemeDefinition>(Object.values(presets).map((t)
 export function createTheme(
   definition: Partial<Omit<ThemeDefinition, "colors">> & { id: string; colors?: Partial<ThemeDefinition["colors"]>; extends?: PresetName | ThemeDefinition },
 ): ThemeDefinition {
-  const { extends: base = defaultTheme, colors, overrides, fonts, ...rest } = definition;
+  const { extends: base = defaultTheme, colors, overrides, fonts, gradients, ...rest } = definition;
   const parent = typeof base === "string" ? presets[base] : base;
   return {
     ...parent,
@@ -20,6 +20,7 @@ export function createTheme(
     label: rest.label ?? definition.id,
     colors: { ...parent.colors, ...colors },
     fonts: { ...parent.fonts, ...fonts },
+    gradients: { ...parent.gradients, ...gradients },
     overrides: {
       light: { ...parent.overrides?.light, ...overrides?.light },
       dark: { ...parent.overrides?.dark, ...overrides?.dark },

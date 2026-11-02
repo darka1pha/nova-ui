@@ -1,0 +1,838 @@
+import { forwardRef, type CSSProperties, type HTMLAttributes, type ImgHTMLAttributes, type ReactNode, type SVGProps } from "react";
+import { cn } from "../utils/cn.ts";
+import { ANCHOR_ENGRAVED, ANCHOR_RATIO, ANCHOR_SOLID, ANCHOR_VIEWBOX, KMS_OUTLINE, KMS_RATIO, KMS_SOLID, KMS_VIEWBOX, WORDMARK, WORDMARK_RATIO, WORDMARK_VIEWBOX } from "./kaveh-artwork.ts";
+
+/*
+ * Kaveh Port & Marine Services (KMS) brand components, drawn from the heritage
+ * logo: the engraved anchor (a thin inline runs inside every part, a double ring,
+ * a stepped stock with a small drop, a large drop on the shank, a keel point and
+ * arrowhead flukes), the orange outlined KMS monogram, the KAVEH wordmark with its
+ * open "A", the "Since 1948" line and the periwinkle tagline band.
+ *
+ * Inlines and outlines are cut out with masks rather than painted white, so every
+ * piece sits on any background without a halo.
+ */
+
+export const kavehBrandColors = {
+  navy: "#164a96",
+  deepNavy: "#0b1f3f",
+  orange: "#f37021",
+  rust: "#c2500f",
+  flare: "#ff8a3d",
+  periwinkle: "#8fa6dc",
+  mist: "#e9effa",
+} as const;
+const k = kavehBrandColors;
+
+/**
+ * - `auto`: navy parts use the theme's secondary text color. Under the Kaveh
+ *   presets that is exactly KMS navy in light mode and a light navy in dark.
+ * - `brand`: fixed KMS navy and Kaveh orange, for light backgrounds.
+ * - `reversed`: white and Flare orange, for navy or photographic backgrounds.
+ * - `on-orange`: Deep Harbour navy, for Kaveh orange backgrounds.
+ * - `mono`: one color, `currentColor`, for stamps and engraving.
+ */
+export type KavehLogoTone = "auto" | "brand" | "reversed" | "on-orange" | "mono";
+
+interface ToneSet {
+  /** Anchor, wordmark, tagline. */
+  navy: string;
+  /** KMS monogram, "Since 1948". */
+  orange: string;
+  /** The small drop under the stock. */
+  drop: string;
+  /** The tagline band. */
+  band: string;
+}
+
+const tones: Record<KavehLogoTone, ToneSet> = {
+  auto: {
+    navy: `var(--nv-color-secondary-text, ${k.navy})`,
+    orange: k.orange,
+    drop: k.periwinkle,
+    band: `linear-gradient(90deg, color-mix(in srgb, ${k.periwinkle} 85%, transparent), color-mix(in srgb, ${k.periwinkle} 12%, transparent))`,
+  },
+  brand: { navy: k.navy, orange: k.orange, drop: k.periwinkle, band: `linear-gradient(90deg, ${k.periwinkle}, ${k.mist} 80%, transparent)` },
+  reversed: { navy: "#ffffff", orange: k.flare, drop: "#a9bee3", band: "linear-gradient(90deg, rgb(255 255 255 / 0.28), rgb(255 255 255 / 0.04))" },
+  "on-orange": { navy: k.deepNavy, orange: k.deepNavy, drop: "#ffffff", band: "linear-gradient(90deg, rgb(11 31 63 / 0.22), rgb(11 31 63 / 0.02))" },
+  mono: { navy: "currentColor", orange: "currentColor", drop: "currentColor", band: "linear-gradient(90deg, color-mix(in srgb, currentColor 18%, transparent), transparent)" },
+};
+
+
+/** A water drop whose tip is at (cx, top), `h` tall. */
+const drop = (cx: number, top: number, h: number) => {
+  const r = h * 0.31;
+  const y = top + h - r;
+  return `M${cx} ${top}C${cx} ${top} ${cx - r} ${top + h * 0.48} ${cx - r} ${y}a${r} ${r} 0 0 0 ${2 * r} 0C${cx + r} ${top + h * 0.48} ${cx} ${top} ${cx} ${top}Z`;
+};
+
+/* The anchor, KMS and KAVEH are the traced heritage artwork, not redrawings (see kaveh-artwork.ts). */
+const ANCHOR = { viewBox: ANCHOR_VIEWBOX, ratio: ANCHOR_RATIO };
+
+/** `engraved` keeps the heritage inline; `solid` drops it for small sizes and flat print. */
+export type KavehMarkVariant = "engraved" | "solid";
+
+/** One even-odd path: the inline, ring hole and drop outlines are true holes, so the anchor sits on any background. */
+function AnchorArt({ tone, variant = "engraved" }: { tone: KavehLogoTone; variant?: KavehMarkVariant }) {
+  return <path d={variant === "engraved" ? ANCHOR_ENGRAVED : ANCHOR_SOLID} fill={tones[tone].navy} fillRule="evenodd" />;
+}
+
+const KMS = { viewBox: KMS_VIEWBOX, ratio: KMS_RATIO };
+
+/** `outline` is the heritage lettering (outline, white inline, letters); `solid` is the letters alone. */
+export type KmsMonogramVariant = "outline" | "solid";
+
+function KmsArt({ tone, variant = "outline" }: { tone: KavehLogoTone; variant?: KmsMonogramVariant }) {
+  return <path d={variant === "outline" ? KMS_OUTLINE : KMS_SOLID} fill={tones[tone].orange} fillRule="evenodd" />;
+}
+
+/* ---------------------------------------------------------------- Shared */
+
+interface BrandSvgProps extends Omit<SVGProps<SVGSVGElement>, "ref"> {
+  /** Height in px or CSS. */
+  size?: number | string;
+  tone?: KavehLogoTone;
+  /** Accessible name. Pass `""` when a visible name sits next to it. */
+  title?: string;
+}
+
+function svgSize(size: number | string, ratio: number) {
+  return typeof size === "number" ? { height: size, width: Math.round(size * ratio * 100) / 100 } : { height: size, style: { width: "auto" } };
+}
+
+function svgA11y(title: string | undefined) {
+  return title ? { role: "img" as const } : { "aria-hidden": true as const };
+}
+
+/* ------------------------------------------------------------ KavehMark */
+
+export interface KavehMarkProps extends BrandSvgProps {
+  /** Height in px or CSS. The anchor is about 6:5 wide. Defaults to 40. */
+  size?: number | string;
+  /** "auto" (theme secondary text), "brand" (KMS navy), "reversed" (white), "on-orange" or "mono". Defaults to "auto". */
+  tone?: KavehLogoTone;
+  /** Accessible name. Defaults to "Kaveh". Pass `""` when a visible name sits next to it. */
+  title?: string;
+  /** `engraved` (heritage inline) or `solid` (flat, for 24px and below). Defaults to "engraved". */
+  variant?: KavehMarkVariant;
+}
+
+/** The engraved KMS anchor on its own: app icons, avatars, favicons, tight spaces. */
+export const KavehMark = forwardRef<SVGSVGElement, KavehMarkProps>(function KavehMark({ size = 40, tone = "auto", title = "Kaveh", variant = "engraved", className, style, ...props }, ref) {
+  const dims = svgSize(size, ANCHOR.ratio);
+  return (
+    <svg
+      ref={ref}
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox={ANCHOR.viewBox}
+      height={dims.height}
+      width={"width" in dims ? dims.width : undefined}
+      focusable="false"
+      className={cn("nv-kaveh-mark shrink-0", className)}
+      style={{ ...("style" in dims ? dims.style : null), ...style }}
+      {...svgA11y(title)}
+      {...props}
+    >
+      {title ? <title>{title}</title> : null}
+      <AnchorArt tone={tone} variant={variant} />
+    </svg>
+  );
+});
+
+/* ----------------------------------------------------------- KmsMonogram */
+
+export interface KmsMonogramProps extends BrandSvgProps {
+  /** Height in px or CSS. The monogram is 16:5. Defaults to 24. */
+  size?: number | string;
+  /** Orange in `auto` and `brand`, Flare on navy, navy on orange. Defaults to "auto". */
+  tone?: KavehLogoTone;
+  /** Defaults to "KMS". */
+  title?: string;
+  /** `outline` (heritage hollow letters) or `solid`. Defaults to "outline". */
+  variant?: KmsMonogramVariant;
+}
+
+/** The orange outlined KMS monogram from the heritage logo. */
+export const KmsMonogram = forwardRef<SVGSVGElement, KmsMonogramProps>(function KmsMonogram({ size = 24, tone = "auto", title = "KMS", variant = "outline", className, style, ...props }, ref) {
+  const dims = svgSize(size, KMS.ratio);
+  return (
+    <svg
+      ref={ref}
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox={KMS.viewBox}
+      height={dims.height}
+      width={"width" in dims ? dims.width : undefined}
+      focusable="false"
+      className={cn("nv-kms-monogram shrink-0", className)}
+      style={{ ...("style" in dims ? dims.style : null), ...style }}
+      {...svgA11y(title)}
+      {...props}
+    >
+      {title ? <title>{title}</title> : null}
+      <KmsArt tone={tone} variant={variant} />
+    </svg>
+  );
+});
+
+/* --------------------------------------------------------- KavehWordmark */
+
+export interface KavehWordmarkProps extends BrandSvgProps {
+  /** Height in px or CSS, including the H's foot. The wordmark is about 4.2:1. Defaults to 24. */
+  size?: number | string;
+  tone?: KavehLogoTone;
+  /** Defaults to "Kaveh". */
+  title?: string;
+}
+
+/** The KAVEH wordmark from the logo artwork (not typeset), so it matches the logo on every device. */
+export const KavehWordmark = forwardRef<SVGSVGElement, KavehWordmarkProps>(function KavehWordmark({ size = 24, tone = "auto", title = "Kaveh", className, style, ...props }, ref) {
+  const dims = svgSize(size, WORDMARK_RATIO);
+  return (
+    <svg
+      ref={ref}
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox={WORDMARK_VIEWBOX}
+      height={dims.height}
+      width={"width" in dims ? dims.width : undefined}
+      focusable="false"
+      className={cn("nv-kaveh-wordmark shrink-0", className)}
+      style={{ ...("style" in dims ? dims.style : null), ...style }}
+      {...svgA11y(title)}
+      {...props}
+    >
+      {title ? <title>{title}</title> : null}
+      <path d={WORDMARK} fill={tones[tone].navy} fillRule="evenodd" />
+    </svg>
+  );
+});
+
+/* ----------------------------------------------------------- KavehEmblem */
+
+export interface KavehEmblemProps extends BrandSvgProps {
+  /** Height in px or CSS. Defaults to 96. */
+  size?: number | string;
+  tone?: KavehLogoTone;
+  /** Defaults to "Kaveh Marine Services (KMS)". */
+  title?: string;
+}
+
+const EMBLEM_RATIO = 460 / 420;
+
+/** The heritage emblem: the anchor over the KMS monogram, as in the left of the logo. */
+export const KavehEmblem = forwardRef<SVGSVGElement, KavehEmblemProps>(function KavehEmblem(
+  { size = 96, tone = "auto", title = "Kaveh Marine Services (KMS)", className, style, ...props },
+  ref,
+) {
+  const dims = svgSize(size, EMBLEM_RATIO);
+  return (
+    <svg
+      ref={ref}
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 460 420"
+      height={dims.height}
+      width={"width" in dims ? dims.width : undefined}
+      focusable="false"
+      className={cn("nv-kaveh-emblem shrink-0", className)}
+      style={{ ...("style" in dims ? dims.style : null), ...style }}
+      {...svgA11y(title)}
+      {...props}
+    >
+      {title ? <title>{title}</title> : null}
+      <svg x="60" y="0" width="340" height="283" viewBox={ANCHOR.viewBox}>
+        <AnchorArt tone={tone} />
+      </svg>
+      <svg x="0" y="300" width="460" height="114" viewBox={KMS.viewBox} preserveAspectRatio="xMidYMid meet">
+        <KmsArt tone={tone} />
+      </svg>
+    </svg>
+  );
+});
+
+/* ------------------------------------------------------------- KavehLogo */
+
+export interface KavehLogoProps extends HTMLAttributes<HTMLDivElement> {
+  /**
+   * - `horizontal`: anchor beside the wordmark. Everyday use.
+   * - `stacked`: anchor above, centered. Square spaces.
+   * - `heritage`: the full logo: emblem, "Since 1948 · تأسیس ۱۳۲۷", the tagline band and the bilingual name.
+   * - `persian`: Persian-first, right to left: the anchor, «کاوه» and the Persian tagline. Domestic use.
+   * - `badge`: the anchor in a filled tile beside the wordmark. App bars and sign-in screens.
+   */
+  layout?: "horizontal" | "stacked" | "heritage" | "persian" | "badge";
+  /** "auto" (theme secondary text), "brand" (KMS navy), "reversed" (white), "on-orange" or "mono". Defaults to "auto". */
+  tone?: KavehLogoTone;
+  /** Anchor height in px; everything else scales with it. Defaults to 40. */
+  size?: number;
+  /** Show "Port & Marine Services". Always on in `heritage`. */
+  tagline?: boolean;
+  /** Show the Persian name, خدمات بندری و دریایی کاوه. Always on in `heritage`. */
+  persian?: boolean;
+}
+
+/** The Kaveh logo lockups, from the compact anchor-and-wordmark to the full heritage logo. */
+export const KavehLogo = forwardRef<HTMLDivElement, KavehLogoProps>(function KavehLogo(
+  { layout = "horizontal", tone = "auto", size = 40, tagline = true, persian = false, className, style, ...props },
+  ref,
+) {
+  const c = tones[tone];
+  const shared = { ref, role: "img" as const, "aria-label": "Kaveh Port & Marine Services", ...props };
+
+  if (layout === "heritage") {
+    const h = size * 2.4;
+    return (
+      <div {...shared} className={cn("nv-kaveh-logo inline-flex shrink-0 items-center", className)} style={{ gap: h * 0.14, ...style }}>
+        <KavehEmblem size={h} tone={tone} title="" />
+        <div className="flex min-w-0 flex-col" style={{ gap: h * 0.045 }}>
+          <div className="flex items-baseline justify-between font-bold leading-none" style={{ color: c.orange, gap: h * 0.12 }}>
+            <span className="font-display" style={{ fontSize: h * 0.2, letterSpacing: "0.32em" }}>
+              Since 1948
+            </span>
+            <span lang="fa" dir="rtl" style={{ fontSize: h * 0.2 }}>
+              تأسیس ۱۳۲۷
+            </span>
+          </div>
+          <div className="flex items-center font-display leading-none" style={{ background: c.band, borderInlineStart: `${Math.max(1.5, h * 0.012)}px solid ${c.drop}`, color: c.navy, padding: `${h * 0.03}px ${h * 0.05}px`, fontSize: h * 0.155, letterSpacing: "0.3em" }}>
+            Port and Marine Services
+          </div>
+          <div className="flex items-center" style={{ gap: h * 0.12, marginTop: h * 0.03 }}>
+            <KavehWordmark size={h * 0.3} tone={tone} title="" />
+            <span lang="fa" dir="rtl" className="font-black leading-tight" style={{ fontSize: h * 0.19, color: c.navy }}>
+              خدمات بندری و دریایی کاوه
+            </span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (layout === "persian") {
+    return (
+      <div {...shared} dir="rtl" lang="fa" className={cn("nv-kaveh-logo inline-flex shrink-0 items-center", className)} style={{ gap: size * 0.3, ...style }}>
+        <KavehMark size={size} tone={tone} title="" />
+        <div className="flex flex-col items-start">
+          <span className="font-black leading-none" style={{ fontSize: size * 0.95, color: c.navy }}>
+            کاوه
+          </span>
+          {tagline ? (
+            <span className="font-bold leading-normal" style={{ fontSize: Math.max(10, size * 0.27), marginTop: size * 0.1, color: c.orange }}>
+              خدمات بندری و دریایی · تأسیس ۱۳۲۷
+            </span>
+          ) : null}
+        </div>
+      </div>
+    );
+  }
+
+  if (layout === "badge") {
+    const tile = tone === "reversed" ? k.orange : k.deepNavy;
+    const markTone: KavehLogoTone = tone === "reversed" ? "on-orange" : tone === "mono" ? "mono" : "reversed";
+    return (
+      <div {...shared} className={cn("nv-kaveh-logo inline-flex shrink-0 items-center", className)} style={{ gap: size * 0.3, ...style }}>
+        <span className="grid shrink-0 place-items-center" style={{ width: size * 1.25, height: size * 1.25, borderRadius: size * 0.3, background: tone === "mono" ? "transparent" : tile, boxShadow: tone === "mono" ? "inset 0 0 0 2px currentColor" : undefined }}>
+          <KavehMark size={size * 0.62} tone={markTone} title="" variant="solid" />
+        </span>
+        <div className="flex flex-col items-start">
+          <KavehWordmark size={size * 0.46} tone={tone} title="" />
+          {tagline ? (
+            <span className="font-semibold uppercase leading-none" style={{ fontSize: Math.max(8, size * 0.18), letterSpacing: "0.22em", marginTop: size * 0.16, color: c.orange }}>
+              Since 1948
+            </span>
+          ) : null}
+        </div>
+      </div>
+    );
+  }
+
+  const stacked = layout === "stacked";
+  return (
+    <div
+      {...shared}
+      className={cn("nv-kaveh-logo inline-flex shrink-0 items-center", stacked ? "flex-col text-center" : "flex-row text-start", className)}
+      style={{ gap: size * 0.3, ...style }}
+    >
+      <KavehMark size={size} tone={tone} title="" />
+      <div className="flex flex-col" style={{ alignItems: stacked ? "center" : "flex-start" }}>
+        <KavehWordmark size={size * 0.52} tone={tone} title="" />
+        {tagline ? (
+          <span className="flex items-center font-semibold uppercase leading-none" style={{ fontSize: Math.max(8, size * 0.19), letterSpacing: "0.24em", marginTop: size * 0.18, gap: size * 0.15, color: c.navy }}>
+            <span aria-hidden className="inline-block" style={{ width: size * 0.38, height: Math.max(1.5, size * 0.05), background: c.orange }} />
+            Port &amp; Marine Services
+          </span>
+        ) : null}
+        {persian ? (
+          <span lang="fa" dir="rtl" className="font-bold leading-normal" style={{ fontSize: Math.max(10, size * 0.28), marginTop: size * 0.08, color: c.orange }}>
+            خدمات بندری و دریایی کاوه
+          </span>
+        ) : null}
+      </div>
+    </div>
+  );
+});
+
+/* ------------------------------------------------------------- KavehSeal */
+
+export type KavehSealVariant = "navy" | "orange" | "light" | "outline";
+
+const sealStyles: Record<KavehSealVariant, { bg: string; ring: string; inner: string; art: KavehLogoTone; text: string }> = {
+  navy: { bg: k.deepNavy, ring: k.orange, inner: "rgb(255 255 255 / 0.22)", art: "reversed", text: k.flare },
+  orange: { bg: k.orange, ring: k.deepNavy, inner: "rgb(11 31 63 / 0.3)", art: "on-orange", text: k.deepNavy },
+  light: { bg: "#ffffff", ring: k.orange, inner: "rgb(22 74 150 / 0.25)", art: "brand", text: k.rust },
+  outline: { bg: "none", ring: "currentColor", inner: "currentColor", art: "mono", text: "currentColor" },
+};
+
+export interface KavehSealProps extends Omit<BrandSvgProps, "tone"> {
+  /** Diameter in px or CSS. Defaults to 96. */
+  size?: number | string;
+  /** `navy` (default), `orange`, `light` (white with an orange ring) or `outline` (one color, for stamps). */
+  variant?: KavehSealVariant;
+  /** Show the Persian founding year (تأسیس ۱۳۲۷) instead of "SINCE 1948". */
+  persian?: boolean;
+  /** Defaults to "KMS, since 1948". */
+  title?: string;
+}
+
+/** A round heritage seal: the anchor, KMS and the founding year on Deep Harbour navy with an orange ring. */
+export const KavehSeal = forwardRef<SVGSVGElement, KavehSealProps>(function KavehSeal({ size = 96, variant = "navy", persian = false, title = "KMS, since 1948", className, ...props }, ref) {
+  const v = sealStyles[variant];
+  return (
+    <svg ref={ref} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width={size} height={size} focusable="false" className={cn("nv-kaveh-seal shrink-0", className)} {...svgA11y(title)} {...props}>
+      {title ? <title>{title}</title> : null}
+      <circle cx="100" cy="100" r="98" fill={v.bg} stroke={variant === "outline" || variant === "light" ? v.ring : "none"} strokeWidth={variant === "outline" ? 3 : 1.5} />
+      <circle cx="100" cy="100" r="90" fill="none" stroke={v.ring} strokeWidth="4" />
+      <circle cx="100" cy="100" r="80" fill="none" stroke={v.inner} strokeWidth="1.5" strokeDasharray={variant === "outline" ? "2 4" : undefined} />
+      <svg x="48" y="34" width="104" height="86" viewBox={ANCHOR.viewBox}>
+        <AnchorArt tone={v.art} />
+      </svg>
+      <svg x="60" y="126" width="80" height="20" viewBox={KMS.viewBox}>
+        <KmsArt tone={v.art} />
+      </svg>
+      {persian ? (
+        <text x="100" y="170" textAnchor="middle" fill={v.text} fontFamily="Vazirmatn, Tahoma, sans-serif" fontWeight="700" fontSize="15" direction="rtl">
+          تأسیس ۱۳۲۷
+        </text>
+      ) : (
+        <text x="100" y="168" textAnchor="middle" fill={v.text} fontFamily="var(--nv-font-display, sans-serif)" fontWeight="700" fontSize="12" letterSpacing="3">
+          SINCE 1948
+        </text>
+      )}
+    </svg>
+  );
+});
+
+/* -------------------------------------------------------- HorizonDivider */
+
+/**
+ * - `solid`: the 3px orange rule.
+ * - `double`: the orange rule over a thin navy line, for footers and certificates.
+ * - `fade`: orange fading toward the inline end, for headings.
+ * - `dashed`: an orange dash, for timelines and maps.
+ */
+export type HorizonDividerVariant = "solid" | "double" | "fade" | "dashed";
+
+const horizonLine: Record<HorizonDividerVariant, string> = {
+  solid: k.orange,
+  double: k.orange,
+  fade: `linear-gradient(90deg, ${k.orange}, color-mix(in srgb, ${k.orange} 0%, transparent))`,
+  dashed: `repeating-linear-gradient(90deg, ${k.orange} 0 14px, transparent 14px 22px)`,
+};
+
+export interface HorizonDividerProps extends HTMLAttributes<HTMLDivElement> {
+  variant?: HorizonDividerVariant;
+  /** Line length as CSS. Defaults to the full width. */
+  length?: string;
+  /** Add the orange drop above the line's start (or centre when `align="center"`). */
+  drop?: boolean;
+  /** Add a navy wave under the line. */
+  wave?: boolean;
+  align?: "start" | "center";
+  /** A label set in the middle of the line, e.g. "Since 1948". */
+  children?: ReactNode;
+}
+
+function HorizonLine({ variant, className }: { variant: HorizonDividerVariant; className?: string }) {
+  return (
+    <span aria-hidden className={cn("flex w-full flex-col gap-[3px]", className)}>
+      <span className={cn("block h-[3px] w-full rounded-full", variant === "fade" && "rtl:-scale-x-100")} style={{ background: horizonLine[variant] }} />
+      {variant === "double" ? <span className="block h-px w-full bg-secondary-text opacity-60" /> : null}
+    </span>
+  );
+}
+
+/**
+ * The Horizon: the brand's orange rule, from the anchor's stock. Separates a
+ * headline from its body, an image from its caption. Decorative.
+ */
+export const HorizonDivider = forwardRef<HTMLDivElement, HorizonDividerProps>(function HorizonDivider(
+  { variant = "solid", length = "100%", drop: withDrop = false, wave = false, align = "start", className, style, children, ...props },
+  ref,
+) {
+  if (children) {
+    return (
+      <div ref={ref} role="separator" className={cn("nv-horizon flex items-center gap-3", className)} style={{ width: length, ...style }} {...props}>
+        <HorizonLine variant={variant === "fade" ? "solid" : variant} className="flex-1" />
+        <span className="shrink-0 font-display text-xs font-semibold uppercase tracking-[0.24em] text-secondary-text [&:lang(fa)]:tracking-normal">{children}</span>
+        <HorizonLine variant={variant === "fade" ? "solid" : variant} className="flex-1" />
+      </div>
+    );
+  }
+  return (
+    <div ref={ref} role="presentation" className={cn("nv-horizon flex flex-col gap-1", align === "center" ? "items-center" : "items-start", className)} style={{ width: length, ...style }} {...props}>
+      {withDrop ? (
+        <svg aria-hidden viewBox="0 0 20 26" width="12" height="16" className={cn(align === "start" && "ms-3")}>
+          <path d={drop(10, 1, 24)} fill={k.orange} />
+        </svg>
+      ) : null}
+      <HorizonLine variant={variant} />
+      {wave ? (
+        <svg aria-hidden viewBox="0 0 120 8" preserveAspectRatio="none" className="h-2 w-full text-secondary-text">
+          <path d="M0 4q7.5-4 15 0t15 0 15 0 15 0 15 0 15 0 15 0 15 0" fill="none" stroke="currentColor" strokeOpacity=".5" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
+        </svg>
+      ) : null}
+    </div>
+  );
+});
+
+/* -------------------------------------------------------------- Tideband */
+
+/**
+ * - `light`: the heritage periwinkle band, for white or sand backgrounds.
+ * - `dark`: a translucent mist band, for navy backgrounds.
+ * - `orange`: a warm band with navy text, for campaign labels.
+ * - `solid`: a KMS blue strip with white text and an orange edge, for table and section headers.
+ */
+export type TidebandTone = "light" | "dark" | "orange" | "solid";
+
+const tidebandTone: Record<TidebandTone, string> = {
+  light: "border-[#8fa6dc] bg-[linear-gradient(90deg,#b9c8ec,#e9effa_70%,transparent)] text-[#164a96] rtl:bg-[linear-gradient(270deg,#b9c8ec,#e9effa_70%,transparent)]",
+  dark: "border-[#a9bee3] bg-[linear-gradient(90deg,rgb(169_190_227/0.35),transparent)] text-white rtl:bg-[linear-gradient(270deg,rgb(169_190_227/0.35),transparent)]",
+  orange: "border-[#f37021] bg-[linear-gradient(90deg,#ffc9a3,#ffefe3_70%,transparent)] text-[#0b1f3f] rtl:bg-[linear-gradient(270deg,#ffc9a3,#ffefe3_70%,transparent)]",
+  solid: "border-[#f37021] bg-[#164a96] text-white",
+};
+
+const tidebandSize = {
+  sm: "px-2.5 py-1 text-[11px]",
+  md: "px-3 py-1.5 text-sm",
+  lg: "px-4 py-2.5 text-base",
+} as const;
+
+export interface TidebandProps extends HTMLAttributes<HTMLDivElement> {
+  tone?: TidebandTone;
+  size?: keyof typeof tidebandSize;
+  /** Optional element at the band's end, e.g. a link or a Persian translation. */
+  end?: ReactNode;
+}
+
+/**
+ * The periwinkle tagline band from the heritage logo: a strip that fades toward
+ * the inline end, for section labels, captions and data strips.
+ */
+export const Tideband = forwardRef<HTMLDivElement, TidebandProps>(function Tideband({ tone = "light", size = "md", end, className, children, ...props }, ref) {
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        // Persian must never be letter-spaced: it breaks the joins.
+        "nv-tideband flex items-center justify-between gap-4 border-s-[3px] font-display uppercase tracking-[0.24em] rtl:tracking-normal [&:lang(fa)]:tracking-normal",
+        tidebandSize[size],
+        tidebandTone[tone],
+        className,
+      )}
+      {...props}
+    >
+      <span className="min-w-0">{children}</span>
+      {end ? <span className="shrink-0 normal-case tracking-normal">{end}</span> : null}
+    </div>
+  );
+});
+
+/* --------------------------------------------------------- PortholeFrame */
+
+/**
+ * - `navy`: a Deep Harbour rim with orange bolts.
+ * - `orange`: a Kaveh orange rim with navy bolts.
+ * - `double`: a navy rim inside an orange ring.
+ * - `thin`: a slim navy line, no bolts, for dense lists.
+ */
+export type PortholeVariant = "navy" | "orange" | "double" | "thin";
+
+const portholeStyle: Record<PortholeVariant, { rim: string; bolt: string | null; ring?: string }> = {
+  navy: { rim: k.deepNavy, bolt: k.orange },
+  orange: { rim: k.orange, bolt: k.deepNavy },
+  double: { rim: k.deepNavy, bolt: k.orange, ring: k.orange },
+  thin: { rim: k.navy, bolt: null },
+};
+
+export interface PortholeFrameProps extends ImgHTMLAttributes<HTMLImageElement> {
+  variant?: PortholeVariant;
+  /** Diameter in px. Defaults to 160. */
+  size?: number;
+  /** Overrides the rim color. */
+  ringColor?: string;
+  /** A small element pinned to the bottom end of the frame, e.g. a status dot or a flag. */
+  badge?: ReactNode;
+}
+
+/** A circular image frame from the anchor's ring: a rim with four bolts. For portraits and vessel photos. */
+export const PortholeFrame = forwardRef<HTMLImageElement, PortholeFrameProps>(function PortholeFrame(
+  { variant = "navy", size = 160, ringColor, badge, className, style, alt, ...props },
+  ref,
+) {
+  const v = portholeStyle[variant];
+  const rim = variant === "thin" ? Math.max(2, size * 0.02) : Math.max(4, size * 0.055);
+  const bolt = Math.max(3, size * 0.035);
+  const wrap: CSSProperties = {
+    width: size,
+    height: size,
+    padding: rim,
+    background: ringColor ?? v.rim,
+    boxShadow: v.ring ? `0 0 0 ${Math.max(2, size * 0.025)}px ${v.ring}` : undefined,
+  };
+  return (
+    <span className={cn("nv-porthole relative inline-block shrink-0 rounded-full", variant !== "thin" && "shadow-md", className)} style={{ ...wrap, ...style }}>
+      <img ref={ref} alt={alt} className={cn("block size-full rounded-full object-cover", variant !== "thin" && "ring-2 ring-white/25")} {...props} />
+      {v.bolt
+        ? [0, 90, 180, 270].map((deg) => (
+            <span
+              key={deg}
+              aria-hidden
+              className="absolute rounded-full"
+              style={{ width: bolt, height: bolt, background: v.bolt ?? undefined, left: "50%", top: "50%", transform: `translate(-50%, -50%) rotate(${deg}deg) translateY(${-(size / 2 - rim / 2)}px)` }}
+            />
+          ))
+        : null}
+      {badge ? (
+        <span className="absolute bottom-[6%] end-[6%] translate-x-1/4 translate-y-1/4 rtl:-translate-x-1/4">{badge}</span>
+      ) : null}
+    </span>
+  );
+});
+
+/* ----------------------------------------------------- VesselStatusBadge */
+
+export type VesselStatus = "underway" | "berthing" | "berthed" | "anchored" | "delayed";
+
+const vesselStatus: Record<VesselStatus, { label: string; soft: string; solid: string; outline: string; dot: string }> = {
+  underway: { label: "Underway", soft: "bg-info-subtle text-info-on-subtle", solid: "bg-info-solid text-info-on-solid", outline: "border-info-border text-info-text", dot: "bg-info-solid" },
+  berthing: { label: "Berthing", soft: "bg-primary-solid text-primary-on-solid", solid: "bg-primary-solid text-primary-on-solid", outline: "border-primary-solid text-foreground", dot: "bg-primary-solid" },
+  berthed: { label: "Berthed", soft: "bg-success-subtle text-success-on-subtle", solid: "bg-success-solid text-success-on-solid", outline: "border-success-border text-success-text", dot: "bg-success-solid" },
+  anchored: { label: "At anchor", soft: "bg-neutral-subtle text-neutral-on-subtle", solid: "bg-neutral-solid text-neutral-on-solid", outline: "border-border-strong text-foreground-secondary", dot: "bg-neutral-solid" },
+  delayed: { label: "Delayed", soft: "bg-danger-subtle text-danger-on-subtle", solid: "bg-danger-solid text-danger-on-solid", outline: "border-danger-border text-danger-text", dot: "bg-danger-solid" },
+};
+
+export interface VesselStatusBadgeProps extends HTMLAttributes<HTMLSpanElement> {
+  status: VesselStatus;
+  /** `soft` (default), `solid`, `outline`, or `dot` (a colored dot before plain text). */
+  variant?: "soft" | "solid" | "outline" | "dot";
+  /** Replaces the default English label, e.g. for translation. */
+  label?: ReactNode;
+}
+
+/** A vessel's status as a badge. The status is always written out, never color alone. */
+export const VesselStatusBadge = forwardRef<HTMLSpanElement, VesselStatusBadgeProps>(function VesselStatusBadge({ status, variant = "soft", label, className, ...props }, ref) {
+  const s = vesselStatus[status];
+  const text = label ?? s.label;
+  if (variant === "dot") {
+    return (
+      <span ref={ref} className={cn("nv-vessel-status inline-flex items-center gap-1.5 text-xs font-semibold text-foreground-secondary", className)} {...props}>
+        <span aria-hidden className={cn("size-2 rounded-full", s.dot, status === "underway" && "motion-safe:animate-pulse")} />
+        {text}
+      </span>
+    );
+  }
+  return (
+    <span
+      ref={ref}
+      className={cn("nv-vessel-status inline-flex shrink-0 items-center rounded-full px-2.5 py-0.5 text-xs font-semibold", variant === "outline" ? cn("border", s.outline) : s[variant], className)}
+      {...props}
+    >
+      {text}
+    </span>
+  );
+});
+
+/* ---------------------------------------------------------- KavehAppIcon */
+
+/**
+ * - `navy`: white anchor on Deep Harbour. The default app icon.
+ * - `orange`: navy anchor on Kaveh orange.
+ * - `light`: navy anchor on white with a hairline border.
+ * - `sunset`: white anchor on the navy-to-orange harbour sunset.
+ */
+export type KavehAppIconVariant = "navy" | "orange" | "light" | "sunset";
+
+const appIconStyle: Record<KavehAppIconVariant, { background: string; tone: KavehLogoTone; border?: string }> = {
+  navy: { background: k.deepNavy, tone: "reversed" },
+  orange: { background: k.orange, tone: "on-orange" },
+  light: { background: "#ffffff", tone: "brand", border: "inset 0 0 0 1px rgb(11 31 63 / 0.12)" },
+  sunset: { background: `linear-gradient(160deg, ${k.deepNavy} 0%, ${k.navy} 55%, ${k.orange} 130%)`, tone: "reversed" },
+};
+
+export interface KavehAppIconProps extends HTMLAttributes<HTMLSpanElement> {
+  variant?: KavehAppIconVariant;
+  /** Edge length in px. Defaults to 64. */
+  size?: number;
+  /** `rounded` (iOS-style squircle), `square` or `circle`. */
+  shape?: "rounded" | "square" | "circle";
+  /** Accessible name. Defaults to "Kaveh". Pass `""` when decorative. */
+  label?: string;
+}
+
+/** The anchor in a tile: app icons, favicons, avatars and home-screen shortcuts. */
+export const KavehAppIcon = forwardRef<HTMLSpanElement, KavehAppIconProps>(function KavehAppIcon(
+  { variant = "navy", size = 64, shape = "rounded", label = "Kaveh", className, style, ...props },
+  ref,
+) {
+  const v = appIconStyle[variant];
+  const radius = shape === "circle" ? "50%" : shape === "rounded" ? size * 0.23 : size * 0.06;
+  return (
+    <span
+      ref={ref}
+      role={label ? "img" : undefined}
+      aria-label={label || undefined}
+      aria-hidden={label ? undefined : true}
+      className={cn("nv-kaveh-app-icon inline-grid shrink-0 place-items-center", className)}
+      style={{ width: size, height: size, borderRadius: radius, background: v.background, boxShadow: v.border, ...style }}
+      {...props}
+    >
+      <KavehMark size={size * 0.48} tone={v.tone} title="" variant={size < 40 ? "solid" : "engraved"} />
+    </span>
+  );
+});
+
+/* ------------------------------------------------------------- BrandStat */
+
+export interface BrandStatProps extends HTMLAttributes<HTMLDivElement> {
+  /** The number, e.g. "78" or "24/7". */
+  value: ReactNode;
+  /** What it counts. */
+  label: ReactNode;
+  /** The label in Persian, shown under the English one. */
+  labelFa?: ReactNode;
+  /** `navy` (navy figure on the page), `orange` (orange figure), `inverse` (on a KMS blue panel) or `tile` (inside a tinted card). */
+  variant?: "navy" | "orange" | "inverse" | "tile";
+  align?: "start" | "center";
+}
+
+/** A headline figure with the Horizon under it: years of service, ports, vessels handled. */
+export const BrandStat = forwardRef<HTMLDivElement, BrandStatProps>(function BrandStat({ value, label, labelFa, variant = "navy", align = "start", className, ...props }, ref) {
+  const inverse = variant === "inverse";
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        "nv-brand-stat flex flex-col gap-2",
+        align === "center" ? "items-center text-center" : "items-start text-start",
+        inverse && "rounded-lg bg-neutral-solid p-5 text-neutral-on-solid",
+        variant === "tile" && "rounded-lg border border-primary-border bg-primary-subtle p-5",
+        className,
+      )}
+      {...props}
+    >
+      <span className={cn("font-display text-4xl font-extrabold leading-none tracking-tight", variant === "orange" ? "text-[light-dark(#c2500f,#ff8a3d)]" : inverse ? "text-white" : "text-secondary-text")}>{value}</span>
+      <HorizonDivider length="2.5rem" align={align} />
+      <span className={cn("text-sm font-medium", inverse ? "text-white/80" : "text-foreground-secondary")}>{label}</span>
+      {labelFa ? (
+        <span lang="fa" dir="rtl" className={cn("text-sm font-bold", inverse ? "text-[#ffd0b0]" : "text-foreground")}>
+          {labelFa}
+        </span>
+      ) : null}
+    </div>
+  );
+});
+
+/* ------------------------------------------------------ BilingualHeading */
+
+const headingSize = {
+  sm: { en: "text-xl", fa: "text-base" },
+  md: { en: "text-3xl", fa: "text-xl" },
+  lg: { en: "text-5xl", fa: "text-3xl" },
+} as const;
+
+export interface BilingualHeadingProps extends Omit<HTMLAttributes<HTMLDivElement>, "title"> {
+  /** The English headline. */
+  title: ReactNode;
+  /** The Persian headline, set right to left under (or, in `split`, beside) the English one. */
+  titleFa?: ReactNode;
+  /** A small label above, e.g. "Port services". */
+  eyebrow?: ReactNode;
+  /** Heading level for the English title. Defaults to 2. */
+  level?: 1 | 2 | 3 | 4;
+  size?: keyof typeof headingSize;
+  /** `stacked` (Persian under English), `split` (English start, Persian end) or `centered`. */
+  variant?: "stacked" | "split" | "centered";
+  /** Draw the Horizon under the heading. Defaults to true. */
+  divider?: boolean;
+}
+
+/** A section heading in English and Persian with the brand's Horizon rule. */
+export const BilingualHeading = forwardRef<HTMLDivElement, BilingualHeadingProps>(function BilingualHeading(
+  { title, titleFa, eyebrow, level = 2, size = "md", variant = "stacked", divider = true, className, ...props },
+  ref,
+) {
+  const H = `h${level}` as const;
+  const sz = headingSize[size];
+  const centered = variant === "centered";
+  const fa = titleFa ? (
+    <p lang="fa" dir="rtl" className={cn("font-black leading-snug text-secondary-text", sz.fa, variant !== "split" && "w-fit")}>
+      {titleFa}
+    </p>
+  ) : null;
+  return (
+    <div ref={ref} className={cn("nv-bilingual-heading flex flex-col gap-2", centered && "items-center text-center", className)} {...props}>
+      {eyebrow ? <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[light-dark(#c2500f,#ff8a3d)]">{eyebrow}</p> : null}
+      {variant === "split" ? (
+        <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
+          <H className={cn("font-display font-bold leading-tight tracking-tight", sz.en)}>{title}</H>
+          {fa}
+        </div>
+      ) : (
+        <>
+          <H className={cn("font-display font-bold leading-tight tracking-tight", sz.en)}>{title}</H>
+          {fa}
+        </>
+      )}
+      {divider ? <HorizonDivider length={variant === "split" ? "100%" : "4rem"} variant={variant === "split" ? "fade" : "solid"} align={centered ? "center" : "start"} className="mt-1" /> : null}
+    </div>
+  );
+});
+
+/* ----------------------------------------------------------- KavehHeader */
+
+export interface KavehHeaderProps extends HTMLAttributes<HTMLElement> {
+  /** `light` (white bar with a navy logo, the default), `navy` (KMS blue bar) or `transparent` (over a hero image). */
+  variant?: "navy" | "light" | "transparent";
+  /** Replaces the default logo. */
+  logo?: ReactNode;
+  /** Navigation links. */
+  nav?: ReactNode;
+  /** Actions at the end, e.g. a language switch and a call to action. */
+  actions?: ReactNode;
+  /** Draw the orange Horizon along the bottom edge. Defaults to true. */
+  horizon?: boolean;
+}
+
+/** An app or site header in the Kaveh style: logo, navigation and actions, with the Horizon along its edge. */
+export const KavehHeader = forwardRef<HTMLElement, KavehHeaderProps>(function KavehHeader(
+  { variant = "light", logo, nav, actions, horizon = true, className, ...props },
+  ref,
+) {
+  const dark = variant !== "light";
+  return (
+    <header
+      ref={ref}
+      className={cn(
+        "nv-kaveh-header relative flex items-center gap-6 px-5 py-3",
+        variant === "navy" && "bg-[#164a96] text-white",
+        variant === "light" && "border-b border-border bg-surface text-foreground",
+        variant === "transparent" && "bg-[linear-gradient(180deg,rgb(8_20_48/0.75),transparent)] text-white",
+        className,
+      )}
+      {...props}
+    >
+      <div className="shrink-0">{logo ?? <KavehLogo size={28} tagline={false} tone={dark ? "reversed" : "auto"} />}</div>
+      {nav ? <nav className={cn("hidden flex-1 items-center gap-5 text-sm font-medium md:flex", dark ? "text-white/80" : "text-foreground-secondary")}>{nav}</nav> : <div className="flex-1" />}
+      {actions ? <div className="flex shrink-0 items-center gap-2">{actions}</div> : null}
+      {horizon && variant !== "transparent" ? <span aria-hidden className="absolute inset-x-0 bottom-0 h-[3px]" style={{ background: k.orange }} /> : null}
+    </header>
+  );
+});

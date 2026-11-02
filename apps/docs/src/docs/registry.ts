@@ -7,7 +7,7 @@ import { lazy, type ComponentType, type LazyExoticComponent } from "react";
  * new component only needs an entry here and an `<Name>Examples` function.
  */
 
-export type CategoryId = "layout" | "actions" | "forms" | "feedback" | "overlays" | "navigation" | "data" | "animation";
+export type CategoryId = "layout" | "actions" | "forms" | "feedback" | "overlays" | "navigation" | "data" | "animation" | "seasonal";
 
 export interface Category {
   id: CategoryId;
@@ -24,6 +24,7 @@ export const categories: Category[] = [
   { id: "navigation", label: "Navigation", lead: "Tabs, accordions, breadcrumbs, pagination, menus and sidebars." },
   { id: "data", label: "Data display", lead: "Cards, avatars, tables, charts and lists for real product screens." },
   { id: "animation", label: "Animation", lead: "Scroll reveals, counting numbers and decorative effects, all reduced-motion aware." },
+  { id: "seasonal", label: "Kaveh brand", lead: "The Kaveh logo and its Yalda and Nowruz presets, with Persian motifs, patterns and ready-made greetings." },
 ];
 
 export interface ComponentEntry {
@@ -48,6 +49,9 @@ const additions: Loader = () => import("../examples/additions.tsx");
 const additionsMore: Loader = () => import("../examples/additions-more.tsx");
 const motion: Loader = () => import("../examples/motion.tsx");
 const workflow: Loader = () => import("../examples/workflow.tsx");
+const seasonal: Loader = () => import("../examples/seasonal.tsx");
+const kaveh: Loader = () => import("../examples/kaveh.tsx");
+const kavehKit: Loader = () => import("../examples/kaveh-kit.tsx");
 
 export const components: ComponentEntry[] = [
   { id: "typography", name: "Typography", summary: "Headings, body text, links, inline code and keyboard keys on the theme's type scale.", category: "layout", parts: ["Heading", "Text", "Link", "Code", "Kbd"], examples: examples(core, "TypographyExamples") },
@@ -148,6 +152,20 @@ export const components: ComponentEntry[] = [
   { id: "animated-number", name: "AnimatedNumber", summary: "Counts smoothly to new values.", category: "animation", parts: ["AnimatedNumber"], examples: examples(motion, "AnimatedNumberExamples"), a11y: ["Screen readers hear only the final number, not every frame."] },
   { id: "marquee", name: "Marquee", summary: "An endless scrolling row, for logos and highlights.", category: "animation", parts: ["Marquee"], examples: examples(motion, "MarqueeExamples"), a11y: ["Pauses on hover and focus, and is static under reduced motion."] },
   { id: "effects", name: "GradientText & effects", summary: "Gradient text, a pointer spotlight and an animated border for featured content.", category: "animation", parts: ["GradientText", "SpotlightCard", "AnimatedBorder"], examples: examples(motion, "EffectsExamples") },
+  { id: "kaveh-logo", name: "Kaveh logo", summary: "The heritage logo redrawn as components: the engraved anchor, KMS monogram, KAVEH wordmark, lockups and seal, in tones for any background.", category: "seasonal", parts: ["KavehLogo", "KavehMark", "KavehEmblem", "KmsMonogram", "KavehWordmark", "KavehAppIcon", "KavehSeal"], examples: examples(kaveh, "KavehLogoExamples"), a11y: ["KavehLogo is one image named \"Kaveh Port & Marine Services\"; KavehMark is named \"Kaveh\" unless you pass title=\"\"."] },
+  { id: "kaveh-elements", name: "Brand elements", summary: "The Horizon rule, the Tideband and the porthole image frame: the graphic devices of the Kaveh brand.", category: "seasonal", parts: ["HorizonDivider", "Tideband", "PortholeFrame"], examples: examples(kaveh, "KavehElementsExamples"), a11y: ["HorizonDivider is presentational; PortholeFrame passes alt to the image."] },
+  { id: "kaveh-layout", name: "Brand layout", summary: "A Kaveh header, bilingual section headings and headline figures, each with the orange Horizon.", category: "seasonal", parts: ["KavehHeader", "BilingualHeading", "BrandStat"], examples: examples(kaveh, "KavehLayoutExamples"), a11y: ["KavehHeader is a banner landmark with a nav landmark inside.", "BilingualHeading marks the Persian line lang=\"fa\" dir=\"rtl\"; pick the heading level that fits your outline."] },
+  { id: "vessel-status", name: "VesselStatusBadge", summary: "A vessel's status as a badge: soft, solid, outline or dot, in English or Persian.", category: "seasonal", parts: ["VesselStatusBadge"], examples: examples(kaveh, "VesselStatusExamples"), a11y: ["The status is always written out, never shown by color alone."] },
+  { id: "kaveh-dashboard", name: "Kaveh dashboard", summary: "The Kaveh kit together: sidebar, page header, KPIs, notice and table in an operations screen.", category: "seasonal", parts: ["KavehSidebar", "KavehPageHeader", "KavehKpiCard"], examples: examples(kavehKit, "KavehDashboardExamples") },
+  { id: "kaveh-cards", name: "Kaveh cards", summary: "Content, service, port, contact and KPI cards in the Kaveh style, with bilingual titles and the Horizon.", category: "seasonal", parts: ["KavehCard", "KavehServiceCard", "KavehPortCard", "KavehContactCard", "KavehKpiCard"], examples: examples(kavehKit, "KavehCardsExamples"), a11y: ["Cards are articles with real headings; a service card with href is a single link.", "KPI changes are written out (\"up\"/\"down\") for screen readers, not shown by color alone."] },
+  { id: "kaveh-sections", name: "Kaveh page sections", summary: "Hero, page header, footer and timeline: the building blocks of Kaveh pages.", category: "seasonal", parts: ["KavehHero", "KavehPageHeader", "KavehFooter", "KavehTimeline"], examples: examples(kavehKit, "KavehSectionsExamples"), a11y: ["KavehPageHeader renders the page h1; KavehHero an h2.", "Each footer column is a named navigation landmark.", "The current milestone carries aria-current=\"step\"."] },
+  { id: "kaveh-navigation", name: "Kaveh navigation", summary: "Sidebar, horizontal nav menu and dropdown menu with the orange active marker and Persian labels.", category: "seasonal", parts: ["KavehSidebar", "KavehNavMenu", "KavehMenu"], examples: examples(kavehKit, "KavehNavigationExamples"), a11y: ["The current page carries aria-current=\"page\".", "Collapsed sidebars keep every label for screen readers and as a tooltip.", "KavehMenu is Nova UI's DropdownMenu: arrow keys, typeahead and focus return."] },
+  { id: "kaveh-data", name: "Kaveh data & status", summary: "Tables with bilingual headers, notices, empty states, loaders and call-to-action links.", category: "seasonal", parts: ["KavehTable", "KavehNotice", "KavehEmptyState", "KavehLoader", "KavehLink"], examples: examples(kavehKit, "KavehDataExamples"), a11y: ["KavehTable is a semantic table; pass caption to name it.", "Warnings are announced as alerts, other notices as status.", "KavehLoader is a polite status with a text label, and stops moving under reduced motion."] },
+  { id: "seasonal-themes", name: "Seasonal themes", summary: "The kaveh-yalda and kaveh-nowruz presets: Kaveh orange and navy dressed for Yalda Night and Nowruz.", category: "seasonal", parts: ["ThemeProvider"], examples: examples(seasonal, "SeasonalThemeExamples") },
+  { id: "seasonal-greeting", name: "SeasonalGreeting", summary: "A ready-made Yalda or Nowruz greeting: backdrop, pattern and motifs with your copy, logo and action.", category: "seasonal", parts: ["SeasonalGreeting", "PersianVerse"], examples: examples(seasonal, "SeasonalGreetingExamples"), a11y: ["Renders a named region; the Persian headline carries lang=\"fa\" and dir=\"rtl\".", "All art is decorative and hidden from screen readers."] },
+  { id: "motifs", name: "Seasonal motifs", summary: "Pomegranate, watermelon, candle and Divan of Hafez for Yalda; the Haft-Seen items and blossoms for Nowruz.", category: "seasonal", parts: ["Pomegranate"], examples: examples(seasonal, "SeasonalMotifExamples"), a11y: ["Decorative by default (aria-hidden); pass title to give a motif an accessible name."] },
+  { id: "haft-seen", name: "HaftSeen", summary: "The seven S items of the Nowruz table, labelled in Persian, English or both.", category: "seasonal", parts: ["HaftSeen"], examples: examples(seasonal, "HaftSeenExamples"), a11y: ["A labelled list; with labels=\"none\" every item is named for screen readers."] },
+  { id: "seasonal-pattern", name: "SeasonalPattern", summary: "Seamless Persian pattern layers: Yalda stars, pomegranate seeds, blossoms, girih and tide.", category: "seasonal", parts: ["SeasonalPattern"], examples: examples(seasonal, "SeasonalPatternExamples"), a11y: ["Purely decorative and hidden from assistive technology."] },
 ];
 
 export const componentById = new Map(components.map((c) => [c.id, c]));
