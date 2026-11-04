@@ -1,5 +1,15 @@
 # @darkalpha/nova-ui
 
+## 0.3.4
+
+### Patch Changes
+
+- New `ModuleCard`: a launcher tile for one module of an app, with a large icon, title, description, a round forward arrow and a corner wave whose hills are seeded by the title. `tone` takes `primary` or a palette hue, `href` or `onClick` make the whole card one link or button, and `badge`, `size`, `disabled` and `wave` cover the rest. It mirrors in right-to-left layouts.
+  
+  The Kaveh anchor and solid KMS lettering now come from the master logo: a deep navy `#04287e` anchor with its heavy outline, white inline, eye and violet drop, and clean K, M and S letters. The `brand` tone uses the master's inks. Brand marks size in whole pixels, and `KavehMark` defaults to `variant="auto"`, which keeps the fine inline only where it renders crisply (engraved from 44px, by screen density from 20px, a plain silhouette below). The outlined KMS steps down the same way, and app icons show KMS from 64px.
+- Updated dependencies
+  - @darkalpha/nova-tokens@0.3.4
+
 ## 0.3.3
 
 ### Patch Changes
