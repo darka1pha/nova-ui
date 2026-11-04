@@ -373,11 +373,11 @@ export const KavehLogo = forwardRef<HTMLDivElement, KavehLogoProps>(function Kav
 
 export type KavehSealVariant = "navy" | "orange" | "light" | "outline";
 
-const sealStyles: Record<KavehSealVariant, { bg: string; ring: string; inner: string; art: KavehLogoTone; text: string }> = {
-  navy: { bg: k.deepNavy, ring: k.orange, inner: "rgb(255 255 255 / 0.22)", art: "reversed", text: k.flare },
-  orange: { bg: k.orange, ring: k.deepNavy, inner: "rgb(11 31 63 / 0.3)", art: "on-orange", text: k.deepNavy },
-  light: { bg: "#ffffff", ring: k.orange, inner: "rgb(41 80 151 / 0.25)", art: "brand", text: k.rust },
-  outline: { bg: "none", ring: "currentColor", inner: "currentColor", art: "mono", text: "currentColor" },
+const sealStyles: Record<KavehSealVariant, { bg: string; ring: string; inner: string; art: KavehLogoTone }> = {
+  navy: { bg: k.deepNavy, ring: k.orange, inner: "rgb(255 255 255 / 0.22)", art: "reversed" },
+  orange: { bg: k.orange, ring: k.deepNavy, inner: "rgb(11 31 63 / 0.3)", art: "on-orange" },
+  light: { bg: "#ffffff", ring: k.orange, inner: "rgb(41 80 151 / 0.25)", art: "brand" },
+  outline: { bg: "none", ring: "currentColor", inner: "currentColor", art: "mono" },
 };
 
 export interface KavehSealProps extends Omit<BrandSvgProps, "tone"> {
@@ -385,14 +385,14 @@ export interface KavehSealProps extends Omit<BrandSvgProps, "tone"> {
   size?: number | string;
   /** `navy` (default), `orange`, `light` (white with an orange ring) or `outline` (one color, for stamps). */
   variant?: KavehSealVariant;
-  /** Show the Persian founding year (تأسیس ۱۳۲۷) instead of "SINCE 1948". */
+  /** @deprecated The seal no longer shows the founding year, so this has no effect. */
   persian?: boolean;
-  /** Defaults to "KMS, since 1948". */
+  /** Defaults to "KMS". */
   title?: string;
 }
 
-/** A round heritage seal: the anchor, KMS and the founding year on Deep Harbour navy with an orange ring. */
-export const KavehSeal = forwardRef<SVGSVGElement, KavehSealProps>(function KavehSeal({ size = 96, variant = "navy", persian = false, title = "KMS, since 1948", className, ...props }, ref) {
+/** A round heritage seal: the anchor over KMS on Deep Harbour navy with an orange ring. */
+export const KavehSeal = forwardRef<SVGSVGElement, KavehSealProps>(function KavehSeal({ size = 96, variant = "navy", persian: _persian, title = "KMS", className, ...props }, ref) {
   const v = sealStyles[variant];
   return (
     <svg ref={ref} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width={size} height={size} focusable="false" className={cn("nv-kaveh-seal shrink-0", className)} {...svgA11y(title)} {...props}>
@@ -400,21 +400,12 @@ export const KavehSeal = forwardRef<SVGSVGElement, KavehSealProps>(function Kave
       <circle cx="100" cy="100" r="98" fill={v.bg} stroke={variant === "outline" || variant === "light" ? v.ring : "none"} strokeWidth={variant === "outline" ? 3 : 1.5} />
       <circle cx="100" cy="100" r="90" fill="none" stroke={v.ring} strokeWidth="4" />
       <circle cx="100" cy="100" r="80" fill="none" stroke={v.inner} strokeWidth="1.5" strokeDasharray={variant === "outline" ? "2 4" : undefined} />
-      <svg x="48" y="34" width="104" height="86" viewBox={ANCHOR.viewBox}>
+      <svg x="44" y="40" width="112" height="93" viewBox={ANCHOR.viewBox}>
         <AnchorArt tone={v.art} />
       </svg>
-      <svg x="60" y="126" width="80" height="20" viewBox={KMS.viewBox}>
+      <svg x="56" y="139" width="88" height="22" viewBox={KMS.viewBox}>
         <KmsArt tone={v.art} />
       </svg>
-      {persian ? (
-        <text x="100" y="170" textAnchor="middle" fill={v.text} fontFamily="Vazirmatn, Tahoma, sans-serif" fontWeight="700" fontSize="15" direction="rtl">
-          تأسیس ۱۳۲۷
-        </text>
-      ) : (
-        <text x="100" y="168" textAnchor="middle" fill={v.text} fontFamily="var(--nv-font-display, sans-serif)" fontWeight="700" fontSize="12" letterSpacing="3">
-          SINCE 1948
-        </text>
-      )}
     </svg>
   );
 });
@@ -653,19 +644,23 @@ export const VesselStatusBadge = forwardRef<HTMLSpanElement, VesselStatusBadgePr
 /* ---------------------------------------------------------- KavehAppIcon */
 
 /**
- * - `navy`: white anchor on Deep Harbour. The default app icon.
- * - `orange`: navy anchor on Kaveh orange.
- * - `light`: navy anchor on white with a hairline border.
- * - `sunset`: white anchor on the navy-to-orange harbour sunset.
+ * - `navy`: white anchor and Flare orange KMS on Deep Harbour. The default app icon.
+ * - `orange`: navy anchor and KMS on Kaveh orange.
+ * - `light`: navy anchor and orange KMS on white with a hairline border.
+ * - `sunset`: white anchor and KMS on the navy-to-orange harbour sunset.
  */
 export type KavehAppIconVariant = "navy" | "orange" | "light" | "sunset";
 
-const appIconStyle: Record<KavehAppIconVariant, { background: string; tone: KavehLogoTone; border?: string }> = {
-  navy: { background: k.deepNavy, tone: "reversed" },
-  orange: { background: k.orange, tone: "on-orange" },
-  light: { background: "#ffffff", tone: "brand", border: "inset 0 0 0 1px rgb(11 31 63 / 0.12)" },
-  sunset: { background: `linear-gradient(160deg, ${k.deepNavy} 0%, ${k.navy} 55%, ${k.orange} 130%)`, tone: "reversed" },
+const appIconStyle: Record<KavehAppIconVariant, { background: string; tone: KavehLogoTone; kms: string; border?: string }> = {
+  navy: { background: k.deepNavy, tone: "reversed", kms: k.flare },
+  orange: { background: k.orange, tone: "on-orange", kms: k.deepNavy },
+  light: { background: "#ffffff", tone: "brand", kms: k.orange, border: "inset 0 0 0 1px rgb(11 31 63 / 0.12)" },
+  // The sunset ends on true Kaveh orange in the corner rather than a navy-orange mix.
+  sunset: { background: `linear-gradient(160deg, ${k.deepNavy} 0%, ${k.navy} 50%, ${k.orange} 100%)`, tone: "reversed", kms: "#ffffff" },
 };
+
+/** Below this edge length the KMS letters close up, so the icon shows the anchor alone. */
+const APP_ICON_KMS_MIN = 40;
 
 export interface KavehAppIconProps extends HTMLAttributes<HTMLSpanElement> {
   variant?: KavehAppIconVariant;
@@ -675,15 +670,18 @@ export interface KavehAppIconProps extends HTMLAttributes<HTMLSpanElement> {
   shape?: "rounded" | "square" | "circle";
   /** Accessible name. Defaults to "Kaveh". Pass `""` when decorative. */
   label?: string;
+  /** Show the KMS monogram under the anchor. Defaults to true; always hidden below 40px, where it can't be read. */
+  monogram?: boolean;
 }
 
-/** The anchor in a tile: app icons, favicons, avatars and home-screen shortcuts. */
+/** The anchor over the KMS monogram in a tile: app icons, favicons, avatars and home-screen shortcuts. */
 export const KavehAppIcon = forwardRef<HTMLSpanElement, KavehAppIconProps>(function KavehAppIcon(
-  { variant = "navy", size = 64, shape = "rounded", label = "Kaveh", className, style, ...props },
+  { variant = "navy", size = 64, shape = "rounded", label = "Kaveh", monogram = true, className, style, ...props },
   ref,
 ) {
   const v = appIconStyle[variant];
   const radius = shape === "circle" ? "50%" : shape === "rounded" ? size * 0.23 : size * 0.06;
+  const showKms = monogram && size >= APP_ICON_KMS_MIN;
   return (
     <span
       ref={ref}
@@ -694,7 +692,14 @@ export const KavehAppIcon = forwardRef<HTMLSpanElement, KavehAppIconProps>(funct
       style={{ width: size, height: size, borderRadius: radius, background: v.background, boxShadow: v.border, ...style }}
       {...props}
     >
-      <KavehMark size={size * 0.48} tone={v.tone} title="" variant={size < 40 ? "solid" : "engraved"} />
+      {showKms ? (
+        <span className="flex flex-col items-center" style={{ gap: size * 0.05 }}>
+          <KavehMark size={size * 0.4} tone={v.tone} title="" variant="engraved" />
+          <KmsMonogram size={size * 0.115} tone="mono" title="" variant={size < 96 ? "solid" : "outline"} style={{ color: v.kms }} />
+        </span>
+      ) : (
+        <KavehMark size={size * 0.48} tone={v.tone} title="" variant={size < 40 ? "solid" : "engraved"} />
+      )}
     </span>
   );
 });

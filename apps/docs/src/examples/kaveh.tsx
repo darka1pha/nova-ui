@@ -125,7 +125,7 @@ export function KavehLogoExamples() {
       </Example>
       <Example
         title="KavehAppIcon"
-        description="The anchor in a tile for app icons, favicons and avatars: navy, orange, light or the harbour sunset, as a rounded square, square or circle."
+        description="The anchor over the KMS monogram in a tile for app icons, favicons and avatars: navy, orange, light or the harbour sunset, as a rounded square, square or circle. Below 40px the KMS letters close up, so the icon shows the anchor alone; pass monogram={false} to drop KMS at any size."
         code={`<KavehAppIcon variant="navy" />
 <KavehAppIcon variant="sunset" shape="circle" />
 <KavehAppIcon variant="orange" size={32} />`}
@@ -145,18 +145,18 @@ export function KavehLogoExamples() {
       </Example>
       <Example
         title="KavehSeal"
-        description="A round heritage seal for stamps, certificates and social avatars, in four colorways. outline is one color (currentColor) for rubber stamps and embossing."
+        description="A round heritage seal, the anchor over KMS, for stamps, certificates and social avatars, in four colorways. outline is one color (currentColor) for rubber stamps and embossing."
         code={`<KavehSeal variant="navy" />
-<KavehSeal variant="orange" persian />
+<KavehSeal variant="orange" />
 <KavehSeal variant="light" />
 <KavehSeal variant="outline" className="text-[#295097]" />`}
       >
         <div className="flex w-full flex-wrap items-center gap-6 rounded-lg bg-white p-6">
           <KavehSeal variant="navy" size={104} />
-          <KavehSeal variant="orange" size={104} persian />
+          <KavehSeal variant="orange" size={104} />
           <KavehSeal variant="light" size={104} />
           <KavehSeal variant="outline" size={104} className="text-[#295097]" />
-          <KavehSeal variant="outline" size={104} persian className="text-[#c44e00]" />
+          <KavehSeal variant="outline" size={104} className="text-[#c44e00]" />
         </div>
       </Example>
     </>

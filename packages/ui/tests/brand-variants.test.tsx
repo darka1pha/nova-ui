@@ -112,6 +112,19 @@ describe("new brand components", () => {
     expect(screen.getByTestId("decorative")).toHaveAttribute("aria-hidden", "true");
   });
 
+  it("shows KMS under the anchor from 40px, and the anchor alone below it", () => {
+    const { container } = render(
+      <>
+        <KavehAppIcon variant="navy" size={64} data-testid="large" />
+        <KavehAppIcon variant="navy" size={32} data-testid="small" />
+        <KavehAppIcon variant="navy" size={64} monogram={false} data-testid="off" />
+      </>,
+    );
+    expect(container.querySelectorAll("[data-testid=large] .nv-kms-monogram")).toHaveLength(1);
+    expect(container.querySelectorAll("[data-testid=small] .nv-kms-monogram")).toHaveLength(0);
+    expect(container.querySelectorAll("[data-testid=off] .nv-kms-monogram")).toHaveLength(0);
+  });
+
   it("shows a figure with its English and Persian labels", () => {
     render(<BrandStat value="78" label="years of service" labelFa="سال خدمت" variant="inverse" />);
     expect(screen.getByText("78")).toBeInTheDocument();

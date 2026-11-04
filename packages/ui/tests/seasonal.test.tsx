@@ -43,6 +43,11 @@ describe("seasonal presets", () => {
       expect(presets[id].overrides?.light?.["primary-text"]).toBe("#295097");
       expect(presets[id].overrides?.light?.["neutral-solid"]).toBe("#295097");
       expect(presets[id].overrides?.dark?.["neutral-solid"]).toBe("#295097");
+      // Hover and press brighten the orange rather than darken it, in both modes.
+      for (const mode of ["light", "dark"] as const) {
+        expect(presets[id].overrides?.[mode]?.["primary-solid-hover"]).toBe("#ff8349");
+        expect(presets[id].overrides?.[mode]?.["primary-solid-active"]).toBe("#ff8f5c");
+      }
     }
   });
 });
@@ -90,11 +95,13 @@ describe("Kaveh logo", () => {
         <KmsMonogram />
         <KavehWordmark />
         <KavehEmblem />
-        <KavehSeal persian />
+        <KavehSeal />
       </>,
     );
-    for (const name of ["KMS", "Kaveh", "Kaveh Marine Services (KMS)", "KMS, since 1948"]) expect(screen.getByRole("img", { name })).toBeInTheDocument();
-    expect(screen.getByText("تأسیس ۱۳۲۷")).toBeInTheDocument();
+    for (const name of ["Kaveh", "Kaveh Marine Services (KMS)"]) expect(screen.getByRole("img", { name })).toBeInTheDocument();
+    // The monogram and the seal are both named "KMS"; the seal no longer carries a founding year.
+    expect(screen.getAllByRole("img", { name: "KMS" })).toHaveLength(2);
+    expect(document.querySelector(".nv-kaveh-seal text")).toBeNull();
   });
 });
 
