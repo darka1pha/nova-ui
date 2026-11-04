@@ -62,7 +62,7 @@ describe("Kaveh logo", () => {
     expect(logo.querySelector("svg")).toHaveAttribute("aria-hidden", "true");
   });
 
-  it("sizes the traced anchor by height and colors it by tone, with true even-odd holes", () => {
+  it("sizes the master-logo anchor by height and colors it by tone, with the white parts cut through a mask", () => {
     const { container } = render(
       <>
         <KavehMark tone="brand" size={44} />
@@ -71,11 +71,15 @@ describe("Kaveh logo", () => {
     );
     const [a, b] = [...container.querySelectorAll("svg")];
     expect(a).toHaveAttribute("height", "44");
-    expect(Number(a!.getAttribute("width"))).toBeCloseTo(55, 0);
-    const [pa, pb] = [a, b].map((svg) => svg!.querySelector("path")!);
-    expect(pa).toHaveAttribute("fill", "#295097");
-    expect(pa).toHaveAttribute("fill-rule", "evenodd");
+    expect(a).toHaveAttribute("width", "55");
+    // The silhouette is the first path outside the mask: filled and outlined in the tone's ink, and masked.
+    const [pa, pb] = [a, b].map((svg) => svg!.querySelector(":scope > path")!);
+    expect(pa).toHaveAttribute("fill", "#04287e");
+    expect(pa).toHaveAttribute("stroke", "#04287e");
+    expect(pa!.getAttribute("mask")).toMatch(/^url\(#nv-kaveh-anchor-/);
     expect(pb).toHaveAttribute("fill", "#ffffff");
+    // Every anchor gets its own mask id.
+    expect(a!.querySelector("mask")!.id).not.toBe(b!.querySelector("mask")!.id);
     render(<KavehMark title="Kaveh anchor" />);
     expect(screen.getByRole("img", { name: "Kaveh anchor" })).toBeInTheDocument();
   });

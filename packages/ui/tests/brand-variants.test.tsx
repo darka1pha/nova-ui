@@ -22,13 +22,55 @@ describe("mark and monogram variants", () => {
   it("drops the anchor's inline in the solid variant", () => {
     const { container } = render(
       <>
-        <KavehMark tone="brand" />
-        <KavehMark tone="brand" variant="solid" />
+        <KavehMark tone="brand" size={64} />
+        <KavehMark tone="brand" size={64} variant="solid" />
       </>,
     );
-    // The solid anchor has the same outline but two fewer subpaths: the inline and the body inside it.
-    const [engraved, solid] = [...container.querySelectorAll("svg")].map((svg) => (svg.querySelector("path")!.getAttribute("d")!.match(/M/g) ?? []).length);
-    expect(engraved! - solid!).toBe(2);
+    // The engraved mask cuts the inline along the silhouette and rings the large drop; the solid one only cuts the eye and small drop.
+    const [engraved, solid] = [...container.querySelectorAll("svg")].map((svg) => svg.querySelectorAll("mask path").length);
+    expect(engraved).toBe(4);
+    expect(solid).toBe(2);
+  });
+
+  it("picks the anchor's detail by size: silhouette, then solid or engraved by screen density, then engraved", () => {
+    const { container } = render(
+      <>
+        <KavehMark size={16} data-testid="glyph" />
+        <KavehMark size={32} data-testid="density" />
+        <KavehMark size={48} data-testid="engraved" />
+        <KavehMark size={16} variant="engraved" data-testid="forced" />
+      </>,
+    );
+    const q = (id: string) => container.querySelector(`[data-testid=${id}]`)!;
+    // Under 20px: a plain silhouette, no mask at all.
+    expect(q("glyph").querySelectorAll("mask")).toHaveLength(0);
+    // 20–44px: engraved on 2x screens, solid on standard ones, switched by CSS.
+    expect(q("density").querySelectorAll("mask")).toHaveLength(2);
+    expect(q("density").querySelector("g.hidden")).not.toBeNull();
+    // From 44px: engraved only.
+    expect(q("engraved").querySelectorAll("mask path")).toHaveLength(4);
+    // An explicit variant always wins.
+    expect(q("forced").querySelectorAll("mask path")).toHaveLength(4);
+  });
+
+  it("steps the outlined KMS down to solid letters when it is too small to be crisp", () => {
+    const { container } = render(
+      <>
+        <KmsMonogram size={12} data-testid="small" />
+        <KmsMonogram size={24} data-testid="mid" />
+        <KmsMonogram size={40} data-testid="large" />
+      </>,
+    );
+    const boxes = (id: string) => [...container.querySelectorAll(`[data-testid=${id}] svg`)].map((svg) => svg.getAttribute("viewBox"));
+    expect(boxes("small")).toEqual(["142 1340.75 2083 515.5"]);
+    expect(boxes("mid")).toHaveLength(2);
+    expect(boxes("large")).toEqual(["5 334 586 145"]);
+  });
+
+  it("sizes brand marks in whole pixels", () => {
+    const { container } = render(<KavehMark size={25.6} />);
+    expect(container.querySelector("svg")).toHaveAttribute("height", "26");
+    expect(container.querySelector("svg")).toHaveAttribute("width", "32");
   });
 
   it("fills the KMS letters in the solid variant", () => {

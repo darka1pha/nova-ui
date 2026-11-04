@@ -106,15 +106,17 @@ export function KavehLogoExamples() {
       </Example>
       <Example
         title="Engraved or solid"
-        description="The engraved anchor and outlined KMS are the heritage look. Below about 24px the inline closes up, so switch to variant=&quot;solid&quot;; KavehAppIcon does this for you."
-        code={`<KavehMark variant="engraved" />  <KavehMark variant="solid" />
+        description="The engraved anchor and outlined KMS are the heritage look. Their white inline is thinner than a pixel on a small mark and blurs, so the default variant=&quot;auto&quot; draws the anchor engraved from 44px tall, solid below that and as a plain silhouette under 20px. KMS switches to its solid letters under 16px. Force a look with variant=&quot;engraved&quot; or &quot;solid&quot;."
+        code={`<KavehMark />  // auto: engraved from 44px, solid below
+<KavehMark variant="engraved" />  <KavehMark variant="solid" />
 <KmsMonogram variant="outline" />  <KmsMonogram variant="solid" />`}
       >
         <div className="flex w-full flex-wrap items-end gap-8 rounded-lg bg-white p-6 text-[#121826]">
           {([64, 32, 18] as const).map((size) => (
             <div key={size} className="flex items-end gap-3">
-              <KavehMark tone="brand" size={size} />
+              <KavehMark tone="brand" size={size} variant="engraved" />
               <KavehMark tone="brand" size={size} variant="solid" />
+              <KavehMark tone="brand" size={size} />
             </div>
           ))}
           <div className="flex items-end gap-3">
@@ -131,6 +133,12 @@ export function KavehLogoExamples() {
 <KavehAppIcon variant="orange" size={32} />`}
       >
         <div className="flex w-full flex-col gap-4">
+          <div className="flex flex-wrap items-end gap-4">
+            {(["navy", "orange", "light", "sunset"] as const).map((variant) => (
+              <KavehAppIcon key={variant} variant={variant} size={128} label={`Kaveh ${variant} large`} />
+            ))}
+            <span className="text-xs text-foreground-muted">128px</span>
+          </div>
           {(["rounded", "square", "circle"] as const).map((shape) => (
             <div key={shape} className="flex flex-wrap items-end gap-4">
               {(["navy", "orange", "light", "sunset"] as const).map((variant) => (

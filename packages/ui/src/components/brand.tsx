@@ -1,12 +1,12 @@
-import { forwardRef, type CSSProperties, type HTMLAttributes, type ImgHTMLAttributes, type ReactNode, type SVGProps } from "react";
+import { forwardRef, useId, type CSSProperties, type HTMLAttributes, type ImgHTMLAttributes, type ReactNode, type SVGProps } from "react";
 import { cn } from "../utils/cn.ts";
-import { ANCHOR_ENGRAVED, ANCHOR_RATIO, ANCHOR_SOLID, ANCHOR_VIEWBOX, KMS_OUTLINE, KMS_RATIO, KMS_SOLID, KMS_VIEWBOX, WORDMARK, WORDMARK_RATIO, WORDMARK_VIEWBOX } from "./kaveh-artwork.ts";
+import { ANCHOR_DOT, ANCHOR_DROP_LARGE, ANCHOR_DROP_SMALL, ANCHOR_EYE, ANCHOR_INLINE, ANCHOR_OUTLINE, ANCHOR_RATIO, ANCHOR_SILHOUETTE, ANCHOR_VIEWBOX, KMS_OUTLINE, KMS_RATIO, KMS_SOLID, KMS_SOLID_VIEWBOX, KMS_VIEWBOX, WORDMARK, WORDMARK_RATIO, WORDMARK_VIEWBOX } from "./kaveh-artwork.ts";
 
 /*
  * Kaveh Port & Marine Services (KMS) brand components, drawn from the heritage
- * logo: the engraved anchor (a thin inline runs inside every part, a double ring,
- * a stepped stock with a small drop, a large drop on the shank, a keel point and
- * arrowhead flukes), the orange outlined KMS monogram, the KAVEH wordmark with its
+ * logo: the anchor (a deep navy body inside a heavy outline with a white inline
+ * between them, a white eye with a navy dot, a violet drop under the ring and a
+ * large drop on the shank), the orange outlined KMS monogram, the KAVEH wordmark with its
  * open "A", the "Since 1948" line and the periwinkle tagline band.
  *
  * Inlines and outlines are cut out with masks rather than painted white, so every
@@ -21,13 +21,17 @@ export const kavehBrandColors = {
   flare: "#fc7d40",
   periwinkle: "#8fa6dc",
   mist: "#e9effa",
+  /** The master logo's ink: the anchor and KAVEH. */
+  ink: "#04287e",
+  /** The small drop under the anchor's ring in the master logo. */
+  violet: "#3e4095",
 } as const;
 const k = kavehBrandColors;
 
 /**
  * - `auto`: navy parts use the theme's secondary text color. Under the Kaveh
  *   presets that is exactly KMS navy in light mode and a light navy in dark.
- * - `brand`: fixed KMS navy and Kaveh orange, for light backgrounds.
+ * - `brand`: the master logo's colors (deep navy ink, violet drop, Kaveh orange), for light backgrounds.
  * - `reversed`: white and Flare orange, for navy or photographic backgrounds.
  * - `on-orange`: Deep Harbour navy, for Kaveh orange backgrounds.
  * - `mono`: one color, `currentColor`, for stamps and engraving.
@@ -52,7 +56,7 @@ const tones: Record<KavehLogoTone, ToneSet> = {
     drop: k.periwinkle,
     band: `linear-gradient(90deg, color-mix(in srgb, ${k.periwinkle} 85%, transparent), color-mix(in srgb, ${k.periwinkle} 12%, transparent))`,
   },
-  brand: { navy: k.navy, orange: k.orange, drop: k.periwinkle, band: `linear-gradient(90deg, ${k.periwinkle}, ${k.mist} 80%, transparent)` },
+  brand: { navy: k.ink, orange: k.orange, drop: k.violet, band: `linear-gradient(90deg, ${k.periwinkle}, ${k.mist} 80%, transparent)` },
   reversed: { navy: "#ffffff", orange: k.flare, drop: "#a9bee3", band: "linear-gradient(90deg, rgb(255 255 255 / 0.28), rgb(255 255 255 / 0.04))" },
   "on-orange": { navy: k.deepNavy, orange: k.deepNavy, drop: "#ffffff", band: "linear-gradient(90deg, rgb(11 31 63 / 0.22), rgb(11 31 63 / 0.02))" },
   mono: { navy: "currentColor", orange: "currentColor", drop: "currentColor", band: "linear-gradient(90deg, color-mix(in srgb, currentColor 18%, transparent), transparent)" },
@@ -69,15 +73,109 @@ const drop = (cx: number, top: number, h: number) => {
 /* The anchor, KMS and KAVEH are the traced heritage artwork, not redrawings (see kaveh-artwork.ts). */
 const ANCHOR = { viewBox: ANCHOR_VIEWBOX, ratio: ANCHOR_RATIO };
 
-/** `engraved` keeps the heritage inline; `solid` drops it for small sizes and flat print. */
-export type KavehMarkVariant = "engraved" | "solid";
+/**
+ * `engraved` keeps the heritage inline; `solid` drops it for small sizes and flat
+ * print; `auto` picks by rendered size (see {@link resolveAnchorVariant}).
+ */
+export type KavehMarkVariant = "auto" | "engraved" | "solid";
 
-/** One even-odd path: the inline, ring hole and drop outlines are true holes, so the anchor sits on any background. */
-function AnchorArt({ tone, variant = "engraved" }: { tone: KavehLogoTone; variant?: KavehMarkVariant }) {
-  return <path d={variant === "engraved" ? ANCHOR_ENGRAVED : ANCHOR_SOLID} fill={tones[tone].navy} fillRule="evenodd" />;
+/**
+ * The anchor's rendered height in px below which the inline is thinner than about
+ * 0.75px and turns to a gray smear, so `auto` switches to `solid`.
+ */
+const ENGRAVED_MIN_PX = 44;
+/** Below this height the eye and small drop are under 2px, so the anchor is drawn as a plain silhouette. */
+const GLYPH_MAX_PX = 20;
+
+/** `density` draws engraved on high-density screens (2x and up) and solid on standard ones. */
+type AnchorDetail = "engraved" | "solid" | "glyph" | "density";
+
+/**
+ * The level of detail for an anchor drawn `px` CSS pixels tall (undefined when
+ * sized by CSS). Between 20 and 44px the inline is only crisp on a 2x screen,
+ * so `auto` leaves that choice to the screen.
+ */
+function resolveAnchorVariant(variant: KavehMarkVariant, px: number | undefined): AnchorDetail {
+  if (px !== undefined && px < GLYPH_MAX_PX && variant !== "engraved") return "glyph";
+  if (variant !== "auto") return variant;
+  if (px === undefined || px >= ENGRAVED_MIN_PX) return "engraved";
+  return "density";
+}
+
+/**
+ * The anchor layered as in the master logo: the silhouette filled and outlined in
+ * navy, with the white inline, the eye and the rings around the drops cut out
+ * through a mask so they show whatever is behind the mark.
+ */
+function AnchorArt({ tone, detail = "engraved" }: { tone: KavehLogoTone; detail?: AnchorDetail }) {
+  if (detail === "density") {
+    return (
+      <>
+        <g className="hidden [@media(min-resolution:2dppx)]:inline">
+          <AnchorLayers tone={tone} detail="engraved" />
+        </g>
+        <g className="[@media(min-resolution:2dppx)]:hidden">
+          <AnchorLayers tone={tone} detail="solid" />
+        </g>
+      </>
+    );
+  }
+  return <AnchorLayers tone={tone} detail={detail} />;
+}
+
+function AnchorLayers({ tone, detail }: { tone: KavehLogoTone; detail: Exclude<AnchorDetail, "density"> }) {
+  const mask = `nv-kaveh-anchor-${useId().replace(/:/g, "")}`;
+  const t = tones[tone];
+  const engraved = detail === "engraved";
+  if (detail === "glyph") return <path d={ANCHOR_SILHOUETTE} fill={t.navy} stroke={t.navy} strokeWidth={ANCHOR_OUTLINE} strokeMiterlimit={2.6} />;
+  return (
+    <>
+      <defs>
+        <mask id={mask} maskUnits="userSpaceOnUse" x="400" y="40" width="1580" height="1280">
+          <rect x="400" y="40" width="1580" height="1280" fill="#fff" />
+          {engraved ? <path d={ANCHOR_SILHOUETTE} fill="none" stroke="#000" strokeWidth={ANCHOR_INLINE} strokeMiterlimit={2.6} /> : null}
+          <path d={ANCHOR_EYE} fill="#000" />
+          <path d={ANCHOR_DROP_SMALL} fill="#000" stroke="#000" strokeWidth={ANCHOR_INLINE} />
+          {engraved ? <path d={ANCHOR_DROP_LARGE} fill="none" stroke="#000" strokeWidth={ANCHOR_INLINE} /> : null}
+        </mask>
+      </defs>
+      <path d={ANCHOR_SILHOUETTE} fill={t.navy} stroke={t.navy} strokeWidth={ANCHOR_OUTLINE} strokeMiterlimit={2.6} mask={`url(#${mask})`} />
+      <path d={ANCHOR_DOT} fill={t.navy} />
+      <path d={ANCHOR_DROP_SMALL} fill={t.drop} />
+      {engraved ? <path d={ANCHOR_DROP_LARGE} fill={t.navy} /> : null}
+    </>
+  );
 }
 
 const KMS = { viewBox: KMS_VIEWBOX, ratio: KMS_RATIO };
+/** KMS heights in px: the outline's white inline is about 2.4% of the height, so it is only crisp from 32px on a standard screen and 16px on a 2x one. */
+const KMS_OUTLINE_MIN_PX = 32;
+const KMS_DENSITY_MIN_PX = 16;
+
+/** `density` draws the outline on high-density screens (2x and up) and the solid letters on standard ones. */
+type KmsDetail = KmsMonogramVariant | "density";
+
+/** The lettering for a KMS drawn `px` CSS pixels tall (undefined when sized by CSS). Only `outline` steps down. */
+function resolveKmsVariant(variant: KmsMonogramVariant, px: number | undefined): KmsDetail {
+  if (variant === "solid" || px === undefined || px >= KMS_OUTLINE_MIN_PX) return variant;
+  return px >= KMS_DENSITY_MIN_PX ? "density" : "solid";
+}
+
+/** KMS in a box of the given size, each variant in its own viewBox so both fill the same footprint. */
+function KmsBox({ tone, detail, x = 0, y = 0, width, height }: { tone: KavehLogoTone; detail: KmsDetail; x?: number; y?: number; width: number; height: number }) {
+  const box = (variant: KmsMonogramVariant, className?: string) => (
+    <svg x={x} y={y} width={width} height={height} viewBox={variant === "outline" ? KMS_VIEWBOX : KMS_SOLID_VIEWBOX} preserveAspectRatio="xMidYMid meet" className={className}>
+      <KmsArt tone={tone} variant={variant} />
+    </svg>
+  );
+  if (detail !== "density") return box(detail);
+  return (
+    <>
+      {box("outline", "hidden [@media(min-resolution:2dppx)]:inline")}
+      {box("solid", "[@media(min-resolution:2dppx)]:hidden")}
+    </>
+  );
+}
 
 /** `outline` is the heritage lettering (outline, white inline, letters); `solid` is the letters alone. */
 export type KmsMonogramVariant = "outline" | "solid";
@@ -97,7 +195,8 @@ interface BrandSvgProps extends Omit<SVGProps<SVGSVGElement>, "ref"> {
 }
 
 function svgSize(size: number | string, ratio: number) {
-  return typeof size === "number" ? { height: size, width: Math.round(size * ratio * 100) / 100 } : { height: size, style: { width: "auto" } };
+  // Whole pixels: a fractional box puts every edge of the artwork on a half pixel, which reads as blur at small sizes.
+  return typeof size === "number" ? { height: Math.round(size), width: Math.round(size * ratio) } : { height: size, style: { width: "auto" } };
 }
 
 function svgA11y(title: string | undefined) {
@@ -113,13 +212,14 @@ export interface KavehMarkProps extends BrandSvgProps {
   tone?: KavehLogoTone;
   /** Accessible name. Defaults to "Kaveh". Pass `""` when a visible name sits next to it. */
   title?: string;
-  /** `engraved` (heritage inline) or `solid` (flat, for 24px and below). Defaults to "engraved". */
+  /** `auto` (engraved from 44px tall, solid below), `engraved` (heritage inline) or `solid` (flat). Defaults to "auto". */
   variant?: KavehMarkVariant;
 }
 
 /** The engraved KMS anchor on its own: app icons, avatars, favicons, tight spaces. */
-export const KavehMark = forwardRef<SVGSVGElement, KavehMarkProps>(function KavehMark({ size = 40, tone = "auto", title = "Kaveh", variant = "engraved", className, style, ...props }, ref) {
+export const KavehMark = forwardRef<SVGSVGElement, KavehMarkProps>(function KavehMark({ size = 40, tone = "auto", title = "Kaveh", variant = "auto", className, style, ...props }, ref) {
   const dims = svgSize(size, ANCHOR.ratio);
+  const detail = resolveAnchorVariant(variant, typeof dims.height === "number" ? dims.height : undefined);
   return (
     <svg
       ref={ref}
@@ -134,7 +234,7 @@ export const KavehMark = forwardRef<SVGSVGElement, KavehMarkProps>(function Kave
       {...props}
     >
       {title ? <title>{title}</title> : null}
-      <AnchorArt tone={tone} variant={variant} />
+      <AnchorArt tone={tone} detail={detail} />
     </svg>
   );
 });
@@ -148,18 +248,20 @@ export interface KmsMonogramProps extends BrandSvgProps {
   tone?: KavehLogoTone;
   /** Defaults to "KMS". */
   title?: string;
-  /** `outline` (heritage hollow letters) or `solid`. Defaults to "outline". */
+  /** `outline` (heritage hollow letters) or `solid`. Defaults to "outline", which steps down to solid when too small to be crisp: under 32px tall on a standard screen, 16px on a 2x one. */
   variant?: KmsMonogramVariant;
 }
 
 /** The orange outlined KMS monogram from the heritage logo. */
 export const KmsMonogram = forwardRef<SVGSVGElement, KmsMonogramProps>(function KmsMonogram({ size = 24, tone = "auto", title = "KMS", variant = "outline", className, style, ...props }, ref) {
   const dims = svgSize(size, KMS.ratio);
+  // The outline and white inline merge below about 16px tall; the letters alone stay crisp.
+  const detail = resolveKmsVariant(variant, typeof dims.height === "number" ? dims.height : undefined);
   return (
     <svg
       ref={ref}
       xmlns="http://www.w3.org/2000/svg"
-      viewBox={KMS.viewBox}
+      viewBox={`0 0 ${KMS.ratio * 100} 100`}
       height={dims.height}
       width={"width" in dims ? dims.width : undefined}
       focusable="false"
@@ -169,7 +271,7 @@ export const KmsMonogram = forwardRef<SVGSVGElement, KmsMonogramProps>(function 
       {...props}
     >
       {title ? <title>{title}</title> : null}
-      <KmsArt tone={tone} variant={variant} />
+      <KmsBox tone={tone} detail={detail} width={KMS.ratio * 100} height={100} />
     </svg>
   );
 });
@@ -224,6 +326,10 @@ export const KavehEmblem = forwardRef<SVGSVGElement, KavehEmblemProps>(function 
   ref,
 ) {
   const dims = svgSize(size, EMBLEM_RATIO);
+  // In the 420-unit emblem the anchor is 283 units tall and KMS 114.
+  const px = typeof dims.height === "number" ? dims.height / 420 : undefined;
+  const anchorDetail = resolveAnchorVariant("auto", px === undefined ? undefined : px * 283);
+  const kms = resolveKmsVariant("outline", px === undefined ? undefined : px * 114);
   return (
     <svg
       ref={ref}
@@ -239,11 +345,9 @@ export const KavehEmblem = forwardRef<SVGSVGElement, KavehEmblemProps>(function 
     >
       {title ? <title>{title}</title> : null}
       <svg x="60" y="0" width="340" height="283" viewBox={ANCHOR.viewBox}>
-        <AnchorArt tone={tone} />
+        <AnchorArt tone={tone} detail={anchorDetail} />
       </svg>
-      <svg x="0" y="300" width="460" height="114" viewBox={KMS.viewBox} preserveAspectRatio="xMidYMid meet">
-        <KmsArt tone={tone} />
-      </svg>
+      <KmsBox tone={tone} detail={kms} x={0} y={300} width={460} height={114} />
     </svg>
   );
 });
@@ -394,6 +498,10 @@ export interface KavehSealProps extends Omit<BrandSvgProps, "tone"> {
 /** A round heritage seal: the anchor over KMS on Deep Harbour navy with an orange ring. */
 export const KavehSeal = forwardRef<SVGSVGElement, KavehSealProps>(function KavehSeal({ size = 96, variant = "navy", persian: _persian, title = "KMS", className, ...props }, ref) {
   const v = sealStyles[variant];
+  // In the 200-unit seal the anchor is 93 units tall and KMS 22.
+  const px = typeof size === "number" ? size / 200 : undefined;
+  const anchorDetail = resolveAnchorVariant("auto", px === undefined ? undefined : px * 93);
+  const kms = resolveKmsVariant("outline", px === undefined ? undefined : px * 22);
   return (
     <svg ref={ref} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width={size} height={size} focusable="false" className={cn("nv-kaveh-seal shrink-0", className)} {...svgA11y(title)} {...props}>
       {title ? <title>{title}</title> : null}
@@ -401,11 +509,9 @@ export const KavehSeal = forwardRef<SVGSVGElement, KavehSealProps>(function Kave
       <circle cx="100" cy="100" r="90" fill="none" stroke={v.ring} strokeWidth="4" />
       <circle cx="100" cy="100" r="80" fill="none" stroke={v.inner} strokeWidth="1.5" strokeDasharray={variant === "outline" ? "2 4" : undefined} />
       <svg x="44" y="40" width="112" height="93" viewBox={ANCHOR.viewBox}>
-        <AnchorArt tone={v.art} />
+        <AnchorArt tone={v.art} detail={anchorDetail} />
       </svg>
-      <svg x="56" y="139" width="88" height="22" viewBox={KMS.viewBox}>
-        <KmsArt tone={v.art} />
-      </svg>
+      <KmsBox tone={v.art} detail={kms} x={56} y={139} width={88} height={22} />
     </svg>
   );
 });
@@ -659,8 +765,8 @@ const appIconStyle: Record<KavehAppIconVariant, { background: string; tone: Kave
   sunset: { background: `linear-gradient(160deg, ${k.deepNavy} 0%, ${k.navy} 50%, ${k.orange} 100%)`, tone: "reversed", kms: "#ffffff" },
 };
 
-/** Below this edge length the KMS letters close up, so the icon shows the anchor alone. */
-const APP_ICON_KMS_MIN = 40;
+/** Below this edge length KMS would be under 11px tall and unreadable, so the icon shows the anchor alone. */
+const APP_ICON_KMS_MIN = 64;
 
 export interface KavehAppIconProps extends HTMLAttributes<HTMLSpanElement> {
   variant?: KavehAppIconVariant;
@@ -670,7 +776,7 @@ export interface KavehAppIconProps extends HTMLAttributes<HTMLSpanElement> {
   shape?: "rounded" | "square" | "circle";
   /** Accessible name. Defaults to "Kaveh". Pass `""` when decorative. */
   label?: string;
-  /** Show the KMS monogram under the anchor. Defaults to true; always hidden below 40px, where it can't be read. */
+  /** Show the KMS monogram under the anchor. Defaults to true; always hidden below 64px, where it can't be read. */
   monogram?: boolean;
 }
 
@@ -693,12 +799,14 @@ export const KavehAppIcon = forwardRef<HTMLSpanElement, KavehAppIconProps>(funct
       {...props}
     >
       {showKms ? (
-        <span className="flex flex-col items-center" style={{ gap: size * 0.05 }}>
-          <KavehMark size={size * 0.4} tone={v.tone} title="" variant="engraved" />
-          <KmsMonogram size={size * 0.115} tone="mono" title="" variant={size < 96 ? "solid" : "outline"} style={{ color: v.kms }} />
+        // Proportions of the master emblem: KMS runs about 1.4 times the anchor's width.
+        // Sizes are whole pixels so the artwork sits on the pixel grid.
+        <span className="flex flex-col items-center" style={{ gap: Math.round(size * 0.035) }}>
+          <KavehMark size={Math.round(size * 0.4)} tone={v.tone} title="" />
+          <KmsMonogram size={Math.round(size * 0.17)} tone="mono" title="" style={{ color: v.kms }} />
         </span>
       ) : (
-        <KavehMark size={size * 0.48} tone={v.tone} title="" variant={size < 40 ? "solid" : "engraved"} />
+        <KavehMark size={Math.round(size * 0.5)} tone={v.tone} title="" />
       )}
     </span>
   );
