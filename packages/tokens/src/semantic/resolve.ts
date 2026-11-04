@@ -276,6 +276,7 @@ export function resolveTheme(theme: ThemeDefinition, options: ResolveOptions = {
     }
     colors[key as Intent] = value;
   }
+  const hasBrand = Object.values(options.brand ?? {}).some((value) => typeof value === "string" && isHexColor(value));
   const seeds = Object.fromEntries(
     INTENTS.map((intent) => [intent, resolveSeed(colors[intent], FALLBACKS[intent], warnings, intent === "neutral" ? "neutral" : "chromatic")]),
   ) as Record<Intent, ResolvedSeed>;
@@ -299,6 +300,8 @@ export function resolveTheme(theme: ThemeDefinition, options: ResolveOptions = {
       mono: theme.fonts?.mono ?? fontFamily.mono,
     },
     preferredMode: theme.preferredMode,
+    // Hand-made gradients are drawn for the theme's own colors; a rebrand falls back to derived ones.
+    gradients: hasBrand ? {} : { ...theme.gradients },
     adjustments: [...light.adjustments, ...dark.adjustments],
     warnings,
   };

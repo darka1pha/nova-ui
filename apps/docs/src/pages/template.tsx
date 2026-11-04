@@ -51,6 +51,7 @@ import {
   presets,
   type DataTableColumn,
   type PresetName,
+  KavehMark,
 } from "@darkalpha/nova-ui";
 import {
   type Density,
@@ -59,7 +60,6 @@ import {
   type SurfaceStyle,
 } from "@darkalpha/nova-tokens";
 import {
-  Anchor,
   CheckCircle2,
   CreditCard,
   Download,
@@ -159,6 +159,7 @@ const fuelSeries = [
 export function TemplatePage() {
   const [notifications, setNotifications] = useState(startingNotifications);
   const [activePreset, setActivePreset] = useState<PresetName>("kaveh");
+  const isKaveh = activePreset.startsWith("kaveh");
   const [activeMode, setActiveMode] = useState<"light" | "dark">("light");
   const [activeDensity, setActiveDensity] = useState<Density>("comfortable");
   const [activeRadius, setActiveRadius] = useState<RadiusPreset>("md");
@@ -363,8 +364,8 @@ export function TemplatePage() {
                   className="size-2.5 rounded-full ring-1 ring-white/30"
                   style={{
                     backgroundColor:
-                      pId === "kaveh"
-                        ? "#164f9a"
+                      pId.startsWith("kaveh")
+                        ? "#164a96"
                         : pId === "vibrant"
                           ? "#6d4aff"
                           : pId === "ocean"
@@ -470,11 +471,11 @@ export function TemplatePage() {
               brand={{
                 logo: (
                   <span className="flex size-8 items-center justify-center rounded-xl bg-primary text-primary-on-solid font-bold shadow-sm animate-nv-pop-in">
-                    {activePreset === "kaveh" ? <Anchor className="size-4" /> : <Package className="size-4" />}
+                    {isKaveh ? <KavehMark size={20} tone="reversed" title="" /> : <Package className="size-4" />}
                   </span>
                 ),
-                title: activePreset === "kaveh" ? "Kaveh Marine Services" : "Nova UI Logistics",
-                subtitle: activePreset === "kaveh" ? "Since 1948 · Port & Marine" : "Enterprise Global Suite",
+                title: isKaveh ? "Kaveh Marine Services" : "Nova UI Logistics",
+                subtitle: isKaveh ? "Since 1948 · Port & Marine" : "Enterprise Global Suite",
               }}
               groups={[
                 {
