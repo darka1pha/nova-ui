@@ -17,7 +17,7 @@ import { DataTable, type DataTableColumn } from "./table.tsx";
  */
 
 /** "navy" surfaces use KMS blue: on brand, lighter than Deep Harbour. Text on it is white, white/75+ or peach #ffd0b0 (Flare orange is only 3.6:1 there). */
-const NAVY = "bg-[#164a96] text-white";
+const NAVY = "bg-[#295097] text-white";
 const depth = "radial-gradient(110% 90% at 100% 0%, rgb(143 166 220 / 0.35), transparent 62%)";
 /** Persian set right to left, never letter-spaced. */
 const Fa = ({ children, className }: { children: ReactNode; className?: string }) => (
@@ -128,7 +128,7 @@ export const KavehServiceCard = forwardRef<HTMLElement, KavehServiceCardProps>(f
         aria-hidden
         className={cn(
           "grid size-12 place-items-center rounded-lg [&_svg]:size-6",
-          navy ? "bg-[#f37021] text-[#0b1f3f]" : variant === "tinted" ? "bg-surface text-[light-dark(#c2500f,#ff8a3d)]" : "bg-[light-dark(#ffefe3,#3a2112)] text-[light-dark(#c2500f,#ff8a3d)]",
+          navy ? "bg-[#f37537] text-[#0b1f3f]" : variant === "tinted" ? "bg-surface text-[light-dark(#c2500f,#ff8a3d)]" : "bg-[light-dark(#ffefe3,#3a2112)] text-[light-dark(#c2500f,#ff8a3d)]",
         )}
       >
         {icon}
@@ -218,7 +218,7 @@ export const KavehPortCard = forwardRef<HTMLElement, KavehPortCardProps>(functio
         {facts?.length ? (
           <dl className="grid grid-cols-3 gap-2">
             {facts.map((f, i) => (
-              <div key={i} className="min-w-0 border-s-2 border-[#f37021] ps-2">
+              <div key={i} className="min-w-0 border-s-2 border-[#f37537] ps-2">
                 <dt className="truncate text-[11px] text-foreground-muted">{f.label}</dt>
                 <dd className="truncate font-display text-sm font-bold text-secondary-text">{f.value}</dd>
               </div>
@@ -324,7 +324,7 @@ export const KavehKpiCard = forwardRef<HTMLElement, KavehKpiCardProps>(function 
       ref={ref}
       className={cn(
         "nv-kaveh-kpi flex flex-col gap-2 rounded-lg p-4",
-        navy ? NAVY : variant === "tinted" ? "bg-primary-subtle text-foreground" : "border border-border border-s-[3px] border-s-[#f37021] bg-surface text-foreground",
+        navy ? NAVY : variant === "tinted" ? "bg-primary-subtle text-foreground" : "border border-border border-s-[3px] border-s-[#f37537] bg-surface text-foreground",
         className,
       )}
       {...props}
@@ -525,7 +525,7 @@ export const KavehTimeline = forwardRef<HTMLOListElement, KavehTimelineProps>(fu
         const dot = (
           <span
             aria-hidden
-            className={cn("relative z-10 block size-4 shrink-0 rounded-full border-[3px]", active ? "border-[#f37021] bg-[#f37021]" : "border-[#f37021] bg-surface")}
+            className={cn("relative z-10 block size-4 shrink-0 rounded-full border-[3px]", active ? "border-[#f37537] bg-[#f37537]" : "border-[#f37537] bg-surface")}
             style={active ? { boxShadow: `0 0 0 4px color-mix(in srgb, ${k.orange} 25%, transparent)` } : undefined}
           />
         );
@@ -630,7 +630,7 @@ export const KavehSidebar = forwardRef<HTMLElement, KavehSidebarProps>(function 
                       <span className="truncate">{item.label}</span>
                       {item.labelFa ? <Fa className={cn("truncate text-[11px] font-medium", navy ? "text-white/75" : "text-foreground-muted")}>{item.labelFa}</Fa> : null}
                     </span>
-                    {item.badge && !collapsed ? <span className="shrink-0 rounded-full bg-[#f37021] px-1.5 text-[11px] font-bold text-[#0b1f3f]">{item.badge}</span> : null}
+                    {item.badge && !collapsed ? <span className="shrink-0 rounded-full bg-[#f37537] px-1.5 text-[11px] font-bold text-[#0b1f3f]">{item.badge}</span> : null}
                   </>
                 );
                 const classes = cn(
@@ -694,7 +694,7 @@ export const KavehNavMenu = forwardRef<HTMLElement, KavehNavMenuProps>(function 
             variant === "pill" ? "rounded-full px-4 py-1.5" : "px-3 py-3",
             variant === "pill"
               ? active
-                ? "bg-[#f37021] text-[#0b1f3f]"
+                ? "bg-[#f37537] text-[#0b1f3f]"
                 : dark
                   ? "text-white/80 hover:bg-white/10 hover:text-white"
                   : "text-foreground-secondary hover:bg-surface-hover hover:text-foreground"
@@ -712,7 +712,7 @@ export const KavehNavMenu = forwardRef<HTMLElement, KavehNavMenuProps>(function 
             <>
               {item.icon ? <span aria-hidden>{item.icon}</span> : null}
               {item.label}
-              {item.badge ? <span className="rounded-full bg-[#f37021] px-1.5 text-[11px] font-bold text-[#0b1f3f]">{item.badge}</span> : null}
+              {item.badge ? <span className="rounded-full bg-[#f37537] px-1.5 text-[11px] font-bold text-[#0b1f3f]">{item.badge}</span> : null}
               {variant !== "pill" ? <span aria-hidden className={cn("absolute inset-x-3 bottom-0 h-[3px] rounded-full transition-transform duration-(--nv-duration-normal)", active ? "scale-x-100" : "scale-x-0")} style={{ background: k.orange }} /> : null}
             </>
           );
@@ -778,8 +778,8 @@ export function KavehMenu({ trigger, items, header, variant = "light", align = "
       <DropdownMenuContent
         align={align}
         className={cn(
-          "nv-kaveh-menu relative min-w-56 overflow-hidden border-t-[3px] border-t-[#f37021]",
-          navy && "border-x-white/15 border-b-white/15 bg-[#164a96] text-white [&_[role=menuitem]]:text-white/85 [&_[role=menuitem][data-highlighted]]:bg-white/10 [&_[role=menuitem][data-highlighted]]:text-white",
+          "nv-kaveh-menu relative min-w-56 overflow-hidden border-t-[3px] border-t-[#f37537]",
+          navy && "border-x-white/15 border-b-white/15 bg-[#295097] text-white [&_[role=menuitem]]:text-white/85 [&_[role=menuitem][data-highlighted]]:bg-white/10 [&_[role=menuitem][data-highlighted]]:text-white",
           className,
         )}
       >
@@ -892,17 +892,17 @@ export interface KavehTableProps<T> {
 
 const headStyle = {
   navy: cn(
-    "[&_th]:bg-[#164a96] [&_th]:text-white [&_th:first-child]:shadow-[inset_3px_0_0_#f37021] rtl:[&_th:first-child]:shadow-[inset_-3px_0_0_#f37021]",
+    "[&_th]:bg-[#295097] [&_th]:text-white [&_th:first-child]:shadow-[inset_3px_0_0_#f37537] rtl:[&_th:first-child]:shadow-[inset_-3px_0_0_#f37537]",
     "[&_th_button]:text-white/90! [&_th_button:hover]:text-[#ffd0b0]! [&_th[aria-sort=ascending]_button]:text-[#ffd0b0]! [&_th[aria-sort=descending]_button]:text-[#ffd0b0]!",
     "[&_th_[role=checkbox]]:border-white/60",
   ),
   band: cn(
-    "[&_th]:bg-[light-dark(#e3eaf8,#13305c)] [&_th]:text-[light-dark(#164a96,#cfe0ff)] [&_thead_tr]:border-b-2 [&_thead_tr]:border-b-[#8fa6dc]",
-    "[&_th_button]:text-inherit! [&_th[aria-sort=ascending]_svg]:text-[#f37021] [&_th[aria-sort=descending]_svg]:text-[#f37021]",
+    "[&_th]:bg-[light-dark(#e3eaf8,#13305c)] [&_th]:text-[light-dark(#295097,#cfe0ff)] [&_thead_tr]:border-b-2 [&_thead_tr]:border-b-[#8fa6dc]",
+    "[&_th_button]:text-inherit! [&_th[aria-sort=ascending]_svg]:text-[#f37537] [&_th[aria-sort=descending]_svg]:text-[#f37537]",
   ),
   minimal: cn(
-    "[&_thead_tr]:border-b-[3px] [&_thead_tr]:border-b-[#f37021] [&_th]:bg-surface [&_th]:text-secondary-text",
-    "[&_th_button]:text-inherit! [&_th[aria-sort=ascending]_svg]:text-[#f37021] [&_th[aria-sort=descending]_svg]:text-[#f37021]",
+    "[&_thead_tr]:border-b-[3px] [&_thead_tr]:border-b-[#f37537] [&_th]:bg-surface [&_th]:text-secondary-text",
+    "[&_th_button]:text-inherit! [&_th[aria-sort=ascending]_svg]:text-[#f37537] [&_th[aria-sort=descending]_svg]:text-[#f37537]",
   ),
 } as const;
 
@@ -910,8 +910,8 @@ const headStyle = {
 const rowMarker = cn(
   "[&_tbody_tr]:transition-colors",
   "[&_tbody_tr:hover]:bg-primary-subtle/50 [&_tbody_tr[data-state=selected]]:bg-primary-subtle",
-  "[&_tbody_tr:hover>td:first-child]:shadow-[inset_3px_0_0_#f37021] [&_tbody_tr[data-state=selected]>td:first-child]:shadow-[inset_3px_0_0_#f37021] [&_tbody_tr:focus-within>td:first-child]:shadow-[inset_3px_0_0_#f37021]",
-  "rtl:[&_tbody_tr:hover>td:first-child]:shadow-[inset_-3px_0_0_#f37021] rtl:[&_tbody_tr[data-state=selected]>td:first-child]:shadow-[inset_-3px_0_0_#f37021] rtl:[&_tbody_tr:focus-within>td:first-child]:shadow-[inset_-3px_0_0_#f37021]",
+  "[&_tbody_tr:hover>td:first-child]:shadow-[inset_3px_0_0_#f37537] [&_tbody_tr[data-state=selected]>td:first-child]:shadow-[inset_3px_0_0_#f37537] [&_tbody_tr:focus-within>td:first-child]:shadow-[inset_3px_0_0_#f37537]",
+  "rtl:[&_tbody_tr:hover>td:first-child]:shadow-[inset_-3px_0_0_#f37537] rtl:[&_tbody_tr[data-state=selected]>td:first-child]:shadow-[inset_-3px_0_0_#f37537] rtl:[&_tbody_tr:focus-within>td:first-child]:shadow-[inset_-3px_0_0_#f37537]",
 );
 
 /**
@@ -1005,8 +1005,8 @@ export function KavehTable<T>({
       ) : null}
 
       {showBulk ? (
-        <div role="region" aria-label="Bulk actions" aria-live="polite" className="mx-3 mt-3 flex flex-wrap items-center gap-3 rounded-lg border border-primary-border border-s-[3px] border-s-[#f37021] bg-primary-subtle px-3 py-2 text-sm text-primary-on-subtle animate-nv-slide-down">
-          <span className="rounded-full bg-[#f37021] px-2.5 py-0.5 text-xs font-bold text-[#0b1f3f] tabular-nums">{labels?.selected?.(selected.length) ?? `${selected.length} selected`}</span>
+        <div role="region" aria-label="Bulk actions" aria-live="polite" className="mx-3 mt-3 flex flex-wrap items-center gap-3 rounded-lg border border-primary-border border-s-[3px] border-s-[#f37537] bg-primary-subtle px-3 py-2 text-sm text-primary-on-subtle animate-nv-slide-down">
+          <span className="rounded-full bg-[#f37537] px-2.5 py-0.5 text-xs font-bold text-[#0b1f3f] tabular-nums">{labels?.selected?.(selected.length) ?? `${selected.length} selected`}</span>
           <div className="flex flex-1 flex-wrap items-center gap-2">{bulkActions(selected, clear)}</div>
           <button type="button" onClick={clear} className={cn("rounded-md px-2 py-1 font-medium text-secondary-text hover:bg-surface", focusRing)}>
             {labels?.clearSelection ?? "Clear"}
@@ -1049,9 +1049,9 @@ export type KavehNoticeVariant = "info" | "success" | "warning" | "navy" | "camp
 const noticeStyle: Record<KavehNoticeVariant, { box: string; icon: ReactNode }> = {
   info: { box: "border-[#a9bee3] bg-primary-subtle text-foreground", icon: <Info /> },
   success: { box: "border-success-border bg-success-subtle text-success-on-subtle", icon: <CheckCircle2 /> },
-  warning: { box: "border-[#f37021] bg-[light-dark(#ffefe3,#3a2112)] text-[light-dark(#0b1f3f,#ffd1bc)]", icon: <AlertTriangle /> },
-  navy: { box: cn("border-[#f37021]", NAVY), icon: <Info /> },
-  campaign: { box: "border-transparent text-[#0b1f3f] bg-[linear-gradient(120deg,#ffc46b,#ff9a4d_40%,#f37021)]", icon: <Sparkles /> },
+  warning: { box: "border-[#f37537] bg-[light-dark(#ffefe3,#3a2112)] text-[light-dark(#0b1f3f,#ffd1bc)]", icon: <AlertTriangle /> },
+  navy: { box: cn("border-[#f37537]", NAVY), icon: <Info /> },
+  campaign: { box: "border-transparent text-[#0b1f3f] bg-[linear-gradient(120deg,#ffc46b,#ff9a4d_40%,#f37537)]", icon: <Sparkles /> },
 };
 
 export interface KavehNoticeProps extends Omit<HTMLAttributes<HTMLDivElement>, "title"> {
@@ -1120,7 +1120,7 @@ export const KavehEmptyState = forwardRef<HTMLDivElement, KavehEmptyStateProps>(
           </svg>
         </span>
       ) : (
-        <span aria-hidden className={cn("grid size-24 place-items-center rounded-full", navy ? "bg-white/10" : "bg-primary-subtle")} style={{ boxShadow: `inset 0 0 0 4px ${navy ? "rgb(255 255 255 / 0.15)" : "rgb(22 74 150 / 0.15)"}, 0 0 0 3px ${k.orange}` }}>
+        <span aria-hidden className={cn("grid size-24 place-items-center rounded-full", navy ? "bg-white/10" : "bg-primary-subtle")} style={{ boxShadow: `inset 0 0 0 4px ${navy ? "rgb(255 255 255 / 0.15)" : "rgb(41 80 151 / 0.15)"}, 0 0 0 3px ${k.orange}` }}>
           <KavehMark size={44} tone={navy ? "reversed" : "auto"} title="" />
         </span>
       )}
@@ -1155,7 +1155,7 @@ export const KavehLoader = forwardRef<HTMLSpanElement, KavehLoaderProps>(functio
       {variant === "ring" ? (
         <>
           <span aria-hidden className="absolute inset-0 rounded-full border-[3px] border-[rgb(22_74_150/0.18)]" />
-          <span aria-hidden className="absolute inset-0 animate-spin rounded-full border-[3px] border-transparent border-t-[#f37021] [animation-duration:900ms] motion-reduce:animate-none" />
+          <span aria-hidden className="absolute inset-0 animate-spin rounded-full border-[3px] border-transparent border-t-[#f37537] [animation-duration:900ms] motion-reduce:animate-none" />
           <KavehMark size={size * 0.46} tone={markTone} title="" variant="solid" />
         </>
       ) : variant === "wave" ? (
@@ -1170,8 +1170,8 @@ export const KavehLoader = forwardRef<HTMLSpanElement, KavehLoaderProps>(functio
         </>
       ) : (
         <>
-          <span aria-hidden className="absolute inset-0 rounded-full bg-[#f37021] opacity-25 motion-safe:animate-ping" />
-          <span aria-hidden className="relative grid size-full place-items-center rounded-full bg-[#164a96]">
+          <span aria-hidden className="absolute inset-0 rounded-full bg-[#f37537] opacity-25 motion-safe:animate-ping" />
+          <span aria-hidden className="relative grid size-full place-items-center rounded-full bg-[#295097]">
             <KavehMark size={size * 0.46} tone="reversed" title="" variant="solid" />
           </span>
         </>
@@ -1195,7 +1195,7 @@ export const KavehLink = forwardRef<HTMLAnchorElement, KavehLinkProps>(function 
       className={cn(
         "nv-kaveh-link group/kl inline-flex items-center gap-1.5 font-semibold no-underline transition-colors",
         variant === "button" ? "rounded-full border-2 border-secondary-text px-4 py-1.5 text-sm text-secondary-text hover:bg-secondary-text hover:text-surface" : "text-secondary-text",
-        variant === "underline" && "bg-[linear-gradient(#f37021,#f37021)] bg-[length:100%_3px] bg-[position:0_100%] bg-no-repeat pb-1 hover:bg-[length:100%_100%] hover:text-[#0b1f3f]",
+        variant === "underline" && "bg-[linear-gradient(#f37537,#f37537)] bg-[length:100%_3px] bg-[position:0_100%] bg-no-repeat pb-1 hover:bg-[length:100%_100%] hover:text-[#0b1f3f]",
         focusRing,
         variant !== "button" && "rounded-xs",
         className,
@@ -1203,7 +1203,7 @@ export const KavehLink = forwardRef<HTMLAnchorElement, KavehLinkProps>(function 
       {...props}
     >
       {children}
-      {variant !== "underline" ? <ArrowUpRight aria-hidden className="size-4 text-[#f37021] transition-transform group-hover/kl:-translate-y-0.5 group-hover/kl:translate-x-0.5 rtl:-scale-x-100" /> : null}
+      {variant !== "underline" ? <ArrowUpRight aria-hidden className="size-4 text-[#f37537] transition-transform group-hover/kl:-translate-y-0.5 group-hover/kl:translate-x-0.5 rtl:-scale-x-100" /> : null}
     </a>
   );
 });

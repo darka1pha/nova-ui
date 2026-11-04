@@ -6,7 +6,7 @@ const hexStops = (gradient: string) => gradient.match(/#[0-9a-f]{6}\b/gi) ?? [];
 describe("theme gradients", () => {
   it("emits a preset's hand-made gradients and keeps derived ones otherwise", () => {
     const kaveh = themeVariables(getResolvedTheme(presets.kaveh));
-    expect(kaveh["--nv-gradient-vivid"]).toContain("#f37021");
+    expect(kaveh["--nv-gradient-vivid"]).toContain("#f37537");
     expect(themeCss(getResolvedTheme(presets.kaveh))).toContain("--nv-gradient-mesh:");
     // Presets without gradients leave the derived (var-based) ones in charge.
     expect(themeVariables(getResolvedTheme(presets.ocean))["--nv-gradient-vivid"]).toBeUndefined();

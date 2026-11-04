@@ -54,8 +54,8 @@ function createMotif(name: string, viewBox: string, art: ReactNode): MotifCompon
 export const seasonalColors = {
   night: "#081430",
   navy: "#0b1f3f",
-  blue: "#164a96",
-  orange: "#f37021",
+  blue: "#295097",
+  orange: "#f37537",
   flare: "#ff8a3d",
   pomegranate: "#b3122e",
   garnet: "#6e0b1f",

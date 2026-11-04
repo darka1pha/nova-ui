@@ -74,9 +74,9 @@ export function KavehLogoExamples() {
             {(
               [
                 ["brand", "#ffffff"],
-                ["on-orange", "#f37021"],
+                ["on-orange", "#f37537"],
                 ["mono", "#f6f2ec"],
-                ["reversed", "#164a96"],
+                ["reversed", "#295097"],
               ] as const
             ).map(([tone, bg]) => (
               <div key={tone} className="flex items-center justify-between gap-4 rounded-lg border border-border p-5" style={{ background: bg, color: "#121826" }}>
@@ -149,13 +149,13 @@ export function KavehLogoExamples() {
         code={`<KavehSeal variant="navy" />
 <KavehSeal variant="orange" persian />
 <KavehSeal variant="light" />
-<KavehSeal variant="outline" className="text-[#164a96]" />`}
+<KavehSeal variant="outline" className="text-[#295097]" />`}
       >
         <div className="flex w-full flex-wrap items-center gap-6 rounded-lg bg-white p-6">
           <KavehSeal variant="navy" size={104} />
           <KavehSeal variant="orange" size={104} persian />
           <KavehSeal variant="light" size={104} />
-          <KavehSeal variant="outline" size={104} className="text-[#164a96]" />
+          <KavehSeal variant="outline" size={104} className="text-[#295097]" />
           <KavehSeal variant="outline" size={104} persian className="text-[#c2500f]" />
         </div>
       </Example>
@@ -166,7 +166,7 @@ export function KavehLogoExamples() {
 const harbour =
   "data:image/svg+xml," +
   encodeURIComponent(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><defs><linearGradient id="s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0b1f3f"/><stop offset=".6" stop-color="#164a96"/><stop offset="1" stop-color="#f37021"/></linearGradient></defs><rect width="200" height="200" fill="url(#s)"/><circle cx="140" cy="128" r="22" fill="#ffb35c"/><g fill="#081430"><rect x="34" y="50" width="6" height="100"/><path d="M37 50h90v6H37z"/><rect x="110" y="56" width="2" height="30"/><rect y="146" width="200" height="54"/></g></svg>`,
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><defs><linearGradient id="s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0b1f3f"/><stop offset=".6" stop-color="#295097"/><stop offset="1" stop-color="#f37537"/></linearGradient></defs><rect width="200" height="200" fill="url(#s)"/><circle cx="140" cy="128" r="22" fill="#ffb35c"/><g fill="#081430"><rect x="34" y="50" width="6" height="100"/><path d="M37 50h90v6H37z"/><rect x="110" y="56" width="2" height="30"/><rect y="146" width="200" height="54"/></g></svg>`,
   );
 
 export function KavehElementsExamples() {
@@ -260,7 +260,7 @@ export function KavehElementsExamples() {
       >
         <PortholeFrame src={harbour} alt="Shahid Rajaee port at dusk" size={160} />
         <PortholeFrame src={harbour} alt="Cranes at dusk" size={96} />
-        <PortholeFrame src={harbour} alt="Harbour" size={56} ringColor="#f37021" />
+        <PortholeFrame src={harbour} alt="Harbour" size={56} ringColor="#f37537" />
       </Example>
       <Example
         title="Porthole variants"
@@ -361,10 +361,10 @@ export function KavehLayoutExamples() {
             }
             className="rounded-xl"
           />
-          <div className="relative overflow-hidden rounded-xl p-3" style={{ background: "radial-gradient(ellipse at top left, #164a96, #0b1f3f 70%, #f37021 140%)", minHeight: 150 }}>
+          <div className="relative overflow-hidden rounded-xl p-3" style={{ background: "radial-gradient(ellipse at top left, #295097, #0b1f3f 70%, #f37537 140%)", minHeight: 150 }}>
             <KavehHeader variant="glass" nav={nav} actions={<Button size="sm" variant="glass">Client portal</Button>} className="rounded-xl" />
           </div>
-          <div className="relative overflow-hidden rounded-xl" style={{ background: "linear-gradient(180deg,#164a96,#0b1f3f 60%,#f37021 140%)", height: 140 }}>
+          <div className="relative overflow-hidden rounded-xl" style={{ background: "linear-gradient(180deg,#295097,#0b1f3f 60%,#f37537 140%)", height: 140 }}>
             <KavehHeader variant="transparent" nav={nav} logo={<KavehLogo layout="badge" tone="reversed" size={30} />} actions={<Button size="sm" variant="outline">Contact</Button>} />
           </div>
           <div dir="rtl" lang="fa">

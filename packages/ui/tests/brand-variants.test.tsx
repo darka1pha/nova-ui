@@ -77,7 +77,7 @@ describe("seal, divider and band variants", () => {
       </>,
     );
     expect(screen.getByText("Yalda offer").parentElement).toHaveClass("text-[11px]");
-    expect(screen.getByText("Fleet").parentElement).toHaveClass("bg-[#164a96]");
+    expect(screen.getByText("Fleet").parentElement).toHaveClass("bg-[#295097]");
   });
 
   it("pins a badge to the porthole and hides bolts in the thin variant", () => {

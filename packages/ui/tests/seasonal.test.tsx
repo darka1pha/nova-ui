@@ -33,16 +33,16 @@ describe("seasonal presets", () => {
 
   it("leads with orange, navy beside it, in every Kaveh preset", () => {
     for (const id of ["kaveh", "kaveh-yalda", "kaveh-nowruz"] as const) {
-      expect(presets[id].colors.primary).toBe("#f37021");
-      expect(presets[id].colors.secondary).toBe("#164a96");
+      expect(presets[id].colors.primary).toBe("#f37537");
+      expect(presets[id].colors.secondary).toBe("#295097");
       // Navy text on orange: white on Kaveh orange is only 2.9:1.
       expect(presets[id].overrides?.light?.["primary-on-solid"]).toBe("#0b1f3f");
-      expect(presets[id].overrides?.light?.["chart-1"]).toBe("#f37021");
-      expect(presets[id].overrides?.light?.["chart-2"]).toBe("#164a96");
+      expect(presets[id].overrides?.light?.["chart-1"]).toBe("#f37537");
+      expect(presets[id].overrides?.light?.["chart-2"]).toBe("#295097");
       // Navy carries text, links and dark fills so it is on screen next to the orange.
-      expect(presets[id].overrides?.light?.["primary-text"]).toBe("#164a96");
-      expect(presets[id].overrides?.light?.["neutral-solid"]).toBe("#164a96");
-      expect(presets[id].overrides?.dark?.["neutral-solid"]).toBe("#164a96");
+      expect(presets[id].overrides?.light?.["primary-text"]).toBe("#295097");
+      expect(presets[id].overrides?.light?.["neutral-solid"]).toBe("#295097");
+      expect(presets[id].overrides?.dark?.["neutral-solid"]).toBe("#295097");
     }
   });
 });
@@ -68,7 +68,7 @@ describe("Kaveh logo", () => {
     expect(a).toHaveAttribute("height", "44");
     expect(Number(a!.getAttribute("width"))).toBeCloseTo(55, 0);
     const [pa, pb] = [a, b].map((svg) => svg!.querySelector("path")!);
-    expect(pa).toHaveAttribute("fill", "#164a96");
+    expect(pa).toHaveAttribute("fill", "#295097");
     expect(pa).toHaveAttribute("fill-rule", "evenodd");
     expect(pb).toHaveAttribute("fill", "#ffffff");
     render(<KavehMark title="Kaveh anchor" />);

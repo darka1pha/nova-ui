@@ -217,7 +217,7 @@ const patterns: [SeasonalPatternName, string, string][] = [
   ["yalda-stars", "#081430", "#e8a33d"],
   ["pomegranate-seeds", "#b3122e", "#6e0b1f"],
   ["blossom", "#fff8ec", "#f6b5c4"],
-  ["girih", "#f6f2ec", "#164a96"],
+  ["girih", "#f6f2ec", "#295097"],
   ["tide", "#0b1f3f", "#ffffff"],
 ];
 

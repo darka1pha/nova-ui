@@ -14,9 +14,9 @@ import { ANCHOR_ENGRAVED, ANCHOR_RATIO, ANCHOR_SOLID, ANCHOR_VIEWBOX, KMS_OUTLIN
  */
 
 export const kavehBrandColors = {
-  navy: "#164a96",
+  navy: "#295097",
   deepNavy: "#0b1f3f",
-  orange: "#f37021",
+  orange: "#f37537",
   rust: "#c2500f",
   flare: "#ff8a3d",
   periwinkle: "#8fa6dc",
@@ -376,7 +376,7 @@ export type KavehSealVariant = "navy" | "orange" | "light" | "outline";
 const sealStyles: Record<KavehSealVariant, { bg: string; ring: string; inner: string; art: KavehLogoTone; text: string }> = {
   navy: { bg: k.deepNavy, ring: k.orange, inner: "rgb(255 255 255 / 0.22)", art: "reversed", text: k.flare },
   orange: { bg: k.orange, ring: k.deepNavy, inner: "rgb(11 31 63 / 0.3)", art: "on-orange", text: k.deepNavy },
-  light: { bg: "#ffffff", ring: k.orange, inner: "rgb(22 74 150 / 0.25)", art: "brand", text: k.rust },
+  light: { bg: "#ffffff", ring: k.orange, inner: "rgb(41 80 151 / 0.25)", art: "brand", text: k.rust },
   outline: { bg: "none", ring: "currentColor", inner: "currentColor", art: "mono", text: "currentColor" },
 };
 
@@ -503,10 +503,10 @@ export const HorizonDivider = forwardRef<HTMLDivElement, HorizonDividerProps>(fu
 export type TidebandTone = "light" | "dark" | "orange" | "solid";
 
 const tidebandTone: Record<TidebandTone, string> = {
-  light: "border-[#8fa6dc] bg-[linear-gradient(90deg,#b9c8ec,#e9effa_70%,transparent)] text-[#164a96] rtl:bg-[linear-gradient(270deg,#b9c8ec,#e9effa_70%,transparent)]",
+  light: "border-[#8fa6dc] bg-[linear-gradient(90deg,#b9c8ec,#e9effa_70%,transparent)] text-[#295097] rtl:bg-[linear-gradient(270deg,#b9c8ec,#e9effa_70%,transparent)]",
   dark: "border-[#a9bee3] bg-[linear-gradient(90deg,rgb(169_190_227/0.35),transparent)] text-white rtl:bg-[linear-gradient(270deg,rgb(169_190_227/0.35),transparent)]",
-  orange: "border-[#f37021] bg-[linear-gradient(90deg,#ffc9a3,#ffefe3_70%,transparent)] text-[#0b1f3f] rtl:bg-[linear-gradient(270deg,#ffc9a3,#ffefe3_70%,transparent)]",
-  solid: "border-[#f37021] bg-[#164a96] text-white",
+  orange: "border-[#f37537] bg-[linear-gradient(90deg,#ffc9a3,#ffefe3_70%,transparent)] text-[#0b1f3f] rtl:bg-[linear-gradient(270deg,#ffc9a3,#ffefe3_70%,transparent)]",
+  solid: "border-[#f37537] bg-[#295097] text-white",
 };
 
 const tidebandSize = {

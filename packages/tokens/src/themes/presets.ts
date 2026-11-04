@@ -93,8 +93,8 @@ export const premium: ThemeDefinition = {
  * progress), focus and selection, with Deep Harbour navy text on it (white on
  * orange is only 2.9:1). Seasonal presets add their accent and nothing else.
  */
-const kavehNavy = "#164a96";
-const kavehOrange = "#f37021";
+const kavehNavy = "#295097";
+const kavehOrange = "#f37537";
 
 /** Overrides that keep orange in front and navy as its counterpart in every Kaveh preset. */
 const kavehBrand = (light: SemanticOverrides = {}, dark: SemanticOverrides = {}): ThemeDefinition["overrides"] => ({
@@ -146,7 +146,7 @@ const kavehBrand = (light: SemanticOverrides = {}, dark: SemanticOverrides = {})
     selection: "#7a3410",
     "chart-1": "#ff8a3d",
     "chart-2": "#6f97da",
-    "chart-3": "#f37021",
+    "chart-3": "#f37537",
     "chart-4": "#a9bee3",
     "chart-5": "#ffc49c",
     "chart-6": "#3f6db8",
