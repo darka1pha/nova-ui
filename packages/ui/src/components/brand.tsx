@@ -799,40 +799,109 @@ export const BilingualHeading = forwardRef<HTMLDivElement, BilingualHeadingProps
 /* ----------------------------------------------------------- KavehHeader */
 
 export interface KavehHeaderProps extends HTMLAttributes<HTMLElement> {
-  /** `light` (white bar with a navy logo, the default), `navy` (KMS blue bar) or `transparent` (over a hero image). */
-  variant?: "navy" | "light" | "transparent";
+  /**
+   * `light`: white surface with a hairline border.
+   * `navy`: Deep Harbour navy with a soft light from the top corner.
+   * `glass`: frosted navy, for headers that float over imagery.
+   * `transparent`: no surface, a faint scrim keeps text readable over hero photos.
+   */
+  variant?: "navy" | "light" | "glass" | "transparent";
   /** Replaces the default logo. */
   logo?: ReactNode;
-  /** Navigation links. */
+  /**
+   * Navigation links, set in a pill track. Mark the current page with
+   * `aria-current="page"` to give it the raised active pill.
+   */
   nav?: ReactNode;
   /** Actions at the end, e.g. a language switch and a call to action. */
   actions?: ReactNode;
-  /** Draw the orange Horizon along the bottom edge. Defaults to true. */
+  /** Draw the signature orange Horizon along the bottom edge. Defaults to true. */
   horizon?: boolean;
+  /** Keep the header sticky at the top of its scroll container. */
+  sticky?: boolean;
 }
 
-/** An app or site header in the Kaveh style: logo, navigation and actions, with the Horizon along its edge. */
+// Nav links: pill shaped, with a clear hover, keyboard focus and current-page state.
+const headerLink =
+  "[&_nav_a]:inline-flex [&_nav_a]:h-8 [&_nav_a]:items-center [&_nav_a]:rounded-full [&_nav_a]:px-3.5 [&_nav_a]:outline-none [&_nav_a]:transition-[color,background-color,box-shadow] [&_nav_a]:duration-(--nv-duration-fast) " +
+  "[&_nav_a:focus-visible]:ring-2 [&_nav_a:focus-visible]:ring-[#ff8a3d]";
+
+const headerVariants = {
+  light: [
+    "border border-border bg-surface text-foreground shadow-[0_1px_2px_rgb(11_31_63/0.04),0_8px_24px_-12px_rgb(11_31_63/0.12)]",
+    "[&_nav]:bg-surface-hover/70 [&_nav]:ring-1 [&_nav]:ring-border/60",
+    "[&_nav_a]:text-foreground-secondary [&_nav_a:hover]:text-foreground [&_nav_a:hover]:bg-surface",
+    "[&_nav_a[aria-current=page]]:bg-surface [&_nav_a[aria-current=page]]:text-foreground [&_nav_a[aria-current=page]]:shadow-[0_1px_2px_rgb(11_31_63/0.1),0_0_0_1px_rgb(11_31_63/0.06)]",
+  ],
+  navy: [
+    "bg-[#0b1f3f] bg-[radial-gradient(120%_180%_at_0%_0%,rgb(22_74_150/0.9)_0%,transparent_55%)] text-white",
+    "shadow-[inset_0_1px_0_rgb(255_255_255/0.08),0_12px_32px_-16px_rgb(11_31_63/0.6)]",
+  ],
+  glass: [
+    "border border-white/12 bg-[rgb(11_31_63/0.55)] text-white backdrop-blur-xl backdrop-saturate-150",
+    "shadow-[inset_0_1px_0_rgb(255_255_255/0.1),0_16px_40px_-20px_rgb(0_0_0/0.5)]",
+  ],
+  transparent: ["bg-[linear-gradient(180deg,rgb(8_20_48/0.45),transparent)] text-white"],
+} as const;
+
+// Shared by the three dark variants: a translucent track, white links, and
+// ghost, outline and glass buttons switched to white so they stay legible.
+const headerOnDark = [
+  "[&_nav]:bg-white/8 [&_nav]:ring-1 [&_nav]:ring-white/10",
+  "[&_nav_a]:text-white/75 [&_nav_a:hover]:text-white [&_nav_a:hover]:bg-white/10",
+  "[&_nav_a[aria-current=page]]:bg-white/15 [&_nav_a[aria-current=page]]:text-white [&_nav_a[aria-current=page]]:shadow-[inset_0_1px_0_rgb(255_255_255/0.12)]",
+  "[&_[data-slot=button]:is([data-variant=ghost],[data-variant=outline],[data-variant=glass])]:border-white/20 [&_[data-slot=button]:is([data-variant=ghost],[data-variant=outline],[data-variant=glass])]:bg-white/8 [&_[data-slot=button]:is([data-variant=ghost],[data-variant=outline],[data-variant=glass])]:text-white [&_[data-slot=button]:is([data-variant=ghost],[data-variant=outline],[data-variant=glass])]:shadow-none",
+  "[&_[data-slot=button]:is([data-variant=ghost],[data-variant=outline],[data-variant=glass]):hover]:bg-white/15",
+];
+
+/** An app or site header in the Kaveh style: logo, centered pill navigation, actions, and the signature orange Horizon. */
 export const KavehHeader = forwardRef<HTMLElement, KavehHeaderProps>(function KavehHeader(
-  { variant = "light", logo, nav, actions, horizon = true, className, ...props },
+  { variant = "light", logo, nav, actions, horizon = true, sticky = false, className, children, ...props },
   ref,
 ) {
   const dark = variant !== "light";
+
   return (
     <header
       ref={ref}
+      data-variant={variant}
       className={cn(
-        "nv-kaveh-header relative flex items-center gap-6 px-5 py-3",
-        variant === "navy" && "bg-[#164a96] text-white",
-        variant === "light" && "border-b border-border bg-surface text-foreground",
-        variant === "transparent" && "bg-[linear-gradient(180deg,rgb(8_20_48/0.75),transparent)] text-white",
+        // From md up, three columns keep the navigation centered on the header, whatever the logo and actions
+        // measure. Below md the navigation hides and the logo and actions sit at either end.
+        "nv-kaveh-header relative flex h-16 w-full items-center justify-between gap-4 px-4 sm:px-6 md:grid md:grid-cols-[1fr_auto_1fr]",
+        sticky && "sticky top-0 z-(--nv-z-sticky)",
+        headerLink,
+        headerVariants[variant],
+        dark && headerOnDark,
         className,
       )}
       {...props}
     >
-      <div className="shrink-0">{logo ?? <KavehLogo size={28} tagline={false} tone={dark ? "reversed" : "auto"} />}</div>
-      {nav ? <nav className={cn("hidden flex-1 items-center gap-5 text-sm font-medium md:flex", dark ? "text-white/80" : "text-foreground-secondary")}>{nav}</nav> : <div className="flex-1" />}
-      {actions ? <div className="flex shrink-0 items-center gap-2">{actions}</div> : null}
-      {horizon && variant !== "transparent" ? <span aria-hidden className="absolute inset-x-0 bottom-0 h-[3px]" style={{ background: k.orange }} /> : null}
+      <div className="flex min-w-0 items-center justify-self-start">
+        {logo ?? <KavehLogo size={30} tagline={false} tone={dark ? "reversed" : "auto"} />}
+      </div>
+
+      {nav ? (
+        <nav className="hidden items-center gap-0.5 rounded-full p-1 text-sm font-semibold md:flex">{nav}</nav>
+      ) : (
+        <span />
+      )}
+
+      <div className="flex items-center gap-2 justify-self-end">
+        {actions}
+        {children}
+      </div>
+
+      {horizon && variant !== "transparent" ? (
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-x-[12%] -bottom-px h-0.5 rounded-full"
+          style={{
+            background: `linear-gradient(90deg, transparent, ${k.orange} 25%, ${k.flare} 50%, ${k.orange} 75%, transparent)`,
+            boxShadow: dark ? `0 0 10px ${k.orange}80` : undefined,
+          }}
+        />
+      ) : null}
     </header>
   );
 });

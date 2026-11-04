@@ -314,7 +314,9 @@ export function VesselStatusExamples() {
 export function KavehLayoutExamples() {
   const nav = (
     <>
-      <a href="#/components/kaveh-layout">Services</a>
+      <a href="#/components/kaveh-layout" aria-current="page">
+        Services
+      </a>
       <a href="#/components/kaveh-layout">Ports</a>
       <a href="#/components/kaveh-layout">Fleet</a>
       <a href="#/components/kaveh-layout">About</a>
@@ -324,13 +326,15 @@ export function KavehLayoutExamples() {
     <>
       <Example
         title="KavehHeader"
-        description="A site or app header: logo, navigation and actions, with the orange Horizon along its bottom edge. light is the default (white with the orange Horizon); navy is a KMS blue bar; transparent goes over a hero photo."
-        code={`<KavehHeader nav={<Links />} actions={<Button size="sm">Request a quote</Button>} />
-<KavehHeader variant="light" nav={<Links />} />
-<KavehHeader variant="transparent" />`}
+        description={`Logo, centered pill navigation and actions, with the orange Horizon glowing along the bottom edge. Mark the current page with aria-current="page". light sits on page backgrounds, navy is the brand bar, glass floats over imagery and transparent goes straight onto a hero photo. On the dark variants, ghost, outline and glass buttons turn white.`}
+        code={`<KavehHeader nav={<Links />} actions={<Button size="sm">Track a vessel</Button>} />
+<KavehHeader variant="navy" nav={<Links />} />
+<KavehHeader variant="glass" nav={<Links />} />
+<KavehHeader variant="transparent" />
+
+// Links: <a href="/services" aria-current="page">Services</a> …`}
       >
         <ThemeProvider theme="kaveh" mode="light" className="min-h-0! grid w-full gap-4">
-          <KavehHeader variant="navy" nav={nav} actions={<Button size="sm">Request a quote</Button>} className="rounded-lg" />
           <KavehHeader
             variant="light"
             nav={nav}
@@ -342,23 +346,41 @@ export function KavehLayoutExamples() {
                 <Button size="sm">Track a vessel</Button>
               </>
             }
-            className="rounded-lg"
+            className="rounded-xl"
           />
-          <div className="relative overflow-hidden rounded-lg" style={{ background: "linear-gradient(180deg,#164a96,#0b1f3f 60%,#f37021 140%)", height: 140 }}>
-            <KavehHeader variant="transparent" nav={nav} logo={<KavehLogo layout="badge" tone="reversed" size={30} />} />
+          <KavehHeader
+            variant="navy"
+            nav={nav}
+            actions={
+              <>
+                <Button size="sm" variant="ghost">
+                  Sign in
+                </Button>
+                <Button size="sm">Request a quote</Button>
+              </>
+            }
+            className="rounded-xl"
+          />
+          <div className="relative overflow-hidden rounded-xl p-3" style={{ background: "radial-gradient(ellipse at top left, #164a96, #0b1f3f 70%, #f37021 140%)", minHeight: 150 }}>
+            <KavehHeader variant="glass" nav={nav} actions={<Button size="sm" variant="glass">Client portal</Button>} className="rounded-xl" />
+          </div>
+          <div className="relative overflow-hidden rounded-xl" style={{ background: "linear-gradient(180deg,#164a96,#0b1f3f 60%,#f37021 140%)", height: 140 }}>
+            <KavehHeader variant="transparent" nav={nav} logo={<KavehLogo layout="badge" tone="reversed" size={30} />} actions={<Button size="sm" variant="outline">Contact</Button>} />
           </div>
           <div dir="rtl" lang="fa">
             <KavehHeader
-              logo={<KavehLogo layout="persian" tone="reversed" size={30} tagline={false} />}
+              logo={<KavehLogo layout="persian" size={30} tagline={false} />}
               nav={
                 <>
-                  <a href="#/components/kaveh-layout">خدمات</a>
+                  <a href="#/components/kaveh-layout" aria-current="page">
+                    خدمات
+                  </a>
                   <a href="#/components/kaveh-layout">بنادر</a>
                   <a href="#/components/kaveh-layout">ناوگان</a>
                 </>
               }
               actions={<Button size="sm">درخواست قیمت</Button>}
-              className="rounded-lg"
+              className="rounded-xl"
             />
           </div>
         </ThemeProvider>
