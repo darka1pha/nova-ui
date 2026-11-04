@@ -36,6 +36,51 @@ export const Tanker = createIcon("tanker", [
   ["path", { d: "M17.5 15V9.5a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1V15" }],
 ]);
 
+export const Ferry = createIcon("ferry", [
+  ["path", { d: hull(14) }, "f"],
+  ["path", { d: "M5.5 14v-3a1 1 0 0 1 1-1h11a1 1 0 0 1 1 1v3" }],
+  ["path", { d: "M8 10V7.5a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1V10" }, "s"],
+  ["path", { d: "M8.5 12h1M11.5 12h1M14.5 12h1" }, "s"],
+]);
+
+export const Sailboat = createIcon("sailboat", [
+  ["path", { d: hull(16, 4, 20) }, "f"],
+  ["path", { d: "M12 16V2.5" }],
+  ["path", { d: "M12 3.5 18.5 13.5H12" }, "f"],
+  ["path", { d: "M10 6 5 13.5h5Z" }, "sf"],
+]);
+
+export const CruiseShip = createIcon("cruise-ship", [
+  ["path", { d: hull(15) }, "f"],
+  ["path", { d: "M5 15v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3" }],
+  ["path", { d: "M7 11V8.5a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1V11" }, "s"],
+  ["path", { d: "m11 7.5.5-3.5H14l-.5 3.5" }, "s"],
+  dot(8.5, 13, 0.75),
+  dot(12, 13, 0.75),
+  dot(15.5, 13, 0.75),
+]);
+
+export const FishingBoat = createIcon("fishing-boat", [
+  ["path", { d: hull(15) }, "f"],
+  ["path", { d: "M5.5 15v-4a1 1 0 0 1 1-1H10a1 1 0 0 1 1 1v4" }],
+  ["path", { d: "M15 15V3.5" }],
+  ["path", { d: "m15 4.5 5 5.5v2.5" }, "s"],
+]);
+
+export const Radar = createIcon("radar", [
+  ["circle", { cx: 12, cy: 12, r: 9.5 }, "f"],
+  ["circle", { cx: 12, cy: 12, r: 5 }, "s"],
+  ["path", { d: "m12 12 6.7-6.7" }],
+  dot(15.5, 14.5),
+]);
+
+export const Binoculars = createIcon("binoculars", [
+  ["circle", { cx: 6.5, cy: 16, r: 3.5 }, "f"],
+  ["circle", { cx: 17.5, cy: 16, r: 3.5 }, "f"],
+  ["path", { d: "M3 16 5 6.5a1.5 1.5 0 0 1 1.5-1.2h1A1.5 1.5 0 0 1 9 6.8V12M21 16 19 6.5a1.5 1.5 0 0 0-1.5-1.2h-1A1.5 1.5 0 0 0 15 6.8V12" }, "s"],
+  ["path", { d: "M10 13.5h4" }],
+]);
+
 export const VesselTracking = createIcon("vessel-tracking", [
   ["path", { d: hull(16, 4, 20) }, "f"],
   ["path", { d: "M8 16v-2.5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1V16" }],
@@ -150,6 +195,21 @@ export const Warehouse = createIcon("warehouse", [
   ["path", { d: "M1.5 21h21" }, "s"],
 ]);
 
+export const Forklift = createIcon("forklift", [
+  ["path", { d: "M3.5 17V9a1 1 0 0 1 1-1H8a1 1 0 0 1 .9.6L11.5 14v3" }, "f"],
+  ["path", { d: "M15 3v16h6" }],
+  ["path", { d: "M11.5 14H15" }, "s"],
+  ["circle", { cx: 6, cy: 19, r: 2 }, "s"],
+  ["circle", { cx: 11.5, cy: 19, r: 2 }, "s"],
+]);
+
+export const Silo = createIcon("silo", [
+  ["path", { d: "M4 21V8.5a3.5 3.5 0 0 1 7 0V21" }, "f"],
+  ["path", { d: "M13 21v-9.5a3.5 3.5 0 0 1 7 0V21" }, "sf"],
+  ["path", { d: "M4 12h7M13 15h7" }, "s"],
+  ["path", { d: "M2.5 21h19" }],
+]);
+
 /* ------------------------------------------------------ Cargo & logistics */
 
 export const Container = createIcon("container", [
@@ -177,11 +237,30 @@ export const Pallet = createIcon("pallet", [
   ["path", { d: "M5 17v3.5M12 17v3.5M19 17v3.5" }, "s"],
 ]);
 
+export const Package = createIcon("package", [
+  ["path", { d: "M12 2.5 20.5 7v10L12 21.5 3.5 17V7Z" }, "f"],
+  ["path", { d: "M3.5 7 12 11.5 20.5 7M12 11.5v10" }, "s"],
+  ["path", { d: "m7.75 4.75 8.5 4.5" }, "s"],
+]);
+
 export const Truck = createIcon("truck", [
   ["rect", { x: 2, y: 5, width: 12, height: 11, rx: 2 }, "f"],
   ["path", { d: "M14 9h3.4a2 2 0 0 1 1.7.9l2.4 3.6c.3.4.5.9.5 1.4V16h-8" }],
   ["circle", { cx: 6.5, cy: 18, r: 2 }, "s"],
   ["circle", { cx: 17.5, cy: 18, r: 2 }, "s"],
+]);
+
+export const Train = createIcon("train", [
+  ["rect", { x: 5, y: 3, width: 14, height: 13, rx: 3 }, "f"],
+  ["path", { d: "M5 10h14" }, "s"],
+  dot(9, 13),
+  dot(15, 13),
+  ["path", { d: "m8.5 16-2 4.5M15.5 16l2 4.5" }],
+  ["path", { d: "M7.5 18.5h9" }, "s"],
+]);
+
+export const Plane = createIcon("plane", [
+  ["path", { d: "M12 2.5c.8 0 1.5.7 1.5 1.5v5l7 4.5v2l-7-2v4.5l2.5 2v1.5L12 20.5 8 21.5V20l2.5-2v-4.5l-7 2v-2l7-4.5V4c0-.8.7-1.5 1.5-1.5Z" }, "f"],
 ]);
 
 export const Route = createIcon("route", [
@@ -222,6 +301,19 @@ export const CustomsStamp = createIcon("customs-stamp", [
   ["path", { d: "M4 17a2.5 2.5 0 0 1 2.5-2.5h11A2.5 2.5 0 0 1 20 17v1.5H4Z" }, "f"],
   ["path", { d: "M9.5 14.5v-2a3 3 0 0 0-.8-2 4 4 0 1 1 6.6 0 3 3 0 0 0-.8 2v2" }],
   ["path", { d: "M5 21.5h14" }, "s"],
+]);
+
+export const Passport = createIcon("passport", [
+  ["rect", { x: 5, y: 2, width: 14, height: 20, rx: 2.5 }, "f"],
+  ["circle", { cx: 12, cy: 10, r: 3.5 }, "s"],
+  ["path", { d: "M9 17h6" }],
+]);
+
+export const Certificate = createIcon("certificate", [
+  ["path", { d: "M13 16H5.5A2.5 2.5 0 0 1 3 13.5v-7A2.5 2.5 0 0 1 5.5 4h13A2.5 2.5 0 0 1 21 6.5v4" }, "f"],
+  ["path", { d: "M7 8h10M7 11.5h4" }, "s"],
+  ["circle", { cx: 17, cy: 14.5, r: 3 }],
+  ["path", { d: "m15.5 17-1 4.5 2.5-1.5 2.5 1.5-1-4.5" }, "s"],
 ]);
 
 export const PilotFlag = createIcon("pilot-flag", [
