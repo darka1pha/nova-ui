@@ -1,5 +1,11 @@
 # @darkalpha/nova-tokens
 
+## 0.3.2
+
+### Patch Changes
+
+- Re-tune the Kaveh orange shades to the new brand orange `#f37537`, so orange text, focus rings, dark-mode accents and gradient ends match its hue: orange text is `#c44e00` (`#bc4b00` on the peach tint), the focus ring `#e96c2c`, the dark-mode orange `#fc7d40` and the gradient end `#e16523`. All keep WCAG AA contrast.
+
 ## 0.3.1
 
 ### Patch Changes
