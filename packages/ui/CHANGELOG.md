@@ -1,5 +1,13 @@
 # @darkalpha/nova-ui
 
+## 0.3.3
+
+### Patch Changes
+
+- `KavehAppIcon` now shows the KMS monogram under the anchor from 40px up; pass `monogram={false}` to turn it off. The sunset tile ends on true Kaveh orange. `KavehSeal` no longer shows the founding year: it is the anchor over KMS, named "KMS" by default, and its `persian` prop is deprecated with no effect. Kaveh presets now brighten primary buttons on hover (`#ff8349`) and press (`#ff8f5c`) instead of darkening them.
+- Updated dependencies
+  - @darkalpha/nova-tokens@0.3.3
+
 ## 0.3.2
 
 ### Patch Changes
