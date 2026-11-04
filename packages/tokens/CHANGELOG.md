@@ -1,5 +1,11 @@
 # @darkalpha/nova-tokens
 
+## 0.3.1
+
+### Patch Changes
+
+- Update the Kaveh brand colors: Kaveh orange is now `#f37537` (was `#f37021`) and KMS navy is now `#295097` (was `#164a96`), in the Kaveh presets, gradients, brand marks and Kaveh kit components.
+
 ## 0.3.0
 
 ### Minor Changes
