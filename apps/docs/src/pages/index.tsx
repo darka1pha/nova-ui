@@ -30,6 +30,7 @@ export const nav: { title: string; items: NavItem[] }[] = [
       { id: "playground", label: "Theme playground", badge: "Live" },
       { id: "template", label: "Template preview", badge: "New" },
       { id: "blocks", label: "Blocks", badge: "New" },
+      { id: "seasonal-pages", label: "Seasonal pages", badge: "New", keywords: "Yalda Nowruz kaveh-yalda kaveh-nowruz campaign" },
     ],
   },
   {
@@ -71,6 +72,7 @@ export const pages: Record<string, LazyExoticComponent<ComponentType>> = {
   playground: page(() => import("./playground.tsx"), "PlaygroundPage"),
   template: page(() => import("./template.tsx"), "TemplatePage"),
   blocks: page(() => import("./blocks.tsx"), "BlocksPage"),
+  "seasonal-pages": page(() => import("./seasonal-pages.tsx"), "SeasonalPagesPage"),
   theming: page(() => import("./theming.tsx"), "ThemingPage"),
   tokens: page(() => import("./tokens.tsx"), "TokensPage"),
   motion: page(() => import("./motion.tsx"), "MotionPage"),
