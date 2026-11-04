@@ -56,7 +56,7 @@ export const seasonalColors = {
   navy: "#0b1f3f",
   blue: "#295097",
   orange: "#f37537",
-  flare: "#ff8a3d",
+  flare: "#fc7d40",
   pomegranate: "#b3122e",
   garnet: "#6e0b1f",
   seed: "#e85a6b",
@@ -234,7 +234,7 @@ export const Somagh = createMotif(
   <>
     <path d="M18 36q14-18 28 0Z" fill="#8e2a3c" />
     <path d="M10 36h44c0 10-10 16-22 16S10 46 10 36Z" fill={c.orange} />
-    <path d="M10 36h44" stroke="#c2500f" strokeWidth="2" />
+    <path d="M10 36h44" stroke="#c44e00" strokeWidth="2" />
   </>,
 );
 
@@ -269,7 +269,7 @@ export const NowruzMirror = createMotif(
     <ellipse cx="32" cy="28" rx="18" ry="22" fill={c.ember} />
     <ellipse cx="32" cy="28" rx="13" ry="17" fill="#e9effa" />
     <path d="m24 20 8-6m-8 14 12-10" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" />
-    <path d="M26 50h12l3 8H23Z" fill="#c2500f" />
+    <path d="M26 50h12l3 8H23Z" fill="#c44e00" />
   </>,
 );
 

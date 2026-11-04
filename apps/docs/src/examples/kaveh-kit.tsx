@@ -572,7 +572,7 @@ export function KavehDataExamples() {
             <KavehNotice variant="warning" title="Strong winds at Bushehr" titleFa="باد شدید در بوشهر">
               Pilotage is suspended until 18:00.
             </KavehNotice>
-            <KavehNotice variant="navy" title="Our operations centre is open 24/7" action={<KavehLink href="#/components/kaveh-data" className="text-[#ff8a3d]">Contact ops</KavehLink>} />
+            <KavehNotice variant="navy" title="Our operations centre is open 24/7" action={<KavehLink href="#/components/kaveh-data" className="text-[#fc7d40]">Contact ops</KavehLink>} />
             {dismissed ? (
               <Button size="sm" variant="outline" className="w-fit" onClick={() => setDismissed(false)}>
                 Show campaign notice

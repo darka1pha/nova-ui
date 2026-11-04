@@ -17,8 +17,8 @@ export const kavehBrandColors = {
   navy: "#295097",
   deepNavy: "#0b1f3f",
   orange: "#f37537",
-  rust: "#c2500f",
-  flare: "#ff8a3d",
+  rust: "#c44e00",
+  flare: "#fc7d40",
   periwinkle: "#8fa6dc",
   mist: "#e9effa",
 } as const;
@@ -728,7 +728,7 @@ export const BrandStat = forwardRef<HTMLDivElement, BrandStatProps>(function Bra
       )}
       {...props}
     >
-      <span className={cn("font-display text-4xl font-extrabold leading-none tracking-tight", variant === "orange" ? "text-[light-dark(#c2500f,#ff8a3d)]" : inverse ? "text-white" : "text-secondary-text")}>{value}</span>
+      <span className={cn("font-display text-4xl font-extrabold leading-none tracking-tight", variant === "orange" ? "text-[light-dark(#c44e00,#fc7d40)]" : inverse ? "text-white" : "text-secondary-text")}>{value}</span>
       <HorizonDivider length="2.5rem" align={align} />
       <span className={cn("text-sm font-medium", inverse ? "text-white/80" : "text-foreground-secondary")}>{label}</span>
       {labelFa ? (
@@ -779,7 +779,7 @@ export const BilingualHeading = forwardRef<HTMLDivElement, BilingualHeadingProps
   ) : null;
   return (
     <div ref={ref} className={cn("nv-bilingual-heading flex flex-col gap-2", centered && "items-center text-center", className)} {...props}>
-      {eyebrow ? <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[light-dark(#c2500f,#ff8a3d)]">{eyebrow}</p> : null}
+      {eyebrow ? <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[light-dark(#c44e00,#fc7d40)]">{eyebrow}</p> : null}
       {variant === "split" ? (
         <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
           <H className={cn("font-display font-bold leading-tight tracking-tight", sz.en)}>{title}</H>
@@ -824,7 +824,7 @@ export interface KavehHeaderProps extends HTMLAttributes<HTMLElement> {
 // Nav links: pill shaped, with a clear hover, keyboard focus and current-page state.
 const headerLink =
   "[&_nav_a]:inline-flex [&_nav_a]:h-8 [&_nav_a]:items-center [&_nav_a]:rounded-full [&_nav_a]:px-3.5 [&_nav_a]:outline-none [&_nav_a]:transition-[color,background-color,box-shadow] [&_nav_a]:duration-(--nv-duration-fast) " +
-  "[&_nav_a:focus-visible]:ring-2 [&_nav_a:focus-visible]:ring-[#ff8a3d]";
+  "[&_nav_a:focus-visible]:ring-2 [&_nav_a:focus-visible]:ring-[#fc7d40]";
 
 const headerVariants = {
   light: [

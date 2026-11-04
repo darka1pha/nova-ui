@@ -156,7 +156,7 @@ export function KavehLogoExamples() {
           <KavehSeal variant="orange" size={104} persian />
           <KavehSeal variant="light" size={104} />
           <KavehSeal variant="outline" size={104} className="text-[#295097]" />
-          <KavehSeal variant="outline" size={104} persian className="text-[#c2500f]" />
+          <KavehSeal variant="outline" size={104} persian className="text-[#c44e00]" />
         </div>
       </Example>
     </>

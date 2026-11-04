@@ -113,11 +113,11 @@ const kavehBrand = (light: SemanticOverrides = {}, dark: SemanticOverrides = {})
     "neutral-solid-active": "#2464c0",
     "neutral-on-solid": "#ffffff",
     "secondary-text": kavehNavy,
-    "focus-ring": "#d4580f",
+    "focus-ring": "#e96c2c",
     selection: "#ffd9bf",
     "chart-1": kavehOrange,
     "chart-2": kavehNavy,
-    "chart-3": "#ff8a3d",
+    "chart-3": "#fc7d40",
     "chart-4": "#4f7bc4",
     "chart-5": "#0b1f3f",
     "chart-6": "#a9bee3",
@@ -142,9 +142,9 @@ const kavehBrand = (light: SemanticOverrides = {}, dark: SemanticOverrides = {})
     "neutral-on-solid": "#ffffff",
     "primary-text": "#9cbcf0",
     "secondary-text": "#9cbcf0",
-    "focus-ring": "#ff8a3d",
+    "focus-ring": "#fc7d40",
     selection: "#7a3410",
-    "chart-1": "#ff8a3d",
+    "chart-1": "#fc7d40",
     "chart-2": "#6f97da",
     "chart-3": "#f37537",
     "chart-4": "#a9bee3",
@@ -188,7 +188,7 @@ export const kaveh: ThemeDefinition = {
   shadow: "crisp",
   motion: "standard",
   overrides: kavehBrand(),
-  gradients: kavehGradients("#ec5f24", "#a9bee3"),
+  gradients: kavehGradients("#e16523", "#a9bee3"),
 };
 
 /**
@@ -247,7 +247,7 @@ export const kavehNowruz: ThemeDefinition = {
   motion: "expressive",
   preferredMode: "light",
   gradients: {
-    ...kavehGradients("#ec5f24", "#3ba55c"),
+    ...kavehGradients("#e16523", "#3ba55c"),
     // Spring morning: orange sun into new leaf.
     vivid: `linear-gradient(120deg, ${kavehOrange} 0%, #ffb35c 50%, #a8d86e 100%)`,
   },
