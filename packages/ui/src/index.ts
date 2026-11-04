@@ -173,6 +173,8 @@ export type { ScrollAreaProps } from "./components/disclosure.tsx";
 // Motion
 export { Reveal, AnimatedNumber, Marquee, GradientText, SpotlightCard, AnimatedBorder } from "./components/motion.tsx";
 export type { RevealProps, AnimatedNumberProps, MarqueeProps, GradientTextProps, SpotlightCardProps, AnimatedBorderProps } from "./components/motion.tsx";
+export { ModuleCard } from "./components/module-card.tsx";
+export type { ModuleCardProps, ModuleCardTone } from "./components/module-card.tsx";
 export { useRipple } from "./components/button.tsx";
 
 // Utilities

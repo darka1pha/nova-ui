@@ -48,6 +48,7 @@ const extras: Loader = () => import("../examples/extras.tsx");
 const additions: Loader = () => import("../examples/additions.tsx");
 const additionsMore: Loader = () => import("../examples/additions-more.tsx");
 const motion: Loader = () => import("../examples/motion.tsx");
+const moduleCard: Loader = () => import("../examples/module-card.tsx");
 const workflow: Loader = () => import("../examples/workflow.tsx");
 const seasonal: Loader = () => import("../examples/seasonal.tsx");
 const kaveh: Loader = () => import("../examples/kaveh.tsx");
@@ -127,6 +128,7 @@ export const components: ComponentEntry[] = [
   { id: "tree-view", name: "TreeView", summary: "Nested items that expand and select, like a file tree.", category: "navigation", parts: ["TreeView"], examples: examples(extras, "TreeViewExamples") },
   { id: "stepper", name: "Stepper", summary: "Progress through a multi-step flow.", category: "navigation", parts: ["Stepper"], examples: examples(extras, "StepperExamples") },
   { id: "card", name: "Card", summary: "A container for related content.", category: "data", parts: ["Card", "CardHeader", "CardTitle", "CardDescription", "CardContent", "CardFooter"], examples: examples(core, "CardExamples") },
+  { id: "module-card", name: "ModuleCard", summary: "A launcher tile for one module of an app: tinted surface, corner wave, large icon, title and a forward arrow.", category: "data", parts: ["ModuleCard"], examples: examples(moduleCard, "ModuleCardExamples"), a11y: ["With href the whole card is one link and with onClick one button, named by its title and description; the icon, wave and arrow are hidden from assistive technology.", "disabled removes the link's href and sets aria-disabled, or disables the button."] },
   { id: "avatar", name: "Avatar", summary: "A person's image or initials, with status, alone or stacked.", category: "data", parts: ["Avatar", "AvatarGroup"], examples: examples(core, "AvatarExamples"), a11y: ["Avatars without images expose the person's name as role=\"img\"; status dots have an accessible label."] },
   { id: "data-table", name: "DataTable", summary: "Sorting, search, pagination, selection and column visibility for records.", category: "data", parts: ["DataTable", "Table", "TableHeader", "TableBody", "TableFooter", "TableRow", "TableHead", "TableCell", "TableCaption"], examples: examples(core, "DataTableExamples"), a11y: ["Native table semantics, scope=\"col\" headers, aria-sort on sortable columns and labelled checkboxes."] },
   { id: "line-chart", name: "LineChart & AreaChart", summary: "Trends over time, as lines or filled areas.", category: "data", parts: ["LineChart", "AreaChart"], examples: examples(core, "LineChartExamples"), a11y: ["Charts are labelled figures with a data table that is always available to screen readers and one click away for everyone; the plot is focusable and arrow keys announce each point."] },
