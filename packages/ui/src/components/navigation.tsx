@@ -11,20 +11,45 @@ import { focusRing, transition } from "./shared.ts";
 
 /* -------------------------------------------------------------------- Tabs */
 
-const TabsVariantContext = createContext<"underline" | "pills" | "segmented">("underline");
+type TabsVariant = "underline" | "pills" | "segmented";
+
+/** A theme surface for the tab bar, or any CSS color (`"#fef3c7"`, `"var(--brand-bg)"`). */
+export type TabsBackground = "none" | "surface" | "raised" | "sunken" | "primary" | (string & {});
+
+const TabsVariantContext = createContext<{ variant: TabsVariant; background?: TabsBackground }>({ variant: "underline" });
 
 export interface TabsProps extends ComponentPropsWithoutRef<typeof TabsPrimitive.Root> {
-  variant?: "underline" | "pills" | "segmented";
+  variant?: TabsVariant;
+  /**
+   * Fill behind the tab bar. Defaults to the variant's own look (sunken for `segmented`, none
+   * otherwise). Pass `"none"` to remove it. TabsList's `background` overrides this.
+   */
+  background?: TabsBackground;
 }
 
 /** Switches between views. Arrow keys move between tabs; RTL aware. */
-export const Tabs = forwardRef<HTMLDivElement, TabsProps>(function Tabs({ variant = "underline", className, ...props }, ref) {
+export const Tabs = forwardRef<HTMLDivElement, TabsProps>(function Tabs({ variant = "underline", background, className, ...props }, ref) {
   return (
-    <TabsVariantContext.Provider value={variant}>
+    <TabsVariantContext.Provider value={{ variant, background }}>
       <TabsPrimitive.Root ref={ref} className={cn("flex flex-col gap-4 data-[orientation=vertical]:flex-row", className)} {...props} />
     </TabsVariantContext.Provider>
   );
 });
+
+const tabsBackground: Record<string, string> = {
+  none: "bg-transparent",
+  surface: "bg-surface",
+  raised: "bg-surface-raised shadow-xs",
+  sunken: "bg-surface-sunken",
+  primary: "bg-primary-subtle",
+};
+
+// A filled bar needs a little room around the tabs and rounded corners; underline keeps its rule at the bottom.
+const tabsFilled: Record<TabsVariant, string> = {
+  underline: "rounded-t-(--nv-button-radius) px-1 pt-1 data-[orientation=vertical]:rounded-t-none data-[orientation=vertical]:rounded-s-(--nv-button-radius) data-[orientation=vertical]:py-1 data-[orientation=vertical]:ps-1 data-[orientation=vertical]:pe-0",
+  pills: "rounded-(--nv-button-radius) p-1",
+  segmented: "",
+};
 
 const tabsList = {
   underline: "relative flex gap-1 border-b border-border data-[orientation=vertical]:flex-col data-[orientation=vertical]:border-b-0 data-[orientation=vertical]:border-e",
@@ -50,8 +75,16 @@ const tabsTrigger = {
     "relative z-10 rounded-[calc(var(--nv-button-radius)-2px)] px-3 py-1.5 text-foreground-muted hover:text-foreground data-[state=active]:bg-surface data-[state=active]:text-foreground data-[state=active]:shadow-sm group-data-[indicator=ready]/tabslist:data-[state=active]:bg-transparent group-data-[indicator=ready]/tabslist:data-[state=active]:shadow-none",
 };
 
-export const TabsList = forwardRef<HTMLDivElement, ComponentPropsWithoutRef<typeof TabsPrimitive.List>>(function TabsList({ className, children, ...props }, ref) {
-  const variant = useContext(TabsVariantContext);
+export interface TabsListProps extends ComponentPropsWithoutRef<typeof TabsPrimitive.List> {
+  /** Fill behind this tab bar; overrides the `background` set on Tabs. */
+  background?: TabsBackground;
+}
+
+export const TabsList = forwardRef<HTMLDivElement, TabsListProps>(function TabsList({ background: backgroundProp, className, style: styleProp, children, ...props }, ref) {
+  const { variant, background: inherited } = useContext(TabsVariantContext);
+  const background = backgroundProp ?? inherited;
+  const preset = background !== undefined ? tabsBackground[background] : undefined;
+  const filled = background !== undefined && background !== "none";
   const [list, setList] = useState<HTMLDivElement | null>(null);
   const composed = useComposedRefs(ref, setList);
   const rect = useActiveRect(list, '[role="tab"][data-state="active"]', '[role="tab"]');
@@ -73,7 +106,17 @@ export const TabsList = forwardRef<HTMLDivElement, ComponentPropsWithoutRef<type
       : { left: 0, top: 0, width: rect.w, height: rect.h, translate: `${rect.x}px ${rect.y}px` });
 
   return (
-    <TabsPrimitive.List ref={composed} data-slot="tabs-list" data-variant={variant} data-indicator={rect ? "ready" : undefined} className={cn("group/tabslist", tabsList[variant], className)} {...props}>
+    <TabsPrimitive.List
+      ref={composed}
+      data-slot="tabs-list"
+      data-variant={variant}
+      data-background={background}
+      data-indicator={rect ? "ready" : undefined}
+      className={cn("group/tabslist", tabsList[variant], filled && tabsFilled[variant], preset, className)}
+      // Anything that isn't a preset name is taken as a CSS color.
+      style={background !== undefined && !preset ? { backgroundColor: background, ...styleProp } : styleProp}
+      {...props}
+    >
       {children}
       {style ? (
         <span
@@ -83,6 +126,8 @@ export const TabsList = forwardRef<HTMLDivElement, ComponentPropsWithoutRef<type
             "pointer-events-none absolute z-0",
             animate && "transition-[translate,width,height] duration-(--nv-duration-slow) ease-(--nv-ease-interactive) motion-reduce:transition-none",
             tabsIndicator[variant],
+            // The segmented thumb is a surface; on a surface-colored bar it needs to sink instead.
+            variant === "segmented" && (background === "surface" || background === "raised") && "bg-surface-sunken shadow-none",
           )}
           style={style}
         />
@@ -92,7 +137,7 @@ export const TabsList = forwardRef<HTMLDivElement, ComponentPropsWithoutRef<type
 });
 
 export const TabsTrigger = forwardRef<HTMLButtonElement, ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>>(function TabsTrigger({ className, ...props }, ref) {
-  const variant = useContext(TabsVariantContext);
+  const { variant } = useContext(TabsVariantContext);
   return (
     <TabsPrimitive.Trigger
       ref={ref}
