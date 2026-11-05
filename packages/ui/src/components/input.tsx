@@ -2,11 +2,14 @@
 
 import { cva, type VariantProps } from "class-variance-authority";
 import { Minus, Plus, Search, X } from "lucide-react";
+import { Direction } from "radix-ui";
 import {
   createContext,
   forwardRef,
   useCallback,
   useContext,
+  useEffect,
+  useLayoutEffect,
   useRef,
   useState,
   type ChangeEvent,
@@ -49,7 +52,10 @@ export const fieldVariants = cva(
   },
 );
 
-type FieldSize = NonNullable<VariantProps<typeof fieldVariants>["size"]>;
+// useLayoutEffect warns during SSR on React 18; measuring only matters in the browser.
+const useIsomorphicLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
+
+type FieldSize =NonNullable<VariantProps<typeof fieldVariants>["size"]>;
 
 interface InputGroupContextValue {
   hasStart: boolean;
@@ -64,14 +70,32 @@ export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
 export const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ size, className, type = "text", ...props }, ref) {
   const group = useContext(InputGroupContext);
   const fieldProps = useFormField(props);
+  const inner = useRef<HTMLInputElement>(null);
+  const composed = useComposedRefs(ref, inner);
+  // The group lays out its adornments in its own direction, but logical padding (`ps-*`) follows
+  // the input's. An input with its own `dir` (e.g. `dir="ltr"` for an email in an RTL page) would
+  // pad the wrong side and the text would run under the icon, so swap the sides when they differ.
+  const contextDir = Direction.useDirection();
+  const [flipped, setFlipped] = useState(() => !!group && !!props.dir && props.dir !== "auto" && props.dir !== contextDir);
+  useIsomorphicLayoutEffect(() => {
+    const el = inner.current;
+    const parent = el?.parentElement;
+    if (!group || !el || !parent) return;
+    const own = getComputedStyle(el).direction;
+    const outer = getComputedStyle(parent).direction;
+    if (!own || !outer) return; // no layout engine (e.g. jsdom): keep the prop-based guess
+    if ((own !== outer) !== flipped) setFlipped(own !== outer);
+  });
+  const padStart = flipped ? "pe-9" : "ps-9";
+  const padEnd = flipped ? "ps-9" : "pe-9";
   return (
     <input
-      ref={ref}
+      ref={composed}
       type={type}
       className={cn(
         fieldVariants({ size: size ?? group?.size }),
-        group?.hasStart && "ps-9",
-        group?.hasEnd && "pe-9",
+        group?.hasStart && padStart,
+        group?.hasEnd && padEnd,
         "file:me-3 file:border-0 file:bg-transparent file:text-sm file:font-medium",
         className,
       )}
