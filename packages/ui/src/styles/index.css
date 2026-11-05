@@ -16,6 +16,7 @@
 @import "./interactions.css";
 @import "tailwindcss/utilities" layer(utilities) source(none);
 @import "./materials.css";
+@import "./rich-text.css";
 
 @source "../components";
 @source "../theme";

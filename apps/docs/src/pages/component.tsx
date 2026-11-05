@@ -20,7 +20,7 @@ export function ComponentPage({ id }: { id: string }) {
 
   return (
     <Page eyebrow={category.label} title={entry.name} lead={entry.summary}>
-      <CodeBlock language="tsx" code={`import { ${imports} } from "@darkalpha/nova-ui";`} />
+      <CodeBlock language="tsx" code={`import { ${imports} } from "@darkalpha/nova-ui${entry.entry ? `/${entry.entry}` : ""}";`} />
       <Suspense fallback={<LoadingState title="Loading examples…" className="py-16" />}>
         <Examples />
       </Suspense>

@@ -49,6 +49,10 @@
       "types": "./dist/react-hook-form.d.ts",
       "default": "./dist/react-hook-form.js"
     },
+    "./rich-text-editor": {
+      "types": "./dist/rich-text-editor.d.ts",
+      "default": "./dist/rich-text-editor.js"
+    },
     "./styles.css": "./dist/styles.css",
     "./themes.css": "./dist/themes.css",
     "./tailwind.css": "./dist/tailwind.css",
@@ -69,6 +73,22 @@
   },
   "dependencies": {
     "@darkalpha/nova-tokens": "workspace:^",
+    "@tiptap/core": "^3.32.2",
+    "@tiptap/extension-bubble-menu": "^3.32.2",
+    "@tiptap/extension-highlight": "^3.32.2",
+    "@tiptap/extension-image": "^3.32.2",
+    "@tiptap/extension-list": "^3.32.2",
+    "@tiptap/extension-subscript": "^3.32.2",
+    "@tiptap/extension-superscript": "^3.32.2",
+    "@tiptap/extension-table": "^3.32.2",
+    "@tiptap/extension-text-align": "^3.32.2",
+    "@tiptap/extension-text-style": "^3.32.2",
+    "@tiptap/extension-typography": "^3.32.2",
+    "@tiptap/extensions": "^3.32.2",
+    "@tiptap/pm": "^3.32.2",
+    "@tiptap/react": "^3.32.2",
+    "@tiptap/starter-kit": "^3.32.2",
+    "@tiptap/suggestion": "^3.32.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",

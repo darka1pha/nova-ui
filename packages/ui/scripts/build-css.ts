@@ -24,7 +24,7 @@ copyFileSync(`${root}src/styles/tailwind.css`, `${root}dist/tailwind.css`);
 copyFileSync(`${root}src/styles/generated/tokens.css`, `${root}dist/tokens.generated.css`);
 copyFileSync(`${root}src/styles/generated/theme.css`, `${root}dist/theme.generated.css`);
 copyFileSync(`${root}src/styles/motion.css`, `${root}dist/motion.generated.css`);
-for (const f of ["base.css", "interactions.css", "materials.css"]) copyFileSync(`${root}src/styles/${f}`, `${root}dist/${f}`);
+for (const f of ["base.css", "interactions.css", "materials.css", "rich-text.css"]) copyFileSync(`${root}src/styles/${f}`, `${root}dist/${f}`);
 
 for (const f of ["styles.css", "themes.css"]) {
   console.log(`dist/${f}: ${(statSync(`${root}dist/${f}`).size / 1024).toFixed(1)} kB`);

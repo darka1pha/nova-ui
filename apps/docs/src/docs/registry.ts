@@ -38,6 +38,8 @@ export interface ComponentEntry {
   parts: string[];
   examples: LazyExoticComponent<ComponentType>;
   a11y?: string[];
+  /** Subpath the parts are imported from, when not the main entry (e.g. "rich-text-editor"). */
+  entry?: string;
 }
 
 type Loader = () => Promise<Record<string, unknown>>;
@@ -49,6 +51,7 @@ const additions: Loader = () => import("../examples/additions.tsx");
 const additionsMore: Loader = () => import("../examples/additions-more.tsx");
 const motion: Loader = () => import("../examples/motion.tsx");
 const moduleCard: Loader = () => import("../examples/module-card.tsx");
+const richText: Loader = () => import("../examples/rich-text-editor.tsx");
 const workflow: Loader = () => import("../examples/workflow.tsx");
 const seasonal: Loader = () => import("../examples/seasonal.tsx");
 const kaveh: Loader = () => import("../examples/kaveh.tsx");
@@ -73,6 +76,7 @@ export const components: ComponentEntry[] = [
   { id: "chip", name: "Chip", summary: "Compact, selectable or removable tokens for filters and tags.", category: "actions", parts: ["Chip"], examples: examples(extras, "ChipExamples") },
   { id: "form-field", name: "FormField", summary: "Wires a label, description and error to any control.", category: "forms", parts: ["FormField", "Fieldset", "Label"], examples: examples(core, "FormFieldExamples"), a11y: ["Every control has a visible focus ring with ≥3:1 contrast, and input borders meet 3:1 against their surface.", "Errors use an icon and text, never color alone.", "Use Fieldset with a legend to name groups of radios or checkboxes."] },
   { id: "input", name: "Input", summary: "Single- and multi-line text fields, with groups for icons and add-ons.", category: "forms", parts: ["Input", "Textarea", "InputGroup", "SearchInput"], examples: examples(core, "InputExamples") },
+  { id: "rich-text-editor", name: "RichTextEditor", summary: "A full-featured rich text editor: headings, marks, colors, links, images, tables, checklists, slash commands and per-block text direction.", category: "forms", parts: ["RichTextEditor", "RichTextViewer"], entry: "rich-text-editor", examples: examples(richText, "RichTextEditorExamples"), a11y: ["The editable area is role=\"textbox\" with aria-multiline, named by its FormField label (or aria-label) and described by its description and error.", "The toolbar is a role=\"toolbar\" with roving focus (arrow keys move between controls) and aria-controls pointing at the editor; toggles expose aria-pressed and every button has a name and a shortcut in its tooltip.", "The / menu is a listbox driven by aria-activedescendant, so focus stays in the text while arrow keys move through commands.", "Import from @darkalpha/nova-ui/rich-text-editor; apps that don't use it never load the editor engine."] },
   { id: "number-input", name: "NumberInput", summary: "A numeric field with steppers, keyboard increments and locale formatting.", category: "forms", parts: ["NumberInput"], examples: examples(core, "NumberInputExamples") },
   { id: "currency-input", name: "CurrencyInput", summary: "A money field that formats with Intl and rounds to the currency's minor units.", category: "forms", parts: ["CurrencyInput"], examples: examples(additions, "CurrencyInputExamples") },
   { id: "phone-input", name: "PhoneInput", summary: "A phone field that formats as you type and stores E.164.", category: "forms", parts: ["PhoneInput"], examples: examples(additions, "PhoneInputExamples") },

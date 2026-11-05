@@ -23,6 +23,7 @@ import "@darkalpha/nova-ui/styles.css";
 | `@darkalpha/nova-ui/styles.css` | Required once (unless you use `tailwind.css`). Tokens, a reset scoped to `.nv-theme`, and component styles. No global preflight. |
 | `@darkalpha/nova-ui/themes.css` | Optional. All presets as `[data-nv-theme="…"]` blocks for zero-JS theming. |
 | `@darkalpha/nova-ui/react-hook-form` | Optional bindings for react-hook-form (any resolver, e.g. zod). Requires `react-hook-form` ≥ 7.55; never loaded by the main entry. |
+| `@darkalpha/nova-ui/rich-text-editor` | `RichTextEditor` and `RichTextViewer`, built on Tiptap/ProseMirror. A separate entry so the editor engine is only loaded by apps that import it; its styles are already in `styles.css`. |
 | `@darkalpha/nova-ui/tailwind.css` | For Tailwind v4 apps, **instead of** `styles.css`: `@import "tailwindcss"; @import "@darkalpha/nova-ui/tailwind.css";` |
 
 ## Apps that use Tailwind CSS v4

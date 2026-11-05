@@ -23,6 +23,7 @@
 @import "./base.css";
 @import "./interactions.css";
 @import "./materials.css";
+@import "./rich-text.css";
 
 @source "./components/**/*.js";
 @source "./theme/**/*.js";

@@ -218,6 +218,7 @@ Select and Combobox are dominated by Radix's positioning engine.
 | Data | Card, Avatar, AvatarGroup, Table, DataTable, DescriptionList, Stat, Timeline, Carousel, BarList, Sparkline, CalendarHeatmap, SortableList (keyboard reordering), VirtualList, Image, ImageGallery, RelativeTime, CodeBlock, ExpandableText |
 | Chat | MessageList (sticks to the bottom, "Jump to latest"), MessageGroup, Message (streaming caret), ChatComposer (auto-grow, IME-safe Enter, attachments, Stop), TypingIndicator |
 | Form bindings (`@darkalpha/nova-ui/react-hook-form`, optional) | Form, FormController, Form{Input, Textarea, NumberInput, Checkbox, Switch, RadioGroup, Select, Combobox, DatePicker, Slider, PinInput, TagInput, Rating, FileDropzone}, FormSubmit, FormReset, FormErrorSummary, FormRootError, FormSuccess, FormError, formFields |
+| Rich text (`@darkalpha/nova-ui/rich-text-editor`) | RichTextEditor (toolbar presets, bubble menu, / commands, tables, images with upload, links, colors, checklists, per-block direction, counts, full screen), RichTextViewer |
 | Motion | Reveal, AnimatedNumber, Marquee, GradientText, SpotlightCard, AnimatedBorder, `useRipple` |
 
 ## Known limitations

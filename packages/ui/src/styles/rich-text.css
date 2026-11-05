@@ -1,0 +1,258 @@
+/*
+ * RichTextEditor content. The editor renders plain HTML elements (p, h1, ul,
+ * table…) that Tailwind utilities can't reach, so their typography lives here.
+ * Everything is scoped to `.nv-rte-content` and uses theme tokens, so content
+ * follows the active theme, mode and direction.
+ */
+@layer components {
+  .nv-rte-content {
+    font-size: var(--nv-text-md);
+    line-height: var(--nv-leading-relaxed);
+    color: var(--nv-color-foreground);
+    overflow-wrap: break-word;
+  }
+
+  .nv-rte-content .ProseMirror {
+    outline: none;
+    min-height: inherit;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-variant-ligatures: none;
+    -webkit-font-variant-ligatures: none;
+  }
+
+  .nv-rte-content .ProseMirror > * + * {
+    margin-block-start: 0.75em;
+  }
+
+  /* Headings */
+  .nv-rte-content :is(h1, h2, h3, h4) {
+    font-family: var(--nv-font-display, inherit);
+    font-weight: var(--nv-weight-bold);
+    letter-spacing: var(--nv-tracking-tight);
+    line-height: var(--nv-leading-tight);
+    color: var(--nv-color-foreground);
+    text-wrap: balance;
+  }
+  .nv-rte-content h1 { font-size: var(--nv-text-3xl); margin-block-start: 1.1em; }
+  .nv-rte-content h2 { font-size: var(--nv-text-2xl); margin-block-start: 1em; }
+  .nv-rte-content h3 { font-size: var(--nv-text-xl); margin-block-start: 0.9em; }
+  .nv-rte-content h4 { font-size: var(--nv-text-lg); margin-block-start: 0.8em; }
+  .nv-rte-content .ProseMirror > :first-child { margin-block-start: 0; }
+
+  /* Inline marks */
+  .nv-rte-content a {
+    color: var(--nv-color-primary-text);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+    cursor: text;
+  }
+  .nv-rte-content[data-editable="false"] a { cursor: pointer; }
+  .nv-rte-content code {
+    font-family: var(--nv-font-mono);
+    font-size: 0.875em;
+    padding: 0.1em 0.35em;
+    border-radius: var(--nv-radius-sm);
+    background: var(--nv-color-surface-sunken);
+    border: 1px solid var(--nv-color-border);
+  }
+  .nv-rte-content mark {
+    border-radius: 0.2em;
+    padding: 0.05em 0.1em;
+    background-color: #fde68a;
+    /* Highlight swatches are light in both modes, so keep the text dark on them.
+     * !important beats the inline `color: inherit` the highlight mark writes. */
+    color: #1c1917 !important;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+  }
+  .nv-rte-content sub, .nv-rte-content sup { font-size: 0.75em; line-height: 0; }
+
+  /* Lists (the scoped base resets them, so restore markers here) */
+  .nv-rte-content :is(ul, ol) {
+    padding-inline-start: 1.5em;
+  }
+  .nv-rte-content ul { list-style: disc; }
+  .nv-rte-content ul ul { list-style: circle; }
+  .nv-rte-content ul ul ul { list-style: square; }
+  .nv-rte-content ol { list-style: decimal; }
+  .nv-rte-content ol ol { list-style: lower-alpha; }
+  .nv-rte-content ol ol ol { list-style: lower-roman; }
+  .nv-rte-content li::marker { color: var(--nv-color-foreground-muted); }
+  .nv-rte-content li > p { margin: 0; }
+  .nv-rte-content li + li, .nv-rte-content li > :is(ul, ol) { margin-block-start: 0.25em; }
+
+  /* Task lists */
+  .nv-rte-content ul[data-type="taskList"] {
+    list-style: none;
+    padding-inline-start: 0.125em;
+  }
+  .nv-rte-content ul[data-type="taskList"] li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5em;
+  }
+  .nv-rte-content ul[data-type="taskList"] li > label {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    height: calc(1em * 1.625);
+    user-select: none;
+  }
+  .nv-rte-content ul[data-type="taskList"] li > label input {
+    width: 1rem;
+    height: 1rem;
+    margin: 0;
+    cursor: pointer;
+    accent-color: var(--nv-color-primary-solid);
+  }
+  .nv-rte-content ul[data-type="taskList"] li > div { flex: 1 1 auto; min-width: 0; }
+  .nv-rte-content ul[data-type="taskList"] li[data-checked="true"] > div {
+    color: var(--nv-color-foreground-muted);
+    text-decoration: line-through;
+  }
+  .nv-rte-content ul[data-type="taskList"] ul[data-type="taskList"] { margin-block-start: 0.25em; }
+
+  /* Blocks */
+  .nv-rte-content blockquote {
+    border-inline-start: 3px solid var(--nv-color-primary-border);
+    padding-inline-start: 1em;
+    color: var(--nv-color-foreground-secondary);
+    font-style: italic;
+  }
+  .nv-rte-content pre {
+    font-family: var(--nv-font-mono);
+    font-size: var(--nv-text-sm);
+    line-height: var(--nv-leading-normal);
+    background: var(--nv-color-surface-sunken);
+    border: 1px solid var(--nv-color-border);
+    border-radius: var(--nv-radius-md);
+    padding: 0.85em 1em;
+    overflow-x: auto;
+    direction: ltr;
+    text-align: left;
+    tab-size: 2;
+  }
+  .nv-rte-content pre code {
+    padding: 0;
+    border: 0;
+    background: none;
+    font-size: inherit;
+  }
+  .nv-rte-content hr {
+    border: 0;
+    border-block-start: 1px solid var(--nv-color-border-strong);
+    margin-block: 1.5em;
+    cursor: pointer;
+  }
+  .nv-rte-content hr.ProseMirror-selectednode { border-block-start-color: var(--nv-color-focus-ring); }
+
+  /* Images */
+  .nv-rte-content img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--nv-radius-md);
+  }
+  .nv-rte-content :is(img, [data-resize-wrapper]).ProseMirror-selectednode,
+  .nv-rte-content .ProseMirror-selectednode img {
+    outline: var(--nv-focus-ring-width, 2px) solid var(--nv-color-focus-ring);
+    outline-offset: 2px;
+  }
+  .nv-rte-content [data-resize-handle] {
+    position: absolute;
+    z-index: 1;
+    width: 10px;
+    height: 10px;
+    border-radius: 9999px;
+    background: var(--nv-color-surface);
+    border: 2px solid var(--nv-color-focus-ring);
+    opacity: 0;
+    transition: opacity var(--nv-duration-fast) var(--nv-ease-standard);
+  }
+  .nv-rte-content [data-resize-container]:hover [data-resize-handle],
+  .nv-rte-content .ProseMirror-selectednode [data-resize-handle] { opacity: 1; }
+  .nv-rte-content [data-resize-handle="top-left"] { top: -5px; left: -5px; cursor: nwse-resize; }
+  .nv-rte-content [data-resize-handle="top-right"] { top: -5px; right: -5px; cursor: nesw-resize; }
+  .nv-rte-content [data-resize-handle="bottom-left"] { bottom: -5px; left: -5px; cursor: nesw-resize; }
+  .nv-rte-content [data-resize-handle="bottom-right"] { bottom: -5px; right: -5px; cursor: nwse-resize; }
+
+  /* Tables */
+  .nv-rte-content .tableWrapper {
+    overflow-x: auto;
+    margin-block: 1em;
+  }
+  .nv-rte-content table {
+    border-collapse: collapse;
+    table-layout: fixed;
+    width: 100%;
+    margin: 0;
+    overflow: hidden;
+  }
+  .nv-rte-content :is(td, th) {
+    position: relative;
+    min-width: 4em;
+    border: 1px solid var(--nv-color-border-strong);
+    padding: 0.4em 0.6em;
+    vertical-align: top;
+    text-align: start;
+  }
+  .nv-rte-content :is(td, th) > * { margin: 0; }
+  .nv-rte-content th {
+    font-weight: var(--nv-weight-medium, 600);
+    background: var(--nv-color-surface-sunken);
+  }
+  .nv-rte-content .selectedCell::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: var(--nv-color-selection);
+    opacity: 0.6;
+  }
+  .nv-rte-content .column-resize-handle {
+    position: absolute;
+    inset-block: -1px;
+    inset-inline-end: -2px;
+    width: 4px;
+    background: var(--nv-color-focus-ring);
+    pointer-events: none;
+  }
+  .nv-rte-content.resize-cursor, .nv-rte-content .resize-cursor { cursor: col-resize; }
+
+  /* Placeholders: the whole-document one, and hints on the empty line being edited. */
+  .nv-rte-content :is(p, h1, h2, h3, h4).is-empty[data-placeholder]:not([data-placeholder=""])::before {
+    content: attr(data-placeholder);
+    float: inline-start;
+    height: 0;
+    pointer-events: none;
+    color: var(--nv-color-foreground-muted);
+    opacity: 0.8;
+  }
+
+  /* Cursor and selection helpers */
+  .nv-rte-content .ProseMirror-gapcursor {
+    display: none;
+    pointer-events: none;
+    position: absolute;
+  }
+  .nv-rte-content .ProseMirror-gapcursor::after {
+    content: "";
+    display: block;
+    position: absolute;
+    top: -2px;
+    width: 20px;
+    border-top: 1px solid var(--nv-color-foreground);
+    animation: nv-rte-cursor-blink 1.1s steps(2, start) infinite;
+  }
+  .nv-rte-content .ProseMirror-focused .ProseMirror-gapcursor { display: block; }
+  .nv-rte-content .ProseMirror-hideselection *::selection { background: transparent; }
+  /* Keeps the selection visible while a toolbar popover has focus. */
+  .nv-rte-content .selection { background: var(--nv-color-selection); }
+  .nv-rte-content .ProseMirror-separator, .nv-rte-content .ProseMirror-trailingBreak { display: inline; }
+
+  @keyframes nv-rte-cursor-blink {
+    to { visibility: hidden; }
+  }
+}

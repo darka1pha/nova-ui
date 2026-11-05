@@ -99,15 +99,20 @@ export function extractApi(sources?: PropSources): ApiData {
   const configPath = resolve(uiRoot, "tsconfig.json");
   const config = ts.getParsedCommandLineOfConfigFile(configPath, {}, { ...ts.sys, onUnRecoverableConfigFileDiagnostic: () => {} });
   if (!config) throw new Error(`Couldn't read ${configPath}`);
-  const program = ts.createProgram({ rootNames: [resolve(uiSrc, "index.ts")], options: { ...config.options, noEmit: true } });
+  // The main entry plus the subpath entries that export components.
+  const entries = ["index.ts", "rich-text-editor.ts"].map((f) => resolve(uiSrc, f));
+  const program = ts.createProgram({ rootNames: entries, options: { ...config.options, noEmit: true } });
   const checker = program.getTypeChecker();
-  const index = program.getSourceFile(resolve(uiSrc, "index.ts"));
-  if (!index) throw new Error("packages/ui/src/index.ts not found");
-  const moduleSymbol = checker.getSymbolAtLocation(index);
-  if (!moduleSymbol) throw new Error("index.ts has no exports");
+  const exports = entries.flatMap((file) => {
+    const source = program.getSourceFile(file);
+    if (!source) throw new Error(`${file} not found`);
+    const moduleSymbol = checker.getSymbolAtLocation(source);
+    if (!moduleSymbol) throw new Error(`${file} has no exports`);
+    return checker.getExportsOfModule(moduleSymbol);
+  });
 
   const out: ApiData = {};
-  for (const exported of checker.getExportsOfModule(moduleSymbol)) {
+  for (const exported of exports) {
     const name = exported.getName();
     if (!/^[A-Z]/.test(name)) continue;
     const symbol = exported.flags & ts.SymbolFlags.Alias ? checker.getAliasedSymbol(exported) : exported;
