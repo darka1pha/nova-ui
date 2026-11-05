@@ -367,6 +367,35 @@ describe("Navigation", () => {
     expect(screen.getByRole("tabpanel")).toHaveTextContent("Activity panel");
   });
 
+  it("Tabs take a background preset, a CSS color, or a per-list override", () => {
+    wrap(
+      <>
+        <Tabs defaultValue="a" background="sunken">
+          <TabsList aria-label="Preset">
+            <TabsTrigger value="a">A</TabsTrigger>
+          </TabsList>
+        </Tabs>
+        <Tabs defaultValue="a" background="sunken">
+          <TabsList aria-label="Custom" background="#fef3c7">
+            <TabsTrigger value="a">A</TabsTrigger>
+          </TabsList>
+        </Tabs>
+        <Tabs defaultValue="a" variant="segmented" background="none">
+          <TabsList aria-label="Bare">
+            <TabsTrigger value="a">A</TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </>,
+    );
+    expect(screen.getByRole("tablist", { name: "Preset" })).toHaveClass("bg-surface-sunken");
+    const custom = screen.getByRole("tablist", { name: "Custom" });
+    expect(custom).not.toHaveClass("bg-surface-sunken");
+    expect(custom.style.backgroundColor).toBe("rgb(254, 243, 199)");
+    const bare = screen.getByRole("tablist", { name: "Bare" });
+    expect(bare).toHaveClass("bg-transparent");
+    expect(bare).not.toHaveClass("bg-surface-sunken");
+  });
+
   it("Accordion expands and collapses", async () => {
     wrap(
       <Accordion type="single" collapsible>

@@ -16,6 +16,20 @@
       "port": 5173
     },
     {
+      "name": "docs-alt",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "--filter",
+        "@darkalpha/nova-docs",
+        "exec",
+        "vite",
+        "--port",
+        "5174",
+        "--strictPort"
+      ],
+      "port": 5174
+    },
+    {
       "name": "example",
       "runtimeExecutable": "npx",
       "runtimeArgs": [

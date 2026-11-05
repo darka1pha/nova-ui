@@ -1534,6 +1534,7 @@ function InteractiveSidebarShowcase() {
 
 export function TabsExamples() {
   return (
+    <>
     <Example
       title="Tabs"
       description="Three looks: underline, pills and segmented. Arrow keys move between tabs."
@@ -1574,6 +1575,33 @@ export function TabsExamples() {
         ))}
       </Stack>
     </Example>
+    <Example
+      title="Background"
+      description="Fill the tab bar with a theme surface (surface, raised, sunken, primary), any CSS color, or none. Set it on Tabs, or on a TabsList to override."
+      code={`<Tabs defaultValue="overview" variant="pills" background="sunken">…</Tabs>
+<Tabs defaultValue="overview" variant="segmented" background="none">…</Tabs>
+<Tabs defaultValue="overview" background="#fef3c7">…</Tabs>`}
+    >
+      <Stack gap={6} className="w-full">
+        {(
+          [
+            ["pills", "sunken"],
+            ["underline", "primary"],
+            ["segmented", "surface"],
+            ["segmented", "none"],
+          ] as const
+        ).map(([variant, background]) => (
+          <Tabs key={`${variant}-${background}`} defaultValue="overview" variant={variant} background={background}>
+            <TabsList aria-label={`${variant} tabs on ${background}`}>
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="activity">Activity</TabsTrigger>
+              <TabsTrigger value="settings">Settings</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        ))}
+      </Stack>
+    </Example>
+    </>
   );
 }
 

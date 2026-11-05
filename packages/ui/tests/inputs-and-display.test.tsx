@@ -7,6 +7,8 @@ import {
   DescriptionItem,
   DescriptionList,
   FormField,
+  Input,
+  InputGroup,
   formatPhoneNumber,
   formatRelativeTime,
   parsePhoneNumber,
@@ -182,5 +184,30 @@ describe("PhoneInput", () => {
       </FormField>,
     );
     expect(await axeViolations(container)).toEqual([]);
+  });
+});
+
+describe("InputGroup direction", () => {
+  it("pads the side the adornment is on when the input has its own dir", () => {
+    wrap(
+      <InputGroup start={<span>@</span>}>
+        <Input aria-label="Email" dir="ltr" />
+      </InputGroup>,
+      { dir: "rtl" },
+    );
+    const input = screen.getByRole("textbox", { name: "Email" });
+    // The icon sits at the group's start (right, in RTL), which is the LTR input's end.
+    expect(input.className).toContain("pe-9");
+    expect(input.className).not.toContain("ps-9");
+  });
+
+  it("pads the start side when directions match", () => {
+    wrap(
+      <InputGroup start={<span>@</span>}>
+        <Input aria-label="Name" />
+      </InputGroup>,
+      { dir: "rtl" },
+    );
+    expect(screen.getByRole("textbox", { name: "Name" }).className).toContain("ps-9");
   });
 });
