@@ -5,6 +5,7 @@ import { Check, Copy, Star, X } from "lucide-react";
 import { forwardRef, useEffect, useId, useState, type ButtonHTMLAttributes, type HTMLAttributes, type ReactNode } from "react";
 import { cn } from "../utils/cn.ts";
 import { buttonVariants, type ButtonSize, type ButtonVariant } from "./button.tsx";
+import { useFormField, useFormFieldContext } from "./field.tsx";
 import { focusRing, pressable, transition } from "./shared.ts";
 
 /* -------------------------------------------------------------------- Chip */
@@ -176,16 +177,37 @@ export interface RatingProps extends Omit<HTMLAttributes<HTMLDivElement>, "onCha
   /** Text for each option, e.g. (n) => `${n} stars`. */
   getOptionLabel?: (value: number) => string;
   name?: string;
+  /** Disables every star. Inherited from a surrounding FormField. */
+  disabled?: boolean;
+  /** Marks the group required (native `required` on the radios). Inherited from FormField. */
+  required?: boolean;
 }
 
 const starSizes = { sm: "size-4", md: "size-6", lg: "size-8" };
+// Empty stars are the choices, so they need 3:1 non-text contrast (WCAG 1.4.11):
+// `input` is resolved to at least 3:1; `border-strong` only to 1.6:1.
+const emptyStar = "text-input";
 
 /**
  * A star rating built on native radio inputs: arrow keys, form submission and
  * screen readers work as standard. Stars preview on hover and pop when chosen.
  */
 export const Rating = forwardRef<HTMLDivElement, RatingProps>(function Rating(
-  { value, defaultValue = 0, onValueChange, max = 5, readOnly = false, size = "md", label = "Rating", getOptionLabel = (n) => `${n} star${n === 1 ? "" : "s"}`, name, className, ...props },
+  {
+    value,
+    defaultValue = 0,
+    onValueChange,
+    max = 5,
+    readOnly = false,
+    size = "md",
+    label,
+    getOptionLabel = (n) => `${n} star${n === 1 ? "" : "s"}`,
+    name,
+    disabled: disabledProp,
+    required: requiredProp,
+    className,
+    ...rest
+  },
   ref,
 ) {
   const [internal, setInternal] = useState(defaultValue);
@@ -193,31 +215,53 @@ export const Rating = forwardRef<HTMLDivElement, RatingProps>(function Rating(
   const [hover, setHover] = useState<number | null>(null);
   const autoName = useId();
   const shown = hover ?? current;
+  // Inside a FormField: take its id, description/message ids, invalid, required and disabled.
+  const field = useFormFieldContext();
+  const { disabled, required, ...props } = useFormField({ ...rest, disabled: disabledProp, required: requiredProp });
+  // The field's visible label names the group; an explicit `label` prop still wins.
+  const naming = label !== undefined ? { "aria-label": label } : field?.labelId ? { "aria-labelledby": field.labelId } : { "aria-label": "Rating" };
 
   if (readOnly) {
     return (
       <div ref={ref} role="img" aria-label={`${current} out of ${max}`} className={cn("inline-flex gap-0.5", className)} {...props}>
         {Array.from({ length: max }, (_, i) => (
-          <Star key={i} aria-hidden className={cn(starSizes[size], i < Math.round(current) ? "fill-warning text-warning-text" : "text-border-strong")} />
+          <Star key={i} aria-hidden className={cn(starSizes[size], i < Math.round(current) ? "fill-warning text-warning-text" : emptyStar)} />
         ))}
       </div>
     );
   }
 
   return (
-    <div ref={ref} role="radiogroup" aria-label={label} className={cn("inline-flex gap-0.5", className)} onPointerLeave={() => setHover(null)} {...props}>
+    <div
+      ref={ref}
+      role="radiogroup"
+      {...naming}
+      aria-required={required || undefined}
+      aria-disabled={disabled || undefined}
+      data-disabled={disabled ? "" : undefined}
+      className={cn("inline-flex gap-0.5", disabled && "opacity-50", className)}
+      onPointerLeave={() => setHover(null)}
+      {...props}
+    >
       {Array.from({ length: max }, (_, i) => {
         const n = i + 1;
         const id = `${autoName}-${n}`;
         const filled = n <= shown;
         return (
-          <label key={n} htmlFor={id} className="group/star relative cursor-pointer" onPointerEnter={() => setHover(n)}>
+          <label
+            key={n}
+            htmlFor={id}
+            className={cn("group/star relative", disabled ? "cursor-not-allowed" : "cursor-pointer")}
+            onPointerEnter={disabled ? undefined : () => setHover(n)}
+          >
             <input
               id={id}
               type="radio"
               name={name ?? autoName}
               value={n}
               checked={current === n}
+              disabled={disabled}
+              required={required}
               onChange={() => {
                 if (value === undefined) setInternal(n);
                 onValueChange?.(n);
@@ -229,8 +273,9 @@ export const Rating = forwardRef<HTMLDivElement, RatingProps>(function Rating(
               aria-hidden
               className={cn(
                 starSizes[size],
-                "rounded-sm transition-[scale,color,fill] duration-(--nv-duration-slow) ease-(--nv-ease-interactive) group-hover/star:scale-125 peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-focus-ring peer-checked:animate-nv-bounce-in motion-reduce:group-hover/star:scale-100",
-                filled ? "fill-warning text-warning-text" : "fill-transparent text-border-strong",
+                "rounded-sm transition-[scale,color,fill] duration-(--nv-duration-slow) ease-(--nv-ease-interactive) peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-focus-ring peer-checked:animate-nv-bounce-in",
+                !disabled && "group-hover/star:scale-125 motion-reduce:group-hover/star:scale-100",
+                filled ? "fill-warning text-warning-text" : cn("fill-transparent", emptyStar),
               )}
             />
           </label>

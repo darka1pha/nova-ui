@@ -1,7 +1,7 @@
 "use client";
 
 import { cva, type VariantProps } from "class-variance-authority";
-import { ArrowDownRight, ArrowUpRight, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight, ChevronLeft, ChevronRight, Pause, Play, X } from "lucide-react";
 import {
   Children,
   forwardRef,
@@ -429,11 +429,23 @@ export interface CarouselProps extends HTMLAttributes<HTMLElement> {
   slideSize?: string;
   /** Space between slides as CSS, e.g. "1rem". */
   gap?: string;
-  /** Advance automatically (pauses on hover/focus; off under reduced motion). */
+  /**
+   * Advance automatically every N ms. Pauses while hovered or focused, can be
+   * stopped with a pause/play button (WCAG 2.2.2), and is off under reduced motion.
+   */
   autoPlay?: number | false;
   /** Show a dot per slide under the track. */
   showDots?: boolean;
-  labels?: { previous?: string; next?: string; goTo?: (n: number) => string; slide?: (n: number, total: number) => string };
+  labels?: {
+    previous?: string;
+    next?: string;
+    goTo?: (n: number) => string;
+    slide?: (n: number, total: number) => string;
+    /** Name of the rotation button while slides are advancing. */
+    pause?: string;
+    /** Name of the rotation button once rotation is stopped. */
+    play?: string;
+  };
   children: ReactNode;
 }
 
@@ -451,7 +463,23 @@ export const Carousel = forwardRef<HTMLElement, CarouselProps>(function Carousel
   // Whether the track can scroll further back / forward. Drives the buttons, so they
   // stay right when several slides are visible at once (index alone can't tell).
   const [edges, setEdges] = useState({ start: true, end: slides.length <= 1 });
-  const [paused, setPaused] = useState(false);
+  // Hover and focus are tracked apart: leaving with the pointer must not resume
+  // rotation while focus is still inside, and vice versa.
+  const [hovered, setHovered] = useState(false);
+  const [focusWithin, setFocusWithin] = useState(false);
+  // An explicit stop from the rotation button; only that button undoes it.
+  const [stopped, setStopped] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(false);
+  useEffect(() => {
+    const mql = window.matchMedia?.("(prefers-reduced-motion: reduce)");
+    if (!mql) return;
+    setReducedMotion(mql.matches);
+    const onChange = () => setReducedMotion(mql.matches);
+    mql.addEventListener?.("change", onChange);
+    return () => mql.removeEventListener?.("change", onChange);
+  }, []);
+  const rotates = !!autoPlay && !reducedMotion && slides.length > 1;
+  const paused = stopped || hovered || focusWithin;
   // The slide a button scroll is heading to, so quick repeat clicks step on from
   // there instead of from wherever the smooth scroll has reached.
   const target = useRef<number | null>(null);
@@ -531,11 +559,11 @@ export const Carousel = forwardRef<HTMLElement, CarouselProps>(function Carousel
   );
 
   useEffect(() => {
-    if (!autoPlay || paused || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+    if (!rotates || paused || !autoPlay) return;
     // At the end, wrap to the first slide.
     const t = setInterval(() => goTo(edges.end ? 0 : index + 1), autoPlay);
     return () => clearInterval(t);
-  }, [autoPlay, paused, index, edges.end, goTo]);
+  }, [rotates, autoPlay, paused, index, edges.end, goTo]);
 
   const nav = cn(
     "absolute top-1/2 z-10 inline-flex size-9 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-surface/90 text-foreground shadow-md backdrop-blur-sm hover:scale-110 disabled:opacity-0 [&_svg]:size-4",
@@ -546,22 +574,36 @@ export const Carousel = forwardRef<HTMLElement, CarouselProps>(function Carousel
 
   return (
     <section
+      {...props}
       ref={ref}
       aria-roledescription="carousel"
       aria-label={label}
-      onPointerEnter={() => setPaused(true)}
-      onPointerLeave={() => setPaused(false)}
-      onFocus={() => setPaused(true)}
-      onBlur={() => setPaused(false)}
+      onPointerEnter={(e) => {
+        // Touch has no hover: a tap would otherwise pause rotation until the next tap elsewhere.
+        if (e.pointerType === "mouse") setHovered(true);
+        props.onPointerEnter?.(e);
+      }}
+      onPointerLeave={(e) => {
+        setHovered(false);
+        props.onPointerLeave?.(e);
+      }}
+      onFocus={(e) => {
+        setFocusWithin(true);
+        props.onFocus?.(e);
+      }}
+      onBlur={(e) => {
+        // focusout bubbles: moving between controls inside is not leaving.
+        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setFocusWithin(false);
+        props.onBlur?.(e);
+      }}
       className={cn("group/carousel relative flex flex-col gap-3", className)}
-      {...props}
     >
       <div className="relative">
         <div
           ref={track}
           // Focusable so keyboard users can scroll it with the arrow keys.
           tabIndex={0}
-          aria-live={autoPlay && !paused ? "off" : "polite"}
+          aria-live={rotates && !paused ? "off" : "polite"}
           className={cn("flex snap-x snap-mandatory overflow-x-auto scroll-smooth rounded-lg [scrollbar-width:none] motion-reduce:scroll-auto [&::-webkit-scrollbar]:hidden", focusRing)}
           style={{ gap }}
         >
@@ -586,9 +628,24 @@ export const Carousel = forwardRef<HTMLElement, CarouselProps>(function Carousel
           <ChevronRight className="rtl:-scale-x-100" />
         </button>
       </div>
-      {showDots ? (
-        <div className="flex justify-center">
-          {slides.map((_, i) => (
+      {showDots || rotates ? (
+        <div className="flex items-center justify-center">
+          {rotates ? (
+            <button
+              type="button"
+              data-slot="carousel-rotation"
+              aria-label={stopped ? (labels?.play ?? "Start slide rotation") : (labels?.pause ?? "Stop slide rotation")}
+              onClick={() => setStopped((s) => !s)}
+              className={cn(
+                "inline-flex size-6 items-center justify-center rounded-full text-foreground-muted hover:bg-surface-hover hover:text-foreground [&_svg]:size-3.5",
+                focusRing,
+                transition,
+              )}
+            >
+              {stopped ? <Play aria-hidden /> : <Pause aria-hidden />}
+            </button>
+          ) : null}
+          {showDots && slides.map((_, i) => (
             // A 24px hit area around a small animated pill (WCAG 2.5.8 target size).
             <button
               key={i}
