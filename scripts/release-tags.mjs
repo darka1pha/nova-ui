@@ -111,7 +111,8 @@ for (const tag of tags) {
   writeFileSync(notes, changelogSection(name, version) + "\n");
   const exists = !dryRun && (() => {
     try {
-      run("gh", ["release", "view", tag]);
+      // Quiet: "release not found" is the expected answer for a new tag.
+      execFileSync("gh", ["release", "view", tag], { cwd: root, stdio: "ignore" });
       return true;
     } catch {
       return false;
