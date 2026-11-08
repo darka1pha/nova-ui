@@ -67,7 +67,7 @@ export const KavehCard = forwardRef<HTMLElement, KavehCardProps>(function KavehC
       ) : (
         <header className={cn("flex items-start justify-between gap-3", navy ? cn(NAVY, "px-5 py-4") : "px-5 pt-5")}>
           <div className="min-w-0">
-            {eyebrow ? <p className={cn("mb-1 text-xs font-semibold uppercase tracking-[0.18em]", navy ? "text-[#ffd0b0]" : "text-[light-dark(#c44e00,#fc7d40)]")}>{eyebrow}</p> : null}
+            {eyebrow ? <p className={cn("mb-1 text-xs font-semibold uppercase tracking-[0.18em]", navy ? "text-[#ffd0b0]" : "text-[light-dark(#b34700,#fc7d40)]")}>{eyebrow}</p> : null}
             {title ? <h3 className="font-display text-lg font-bold leading-snug">{title}</h3> : null}
             {titleFa ? <Fa className={cn("text-sm", navy ? "text-[#ffd0b0]" : "text-secondary-text")}>{titleFa}</Fa> : null}
           </div>
@@ -128,7 +128,7 @@ export const KavehServiceCard = forwardRef<HTMLElement, KavehServiceCardProps>(f
         aria-hidden
         className={cn(
           "grid size-12 place-items-center rounded-lg [&_svg]:size-6",
-          navy ? "bg-[#f37537] text-[#0b1f3f]" : variant === "tinted" ? "bg-surface text-[light-dark(#c44e00,#fc7d40)]" : "bg-[light-dark(#ffefe3,#3a2112)] text-[light-dark(#bc4b00,#fc7d40)]",
+          navy ? "bg-[#f37537] text-[#0b1f3f]" : variant === "tinted" ? "bg-surface text-[light-dark(#b34700,#fc7d40)]" : "bg-[light-dark(#ffefe3,#3a2112)] text-[light-dark(#bc4b00,#fc7d40)]",
         )}
       >
         {icon}
@@ -263,7 +263,7 @@ export const KavehContactCard = forwardRef<HTMLElement, KavehContactCardProps>(f
       )}
       <div className="flex min-w-0 flex-col gap-1">
         <h3 className="font-display text-base font-bold">{name}</h3>
-        {role ? <p className="text-sm text-[light-dark(#c44e00,#fc7d40)]">{role}</p> : null}
+        {role ? <p className="text-sm text-[light-dark(#b34700,#fc7d40)]">{role}</p> : null}
         {roleFa ? <Fa className="text-sm text-secondary-text">{roleFa}</Fa> : null}
         <ul className={cn("mt-2 flex flex-col gap-1.5 text-sm text-foreground-secondary", stacked && "items-center")}>
           {phone ? (
@@ -397,7 +397,7 @@ export const KavehHero = forwardRef<HTMLElement, KavehHeroProps>(function KavehH
       {...props}
     >
       <div className="relative flex flex-col items-start gap-4 p-8 md:p-12">
-        {eyebrow ? <p className={cn("text-xs font-semibold uppercase tracking-[0.22em]", dark ? "text-[#ffd0b0]" : "text-[light-dark(#c44e00,#fc7d40)]")}>{eyebrow}</p> : null}
+        {eyebrow ? <p className={cn("text-xs font-semibold uppercase tracking-[0.22em]", dark ? "text-[#ffd0b0]" : "text-[light-dark(#b34700,#fc7d40)]")}>{eyebrow}</p> : null}
         <h2 className={cn("font-display text-4xl font-extrabold leading-[1.05] tracking-tight md:text-5xl", !dark && "text-secondary-text")}>{title}</h2>
         {titleFa ? <Fa className={cn("text-2xl font-black", dark ? "text-white/90" : "text-foreground")}>{titleFa}</Fa> : null}
         <HorizonDivider length="5rem" />
@@ -442,7 +442,7 @@ export const KavehPageHeader = forwardRef<HTMLElement, KavehPageHeaderProps>(fun
       {variant === "band" && eyebrow ? <Tideband size="sm" className="w-fit min-w-64">{eyebrow}</Tideband> : null}
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="min-w-0">
-          {eyebrow && variant !== "band" ? <p className={cn("mb-1 text-xs font-semibold uppercase tracking-[0.2em]", navy ? "text-[#ffd0b0]" : "text-[light-dark(#c44e00,#fc7d40)]")}>{eyebrow}</p> : null}
+          {eyebrow && variant !== "band" ? <p className={cn("mb-1 text-xs font-semibold uppercase tracking-[0.2em]", navy ? "text-[#ffd0b0]" : "text-[light-dark(#b34700,#fc7d40)]")}>{eyebrow}</p> : null}
           <h1 className={cn("font-display text-3xl font-bold leading-tight tracking-tight", !navy && "text-foreground")}>{title}</h1>
           {titleFa ? <Fa className={cn("text-lg", navy ? "text-[#ffd0b0]" : "text-secondary-text")}>{titleFa}</Fa> : null}
           {description ? <p className={cn("mt-2 max-w-2xl text-sm", navy ? "text-white/75" : "text-foreground-secondary")}>{description}</p> : null}
@@ -482,7 +482,7 @@ export const KavehFooter = forwardRef<HTMLElement, KavehFooterProps>(function Ka
         </div>
         {columns?.map((col, i) => (
           <nav key={i} aria-label={typeof col.title === "string" ? col.title : undefined} className="flex flex-col gap-2 text-sm">
-            <p className={cn("mb-1 font-display text-xs font-semibold uppercase tracking-[0.18em]", navy ? "text-[#ffd0b0]" : "text-[light-dark(#c44e00,#fc7d40)]")}>{col.title}</p>
+            <p className={cn("mb-1 font-display text-xs font-semibold uppercase tracking-[0.18em]", navy ? "text-[#ffd0b0]" : "text-[light-dark(#b34700,#fc7d40)]")}>{col.title}</p>
             {col.links.map((l, j) => (
               <a key={j} href={l.href} className={cn("w-fit rounded-xs hover:underline", navy ? "text-white/80 hover:text-white" : "text-foreground-secondary hover:text-foreground", focusRing)}>
                 {l.label}
@@ -519,7 +519,13 @@ export interface KavehTimelineProps extends HTMLAttributes<HTMLOListElement> {
 export const KavehTimeline = forwardRef<HTMLOListElement, KavehTimelineProps>(function KavehTimeline({ items, orientation = "vertical", current, className, ...props }, ref) {
   const horizontal = orientation === "horizontal";
   return (
-    <ol ref={ref} className={cn("nv-kaveh-timeline", horizontal ? "flex gap-6 overflow-x-auto pb-2" : "flex flex-col", className)} {...props}>
+    <ol
+      ref={ref}
+      // A horizontal timeline scrolls sideways: it must be focusable so keyboard users can scroll it (WCAG 2.1.1).
+      tabIndex={horizontal ? 0 : undefined}
+      className={cn("nv-kaveh-timeline", horizontal ? cn("flex gap-6 overflow-x-auto pb-2 rounded-sm", focusRing) : "flex flex-col", className)}
+      {...props}
+    >
       {items.map((item, i) => {
         const active = i === current;
         const dot = (
@@ -546,7 +552,7 @@ export const KavehTimeline = forwardRef<HTMLOListElement, KavehTimelineProps>(fu
               <p className="flex items-baseline gap-2">
                 <span className="font-display text-xl font-extrabold text-secondary-text">{item.year}</span>
                 {item.yearFa ? (
-                  <span lang="fa" dir="rtl" className="text-sm font-bold text-[light-dark(#c44e00,#fc7d40)]">
+                  <span lang="fa" dir="rtl" className="text-sm font-bold text-[light-dark(#b34700,#fc7d40)]">
                     {item.yearFa}
                   </span>
                 ) : null}
@@ -625,10 +631,11 @@ export const KavehSidebar = forwardRef<HTMLElement, KavehSidebarProps>(function 
                 const inner = (
                   <>
                     <span aria-hidden className={cn("absolute inset-y-1.5 start-0 w-[3px] rounded-full transition-opacity", active ? "opacity-100" : "opacity-0")} style={{ background: k.orange }} />
-                    {item.icon ? <span aria-hidden className={cn("grid size-5 shrink-0 place-items-center [&_svg]:size-[18px]", active ? (navy ? "text-[#ffd0b0]" : "text-[light-dark(#c44e00,#fc7d40)]") : "")}>{item.icon}</span> : null}
+                    {item.icon ? <span aria-hidden className={cn("grid size-5 shrink-0 place-items-center [&_svg]:size-[18px]", active ? (navy ? "text-[#ffd0b0]" : "text-[light-dark(#b34700,#fc7d40)]") : "")}>{item.icon}</span> : null}
                     <span className={cn("flex min-w-0 flex-1 flex-col", collapsed && "sr-only")}>
                       <span className="truncate">{item.label}</span>
-                      {item.labelFa ? <Fa className={cn("truncate text-[11px] font-medium", navy ? "text-white/75" : "text-foreground-muted")}>{item.labelFa}</Fa> : null}
+                      {/* On the lighter active/hover row, 75% white drops under 4.5:1; 85% keeps it. */}
+                      {item.labelFa ? <Fa className={cn("truncate text-[11px] font-medium", navy ? "text-white/85" : "text-foreground-muted")}>{item.labelFa}</Fa> : null}
                     </span>
                     {item.badge && !collapsed ? <span className="shrink-0 rounded-full bg-[#f37537] px-1.5 text-[11px] font-bold text-[#0b1f3f]">{item.badge}</span> : null}
                   </>
@@ -966,7 +973,8 @@ export function KavehTable<T>({
       header: (
         <span className={cn("inline-flex flex-col font-display text-xs font-semibold uppercase tracking-[0.12em]", align === "end" ? "items-end" : align === "center" ? "items-center" : "items-start")}>
           <span>{col.header}</span>
-          {col.headerFa ? <Fa className="text-[11px] font-medium opacity-80">{col.headerFa}</Fa> : null}
+          {/* Full opacity: at 80% the 11px Persian header fell to 4.16:1 on the header tint. */}
+          {col.headerFa ? <Fa className="text-[11px] font-medium">{col.headerFa}</Fa> : null}
         </span>
       ),
       menuLabel: typeof col.header === "string" ? col.header : col.key,

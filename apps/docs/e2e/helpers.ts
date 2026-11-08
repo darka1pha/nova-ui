@@ -28,12 +28,21 @@ export async function open(page: Page, route: string, mode: "light" | "dark" = "
   return errors;
 }
 
-/** Runs axe-core in the real browser, including color-contrast. */
+/**
+ * Runs axe-core in the real browser, including color-contrast. Contrast findings
+ * inside `[data-nv-logotype]` (brand lockups such as KavehLogo) are dropped: WCAG
+ * 1.4.3 exempts text that is part of a logo. Every other rule still applies there.
+ */
 export async function axe(page: Page, selector = "main") {
   await page.addScriptTag({ path: axePath });
   return page.evaluate(async (sel) => {
-    const w = window as unknown as { axe: { run: (ctx: string, opts: object) => Promise<{ violations: { id: string; help: string; nodes: { target: string[] }[] }[] }> } };
+    type Node = { target: string[] };
+    const w = window as unknown as { axe: { run: (ctx: string, opts: object) => Promise<{ violations: { id: string; help: string; nodes: Node[] }[] }> } };
     const result = await w.axe.run(sel, { runOnly: { type: "tag", values: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"] } });
-    return result.violations.map((v) => `${v.id}: ${v.help} → ${v.nodes.slice(0, 3).map((n) => n.target.join(" ")).join(" | ")}`);
+    const inLogotype = (n: Node) => n.target.length === 1 && !!document.querySelector(n.target[0]!)?.closest("[data-nv-logotype]");
+    return result.violations
+      .map((v) => ({ ...v, nodes: v.id === "color-contrast" ? v.nodes.filter((n) => !inLogotype(n)) : v.nodes }))
+      .filter((v) => v.nodes.length > 0)
+      .map((v) => `${v.id}: ${v.help} → ${v.nodes.slice(0, 3).map((n) => n.target.join(" ")).join(" | ")}`);
   }, selector);
 }
