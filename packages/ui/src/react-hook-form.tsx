@@ -622,7 +622,7 @@ export function FormRating<T extends FieldValues = FieldValues, N extends FieldP
     <FormController<T, N>
       {...{ name, control, rules, defaultValue, shouldUnregister, required, successMessage, label, description, warning, success, optional, className }}
       render={({ field, focusRef }) => (
-        <Rating {...rating} label={typeof label === "string" ? label : undefined} ref={focusRef} name={field.name} value={field.value ?? 0} onValueChange={field.onChange} onBlur={field.onBlur} />
+        <Rating {...rating} ref={focusRef} name={field.name} value={field.value ?? 0} onValueChange={field.onChange} onBlur={field.onBlur} />
       )}
     />
   );

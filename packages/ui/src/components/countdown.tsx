@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef, useEffect, useMemo, useRef, useState, type HTMLAttributes, type ReactNode } from "react";
+import { forwardRef, useEffect, useMemo, useRef, useState, useSyncExternalStore, type HTMLAttributes, type ReactNode } from "react";
 import { useLocale } from "../theme/theme-provider.tsx";
 import { cn } from "../utils/cn.ts";
 
@@ -33,7 +33,18 @@ export interface CountdownProps extends Omit<HTMLAttributes<HTMLSpanElement>, "c
   /** Shown instead of zeros once finished. */
   completed?: ReactNode;
   locale?: string;
+  /**
+   * The current time (ms since epoch) to render on the server and while hydrating,
+   * e.g. `Date.now()` captured on the server. Without it the server renders
+   * placeholders ("--") and the real time appears right after hydration, so the
+   * markup never mismatches.
+   */
+  initialNow?: number;
 }
+
+const noopSubscribe = () => () => {};
+/** False on the server and during hydration, true afterwards and on client-only renders. */
+const useHydrated = () => useSyncExternalStore(noopSubscribe, () => true, () => false);
 
 /**
  * Time left until a moment, ticking every second (or minute without seconds).
@@ -42,12 +53,18 @@ export interface CountdownProps extends Omit<HTMLAttributes<HTMLSpanElement>, "c
  * Renders a `<span>`, so it can sit inside a sentence ("Sale ends in …").
  */
 export const Countdown = forwardRef<HTMLSpanElement, CountdownProps>(function Countdown(
-  { to, onComplete, variant = "blocks", showSeconds = true, completed, locale: localeProp, className, ...props },
+  { to, onComplete, variant = "blocks", showSeconds = true, completed, locale: localeProp, initialNow, className, ...props },
   ref,
 ) {
   const { locale } = useLocale(localeProp);
   const target = new Date(to).getTime();
-  const [now, setNow] = useState(() => Date.now());
+  const hydrated = useHydrated();
+  const [now, setNow] = useState(() => initialNow ?? Date.now());
+  // The server's clock (or a hydration-time snapshot) is stale once mounted.
+  useEffect(() => setNow(Date.now()), []);
+  // Server and hydration renders must produce identical markup: either the
+  // caller-supplied clock or placeholders, never the machine's own clock.
+  const placeholder = !hydrated && initialNow === undefined;
   const remaining = Math.max(0, target - now);
   const done = remaining <= 0;
   const step = showSeconds ? MS.second : MS.minute;
@@ -74,7 +91,8 @@ export const Countdown = forwardRef<HTMLSpanElement, CountdownProps>(function Co
 
   // Round up, like any countdown: 1:02 stays on screen until a full second has passed.
   const parts = splitDuration(Math.ceil(remaining / step) * step);
-  const shown = UNITS.filter((u) => (u === "day" ? parts.day > 0 : u === "second" ? showSeconds : true));
+  const shown = UNITS.filter((u) => (u === "day" ? parts.day > 0 && !placeholder : u === "second" ? showSeconds : true));
+  const digitsOf = (unit: Unit) => (placeholder ? "--" : unit === "day" && variant === "inline" ? String(parts.day) : format.digits.format(parts[unit]));
 
   const format = useMemo(() => {
     const unitText = (unit: Unit, value: number, display: "long" | "narrow") =>
@@ -92,25 +110,25 @@ export const Countdown = forwardRef<HTMLSpanElement, CountdownProps>(function Co
     <span
       ref={ref}
       role="timer"
-      aria-label={done && typeof completed === "string" ? completed : spoken}
-      data-done={done || undefined}
+      aria-label={placeholder ? undefined : done && typeof completed === "string" ? completed : spoken}
+      data-done={(done && !placeholder) || undefined}
       className={cn(variant === "blocks" ? "inline-flex gap-2" : "inline-flex items-baseline gap-1 tabular-nums", className)}
       {...props}
     >
-      {done && completed ? (
+      {done && completed && !placeholder ? (
         <span aria-hidden>{completed}</span>
       ) : variant === "blocks" ? (
         shown.map((unit) => (
           <span key={unit} aria-hidden className="flex min-w-16 flex-col items-center gap-1 rounded-(--nv-card-radius) border border-border bg-surface px-3 py-2 shadow-xs">
-            <span className="font-display text-2xl font-semibold tabular-nums leading-none">{format.digits.format(parts[unit])}</span>
-            <span className="text-xs text-foreground-muted">{format.unitText(unit, parts[unit], "long")}</span>
+            <span className="font-display text-2xl font-semibold tabular-nums leading-none">{digitsOf(unit)}</span>
+            <span className="text-xs text-foreground-muted">{format.unitText(unit, placeholder ? 0 : parts[unit], "long")}</span>
           </span>
         ))
       ) : (
         shown.map((unit) => (
           <span key={unit} aria-hidden>
-            <span className="font-semibold">{unit === "day" ? parts.day : format.digits.format(parts[unit])}</span>
-            <span className="text-foreground-muted">{format.unitText(unit, parts[unit], "narrow")}</span>
+            <span className="font-semibold">{digitsOf(unit)}</span>
+            <span className="text-foreground-muted">{format.unitText(unit, placeholder ? 0 : parts[unit], "narrow")}</span>
           </span>
         ))
       )}
