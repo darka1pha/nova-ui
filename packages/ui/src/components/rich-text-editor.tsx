@@ -355,18 +355,42 @@ const toolbarPresets: Record<RichTextToolbarPreset, RichTextToolbarItem[]> = {
   minimal: ["bold", "italic", "|", "link", "|", "bulletList", "orderedList"],
 };
 
-/** Text colors: mid tones that read on light and dark surfaces. */
+/**
+ * Text colors, stored as `light-dark()` pairs. No single color reaches 4.5:1 on both
+ * a white and a near-black surface, so each pair has a dark shade for light mode
+ * and a light shade for dark mode. Every pair clears 4.5:1 on the background,
+ * surface, raised and sunken surfaces of every preset. HTML rendered outside a
+ * theme falls back to the light-mode shade.
+ */
 const textColors = [
-  { name: "Gray", value: "#6b7280" },
-  { name: "Red", value: "#dc2626" },
-  { name: "Orange", value: "#ea580c" },
-  { name: "Amber", value: "#d97706" },
-  { name: "Green", value: "#16a34a" },
-  { name: "Teal", value: "#0d9488" },
-  { name: "Blue", value: "#2563eb" },
-  { name: "Violet", value: "#7c3aed" },
-  { name: "Pink", value: "#db2777" },
+  { name: "Gray", value: "light-dark(#4b5563, #9ca3af)" },
+  { name: "Red", value: "light-dark(#b91c1c, #f87171)" },
+  { name: "Orange", value: "light-dark(#c2410c, #fb923c)" },
+  { name: "Amber", value: "light-dark(#92400e, #fbbf24)" },
+  { name: "Green", value: "light-dark(#166534, #4ade80)" },
+  { name: "Teal", value: "light-dark(#0f766e, #2dd4bf)" },
+  { name: "Blue", value: "light-dark(#1d4ed8, #60a5fa)" },
+  { name: "Violet", value: "light-dark(#6d28d9, #a78bfa)" },
+  { name: "Pink", value: "light-dark(#be185d, #f472b6)" },
 ];
+
+/**
+ * Whether two CSS colors are the same once the browser serializes them. Content
+ * loaded from HTML comes back as e.g. `light-dark(rgb(29, 78, 216), rgb(96, 165, 250))`.
+ */
+let colorProbe: HTMLElement | undefined;
+function sameColor(a: string, b: string): boolean {
+  if (a.toLowerCase() === b.toLowerCase()) return true;
+  if (typeof document === "undefined") return false;
+  const probe = (colorProbe ??= document.createElement("span"));
+  const normalize = (value: string) => {
+    probe.style.color = "";
+    probe.style.color = value;
+    return probe.style.color;
+  };
+  const na = normalize(a);
+  return na !== "" && na === normalize(b);
+}
 
 /** Highlights: light tints. Highlighted text stays dark in both modes (see rich-text.css). */
 const highlightColors = [
@@ -1430,7 +1454,7 @@ function ColorPopover({ label, shortcut, icon: Icon, colors, current, resetLabel
               key={c.value}
               type="button"
               aria-label={c.name}
-              aria-pressed={current?.toLowerCase() === c.value}
+              aria-pressed={current ? sameColor(current, c.value) : false}
               title={c.name}
               onClick={() => pick(c.value)}
               className={cn(

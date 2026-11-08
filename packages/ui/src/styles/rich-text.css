@@ -93,19 +93,65 @@
     align-items: flex-start;
     gap: 0.5em;
   }
+  /*
+   * The box you see is 16px, drawn on Tiptap's styler <span>. The real checkbox is
+   * an invisible 24px square centred on it, so the touch target meets WCAG 2.5.8
+   * (24×24) without making the box larger or changing the line layout.
+   */
   .nv-rte-content ul[data-type="taskList"] li > label {
+    position: relative;
     flex: none;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
+    width: 1rem;
     height: calc(1em * 1.625);
     user-select: none;
   }
   .nv-rte-content ul[data-type="taskList"] li > label input {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    width: 1.5rem;
+    height: 1.5rem;
+    margin: -0.75rem;
+    opacity: 0;
+    cursor: pointer;
+  }
+  .nv-rte-content ul[data-type="taskList"] li > label span {
+    position: relative;
     width: 1rem;
     height: 1rem;
-    margin: 0;
-    cursor: pointer;
-    accent-color: var(--nv-color-primary-solid);
+    border: 1.5px solid var(--nv-color-input);
+    border-radius: var(--nv-radius-xs);
+    background-color: var(--nv-color-surface);
+    pointer-events: none;
+    transition: background-color var(--nv-duration-fast) var(--nv-ease-standard), border-color var(--nv-duration-fast) var(--nv-ease-standard);
+  }
+  .nv-rte-content ul[data-type="taskList"] li > label input:checked + span {
+    border-color: var(--nv-color-primary-solid);
+    background-color: var(--nv-color-primary-solid);
+  }
+  .nv-rte-content ul[data-type="taskList"] li > label input:checked + span::after {
+    content: "";
+    position: absolute;
+    inset-block-start: 45%;
+    inset-inline-start: 50%;
+    width: 0.3rem;
+    height: 0.55rem;
+    border: solid var(--nv-color-primary-on-solid);
+    border-width: 0 2px 2px 0;
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+  [dir="rtl"] .nv-rte-content ul[data-type="taskList"] li > label input:checked + span::after {
+    transform: translate(50%, -50%) rotate(45deg);
+  }
+  .nv-rte-content ul[data-type="taskList"] li > label input:focus-visible + span {
+    outline: 2px solid var(--nv-color-focus-ring);
+    outline-offset: 2px;
+  }
+  .nv-rte-content ul[data-type="taskList"] li > label input:disabled {
+    cursor: default;
   }
   .nv-rte-content ul[data-type="taskList"] li > div { flex: 1 1 auto; min-width: 0; }
   .nv-rte-content ul[data-type="taskList"] li[data-checked="true"] > div {

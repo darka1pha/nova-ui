@@ -1597,6 +1597,12 @@ export function TabsExamples() {
               <TabsTrigger value="activity">Activity</TabsTrigger>
               <TabsTrigger value="settings">Settings</TabsTrigger>
             </TabsList>
+            {/* Each trigger's aria-controls must point at a real panel. */}
+            {["overview", "activity", "settings"].map((value) => (
+              <TabsContent key={value} value={value} className="pt-2 text-sm text-foreground-muted">
+                {variant} on {background}: {value}
+              </TabsContent>
+            ))}
           </Tabs>
         ))}
       </Stack>

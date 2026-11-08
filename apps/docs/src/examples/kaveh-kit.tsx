@@ -308,7 +308,7 @@ const userFooter = (dark: boolean) => (
     <Avatar name="Sara Ahmadi" size="sm" />
     <div className="min-w-0 text-sm">
       <p className="truncate font-semibold">Sara Ahmadi</p>
-      <p className={dark ? "truncate text-xs text-white/60" : "truncate text-xs text-foreground-muted"}>Port agent</p>
+      <p className={dark ? "truncate text-xs text-white/75" : "truncate text-xs text-foreground-muted"}>Port agent</p>
     </div>
   </div>
 );
@@ -570,7 +570,7 @@ export function KavehDataExamples() {
             <KavehNotice variant="warning" title="Strong winds at Bushehr" titleFa="باد شدید در بوشهر">
               Pilotage is suspended until 18:00.
             </KavehNotice>
-            <KavehNotice variant="navy" title="Our operations centre is open 24/7" action={<KavehLink href="#/components/kaveh-data" className="text-[#fc7d40]">Contact ops</KavehLink>} />
+            <KavehNotice variant="navy" title="Our operations centre is open 24/7" action={<KavehLink href="#/components/kaveh-data" className="text-[#ffd0b0]">Contact ops</KavehLink>} />
             {dismissed ? (
               <Button size="sm" variant="outline" className="w-fit" onClick={() => setDismissed(false)}>
                 Show campaign notice

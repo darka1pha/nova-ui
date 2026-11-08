@@ -379,7 +379,10 @@ export const KavehLogo = forwardRef<HTMLDivElement, KavehLogoProps>(function Kav
   ref,
 ) {
   const c = tones[tone];
-  const shared = { ref, role: "img" as const, "aria-label": "Kaveh Port & Marine Services", ...props };
+  // `data-nv-logotype`: the lockup's lettering is the trademark itself, which WCAG 1.4.3
+  // exempts from contrast minimums ("text that is part of a logo or brand name").
+  // The docs' axe checks skip color-contrast inside it, and nothing else.
+  const shared = { ref, role: "img" as const, "aria-label": "Kaveh Port & Marine Services", "data-nv-logotype": "", ...props };
 
   if (layout === "heritage") {
     const h = size * 2.4;
@@ -841,7 +844,7 @@ export const BrandStat = forwardRef<HTMLDivElement, BrandStatProps>(function Bra
       )}
       {...props}
     >
-      <span className={cn("font-display text-4xl font-extrabold leading-none tracking-tight", variant === "orange" ? "text-[light-dark(#c44e00,#fc7d40)]" : inverse ? "text-white" : "text-secondary-text")}>{value}</span>
+      <span className={cn("font-display text-4xl font-extrabold leading-none tracking-tight", variant === "orange" ? "text-[light-dark(#b34700,#fc7d40)]" : inverse ? "text-white" : "text-secondary-text")}>{value}</span>
       <HorizonDivider length="2.5rem" align={align} />
       <span className={cn("text-sm font-medium", inverse ? "text-white/80" : "text-foreground-secondary")}>{label}</span>
       {labelFa ? (
@@ -892,7 +895,7 @@ export const BilingualHeading = forwardRef<HTMLDivElement, BilingualHeadingProps
   ) : null;
   return (
     <div ref={ref} className={cn("nv-bilingual-heading flex flex-col gap-2", centered && "items-center text-center", className)} {...props}>
-      {eyebrow ? <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[light-dark(#c44e00,#fc7d40)]">{eyebrow}</p> : null}
+      {eyebrow ? <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[light-dark(#b34700,#fc7d40)]">{eyebrow}</p> : null}
       {variant === "split" ? (
         <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
           <H className={cn("font-display font-bold leading-tight tracking-tight", sz.en)}>{title}</H>

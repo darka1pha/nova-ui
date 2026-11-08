@@ -17,7 +17,7 @@ const article = `<h2>Release notes</h2>
 <blockquote><p>Good tools disappear while you write.</p></blockquote>`;
 
 const persian = `<h2>یادداشت جلسه</h2>
-<p>در این جلسه دربارهٔ <strong>برنامهٔ انتشار</strong> و هماهنگی با تیم <span style="color: #2563eb">Design System</span> گفت‌وگو شد.</p>
+<p>در این جلسه دربارهٔ <strong>برنامهٔ انتشار</strong> و هماهنگی با تیم <span style="color: light-dark(#1d4ed8, #60a5fa)">Design System</span> گفت‌وگو شد.</p>
 <ol><li><p>بازبینی طرح‌ها تا پایان هفته</p></li><li><p>انتشار نسخهٔ آزمایشی</p></li></ol>`;
 
 /** A stand-in upload that reads the file as a data URL after a short delay. */

@@ -158,7 +158,8 @@ test("hover lifts and glows a primary button; press squashes it", async ({ page 
 
 test("tab indicator glides to the selected tab", async ({ page }) => {
   await open(page, "components/tabs");
-  const list = page.getByRole("tablist", { name: "pills tabs" });
+  // exact: "pills tabs on sunken" (the background demo) also contains "pills tabs".
+  const list = page.getByRole("tablist", { name: "pills tabs", exact: true });
   const indicator = list.locator("[data-tabs-indicator]");
   await expect(list).toHaveAttribute("data-indicator", "ready");
   await list.getByRole("tab", { name: "Settings" }).click();
