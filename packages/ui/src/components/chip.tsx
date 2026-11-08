@@ -176,6 +176,8 @@ export interface RatingProps extends Omit<HTMLAttributes<HTMLDivElement>, "onCha
   label?: string;
   /** Text for each option, e.g. (n) => `${n} stars`. */
   getOptionLabel?: (value: number) => string;
+  /** Accessible name of a read-only rating, e.g. (v, max) => `${v} از ${max}`. Defaults to "3 out of 5". */
+  getValueLabel?: (value: number, max: number) => string;
   name?: string;
   /** Disables every star. Inherited from a surrounding FormField. */
   disabled?: boolean;
@@ -202,6 +204,7 @@ export const Rating = forwardRef<HTMLDivElement, RatingProps>(function Rating(
     size = "md",
     label,
     getOptionLabel = (n) => `${n} star${n === 1 ? "" : "s"}`,
+    getValueLabel = (v, m) => `${v} out of ${m}`,
     name,
     disabled: disabledProp,
     required: requiredProp,
@@ -223,7 +226,7 @@ export const Rating = forwardRef<HTMLDivElement, RatingProps>(function Rating(
 
   if (readOnly) {
     return (
-      <div ref={ref} role="img" aria-label={`${current} out of ${max}`} className={cn("inline-flex gap-0.5", className)} {...props}>
+      <div ref={ref} role="img" aria-label={getValueLabel(current, max)} className={cn("inline-flex gap-0.5", className)} {...props}>
         {Array.from({ length: max }, (_, i) => (
           <Star key={i} aria-hidden className={cn(starSizes[size], i < Math.round(current) ? "fill-warning text-warning-text" : emptyStar)} />
         ))}

@@ -76,7 +76,7 @@ export const Label = forwardRef<HTMLLabelElement, LabelProps>(function Label({ c
   return (
     <LabelPrimitive.Root
       ref={ref}
-      className={cn("inline-flex items-center gap-1 text-sm font-medium text-foreground peer-disabled:opacity-50", className)}
+      className={cn("inline-flex items-center gap-1 text-sm font-medium text-foreground in-data-disabled:opacity-50", className)}
       {...props}
     >
       {children}
@@ -229,7 +229,7 @@ export const FormField = forwardRef<HTMLDivElement, FormFieldProps>(function For
           </>
         )}
         {/* Always rendered so screen readers reliably announce messages as they appear. */}
-        <div id={messageId} aria-live="polite" className={cn(inline && "col-start-2", !status && "contents")}>
+        <div id={messageId} aria-live="polite" className={cn(inline && "col-start-2", !status && "sr-only")}>
           {status ? <FieldMessage status={status} messages={messages} /> : null}
         </div>
       </div>
@@ -250,19 +250,21 @@ export const Fieldset = forwardRef<HTMLFieldSetElement, FieldsetProps>(function 
   const errors = toList(error);
   const auto = useId();
   const errorId = `nv-fieldset-${auto}-error`;
+  const descriptionId = `nv-fieldset-${auto}-description`;
+  const describedBy = [props["aria-describedby"], description ? descriptionId : undefined, errors.length ? errorId : undefined].filter(Boolean).join(" ") || undefined;
   return (
     <fieldset
       ref={ref}
-      aria-invalid={errors.length ? true : undefined}
-      aria-describedby={errors.length ? errorId : undefined}
-      className={cn("m-0 flex min-w-0 flex-col gap-4 p-0 disabled:opacity-60", className)}
+      data-invalid={errors.length ? "" : undefined}
       {...props}
+      aria-describedby={describedBy}
+      className={cn("m-0 flex min-w-0 flex-col gap-4 p-0 disabled:opacity-60", className)}
     >
       {/* legend must be the fieldset's first child to name the group */}
       <legend className="float-left w-full p-0 text-md font-semibold text-foreground">{legend}</legend>
-      {description ? <p className="-mt-3 text-sm text-foreground-muted">{description}</p> : null}
+      {description ? <p id={descriptionId} className="-mt-3 text-sm text-foreground-muted">{description}</p> : null}
       {children}
-      <div id={errorId} aria-live="polite" className={errors.length ? undefined : "contents"}>
+      <div id={errorId} aria-live="polite" className={errors.length ? undefined : "sr-only"}>
         <FieldMessage status="invalid" messages={errors} />
       </div>
     </fieldset>

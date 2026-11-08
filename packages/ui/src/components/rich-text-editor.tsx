@@ -92,7 +92,7 @@ import { toggleVariants } from "./button.tsx";
 import { useFormField, useFormFieldContext } from "./field.tsx";
 import { Input } from "./input.tsx";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "./menu.tsx";
-import { Popover, PopoverAnchor, PopoverContent, PopoverTrigger, Tooltip } from "./overlay.tsx";
+import { Popover, PopoverAnchor, PopoverContent, PopoverTrigger, Tooltip, TooltipProvider } from "./overlay.tsx";
 import { Portal } from "./portal.tsx";
 import { floatingSurface, menuItem, transition } from "./shared.ts";
 
@@ -384,10 +384,22 @@ const mod = isMac ? "⌘" : "Ctrl+";
 const shift = isMac ? "⇧" : "Shift+";
 
 /** Adds https:// to bare domains; leaves relative, anchor, mailto: and tel: links alone. */
-function normalizeUrl(raw: string): string {
-  const url = raw.trim();
+/** Schemes a link may use. Anything else (javascript:, data:, vbscript:…) is refused. */
+const SAFE_LINK_SCHEMES = new Set(["http:", "https:", "mailto:", "tel:"]);
+
+/**
+ * Turns what the user typed into a link href: bare domains get https://, bare
+ * emails get mailto:. Returns "" for a scheme outside {@link SAFE_LINK_SCHEMES},
+ * which removes the link instead of storing a script URL.
+ */
+export function normalizeUrl(raw: string): string {
+  // Browsers ignore ASCII whitespace and control characters inside a scheme ("java\tscript:").
+  // eslint-disable-next-line no-control-regex
+  const url = raw.trim().replace(/[\u0000-\u001f\u007f]/g, "");
   if (!url) return url;
-  if (/^[a-z][a-z\d+.-]*:/i.test(url) || /^[/#?]/.test(url)) return url;
+  const scheme = /^([a-z][a-z\d+.-]*):/i.exec(url)?.[1];
+  if (scheme) return SAFE_LINK_SCHEMES.has(`${scheme.toLowerCase()}:`) ? url : "";
+  if (/^[/#?]/.test(url)) return url;
   if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(url)) return `mailto:${url}`;
   return `https://${url}`;
 }
@@ -1224,16 +1236,19 @@ function RichTextToolbar({ editor, items, labels: l, controls, disabled, sticky,
   };
 
   return (
-    <ToolbarPrimitive.Root
-      aria-label={l.toolbar}
-      aria-controls={controls}
-      className={cn(
-        "flex flex-wrap items-center gap-0.5 rounded-t-[inherit] border-b border-border bg-surface px-1.5 py-1",
-        sticky && "sticky top-0 z-(--nv-z-raised)",
-      )}
-    >
-      {items.map(render)}
-    </ToolbarPrimitive.Root>
+    // One provider: moving along the toolbar opens each tooltip without the delay again.
+    <TooltipProvider delayDuration={300}>
+      <ToolbarPrimitive.Root
+        aria-label={l.toolbar}
+        aria-controls={controls}
+        className={cn(
+          "flex flex-wrap items-center gap-0.5 rounded-t-[inherit] border-b border-border bg-surface px-1.5 py-1",
+          sticky && "sticky top-0 z-(--nv-z-raised)",
+        )}
+      >
+        {items.map(render)}
+      </ToolbarPrimitive.Root>
+    </TooltipProvider>
   );
 }
 
@@ -1615,6 +1630,8 @@ function ImagePopover({ editor, labels: l, disabled, onPickImage, uploading }: {
 function LinkEditor({ editor, labels: l, open, onOpenChange, anchorStyle }: { editor: Editor; labels: RichTextEditorLabels; open: boolean; onOpenChange: (open: boolean) => void; anchorStyle: CSSProperties }) {
   const [href, setHref] = useState("");
   const current = open ? ((editor.getAttributes("link").href as string | undefined) ?? "") : "";
+  // Content can come from saved HTML: never hand an unsafe stored href to the "open" button.
+  const openHref = current ? normalizeUrl(current) : "";
   useEffect(() => {
     if (open) setHref((editor.getAttributes("link").href as string | undefined) ?? "");
   }, [open, editor]);
@@ -1655,8 +1672,8 @@ function LinkEditor({ editor, labels: l, open, onOpenChange, anchorStyle }: { ed
           {current && (
             <>
               <Tooltip content={l.linkOpen}>
-                <Button asChild size="sm" variant="ghost" aria-label={l.linkOpen} className="px-2">
-                  <a href={current} target="_blank" rel="noopener noreferrer">
+                <Button asChild size="sm" variant="ghost" aria-label={l.linkOpen} className="px-2" disabled={!openHref}>
+                  <a href={openHref || undefined} target="_blank" rel="noopener noreferrer">
                     <ExternalLink aria-hidden />
                   </a>
                 </Button>

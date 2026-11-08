@@ -1,4 +1,4 @@
-import { parseHex, type Rgb } from "./convert.ts";
+import { parseHex, parseHexAlpha, type Rgb } from "./convert.ts";
 
 /** WCAG 2.x relative luminance of an sRGB color. */
 export function relativeLuminance({ r, g, b }: Rgb): number {
@@ -9,11 +9,15 @@ export function relativeLuminance({ r, g, b }: Rgb): number {
 /**
  * WCAG 2.x contrast ratio between two hex colors, from 1 to 21.
  * Returns 1 when either color is invalid so callers fail safe.
+ * A translucent first color (`#rrggbbaa`) is composited over the second, which
+ * is treated as opaque, so the ratio is the one actually rendered.
  */
 export function contrastRatio(a: string, b: string): number {
-  const ca = parseHex(a);
   const cb = parseHex(b);
-  if (!ca || !cb) return 1;
+  const raw = parseHex(a);
+  if (!raw || !cb) return 1;
+  const alpha = parseHexAlpha(a);
+  const ca = alpha >= 1 ? raw : { r: raw.r * alpha + cb.r * (1 - alpha), g: raw.g * alpha + cb.g * (1 - alpha), b: raw.b * alpha + cb.b * (1 - alpha) };
   const la = relativeLuminance(ca);
   const lb = relativeLuminance(cb);
   const [hi, lo] = la > lb ? [la, lb] : [lb, la];

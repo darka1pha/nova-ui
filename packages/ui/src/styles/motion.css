@@ -95,5 +95,16 @@
   @keyframes nv-ring-pulse { from { box-shadow: 0 0 0 0 color-mix(in srgb, var(--nv-color-primary-solid) 45%, transparent); } to { box-shadow: 0 0 0 10px transparent; } }
 }
 
-@custom-variant dark (&:where([data-nv-mode="dark"], [data-nv-mode="dark"] *));
+/* `dark:` matches what the tokens do: an explicit dark mode on the element or an
+ * ancestor, or — when no mode is set anywhere above — a dark OS. */
+@custom-variant dark {
+  &:where([data-nv-mode="dark"], [data-nv-mode="dark"] *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where(:not([data-nv-mode], [data-nv-mode] *)) {
+      @slot;
+    }
+  }
+}
 @custom-variant rtl (&:where([dir="rtl"], [dir="rtl"] *));

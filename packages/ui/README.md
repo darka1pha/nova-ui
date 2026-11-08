@@ -23,8 +23,17 @@ import "@darkalpha/nova-ui/styles.css";
 | `@darkalpha/nova-ui/styles.css` | Required once (unless you use `tailwind.css`). Tokens, a reset scoped to `.nv-theme`, and component styles. No global preflight. |
 | `@darkalpha/nova-ui/themes.css` | Optional. All presets as `[data-nv-theme="…"]` blocks for zero-JS theming. |
 | `@darkalpha/nova-ui/react-hook-form` | Optional bindings for react-hook-form (any resolver, e.g. zod). Requires `react-hook-form` ≥ 7.55; never loaded by the main entry. |
-| `@darkalpha/nova-ui/rich-text-editor` | `RichTextEditor` and `RichTextViewer`, built on Tiptap/ProseMirror. A separate entry so the editor engine is only loaded by apps that import it; its styles are already in `styles.css`. |
+| `@darkalpha/nova-ui/rich-text-editor` | `RichTextEditor` and `RichTextViewer`, built on Tiptap/ProseMirror. Tiptap is an optional peer dependency: install it only if you use the editor (command below). Its styles are already in `styles.css`. |
+| `@darkalpha/nova-ui/kaveh` | The Kaveh brand kit (logo family, brand elements, page sections, cards) and the Yalda/Nowruz seasonal artwork. Use with the `kaveh`, `kaveh-yalda` and `kaveh-nowruz` themes. |
 | `@darkalpha/nova-ui/tailwind.css` | For Tailwind v4 apps, **instead of** `styles.css`: `@import "tailwindcss"; @import "@darkalpha/nova-ui/tailwind.css";` |
+
+### Rich text editor
+
+Tiptap is not installed with Nova UI. Apps that import `@darkalpha/nova-ui/rich-text-editor` add it themselves:
+
+```bash
+pnpm add @tiptap/core @tiptap/pm @tiptap/react @tiptap/starter-kit @tiptap/extensions @tiptap/suggestion @tiptap/extension-bubble-menu @tiptap/extension-highlight @tiptap/extension-image @tiptap/extension-list @tiptap/extension-subscript @tiptap/extension-superscript @tiptap/extension-table @tiptap/extension-text-align @tiptap/extension-text-style @tiptap/extension-typography
+```
 
 ## Apps that use Tailwind CSS v4
 

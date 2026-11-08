@@ -183,6 +183,63 @@ console.log("  ok @darkalpha/nova-ui/react-hook-form resolves and server-renders
   );
   console.log(run("node rhf.mjs").trimEnd());
 
+  step("Tiptap stays optional");
+  writeFileSync(
+    join(work, "tiptap-optional.mjs"),
+    `import { readdirSync, readFileSync } from "node:fs";
+import { createRequire } from "node:module";
+import { dirname, join } from "node:path";
+const require = createRequire(import.meta.url);
+let present = true;
+try { require.resolve("@tiptap/core"); } catch { present = false; }
+if (present) throw new Error("@tiptap/core should not be installed yet: it must be an optional peer, not a dependency");
+// Only the rich-text-editor entry may import Tiptap.
+const dist = join(dirname(require.resolve("@darkalpha/nova-ui/package.json")), "dist");
+const offenders = [];
+const walk = (d) => readdirSync(d, { withFileTypes: true }).forEach((e) => {
+  const p = join(d, e.name);
+  if (e.isDirectory()) walk(p);
+  else if (p.endsWith(".js") && !/rich-text-editor\\.js$/.test(p) && /(from\\s*|import\\s*\\(\\s*|require\\(\\s*)["']@tiptap\\//.test(readFileSync(p, "utf8"))) offenders.push(p);
+});
+walk(dist);
+if (offenders.length) throw new Error("entries other than rich-text-editor reference @tiptap: " + offenders.join(", "));
+await import("@darkalpha/nova-ui");
+console.log("  ok @darkalpha/nova-ui loads without Tiptap installed");
+`,
+  );
+  console.log(run("node tiptap-optional.mjs").trimEnd());
+  const tiptapPeers = Object.entries(uiManifest.peerDependencies ?? {}).filter(([name]) => name.startsWith("@tiptap/"));
+  if (tiptapPeers.length === 0) throw new Error("expected @tiptap/* optional peer dependencies in the published manifest");
+  for (const [name] of tiptapPeers) {
+    if (uiManifest.peerDependenciesMeta?.[name]?.optional !== true) throw new Error(`${name} must be an optional peer`);
+  }
+  run(`npm install --no-audit --no-fund --loglevel=error ${tiptapPeers.map(([n, r]) => `"${n}@${r}"`).join(" ")}`);
+  writeFileSync(
+    join(work, "tiptap.mjs"),
+    `import { RichTextEditor, RichTextViewer } from "@darkalpha/nova-ui/rich-text-editor";
+if (typeof RichTextEditor !== "object" && typeof RichTextEditor !== "function") throw new Error("RichTextEditor missing");
+if (!RichTextViewer) throw new Error("RichTextViewer missing");
+console.log("  ok @darkalpha/nova-ui/rich-text-editor loads once its ${tiptapPeers.length} Tiptap peers are installed");
+`,
+  );
+  console.log(run("node tiptap.mjs").trimEnd());
+
+  step("Kaveh brand kit is its own entry");
+  writeFileSync(
+    join(work, "kaveh.mjs"),
+    `import { createElement as h } from "react";
+import { renderToString } from "react-dom/server";
+import * as main from "@darkalpha/nova-ui";
+import { KavehLogo, SeasonalGreeting } from "@darkalpha/nova-ui/kaveh";
+const { ThemeProvider } = main;
+if ("KavehLogo" in main || "SeasonalGreeting" in main) throw new Error("the main entry still exports the Kaveh kit");
+const html = renderToString(h(ThemeProvider, { theme: "kaveh" }, h(KavehLogo, { "aria-label": "Kaveh" }), h(SeasonalGreeting, { season: "yalda", title: "Yalda" })));
+if (!html.includes('data-nv-theme="kaveh"') || !html.includes("<svg")) throw new Error("Kaveh kit did not render");
+console.log("  ok @darkalpha/nova-ui/kaveh resolves and server-renders; the main entry no longer exports it");
+`,
+  );
+  console.log(run("node kaveh.mjs").trimEnd());
+
   step("Type-checking a consumer file against published types");
   writeFileSync(
     join(work, "app.tsx"),

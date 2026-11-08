@@ -12,6 +12,7 @@ import {
   staticVariables,
   derivedVariables,
   THEME_ROOT_SELECTOR,
+  COLOR_SCHEME_CSS,
   tailwindThemeCss,
   themeCss,
   themeVariables,
@@ -26,9 +27,9 @@ writeFileSync(
   `${dir}tokens.css`,
   header +
     "@layer theme {\n" +
-    cssBlock(":where(:root)", { ...staticVariables(), ...themeVariables(getResolvedTheme(defaultTheme)) }, "  color-scheme: light dark;") +
+    cssBlock(":where(:root)", { ...staticVariables(), ...themeVariables(getResolvedTheme(defaultTheme)) }) +
     cssBlock(THEME_ROOT_SELECTOR, derivedVariables()) +
-    '[data-nv-mode="light"] { color-scheme: light; }\n[data-nv-mode="dark"] { color-scheme: dark; }\n' +
+    COLOR_SCHEME_CSS +
     "}\n",
 );
 writeFileSync(

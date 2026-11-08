@@ -20,7 +20,9 @@ async function setup(ui: React.ReactElement) {
   return { ...result, textbox };
 }
 
-describe("RichTextEditor", () => {
+// ProseMirror setup plus many userEvent steps: these run 2–5 s alone and over the
+// 5 s default when the whole suite shares the CPU.
+describe("RichTextEditor", { timeout: 20_000 }, () => {
   it("is a labelled multiline textbox with a formatting toolbar, wired to FormField", async () => {
     const { container, textbox } = await setup(
       <FormField label="Body" description="Shown on the post page" error="Required">

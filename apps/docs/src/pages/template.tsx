@@ -51,8 +51,8 @@ import {
   presets,
   type DataTableColumn,
   type PresetName,
-  KavehMark,
 } from "@darkalpha/nova-ui";
+import { KavehMark } from "@darkalpha/nova-ui/kaveh";
 import {
   type Density,
   type RadiusPreset,

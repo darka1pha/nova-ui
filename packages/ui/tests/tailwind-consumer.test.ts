@@ -41,3 +41,14 @@ describe("@darkalpha/nova-ui/tailwind.css in a consumer's Tailwind build", () =>
     expect(layers.indexOf("nv-materials")).toBeGreaterThan(layers.indexOf("utilities"));
   });
 });
+
+describe("the dark: variant from tailwind.css (M-9)", () => {
+  it("matches an explicit dark mode and a dark OS when no mode is set", () => {
+    execFileSync(process.execPath, [cli, "-i", "tests/fixtures/tailwind-dark.css", "-o", join(out, "dark.css"), "--minify"], { cwd: root, stdio: "pipe" });
+    const css = readFileSync(join(out, "dark.css"), "utf8");
+    // Explicit dark on the element or an ancestor…
+    expect(css).toContain(String.raw`.dark\:bg-primary:where([data-nv-mode=dark],[data-nv-mode=dark] *)`);
+    // …or the OS, unless a mode was set somewhere above.
+    expect(css).toContain(String.raw`@media (prefers-color-scheme:dark){.dark\:bg-primary:where(:not([data-nv-mode],[data-nv-mode] *))`);
+  });
+});

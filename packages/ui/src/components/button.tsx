@@ -6,17 +6,20 @@ import {
   createContext,
   forwardRef,
   useCallback,
+  useEffect,
   useContext,
   useRef,
   useState,
   type ButtonHTMLAttributes,
   type ComponentPropsWithoutRef,
   type HTMLAttributes,
+  type MouseEvent,
   type PointerEvent,
   type ReactNode,
 } from "react";
 import { cn } from "../utils/cn.ts";
 import { disabledState, focusRing, pressable, transition } from "./shared.ts";
+import { devWarn } from "../utils/dev.ts";
 import { Spinner } from "./spinner.tsx";
 
 /**
@@ -89,6 +92,14 @@ interface Ripple {
 export function useRipple(enabled = true) {
   const [ripples, setRipples] = useState<Ripple[]>([]);
   const counter = useRef(0);
+  const timers = useRef(new Set<ReturnType<typeof setTimeout>>());
+  useEffect(() => {
+    const pending = timers.current;
+    return () => {
+      for (const t of pending) clearTimeout(t);
+      pending.clear();
+    };
+  }, []);
   const onPointerDown = useCallback(
     (event: PointerEvent<HTMLElement>) => {
       if (!enabled || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
@@ -97,7 +108,11 @@ export function useRipple(enabled = true) {
       const ripple = { id: ++counter.current, x: event.clientX - rect.left, y: event.clientY - rect.top, size };
       setRipples((current) => [...current.slice(-3), ripple]);
       // Remove by timer too, so ripples never linger if animations are disabled.
-      setTimeout(() => setRipples((current) => current.filter((x) => x.id !== ripple.id)), 1000);
+      const t = setTimeout(() => {
+        timers.current.delete(t);
+        setRipples((current) => current.filter((x) => x.id !== ripple.id));
+      }, 1000);
+      timers.current.add(t);
     },
     [enabled],
   );
@@ -131,6 +146,9 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, Va
   ripple?: boolean;
 }
 
+const endIconClass =
+  "inline-flex transition-transform duration-(--nv-duration-slow) ease-(--nv-ease-interactive) group-hover/button:translate-x-0.5 rtl:group-hover/button:-translate-x-0.5 motion-reduce:transition-none";
+
 /** The primary action component. */
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
   { asChild, variant, size, fullWidth, loading = false, loadingText, startIcon, endIcon, ripple = false, disabled, className, children, type, onPointerDown, ...props },
@@ -144,9 +162,39 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
   const slot = { "data-slot": "button", "data-variant": resolvedVariant };
 
   if (asChild) {
+    const inactive = disabled || loading;
+    if (loadingText !== undefined) devWarn("Button: `loadingText` is ignored with `asChild`; the child keeps its own content.");
+    // A link can't be natively disabled: take it out of the tab order and stop the
+    // click in the capture phase, before the child's own onClick (e.g. a router
+    // link's navigation) and before the browser follows the href.
+    const block = inactive
+      ? {
+          tabIndex: -1,
+          onClickCapture: (e: MouseEvent<HTMLElement>) => {
+            e.preventDefault();
+            e.stopPropagation();
+          },
+        }
+      : {};
     return (
-      <Slot.Root ref={ref} {...slot} className={classes} aria-disabled={disabled || loading || undefined} onPointerDown={onPointerDown} {...props}>
-        {children}
+      <Slot.Root
+        ref={ref}
+        {...slot}
+        className={classes}
+        aria-disabled={inactive || undefined}
+        aria-busy={loading || undefined}
+        data-loading={loading || undefined}
+        {...props}
+        {...block}
+        onPointerDown={(e: PointerEvent<HTMLButtonElement>) => {
+          onPointerDown?.(e);
+          if (!inactive) ink.onPointerDown(e);
+        }}
+      >
+        {ink.layer}
+        {loading ? <span className="inline-flex animate-nv-fade-in"><Spinner size="sm" label={null} /></span> : startIcon}
+        <Slot.Slottable>{children}</Slot.Slottable>
+        {!loading && endIcon ? <span className={endIconClass}>{endIcon}</span> : null}
       </Slot.Root>
     );
   }
@@ -167,13 +215,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       {...props}
     >
       {ink.layer}
-      {loading ? <Spinner size="sm" label={null} className="animate-nv-fade-in" /> : startIcon}
+      {loading ? <span className="inline-flex animate-nv-fade-in"><Spinner size="sm" label={null} /></span> : startIcon}
       {loading && loadingText ? loadingText : children}
-      {!loading && endIcon ? (
-        <span className="inline-flex transition-transform duration-(--nv-duration-slow) ease-(--nv-ease-interactive) group-hover/button:translate-x-0.5 rtl:group-hover/button:-translate-x-0.5 motion-reduce:transition-none">
-          {endIcon}
-        </span>
-      ) : null}
+      {!loading && endIcon ? <span className={endIconClass}>{endIcon}</span> : null}
     </button>
   );
 });

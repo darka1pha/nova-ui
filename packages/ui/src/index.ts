@@ -190,10 +190,8 @@ export {
   type JalaliDate,
 } from "./utils/jalali.ts";
 
-// Brand (Kaveh) & seasonal (Yalda & Nowruz)
-export * from "./components/brand.tsx";
-export * from "./components/kaveh-kit.tsx";
-export * from "./components/seasonal.tsx";
+// The Kaveh brand kit and the Yalda/Nowruz seasonal artwork live in their own
+// entry: @darkalpha/nova-ui/kaveh.
 
 // Token engine re-exports, so most apps need a single import.
 export {

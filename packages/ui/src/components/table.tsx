@@ -416,7 +416,7 @@ export function DataTable<T>({
             const detailId = `nv-row-${id}-details`;
             return (
               <Fragment key={id}>
-              <TableRow data-state={isSelected ? "selected" : undefined} aria-selected={selectable ? isSelected : undefined}>
+              <TableRow data-state={isSelected ? "selected" : undefined}>
                 {renderExpanded ? (
                   <TableCell className="w-10">
                     <button

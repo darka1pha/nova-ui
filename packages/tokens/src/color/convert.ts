@@ -45,6 +45,15 @@ export function parseHex(value: string): Rgb | null {
   return { r: ((n >> 16) & 255) / 255, g: ((n >> 8) & 255) / 255, b: (n & 255) / 255 };
 }
 
+/** The alpha channel of a 4 or 8 digit hex color, 0–1 (1 for opaque or invalid input). */
+export function parseHexAlpha(value: string): number {
+  const hex = HEX_RE.exec(value.trim())?.[1];
+  if (!hex) return 1;
+  if (hex.length === 4) return Number.parseInt(hex.slice(3).repeat(2), 16) / 255;
+  if (hex.length === 8) return Number.parseInt(hex.slice(6, 8), 16) / 255;
+  return 1;
+}
+
 export function toHex({ r, g, b }: Rgb): string {
   const channel = (v: number) =>
     Math.round(Math.min(1, Math.max(0, v)) * 255)

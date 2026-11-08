@@ -1,4 +1,5 @@
 import { contrastRatio, WCAG } from "../color/contrast.ts";
+import { contrastPairs } from "../validate.ts";
 import { hexToOklch, isHexColor, normalizeHex } from "../color/convert.ts";
 import { generateScale, nearestStep, SCALE_STEPS, stepOffset, type ColorScale, type ScaleStep } from "../color/palette.ts";
 import { palette, white, type PaletteName } from "../primitives/colors.ts";
@@ -147,11 +148,14 @@ function resolveSurfaces(ctx: ModeContext, neutral: ColorScale, primary: ColorSc
     s("foreground-disabled", n[600]);
   }
   const bgs = [out.background as string, out.surface as string, out["surface-raised"] as string];
+  // Text also sits on sunken wells and hovered rows (menus, lists, table rows).
+  const textBgs = [...bgs, out["surface-sunken"] as string, out["surface-hover"] as string];
   out.foreground = pickReadable(ctx, "foreground", n, mode === "light" ? 975 : 50, bgs, 7);
-  out["foreground-secondary"] = pickReadable(ctx, "foreground-secondary", n, mode === "light" ? 700 : 300, bgs, WCAG.text);
-  out["foreground-muted"] = pickReadable(ctx, "foreground-muted", n, mode === "light" ? 500 : 400, bgs, WCAG.text);
-  // Form control boundaries must be identifiable: 3:1 against their surface.
-  out.input = pickReadable(ctx, "input", n, mode === "light" ? 400 : 600, [out.surface as string], WCAG.ui);
+  out["foreground-secondary"] = pickReadable(ctx, "foreground-secondary", n, mode === "light" ? 700 : 300, textBgs, WCAG.text);
+  out["foreground-muted"] = pickReadable(ctx, "foreground-muted", n, mode === "light" ? 500 : 400, textBgs, WCAG.text);
+  // Form control boundaries must be identifiable: 3:1 against their surface,
+  // including raised ones (inputs inside dialogs, popovers and sheets).
+  out.input = pickReadable(ctx, "input", n, mode === "light" ? 400 : 600, [out.surface as string, out["surface-raised"] as string], WCAG.ui);
   out["border-strong"] = pickReadable(ctx, "border-strong", n, mode === "light" ? 300 : 700, [out.surface as string], 1.6);
 }
 
@@ -202,7 +206,7 @@ function resolveIntent(ctx: ModeContext, intent: Intent, seed: ResolvedSeed, neu
   set("subtle-hover", scale[plan.subtleHover]);
   set("on-subtle", pickReadable(ctx, `${intent}-on-subtle`, scale, plan.onSubtle, [scale[plan.subtle], scale[plan.subtleHover]], WCAG.text));
   set("border", scale[plan.border]);
-  set("text", pickReadable(ctx, `${intent}-text`, scale, plan.text, [background, surface], WCAG.text));
+  set("text", pickReadable(ctx, `${intent}-text`, scale, plan.text, [background, surface, out["surface-raised"] as string], WCAG.text));
 }
 
 /**
@@ -217,6 +221,9 @@ function resolveIntent(ctx: ModeContext, intent: Intent, seed: ResolvedSeed, neu
  * its own steps, not a flip. Light slots 3–5 sit under 3:1 on white, so charts
  * always ship a data table. Single-series charts use the brand primary instead.
  */
+/** Characters that could end a CSS declaration or rule, or open markup. */
+const UNSAFE_CSS_VALUE = /[;{}<>\\]|\/\*/;
+
 const CHART_PALETTE: Record<ColorMode, readonly string[]> = {
   light: ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300", "#6250d6", "#e34948"],
   dark: ["#3987e5", "#d95926", "#199e70", "#c98500", "#d55181", "#008300", "#9085e9", "#e66767"],
@@ -226,18 +233,49 @@ function resolveMode(mode: ColorMode, seeds: Record<Intent, ResolvedSeed>, overr
   const ctx: ModeContext = { mode, out: {}, adjustments: [] };
   resolveSurfaces(ctx, seeds.neutral.scale, seeds.primary.scale);
   for (const intent of INTENTS) resolveIntent(ctx, intent, seeds[intent], seeds.neutral.scale);
-  ctx.out["focus-ring"] = pickReadable(ctx, "focus-ring", seeds.primary.scale, mode === "light" ? 500 : 400, [ctx.out.background as string, ctx.out.surface as string], WCAG.ui);
+  ctx.out["focus-ring"] = pickReadable(
+    ctx,
+    "focus-ring",
+    seeds.primary.scale,
+    mode === "light" ? 500 : 400,
+    [ctx.out.background as string, ctx.out.surface as string, ctx.out["surface-raised"] as string],
+    WCAG.ui,
+  );
   CHART_PALETTE[mode].forEach((color, i) => {
     ctx.out[`chart-${i + 1}` as SemanticColorName] = color;
   });
 
+  const overridden = new Set<SemanticColorName>();
   for (const [key, value] of Object.entries(overrides ?? {})) {
     if (!SEMANTIC_COLOR_NAMES.includes(key as SemanticColorName)) {
       warnings.push(`Unknown semantic token "${key}" in ${mode} overrides; ignored.`);
       continue;
     }
     if (typeof value !== "string" || value.trim() === "") continue;
-    ctx.out[key as SemanticColorName] = isHexColor(value) ? (normalizeHex(value) as string) : value;
+    // Values end up inside CSS (inline styles and getThemeCss() <style> blocks):
+    // anything that could close the declaration or the rule is refused.
+    if (UNSAFE_CSS_VALUE.test(value)) {
+      warnings.push(`Override "${key}" in ${mode} contains characters not allowed in a color value; ignored.`);
+      continue;
+    }
+    // Keep the alpha of 4/8-digit hex values; normalize the opaque ones.
+    const hexDigits = value.trim().replace(/^#/, "").length;
+    ctx.out[key as SemanticColorName] = isHexColor(value) && (hexDigits === 3 || hexDigits === 6) ? (normalizeHex(value) as string) : value.trim();
+    overridden.add(key as SemanticColorName);
+  }
+
+  // Overrides bypass the contrast walk, so check every rendered pair they touch.
+  if (overridden.size) {
+    for (const [fg, bg, required] of contrastPairs()) {
+      if (!overridden.has(fg) && !overridden.has(bg)) continue;
+      const f = ctx.out[fg];
+      const b = ctx.out[bg];
+      if (!isHexColor(f) || !isHexColor(b)) continue;
+      const ratio = contrastRatio(f, b);
+      if (ratio < required) {
+        warnings.push(`Override makes ${fg} on ${bg} ${ratio.toFixed(2)}:1 in ${mode} mode; ${required}:1 is required. Override the paired token too.`);
+      }
+    }
   }
   return { colors: ctx.out as Record<SemanticColorName, string>, adjustments: ctx.adjustments };
 }

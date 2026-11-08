@@ -9,6 +9,6 @@ export { resolveTheme, resolveSeed, type ResolveOptions } from "./semantic/resol
 export * from "./themes/types.ts";
 export { presets, defaultTheme, type PresetName } from "./themes/presets.ts";
 export { createTheme, registerTheme, getTheme, listThemes, getResolvedTheme } from "./themes/registry.ts";
-export { themeVariables, staticVariables, derivedVariables, THEME_ROOT_SELECTOR, themeCss, cssBlock, tailwindThemeCss } from "./css.ts";
+export { themeVariables, staticVariables, derivedVariables, THEME_ROOT_SELECTOR, COLOR_SCHEME_CSS, themeCss, cssBlock, tailwindThemeCss } from "./css.ts";
 export { auditContrast, contrastPairs, type ContrastCheck } from "./validate.ts";
 export { dtcgTokens, primitiveTokens, themeTokens, type DtcgGroup, type DtcgToken } from "./dtcg.ts";

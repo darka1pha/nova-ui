@@ -20,20 +20,25 @@ export function contrastPairs(): Pair[] {
     ["foreground", "background", WCAG.text],
     ["foreground", "surface", WCAG.text],
     ["foreground", "surface-raised", WCAG.text],
-    ["foreground-secondary", "background", WCAG.text],
-    ["foreground-secondary", "surface", WCAG.text],
-    ["foreground-muted", "background", WCAG.text],
-    ["foreground-muted", "surface", WCAG.text],
     ["input", "surface", WCAG.ui],
+    ["input", "surface-raised", WCAG.ui],
     ["focus-ring", "background", WCAG.ui],
     ["focus-ring", "surface", WCAG.ui],
+    ["focus-ring", "surface-raised", WCAG.ui],
   ];
+  // Secondary and muted text: pages, cards, popovers, sunken wells and hovered rows.
+  for (const fg of ["foreground-secondary", "foreground-muted"] as const) {
+    for (const bg of ["background", "surface", "surface-raised", "surface-sunken", "surface-hover"] as const) pairs.push([fg, bg, WCAG.text]);
+  }
   for (const intent of INTENTS) {
     pairs.push([`${intent}-on-solid`, `${intent}-solid`, WCAG.text]);
     pairs.push([`${intent}-on-solid`, `${intent}-solid-hover`, WCAG.text]);
+    pairs.push([`${intent}-on-solid`, `${intent}-solid-active`, WCAG.text]);
     pairs.push([`${intent}-on-subtle`, `${intent}-subtle`, WCAG.text]);
+    pairs.push([`${intent}-on-subtle`, `${intent}-subtle-hover`, WCAG.text]);
     pairs.push([`${intent}-text`, "background", WCAG.text]);
     pairs.push([`${intent}-text`, "surface", WCAG.text]);
+    pairs.push([`${intent}-text`, "surface-raised", WCAG.text]);
   }
   return pairs;
 }
