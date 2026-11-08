@@ -1,5 +1,60 @@
 # @darkalpha/nova-ui
 
+## 0.5.0
+
+### Minor Changes
+
+- eb44e9d: **Breaking:** two changes to what installs and what the main entry exports.
+  
+  - **Tiptap is now an optional peer dependency.** `@darkalpha/nova-ui` no longer installs the 16 `@tiptap/*` packages (and ProseMirror) for every app. If you import `@darkalpha/nova-ui/rich-text-editor`, add them yourself (the command is in the package README):
+  
+    ```bash
+    pnpm add @tiptap/core @tiptap/pm @tiptap/react @tiptap/starter-kit @tiptap/extensions @tiptap/suggestion @tiptap/extension-bubble-menu @tiptap/extension-highlight @tiptap/extension-image @tiptap/extension-list @tiptap/extension-subscript @tiptap/extension-superscript @tiptap/extension-table @tiptap/extension-text-align @tiptap/extension-text-style @tiptap/extension-typography
+    ```
+  
+  - **The Kaveh brand kit moved to `@darkalpha/nova-ui/kaveh`.** The Kaveh logo family, brand elements, page sections, cards, tables and navigation, plus the Yalda/Nowruz seasonal artwork (`SeasonalGreeting`, `HaftSeen`, the motifs and patterns), are no longer exported from `@darkalpha/nova-ui`. Change the import path:
+  
+    ```diff
+    - import { KavehLogo, SeasonalGreeting } from "@darkalpha/nova-ui";
+    + import { KavehLogo, SeasonalGreeting } from "@darkalpha/nova-ui/kaveh";
+    ```
+  
+    The `kaveh`, `kaveh-yalda` and `kaveh-nowruz` themes are unchanged and still work by name.
+
+### Patch Changes
+
+- 61e7056: Accessibility and SSR fixes from the design system audit:
+  
+  - Carousel: autoplay now has a stop/start rotation button (WCAG 2.2.2), localizable with `labels.pause` / `labels.play`. Hover and focus pause it independently, so it no longer resumes while focus is still inside, and a touch tap no longer leaves it paused.
+  - Countdown: no hydration mismatch under SSR. Server and hydration renders show placeholders; pass the new `initialNow` prop to render real digits on the server.
+  - Rating: wired to FormField (label, description, error, required, disabled), with new `disabled` and `required` props. Empty stars use the `input` token, so they meet 3:1 non-text contrast.
+- eb44e9d: Medium and Low fixes from the design system audit (see issues.md).
+  
+  Tokens:
+  
+  - `color-scheme` is now set on theme roots instead of `:root`, so importing the CSS no longer turns the host page's scrollbars and form controls dark. New `COLOR_SCHEME_CSS` export.
+  - Semantic overrides are checked against every rendered contrast pair they touch and produce warnings when they fail. Values that could break out of a CSS declaration (`;`, `{`, `}`, `<`, `>`, backslash, `/*`) are refused. 4- and 8-digit hex overrides keep their alpha.
+  - `contrastRatio` composites a translucent foreground over its background; new `parseHexAlpha`.
+  - The resolver and `contrastPairs()` cover raised, sunken and hovered surfaces and pressed fills. Every preset resolves to the same colors as before.
+  
+  UI:
+  
+  - The `dark:` variant in `tailwind.css` also matches a dark OS when no mode is set.
+  - `ThemeProvider` with `storageKey` no longer flashes `defaultMode` over a stored mode; `ThemeScript` accepts `defaultMode`.
+  - `Button asChild` renders icons, spinner and ripples, and blocks activation while disabled or loading.
+  - The Toast countdown bar pauses whenever Radix pauses the timer; centered toasts follow vertical swipes.
+  - `<Tooltip>` joins an enclosing `TooltipProvider` (the rich text toolbar now shares one).
+  - The rich text editor refuses non-http(s)/mailto/tel link URLs.
+  - `cn()` merges `animate-nv-*` classes, so `className="animate-none"` overrides a component's animation.
+  - Fieldset is described by its description and error; empty field message regions stay in the accessibility tree; labels dim in disabled fields; `DataTable` rows drop the invalid `aria-selected`.
+  - `Rating` gets `getValueLabel` for read-only labels; `Countdown` renders nothing for an invalid date; `AlertDialogTitle` uses the dialog title tracking.
+- 70c6cb9: Accessibility fixes found by the docs' axe checks:
+  
+  - RichTextEditor: task-list checkboxes have a 24×24 touch target (WCAG 2.5.8); the visible box stays 16px and is now drawn by the library. The text color palette is stored as `light-dark()` pairs, so every color reads at 4.5:1 or better in both modes on every preset. Content saved with the old hex colors keeps those colors.
+  - Kaveh kit: rust text (eyebrows, timeline years, roles, KPI figures) is a shade darker (`#b34700`) to reach 4.5:1 on Kaveh's tinted surfaces. Persian sidebar labels on navy, and Persian table sub-headers, now meet 4.5:1. A horizontal `KavehTimeline` is keyboard-focusable so it can be scrolled. `KavehLogo` lockups are marked `data-nv-logotype` (logo lettering is exempt from contrast minimums).
+- Updated dependencies [eb44e9d]
+  - @darkalpha/nova-tokens@0.5.0
+
 ## 0.4.0
 
 ### Minor Changes
