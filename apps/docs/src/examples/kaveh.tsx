@@ -1,7 +1,7 @@
+import { Button, ThemeProvider } from "@darkalpha/nova-ui";
 import {
   BilingualHeading,
   BrandStat,
-  Button,
   HorizonDivider,
   KavehAppIcon,
   KavehEmblem,
@@ -12,10 +12,9 @@ import {
   KavehWordmark,
   KmsMonogram,
   PortholeFrame,
-  ThemeProvider,
   Tideband,
   VesselStatusBadge,
-} from "@darkalpha/nova-ui";
+} from "@darkalpha/nova-ui/kaveh";
 import { Example } from "../docs/kit.tsx";
 
 export function KavehLogoExamples() {

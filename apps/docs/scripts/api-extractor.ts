@@ -100,7 +100,7 @@ export function extractApi(sources?: PropSources): ApiData {
   const config = ts.getParsedCommandLineOfConfigFile(configPath, {}, { ...ts.sys, onUnRecoverableConfigFileDiagnostic: () => {} });
   if (!config) throw new Error(`Couldn't read ${configPath}`);
   // The main entry plus the subpath entries that export components.
-  const entries = ["index.ts", "rich-text-editor.ts"].map((f) => resolve(uiSrc, f));
+  const entries = ["index.ts", "rich-text-editor.ts", "kaveh.ts"].map((f) => resolve(uiSrc, f));
   const program = ts.createProgram({ rootNames: entries, options: { ...config.options, noEmit: true } });
   const checker = program.getTypeChecker();
   const exports = entries.flatMap((file) => {

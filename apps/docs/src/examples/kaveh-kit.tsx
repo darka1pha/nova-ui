@@ -1,6 +1,5 @@
+import { Avatar, Button, ThemeProvider } from "@darkalpha/nova-ui";
 import {
-  Avatar,
-  Button,
   KavehCard,
   KavehContactCard,
   KavehEmptyState,
@@ -18,10 +17,9 @@ import {
   KavehSidebar,
   KavehTable,
   KavehTimeline,
-  ThemeProvider,
   VesselStatusBadge,
   type VesselStatus,
-} from "@darkalpha/nova-ui";
+} from "@darkalpha/nova-ui/kaveh";
 import { Anchor, ContainerShip, ShipWheel, Tanker, Tugboat, VesselTracking } from "@darkalpha/nova-ui/icons";
 import { BarChart3, Bell, FileText, Fuel, Home, LifeBuoy, LogOut, MapPin, Settings, Ship, User, Users } from "lucide-react";
 import { useState } from "react";

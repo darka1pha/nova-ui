@@ -194,6 +194,18 @@ export function derivedVariables(): Record<string, string> {
 /** Selector for every element that sets a theme; derived tokens are re-declared here. */
 export const THEME_ROOT_SELECTOR = ":where(.nv-theme, [data-nv-theme])";
 
+/**
+ * Color-scheme rules. A theme root follows the OS (`light dark`) unless it, or an
+ * ancestor such as `<html>` set by ThemeScript, carries `data-nv-mode`. Scoped to
+ * theme roots so the host page's own scrollbars and form controls are untouched.
+ */
+export const COLOR_SCHEME_CSS = [
+  ":where(.nv-theme, [data-nv-theme]):not(:where([data-nv-mode], [data-nv-mode] *)) { color-scheme: light dark; }",
+  '[data-nv-mode="light"] { color-scheme: light; }',
+  '[data-nv-mode="dark"] { color-scheme: dark; }',
+  "",
+].join("\n");
+
 export function cssBlock(selector: string, vars: Record<string, string>, extra = ""): string {
   const body = Object.entries(vars)
     .map(([k, val]) => `  ${k}: ${val};`)

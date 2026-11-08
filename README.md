@@ -100,7 +100,7 @@ pnpm test:e2e     # Playwright: axe (with contrast), keyboard, RTL, visual regre
 pnpm size         # bundle-size report per import
 ```
 
-Requires Node 20.19+ and pnpm 10+ (developed on Node 24, pnpm 12).
+Requires Node 22.18+ (the build scripts run TypeScript directly) and pnpm 10+ (developed on Node 24, pnpm 12).
 
 ## Architecture
 
@@ -218,7 +218,8 @@ Select and Combobox are dominated by Radix's positioning engine.
 | Data | Card, Avatar, AvatarGroup, Table, DataTable, DescriptionList, Stat, Timeline, Carousel, BarList, Sparkline, CalendarHeatmap, SortableList (keyboard reordering), VirtualList, Image, ImageGallery, RelativeTime, CodeBlock, ExpandableText |
 | Chat | MessageList (sticks to the bottom, "Jump to latest"), MessageGroup, Message (streaming caret), ChatComposer (auto-grow, IME-safe Enter, attachments, Stop), TypingIndicator |
 | Form bindings (`@darkalpha/nova-ui/react-hook-form`, optional) | Form, FormController, Form{Input, Textarea, NumberInput, Checkbox, Switch, RadioGroup, Select, Combobox, DatePicker, Slider, PinInput, TagInput, Rating, FileDropzone}, FormSubmit, FormReset, FormErrorSummary, FormRootError, FormSuccess, FormError, formFields |
-| Rich text (`@darkalpha/nova-ui/rich-text-editor`) | RichTextEditor (toolbar presets, bubble menu, / commands, tables, images with upload, links, colors, checklists, per-block direction, counts, full screen), RichTextViewer |
+| Rich text (`@darkalpha/nova-ui/rich-text-editor`; install the `@tiptap/*` peers) | RichTextEditor (toolbar presets, bubble menu, / commands, tables, images with upload, links, colors, checklists, per-block direction, counts, full screen), RichTextViewer |
+| Kaveh brand kit (`@darkalpha/nova-ui/kaveh`) | KavehLogo and the logo family, Horizon/Tideband/Porthole elements, Kaveh header, hero, cards, tables and navigation, plus the Yalda and Nowruz seasonal artwork (SeasonalGreeting, HaftSeen, motifs, patterns) |
 | Motion | Reveal, AnimatedNumber, Marquee, GradientText, SpotlightCard, AnimatedBorder, `useRipple` |
 
 ## Known limitations

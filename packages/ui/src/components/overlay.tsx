@@ -3,7 +3,7 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { X } from "lucide-react";
 import { AlertDialog as AlertDialogPrimitive, Dialog as DialogPrimitive, Popover as PopoverPrimitive, Tooltip as TooltipPrimitive } from "radix-ui";
-import { forwardRef, type ComponentPropsWithoutRef, type HTMLAttributes, type ReactNode } from "react";
+import { createContext, forwardRef, useContext, type ComponentPropsWithoutRef, type HTMLAttributes, type ReactNode } from "react";
 import { cn } from "../utils/cn.ts";
 import { buttonVariants } from "./button.tsx";
 import { usePortalContainer } from "./portal.tsx";
@@ -11,7 +11,20 @@ import { floatingSurface, focusRing } from "./shared.ts";
 
 /* ----------------------------------------------------------------- Tooltip */
 
-export const TooltipProvider = TooltipPrimitive.Provider;
+/** Set while inside a {@link TooltipProvider}, so `<Tooltip>` reuses it instead of nesting its own. */
+const TooltipProviderContext = createContext(false);
+
+/**
+ * Shares open/close timing between tooltips: once one is open, moving to the
+ * next opens it instantly (`skipDelayDuration`). Wrap a toolbar or the whole app.
+ */
+export function TooltipProvider(props: ComponentPropsWithoutRef<typeof TooltipPrimitive.Provider>) {
+  return (
+    <TooltipProviderContext.Provider value>
+      <TooltipPrimitive.Provider {...props} />
+    </TooltipProviderContext.Provider>
+  );
+}
 export const TooltipRoot = TooltipPrimitive.Root;
 export const TooltipTrigger = TooltipPrimitive.Trigger;
 
@@ -50,19 +63,23 @@ export interface TooltipProps extends Omit<ComponentPropsWithoutRef<typeof Toolt
 
 /**
  * Convenience tooltip: `<Tooltip content="Copy"><IconButton … /></Tooltip>`.
- * Includes its own provider, so no app-level setup is required.
+ * Works without setup; inside a {@link TooltipProvider} it joins that provider,
+ * so neighbouring tooltips open instantly once one is showing.
+ *
+ * Disabled buttons receive no pointer events, so a tooltip on one never opens:
+ * wrap the disabled control in `<span tabIndex={0}>` and put the tooltip on the span.
  */
-export function Tooltip({ content, children, side = "top", align = "center", delayDuration = 300, ...props }: TooltipProps) {
-  return (
-    <TooltipPrimitive.Provider delayDuration={delayDuration}>
-      <TooltipPrimitive.Root {...props}>
-        <TooltipPrimitive.Trigger asChild>{children}</TooltipPrimitive.Trigger>
-        <TooltipContent side={side} align={align}>
-          {content}
-        </TooltipContent>
-      </TooltipPrimitive.Root>
-    </TooltipPrimitive.Provider>
+export function Tooltip({ content, children, side = "top", align = "center", delayDuration, ...props }: TooltipProps) {
+  const shared = useContext(TooltipProviderContext);
+  const root = (
+    <TooltipPrimitive.Root delayDuration={delayDuration} {...props}>
+      <TooltipPrimitive.Trigger asChild>{children}</TooltipPrimitive.Trigger>
+      <TooltipContent side={side} align={align}>
+        {content}
+      </TooltipContent>
+    </TooltipPrimitive.Root>
   );
+  return shared ? root : <TooltipPrimitive.Provider delayDuration={delayDuration ?? 300}>{root}</TooltipPrimitive.Provider>;
 }
 
 /* ----------------------------------------------------------------- Popover */
@@ -173,7 +190,7 @@ export const AlertDialogTitle = forwardRef<HTMLHeadingElement, ComponentPropsWit
   { className, ...props },
   ref,
 ) {
-  return <AlertDialogPrimitive.Title ref={ref} className={cn("font-display text-lg font-semibold text-foreground", className)} {...props} />;
+  return <AlertDialogPrimitive.Title ref={ref} className={cn("font-display text-lg font-semibold tracking-(--nv-tracking-tight) text-foreground", className)} {...props} />;
 });
 
 export const AlertDialogDescription = forwardRef<HTMLParagraphElement, ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Description>>(

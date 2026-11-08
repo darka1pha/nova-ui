@@ -19,6 +19,7 @@ import {
   staticVariables,
   derivedVariables,
   THEME_ROOT_SELECTOR,
+  COLOR_SCHEME_CSS,
   tailwindThemeCss,
   themeCss,
   themeVariables,
@@ -29,14 +30,13 @@ mkdirSync(out("css"), { recursive: true });
 
 const header = "/* @darkalpha/nova-tokens — generated, do not edit. */\n";
 const defaults = getResolvedTheme(defaultTheme);
-const modeRules = `[data-nv-mode="light"] { color-scheme: light; }\n[data-nv-mode="dark"] { color-scheme: dark; }\n`;
 
 writeFileSync(
   out("css/tokens.css"),
   header +
-    cssBlock(":where(:root)", { ...staticVariables(), ...themeVariables(defaults) }, "  color-scheme: light dark;") +
+    cssBlock(":where(:root)", { ...staticVariables(), ...themeVariables(defaults) }) +
     cssBlock(THEME_ROOT_SELECTOR, derivedVariables()) +
-    modeRules,
+    COLOR_SCHEME_CSS,
 );
 
 writeFileSync(

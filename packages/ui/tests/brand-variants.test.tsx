@@ -13,7 +13,7 @@ import {
   PortholeFrame,
   Tideband,
   VesselStatusBadge,
-} from "../src/index.ts";
+} from "../src/kaveh.ts";
 import { axeViolations } from "./axe.ts";
 
 const pixel = "data:image/gif;base64,R0lGODlhAQABAAAAACw=";

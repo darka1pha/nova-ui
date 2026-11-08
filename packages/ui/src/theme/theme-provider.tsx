@@ -22,6 +22,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useState,
   useSyncExternalStore,
@@ -104,6 +105,9 @@ export interface ThemeContextValue {
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
+// useLayoutEffect warns during SSR on React 18; it is a no-op there anyway.
+const useIsomorphicLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
+
 const darkQuery = "(prefers-color-scheme: dark)";
 function subscribeSystemDark(callback: () => void) {
   if (typeof window === "undefined" || !window.matchMedia) return () => {};
@@ -131,6 +135,12 @@ function readStoredMode(key: string | undefined): ModePreference | null {
 /**
  * Applies a theme to its subtree through CSS custom properties. Themes nest:
  * an inner provider inherits the outer mode unless it sets its own.
+ *
+ * Overlays (dialogs, sheets, popovers, toasts) portal into a host at the end of
+ * this provider's element, so they keep its theme, mode and direction. Because
+ * they are `position: fixed` descendants, don't give the provider `overflow:
+ * hidden`, `transform`, `filter`, `contain` or a stacking `z-index` (put those
+ * on an element inside it), or they will be clipped or stacked under content.
  */
 export function ThemeProvider({
   theme = defaultTheme.id,
@@ -168,9 +178,15 @@ export function ThemeProvider({
   // A nested provider follows its parent's mode unless told otherwise.
   const inherits = parent !== null && modeProp === undefined && defaultMode === undefined && !storageKey && !resolved.preferredMode;
   const [internalMode, setInternalMode] = useState<ModePreference>(() => defaultMode ?? resolved.preferredMode ?? "system");
-  useEffect(() => {
+  // Until the stored preference has been read (after mount), a persisted provider
+  // writes no mode of its own and inherits the one ThemeScript put on <html>, so a
+  // stored "dark" is never overridden by `defaultMode` for a frame.
+  const [storageRead, setStorageRead] = useState(!storageKey);
+  // Layout effect: client-only apps re-render with the stored mode before the first paint.
+  useIsomorphicLayoutEffect(() => {
     const stored = readStoredMode(storageKey);
     if (stored) setInternalMode(stored);
+    setStorageRead(true);
   }, [storageKey]);
 
   const localSetMode = useCallback(
@@ -225,7 +241,8 @@ export function ThemeProvider({
 
   // Only an explicit choice is written; "system" and inherited modes are left
   // to CSS (`color-scheme`), which is what keeps SSR output flash-free.
-  const explicitMode = inherits || mode === "system" ? undefined : mode;
+  const pendingStorage = !storageRead && modeProp === undefined;
+  const explicitMode = inherits || pendingStorage || mode === "system" ? undefined : mode;
   return (
     <ThemeContext.Provider value={value}>
       <Direction.Provider dir={dir}>
@@ -255,7 +272,7 @@ export function useTheme(): ThemeContextValue {
   const ctx = useContext(ThemeContext);
   if (!ctx) {
     devWarn("useTheme() was called outside <ThemeProvider>; returning the default theme.");
-    return fallbackContext;
+    return getFallbackContext();
   }
   return ctx;
 }
@@ -275,16 +292,22 @@ export function useOptionalTheme(): ThemeContextValue | null {
   return useContext(ThemeContext);
 }
 
-const fallbackContext: ThemeContextValue = {
-  theme: getResolvedTheme(defaultTheme),
-  mode: "system",
-  resolvedMode: "light",
-  setMode: () => devWarn("setMode() has no effect outside <ThemeProvider>."),
-  dir: "ltr",
-  locale: undefined,
-  calendar: "gregory",
-  portalContainer: null,
-};
+// Built on first use, not at import: resolving a theme walks both modes' contrast,
+// which every importer (and every server render) would otherwise pay for.
+let fallback: ThemeContextValue | undefined;
+function getFallbackContext(): ThemeContextValue {
+  fallback ??= {
+    theme: getResolvedTheme(defaultTheme),
+    mode: "system",
+    resolvedMode: "light",
+    setMode: () => devWarn("setMode() has no effect outside <ThemeProvider>."),
+    dir: "ltr",
+    locale: undefined,
+    calendar: "gregory",
+    portalContainer: null,
+  };
+  return fallback;
+}
 
 /** The density multiplier for a density preset; handy for custom components. */
 export const densityFactor = (d: Density) => primitives.density[d];

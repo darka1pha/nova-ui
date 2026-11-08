@@ -1,5 +1,6 @@
 import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
+import { presets, ThemeProvider } from "../src/index.ts";
 import {
   HaftSeen,
   haftSeenItems,
@@ -14,14 +15,12 @@ import {
   Tideband,
   PersianVerse,
   Pomegranate,
-  presets,
   SeasonalGreeting,
   SeasonalPattern,
   seasonalPatternUrl,
-  ThemeProvider,
   Watermelon,
   yaldaMotifs,
-} from "../src/index.ts";
+} from "../src/kaveh.ts";
 import { axeViolations } from "./axe.ts";
 
 describe("seasonal presets", () => {

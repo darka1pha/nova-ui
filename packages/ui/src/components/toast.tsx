@@ -2,7 +2,7 @@
 
 import { AlertTriangle, CheckCircle2, Info, X, XCircle } from "lucide-react";
 import { Toast as ToastPrimitive } from "radix-ui";
-import { useSyncExternalStore, type ReactNode } from "react";
+import { useState, useSyncExternalStore, type ReactNode } from "react";
 import { cn } from "../utils/cn.ts";
 import { useOptionalTheme } from "../theme/theme-provider.tsx";
 import { usePortalContainer } from "./portal.tsx";
@@ -137,59 +137,68 @@ export function Toaster({ position = "bottom-end", label = "Notifications ({hotk
 
   return (
     <ToastPrimitive.Provider swipeDirection={swipe}>
-      {items.map((t) => {
-        const variant = t.variant ?? "default";
-        return (
-          <ToastPrimitive.Root
-            key={t.id}
-            open={t.open}
-            duration={t.duration ?? 5000}
-            type={variant === "danger" ? "foreground" : "background"}
-            onOpenChange={(open) => {
-              if (!open) close((x) => x.id === t.id);
-            }}
-            className={cn(
-              "group/toast relative flex w-full items-start gap-3 overflow-hidden rounded-lg border border-border bg-surface-raised p-4 ps-5 text-foreground shadow-lg",
-              "before:absolute before:inset-y-0 before:start-0 before:w-1",
-              accent[variant],
-              "data-[state=open]:animate-nv-pop-in data-[state=closed]:animate-nv-fade-out",
-              "data-[swipe=move]:translate-x-(--radix-toast-swipe-move-x) data-[swipe=cancel]:translate-x-0 data-[swipe=end]:animate-nv-fade-out",
-            )}
-          >
-            {icons[variant] ? <span className="mt-0.5 shrink-0 animate-nv-bounce-in [&_svg]:size-5">{icons[variant]}</span> : null}
-            {Number.isFinite(t.duration ?? 5000) ? (
-              <span
-                aria-hidden
-                className={cn(
-                  "absolute inset-x-0 bottom-0 h-0.5 origin-left animate-nv-countdown opacity-60 rtl:origin-right group-hover/toast:[animation-play-state:paused] group-focus-within/toast:[animation-play-state:paused] motion-reduce:hidden",
-                  countdown[variant],
-                )}
-                style={{ animationDuration: `${t.duration ?? 5000}ms` }}
-              />
-            ) : null}
-            <div className="flex min-w-0 flex-1 flex-col gap-1">
-              <ToastPrimitive.Title className="text-sm font-semibold">{t.title}</ToastPrimitive.Title>
-              {t.description ? <ToastPrimitive.Description className="text-sm text-foreground-muted">{t.description}</ToastPrimitive.Description> : null}
-              {t.action ? (
-                <ToastPrimitive.Action
-                  altText={t.action.altText}
-                  onClick={t.action.onClick}
-                  className={cn("mt-1 w-fit rounded-sm text-sm font-semibold text-primary-text hover:underline", focusRing)}
-                >
-                  {t.action.label}
-                </ToastPrimitive.Action>
-              ) : null}
-            </div>
-            <ToastPrimitive.Close
-              aria-label={closeLabel}
-              className={cn("-me-1 -mt-1 inline-flex size-7 shrink-0 items-center justify-center rounded-sm text-foreground-muted hover:bg-surface-hover hover:text-foreground [&_svg]:size-4", focusRing)}
-            >
-              <X />
-            </ToastPrimitive.Close>
-          </ToastPrimitive.Root>
-        );
-      })}
+      {items.map((t) => (
+        <ToastItem key={t.id} toast={t} closeLabel={closeLabel} />
+      ))}
       {container ? createPortal(viewport, container) : viewport}
     </ToastPrimitive.Provider>
+  );
+}
+
+function ToastItem({ toast: t, closeLabel }: { toast: ToastRecord; closeLabel: string }) {
+  const variant = t.variant ?? "default";
+  const duration = t.duration ?? 5000;
+  // Radix pauses every toast's timer while the viewport is hovered or focused and
+  // while the window is in the background; the countdown bar follows the same events.
+  const [paused, setPaused] = useState(false);
+  return (
+    <ToastPrimitive.Root
+      open={t.open}
+      duration={duration}
+      type={variant === "danger" ? "foreground" : "background"}
+      onOpenChange={(open) => {
+        if (!open) close((x) => x.id === t.id);
+      }}
+      onPause={() => setPaused(true)}
+      onResume={() => setPaused(false)}
+      data-paused={paused || undefined}
+      className={cn(
+        "group/toast relative flex w-full items-start gap-3 overflow-hidden rounded-lg border border-border bg-surface-raised p-4 ps-5 text-foreground shadow-lg",
+        "before:absolute before:inset-y-0 before:start-0 before:w-1",
+        accent[variant],
+        "data-[state=open]:animate-nv-pop-in data-[state=closed]:animate-nv-fade-out",
+        // Radix sets the x or the y offset depending on the swipe direction (centered positions swipe vertically).
+        "data-[swipe=move]:translate-x-(--radix-toast-swipe-move-x) data-[swipe=move]:translate-y-(--radix-toast-swipe-move-y) data-[swipe=cancel]:translate-x-0 data-[swipe=cancel]:translate-y-0 data-[swipe=end]:animate-nv-fade-out",
+      )}
+    >
+      {icons[variant] ? <span className="mt-0.5 shrink-0 animate-nv-bounce-in [&_svg]:size-5">{icons[variant]}</span> : null}
+      {Number.isFinite(duration) ? (
+        <span
+          aria-hidden
+          data-slot="toast-countdown"
+          className={cn("absolute inset-x-0 bottom-0 h-0.5 origin-left animate-nv-countdown opacity-60 rtl:origin-right motion-reduce:hidden", countdown[variant])}
+          style={{ animationDuration: `${duration}ms`, animationPlayState: paused ? "paused" : "running" }}
+        />
+      ) : null}
+      <div className="flex min-w-0 flex-1 flex-col gap-1">
+        <ToastPrimitive.Title className="text-sm font-semibold">{t.title}</ToastPrimitive.Title>
+        {t.description ? <ToastPrimitive.Description className="text-sm text-foreground-muted">{t.description}</ToastPrimitive.Description> : null}
+        {t.action ? (
+          <ToastPrimitive.Action
+            altText={t.action.altText}
+            onClick={t.action.onClick}
+            className={cn("mt-1 w-fit rounded-sm text-sm font-semibold text-primary-text hover:underline", focusRing)}
+          >
+            {t.action.label}
+          </ToastPrimitive.Action>
+        ) : null}
+      </div>
+      <ToastPrimitive.Close
+        aria-label={closeLabel}
+        className={cn("-me-1 -mt-1 inline-flex size-7 shrink-0 items-center justify-center rounded-sm text-foreground-muted hover:bg-surface-hover hover:text-foreground [&_svg]:size-4", focusRing)}
+      >
+        <X />
+      </ToastPrimitive.Close>
+    </ToastPrimitive.Root>
   );
 }

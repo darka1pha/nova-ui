@@ -3,19 +3,21 @@ import {
   Button,
   Card,
   GradientText,
+  Link,
+  Progress,
+  ThemeProvider,
+} from "@darkalpha/nova-ui";
+import {
   HaftSeen,
   KavehLogo,
   haftSeenItems,
-  Link,
   PersianStar,
   PersianVerse,
-  Progress,
   SeasonalGreeting,
   SeasonalPattern,
-  ThemeProvider,
   yaldaMotifs,
   type SeasonalPatternName,
-} from "@darkalpha/nova-ui";
+} from "@darkalpha/nova-ui/kaveh";
 import { Example } from "../docs/kit.tsx";
 
 

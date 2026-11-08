@@ -1,0 +1,4 @@
+/* A consumer build that uses the `dark:` variant once. */
+@import "tailwindcss" source(none);
+@import "../../dist/tailwind.css";
+@source inline("dark:bg-primary");

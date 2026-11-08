@@ -1,7 +1,6 @@
+import { Button, Card, ThemeProvider } from "@darkalpha/nova-ui";
 import {
   BilingualHeading,
-  Button,
-  Card,
   KavehFooter,
   KavehHeader,
   KavehLogo,
@@ -12,9 +11,8 @@ import {
   SeasonalGreeting,
   SeasonalPattern,
   seasonalColors,
-  ThemeProvider,
   yaldaMotifs,
-} from "@darkalpha/nova-ui";
+} from "@darkalpha/nova-ui/kaveh";
 import { FileText, Fuel, Ship } from "lucide-react";
 
 const nav = (

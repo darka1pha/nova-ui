@@ -3,6 +3,7 @@
 import { forwardRef, useEffect, useMemo, useRef, useState, useSyncExternalStore, type HTMLAttributes, type ReactNode } from "react";
 import { useLocale } from "../theme/theme-provider.tsx";
 import { cn } from "../utils/cn.ts";
+import { devWarn } from "../utils/dev.ts";
 
 /* --------------------------------------------------------------- Countdown */
 
@@ -58,6 +59,10 @@ export const Countdown = forwardRef<HTMLSpanElement, CountdownProps>(function Co
 ) {
   const { locale } = useLocale(localeProp);
   const target = new Date(to).getTime();
+  const invalid = Number.isNaN(target);
+  useEffect(() => {
+    if (invalid) devWarn(`Countdown: "${String(to)}" is not a valid date; nothing is rendered.`);
+  }, [invalid, to]);
   const hydrated = useHydrated();
   const [now, setNow] = useState(() => initialNow ?? Date.now());
   // The server's clock (or a hydration-time snapshot) is stale once mounted.
@@ -77,6 +82,7 @@ export const Countdown = forwardRef<HTMLSpanElement, CountdownProps>(function Co
   }, [target]);
 
   useEffect(() => {
+    if (invalid) return;
     if (done) {
       if (!fired.current) {
         fired.current = true;
@@ -87,24 +93,35 @@ export const Countdown = forwardRef<HTMLSpanElement, CountdownProps>(function Co
     // Tick just after the shown value changes, not on a drifting interval.
     const id = setTimeout(() => setNow(Date.now()), (remaining % step || step) + 15);
     return () => clearTimeout(id);
-  }, [now, done, remaining, step]);
+  }, [now, done, remaining, step, invalid]);
 
   // Round up, like any countdown: 1:02 stays on screen until a full second has passed.
   const parts = splitDuration(Math.ceil(remaining / step) * step);
   const shown = UNITS.filter((u) => (u === "day" ? parts.day > 0 && !placeholder : u === "second" ? showSeconds : true));
   const digitsOf = (unit: Unit) => (placeholder ? "--" : unit === "day" && variant === "inline" ? String(parts.day) : format.digits.format(parts[unit]));
 
+  // Formatters are built once per locale, not on every tick.
   const format = useMemo(() => {
+    const units = new Map<string, Intl.NumberFormat>();
+    const unitFormat = (unit: Unit, display: "long" | "narrow") => {
+      const key = `${unit}-${display}`;
+      let f = units.get(key);
+      if (!f) units.set(key, (f = new Intl.NumberFormat(locale, { style: "unit", unit, unitDisplay: display })));
+      return f;
+    };
     const unitText = (unit: Unit, value: number, display: "long" | "narrow") =>
-      new Intl.NumberFormat(locale, { style: "unit", unit, unitDisplay: display }).formatToParts(value).find((p) => p.type === "unit")?.value.trim() ?? unit;
-    const full = (unit: Unit, value: number) => new Intl.NumberFormat(locale, { style: "unit", unit, unitDisplay: "long" }).format(value);
+      unitFormat(unit, display).formatToParts(value).find((p) => p.type === "unit")?.value.trim() ?? unit;
+    const full = (unit: Unit, value: number) => unitFormat(unit, "long").format(value);
     const digits = new Intl.NumberFormat(locale, { minimumIntegerDigits: 2, useGrouping: false });
-    return { unitText, full, digits };
+    const list = new Intl.ListFormat(locale, { type: "unit", style: "long" });
+    return { unitText, full, digits, list };
   }, [locale]);
 
   // Minute precision for the spoken label: "2 days, 4 hours, 9 minutes".
   const spokenUnits = UNITS.filter((u) => u !== "second" && (u !== "day" || parts.day > 0));
-  const spoken = new Intl.ListFormat(locale, { type: "unit", style: "long" }).format(spokenUnits.map((u) => format.full(u, parts[u])));
+  const spoken = format.list.format(spokenUnits.map((u) => format.full(u, parts[u])));
+
+  if (invalid) return null;
 
   return (
     <span

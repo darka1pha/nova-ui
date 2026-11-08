@@ -12,6 +12,10 @@ export default tseslint.config(
     languageOptions: { globals: { ...globals.browser, ...globals.node } },
     plugins: { "react-hooks": reactHooks },
     rules: {
+      // React Compiler rules (react-hooks v7) as warnings: they flag existing
+      // patterns (latest-value refs read in render, setState in effects) that
+      // work today but block compiler optimisation. Fix them, then raise to "error".
+      ...Object.fromEntries(Object.keys(reactHooks.configs["recommended-latest"].rules).map((rule) => [rule, "warn"])),
       "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": "warn",
       "@typescript-eslint/no-explicit-any": "error",
