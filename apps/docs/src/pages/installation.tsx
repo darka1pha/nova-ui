@@ -15,7 +15,7 @@ import {
 } from "@darkalpha/nova-ui";
 import { ArrowRight, Check } from "lucide-react";
 import { useState, type ReactNode } from "react";
-import { CodeBlock, Page, Prose, Section } from "../docs/kit.tsx";
+import { CodeBlock, Page, Prose, Section, to } from "../docs/kit.tsx";
 
 /* ------------------------------------------------------------------ Choices */
 
@@ -411,7 +411,7 @@ export function SignUp() {
                 <Prose>
                   <p>
                     The bindings live in a separate entry, <code>@darkalpha/nova-ui/react-hook-form</code>, so apps that don't use it never download it. See{" "}
-                    <a href="#/forms-validation">Forms &amp; validation</a>.
+                    <a href={to("forms-validation")}>Forms &amp; validation</a>.
                   </p>
                 </Prose>
               </div>
@@ -442,7 +442,7 @@ export function SignUp() {
                 <Prose>
                   <p>
                     Nova UI builds full light and dark scales from each color and keeps text readable (WCAG AA). Try yours in the{" "}
-                    <a href="#/playground">Theme playground</a> and copy the result.
+                    <a href={to("playground")}>Theme playground</a> and copy the result.
                   </p>
                 </Prose>
               </div>
@@ -481,17 +481,17 @@ export function SignUp() {
           ))}
         </ul>
         <Text size="sm" tone="secondary">
-          More in <a className="text-primary-text underline" href="#/troubleshooting">Troubleshooting</a>.
+          More in <a className="text-primary-text underline" href={to("troubleshooting")}>Troubleshooting</a>.
         </Text>
       </Section>
 
       <Section title="Next steps">
         <div className="grid gap-3 sm:grid-cols-2">
           {[
-            ["#/theming", "Theming & color", "Presets, brand colors, dark mode, density and radius."],
-            ["#/forms", "Components", "Every component with live examples and accessibility notes."],
-            ["#/playground", "Theme playground", "Design a theme visually and copy the code."],
-            ["#/accessibility", "Accessibility", "What Nova UI handles for you, and what's still yours to check."],
+            [to("theming"), "Theming & color", "Presets, brand colors, dark mode, density and radius."],
+            [to("forms"), "Components", "Every component with live examples and accessibility notes."],
+            [to("playground"), "Theme playground", "Design a theme visually and copy the code."],
+            [to("accessibility"), "Accessibility", "What Nova UI handles for you, and what's still yours to check."],
           ].map(([href, title, body]) => (
             <a
               key={href}

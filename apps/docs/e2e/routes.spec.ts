@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { horizontalOverflow, navRoutes, open } from "./helpers.ts";
+import { goTo, horizontalOverflow, navRoutes, open, routeUrl } from "./helpers.ts";
 
 const routes = navRoutes();
 
@@ -44,8 +44,8 @@ test("every page has its own document title", async ({ page }) => {
   await open(page, "home");
   const seen = new Map<string, string>();
   for (const route of routes) {
-    await page.evaluate((r) => (location.hash = `#/${r}`), route);
-    await expect(page).toHaveURL(new RegExp(`#/${route}$`));
+    await goTo(page, route);
+    await expect(page).toHaveURL(new RegExp(`${routeUrl(route)}$`));
     await expect(page.locator("main h1").first()).toBeVisible({ timeout: 15_000 });
     const title = await page.title();
     expect(seen.get(title), `"${title}" is used by both ${seen.get(title)} and ${route}`).toBeUndefined();
@@ -62,7 +62,7 @@ test("skip link moves focus to <main> and keeps the route", async ({ page }) => 
   await expect(skip).toBeVisible();
   await page.keyboard.press("Enter");
   await expect(page.locator("main#main")).toBeFocused();
-  await expect(page).toHaveURL(/#\/components\/button$/);
+  await expect(page).toHaveURL(/\/components\/button$/);
   await expect(page.getByRole("heading", { level: 1, name: "Button" })).toBeVisible();
   // The next Tab continues from the page content, not from the top of the header.
   await page.keyboard.press("Tab");
@@ -76,14 +76,14 @@ for (const route of ["no-such-page", "components/no-such-component"]) {
     page.on("console", (msg) => {
       if (msg.type() === "error") errors.push(msg.text());
     });
-    await page.goto(`/#/${route}`);
+    await page.goto(routeUrl(route));
     await expect(page.locator("main").getByText("Page not found", { exact: true })).toBeVisible({ timeout: 15_000 });
     await expect(page).toHaveTitle("Page not found · Nova UI");
     // It must not fall back to the overview.
     await expect(page.getByRole("heading", { level: 1 })).toHaveCount(0);
 
     await page.getByRole("link", { name: "Back to the overview" }).click();
-    await expect(page).toHaveURL(/#\/home$/);
+    await expect(page).toHaveURL(/:\d+\/$/);
     await expect(page).toHaveTitle("Nova UI");
     expect(errors).toEqual([]);
   });

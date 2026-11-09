@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { axe, componentIds, navRoutes, open } from "./helpers.ts";
+import { axe, componentIds, goTo, navRoutes, open } from "./helpers.ts";
 
 // Read from the nav and registry, so a new page is covered without editing this file.
 const componentRoutes = componentIds().map((id) => `components/${id}`);
@@ -269,11 +269,8 @@ test("reduced motion collapses durations @mobile", async ({ page }) => {
   const d = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--nv-duration-normal").trim());
   // Durations are calc(<n>ms * scale) normally; reduced motion replaces them with ~0.
   expect(d).toMatch(/^\.?0?\.01ms$/);
-  const marquee = await page.evaluate(() => {
-    location.hash = "#/motion";
-    return true;
-  });
-  expect(marquee).toBe(true);
+  await goTo(page, "motion");
+  await expect(page.getByRole("heading", { level: 1, name: "Motion & interaction" })).toBeVisible();
 });
 
 test("mobile navigation opens in a sheet @mobile", async ({ page }) => {
@@ -283,4 +280,19 @@ test("mobile navigation opens in a sheet @mobile", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 1, name: "Forms" })).toBeVisible();
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
   expect(overflow).toBe(false);
+});
+
+// P3.3: ⌘K / Ctrl+K search over pages, components and props.
+test("search finds a prop and opens its API reference", async ({ page }) => {
+  const errors = await open(page, "home");
+  await page.keyboard.press("Control+K");
+  const dialog = page.getByRole("dialog", { name: "Search the docs" });
+  await expect(dialog).toBeVisible();
+  await page.keyboard.type("loadingText");
+  await expect(dialog.getByRole("option").first()).toContainText("Button.loadingText");
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(/\/components\/button#api-Button$/);
+  await expect(page.getByRole("heading", { level: 1, name: "Button" })).toBeVisible();
+  await expect(dialog).toBeHidden();
+  expect(errors).toEqual([]);
 });

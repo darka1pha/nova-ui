@@ -14,13 +14,14 @@ import {
 } from "@darkalpha/nova-ui";
 import { Anchor, BillOfLading, ContainerShip, CustomsStamp } from "@darkalpha/nova-ui/icons";
 import { FileDown, MoreHorizontal } from "lucide-react";
+import { to } from "../docs/kit.tsx";
 
 /** A detail page: breadcrumbs, identity and actions, key figures, then tabbed detail. */
 export function VesselDetailBlock() {
   return (
     <div className="flex w-full flex-col gap-5 p-6">
       <Breadcrumbs>
-        <BreadcrumbItem href="#/blocks">Vessels</BreadcrumbItem>
+        <BreadcrumbItem href={to("blocks")}>Vessels</BreadcrumbItem>
         <BreadcrumbItem current>Iran Shahr</BreadcrumbItem>
       </Breadcrumbs>
 

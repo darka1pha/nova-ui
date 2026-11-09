@@ -60,7 +60,7 @@ import {
 } from "@darkalpha/nova-ui";
 import { AlignCenter, AlignLeft, AlignRight, Anchor, Bold, Building2, ChevronsUpDown, Italic, Printer, Share2, CircleCheck, Container, DollarSign, GitCommit, Package, Ship, Truck, Users } from "lucide-react";
 import { useState } from "react";
-import { Example } from "../docs/kit.tsx";
+import { Example, to } from "../docs/kit.tsx";
 
 /* ------------------------------------------------------------------ Actions */
 
@@ -421,7 +421,7 @@ export function HoverCardExamples() {
         Built by{" "}
         <HoverCard openDelay={150}>
           <HoverCardTrigger asChild>
-            <Link href="#/navigation">@ada</Link>
+            <Link href={to("navigation")}>@ada</Link>
           </HoverCardTrigger>
           <HoverCardContent className="flex gap-3">
             <Avatar name="Ada Lovelace" status="online" />

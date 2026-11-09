@@ -6,3 +6,10 @@ declare module "virtual:nova-api" {
   const api: ApiData;
   export default api;
 }
+
+declare module "virtual:nova-api/loaders" {
+  import type { ComponentApi } from "../scripts/api-types.ts";
+  /** One loader per export: its props, in a chunk of its own. */
+  const loaders: Record<string, () => Promise<ComponentApi | null>>;
+  export default loaders;
+}

@@ -28,7 +28,7 @@ import {
   toast,
 } from "@darkalpha/nova-ui";
 import { ArrowRight, Palette, Sparkles, Accessibility, Layers, Gauge, Languages } from "lucide-react";
-import { CodeBlock, releaseLabel } from "../docs/kit.tsx";
+import { CodeBlock, releaseLabel, to } from "../docs/kit.tsx";
 
 function MiniPreview({ theme }: { theme: string }) {
   return (
@@ -83,12 +83,12 @@ export function HomePage() {
             </Text>
             <div className="flex flex-wrap gap-3">
               <Button asChild size="lg" variant="gradient">
-                <a href="#/installation">
+                <a href={to("installation")}>
                   Get started <ArrowRight className="rtl:-scale-x-100" />
                 </a>
               </Button>
               <Button asChild size="lg" variant="outline">
-                <a href="#/playground">Open the playground</a>
+                <a href={to("playground")}>Open the playground</a>
               </Button>
             </div>
             <CodeBlock language="bash" code="pnpm add @darkalpha/nova-ui" className="w-full max-w-md" />
@@ -183,7 +183,7 @@ export function HomePage() {
             </Card>
           ))}
         </Grid>
-        <Alert variant="primary" title="Tip: everything on this site is built with Nova UI itself." action={<Button asChild size="sm" variant="soft"><a href="#/playground">Try your brand colors</a></Button>}>
+        <Alert variant="primary" title="Tip: everything on this site is built with Nova UI itself." action={<Button asChild size="sm" variant="soft"><a href={to("playground")}>Try your brand colors</a></Button>}>
           Switch the preset, color mode or direction in the header — every page updates instantly.
         </Alert>
       </section>

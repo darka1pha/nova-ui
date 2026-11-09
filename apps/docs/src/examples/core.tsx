@@ -177,7 +177,7 @@ import {
   Users,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { capitalize, Example } from "../docs/kit.tsx";
+import { capitalize, Example, navigate, to } from "../docs/kit.tsx";
 
 /* ---------------------------------------------------------- Layout & type */
 
@@ -217,7 +217,7 @@ export function TypographyExamples() {
             Something went wrong
           </Text>
           <Text>
-            <Link href="#/layout">Inline link</Link> · <Code>pnpm add @darkalpha/nova-ui</Code> · <Kbd>Ctrl</Kbd> <Kbd>K</Kbd>
+            <Link href={to("layout")}>Inline link</Link> · <Code>pnpm add @darkalpha/nova-ui</Code> · <Kbd>Ctrl</Kbd> <Kbd>K</Kbd>
           </Text>
         </Stack>
       </Example>
@@ -850,7 +850,7 @@ export function AlertExamples() {
     >
       <Stack gap={3} className="w-full">
         <Alert variant="info" title="Heads up">
-          A new version is available. <a href="#/migration">See what changed</a>.
+          A new version is available. <a href={to("migration")}>See what changed</a>.
         </Alert>
         <Alert variant="success" title="Deployed successfully" onDismiss={() => toast("Dismissed")}>
           Your site is live at novaui.dev.
@@ -1261,7 +1261,7 @@ export function CommandPaletteExamples() {
                 <CommandItem
                   key={id as string}
                   onSelect={() => {
-                    window.location.hash = `#/${id as string}`;
+                    navigate(id as string);
                     setPaletteOpen(false);
                   }}
                 >
@@ -1773,8 +1773,8 @@ export function BreadcrumbsExamples() {
 </Breadcrumbs>`}
     >
       <Breadcrumbs>
-        <BreadcrumbItem href="#/home">Home</BreadcrumbItem>
-        <BreadcrumbItem href="#/navigation">Projects</BreadcrumbItem>
+        <BreadcrumbItem href={to("home")}>Home</BreadcrumbItem>
+        <BreadcrumbItem href={to("navigation")}>Projects</BreadcrumbItem>
         <BreadcrumbItem current>Nova UI</BreadcrumbItem>
       </Breadcrumbs>
     </Example>
@@ -1817,7 +1817,7 @@ export function NavigationMenuExamples() {
                   ["Storage", "Fast, global, durable"],
                 ].map(([t, d]) => (
                   <li key={t}>
-                    <NavigationMenuLink variant="card" href="#/navigation">
+                    <NavigationMenuLink variant="card" href={to("navigation")}>
                       <span className="font-semibold text-foreground">{t}</span>
                       <span className="text-foreground-muted">{d}</span>
                     </NavigationMenuLink>
@@ -1827,10 +1827,10 @@ export function NavigationMenuExamples() {
             </NavigationMenuContent>
           </NavigationMenuItem>
           <NavigationMenuItem>
-            <NavigationMenuLink href="#/getting-started">Docs</NavigationMenuLink>
+            <NavigationMenuLink href={to("getting-started")}>Docs</NavigationMenuLink>
           </NavigationMenuItem>
           <NavigationMenuItem>
-            <NavigationMenuLink href="#/playground">Pricing</NavigationMenuLink>
+            <NavigationMenuLink href={to("playground")}>Pricing</NavigationMenuLink>
           </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>
@@ -1969,7 +1969,7 @@ export function CardExamples() {
           </Card>
         ))}
         <Card interactive>
-          <a href="#/data" className="flex flex-col gap-1 outline-none">
+          <a href={to("data")} className="flex flex-col gap-1 outline-none">
             <Text weight="semibold">Interactive</Text>
             <Text size="sm" tone="muted">
               Hover me, or tab to the link.

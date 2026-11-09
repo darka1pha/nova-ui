@@ -84,15 +84,17 @@ Every docs bug fixed above was visible in the browser but invisible to the test 
 
 ## P3: docs site
 
-1. **Bundle size.** The entry chunk is 275 kB, `icons` 230 kB, `components` 212 kB and
-   `surfaces` 201 kB (minified). Split `components.tsx` per page, load the icon catalog
-   on demand, and lazy-load the template preview's heavy sections.
-2. **Path-based routing with prerendering** so pages are indexable and shareable with headings
-   (`/forms#select`) — hash routing can't do in-page anchors without breaking the router,
-   which is the root cause of the skip-link bug.
-3. **Search** (Cmd+K) over pages, components and props, reusing the `Command` component.
-4. **Generated prop tables** from the TypeScript types instead of hand-written ones, so docs
-   can't drift from the API.
+1. ~~**Bundle size.**~~ Done: component pages load only their own props (about 1 kB per
+   export instead of the 246 kB API file), the icons page dropped `react-dom/server` (229 →
+   28 kB), and search loads on first use. Pages were already split per route. The entry is
+   304 kB, 199 kB of it `react-dom`; `surfaces` (212 kB) is the shared Nova UI chunk.
+2. ~~**Path-based routing with prerendering**~~ Done: routes are paths (`/components/button#api`)
+   under `DOCS_BASE`, and `pnpm build:docs` prerenders all of them to static HTML (plus a
+   `404.html` for GitHub Pages), which the client hydrates. Old `#/…` links redirect.
+3. ~~**Search**~~ Done: ⌘K / Ctrl+K (or the header button) opens a `CommandPalette` over
+   pages, components and every prop, ranked by name; a prop opens its API table.
+4. ~~**Generated prop tables**~~ Done: `scripts/api-extractor.ts` reads props, defaults and
+   JSDoc from the TypeScript source for every component page's API reference.
 
 ## Toward 1.0
 

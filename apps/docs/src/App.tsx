@@ -24,13 +24,17 @@ import {
   type ModePreference,
 } from "@darkalpha/nova-ui";
 import { ChevronRight, GitPullRequest, Languages, Menu, Monitor, Moon, SearchX, Sun } from "lucide-react";
-import { Suspense, useEffect, useState, type ReactNode } from "react";
-import { releaseLabel, useRoute } from "./docs/kit.tsx";
+import { lazy, Suspense, useCallback, useEffect, useState, type ReactNode } from "react";
+import { releaseLabel, to, useLinkInterception, useRoute } from "./docs/kit.tsx";
+import { SearchButton, useSearchShortcut } from "./docs/search-button.tsx";
+
+// The palette (cmdk and the search index) loads the first time it's opened.
+const SearchPalette = lazy(() => import("./docs/search.tsx").then((m) => ({ default: m.SearchPalette })));
 import { nav, resolveRoute, routeLabel, type NavItem } from "./pages/index.tsx";
 
 function Logo() {
   return (
-    <a href="#/home" className="flex shrink-0 items-center gap-2.5 rounded-md focus-visible:outline-2 focus-visible:outline-focus-ring">
+    <a href={to("home")} className="flex shrink-0 items-center gap-2.5 rounded-md focus-visible:outline-2 focus-visible:outline-focus-ring">
       <span aria-hidden className="relative size-8 shrink-0 overflow-hidden rounded-[10px] bg-(image:--nv-gradient-vivid) shadow-md">
         <span className="absolute inset-[5px] rotate-45 rounded-[5px] border-2 border-white/80" />
       </span>
@@ -52,7 +56,7 @@ const linkClass = (active: boolean) =>
 function NavLink({ item, current, onNavigate, expandable, expanded }: { item: NavItem; current: string; onNavigate?: () => void; expandable?: boolean; expanded?: boolean }) {
   const active = item.id === current;
   return (
-    <a href={`#/${item.id}`} onClick={onNavigate} aria-current={active ? "page" : undefined} className={linkClass(active)}>
+    <a href={to(item.id)} onClick={onNavigate} aria-current={active ? "page" : undefined} className={linkClass(active)}>
       {expandable ? <ChevronRight aria-hidden className={cn("-ms-1 size-3.5 shrink-0 transition-transform rtl:-scale-x-100", expanded && "rotate-90 rtl:rotate-90")} /> : null}
       {item.label}
       {item.badge ? (
@@ -147,16 +151,36 @@ function ModeSwitch() {
 function Shell({ theme, setTheme, dir, setDir, children }: { theme: string; setTheme: (t: string) => void; dir: "ltr" | "rtl"; setDir: (d: "ltr" | "rtl") => void; children: ReactNode }) {
   const route = useRoute();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpenState] = useState(false);
+  // Mount the palette only once it has been asked for, then keep it (for its close animation).
+  const [searchUsed, setSearchUsed] = useState(false);
+  const setSearchOpen = useCallback((next: boolean | ((open: boolean) => boolean)) => {
+    setSearchUsed(true);
+    setSearchOpenState(next);
+  }, []);
+  useSearchShortcut(setSearchOpen);
+  useLinkInterception();
   useEffect(() => {
+    // Jump to `#anchor` once the (lazy) page has rendered it, else to the top.
+    const id = decodeURIComponent(window.location.hash.slice(1));
     window.scrollTo({ top: 0 });
+    let frame = 0;
+    let tries = 0;
+    const seek = () => {
+      const target = id ? document.getElementById(id) : null;
+      if (target) target.scrollIntoView();
+      else if (id && tries++ < 120) frame = requestAnimationFrame(seek);
+    };
+    if (id) seek();
     // A distinct title per page, for tabs, history and screen readers (WCAG 2.4.2).
     const label = route === "home" ? undefined : (routeLabel(route) ?? "Page not found");
     document.title = label ? `${label} · Nova UI` : "Nova UI";
+    return () => cancelAnimationFrame(frame);
   }, [route]);
 
   return (
     <div className="flex min-h-dvh flex-col">
-      {/* Focus <main> directly: following "#main" would change the hash, which is the router. */}
+      {/* Focus <main> directly, so the URL keeps any #anchor the page was opened with. */}
       <a
         href="#main"
         onClick={(e) => {
@@ -173,6 +197,7 @@ function Shell({ theme, setTheme, dir, setDir, children }: { theme: string; setT
           </IconButton>
           <Logo />
           <div className="ms-auto flex items-center gap-1 sm:gap-2">
+            <SearchButton onClick={() => setSearchOpen(true)} />
             <Select value={theme} onValueChange={setTheme}>
               <SelectTrigger size="sm" aria-label="Theme preset" className="hidden w-36 sm:flex">
                 <SelectValue />
@@ -192,7 +217,7 @@ function Shell({ theme, setTheme, dir, setDir, children }: { theme: string; setT
             </Tooltip>
             <ModeSwitch />
             <Button asChild variant="ghost" size="sm" className="hidden md:inline-flex">
-              <a href="#/contributing">
+              <a href={to("contributing")}>
                 <GitPullRequest /> Contribute
               </a>
             </Button>
@@ -209,6 +234,11 @@ function Shell({ theme, setTheme, dir, setDir, children }: { theme: string; setT
         </main>
       </div>
 
+      {searchUsed ? (
+        <Suspense fallback={null}>
+          <SearchPalette open={searchOpen} onOpenChange={setSearchOpen} />
+        </Suspense>
+      ) : null}
       <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
         <SheetContent side="start" className="w-72 p-4">
           <SheetTitle className="sr-only">Navigation</SheetTitle>
@@ -228,7 +258,7 @@ function NotFound() {
       description="There's no page at this address. It may have moved, or the link has a typo."
       actions={
         <Button asChild>
-          <a href="#/home">Back to the overview</a>
+          <a href={to("home")}>Back to the overview</a>
         </Button>
       }
       className="py-24"

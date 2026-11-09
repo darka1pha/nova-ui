@@ -10,8 +10,20 @@ import { Prose, Section } from "./kit.tsx";
  * shared wording below, so each component's JSDoc only covers what's its own.
  */
 
-let apiPromise: Promise<Record<string, ComponentApi>> | null = null;
-const loadApi = () => (apiPromise ??= import("virtual:nova-api").then((m) => m.default));
+// Each export's props are a chunk of their own; a page loads only its parts.
+// Cached per set of parts, so `use()` gets the same promise on every render.
+const loaded = new Map<string, Promise<ComponentApi[]>>();
+function loadParts(parts: string[]): Promise<ComponentApi[]> {
+  const key = parts.join(",");
+  let promise = loaded.get(key);
+  if (!promise) {
+    promise = import("virtual:nova-api/loaders").then(({ default: loaders }) =>
+      Promise.all(parts.map((part) => loaders[part]?.() ?? Promise.resolve(null))).then((list) => list.filter((p: ComponentApi | null): p is ComponentApi => p !== null)),
+    );
+    loaded.set(key, promise);
+  }
+  return promise;
+}
 
 const shared: Record<string, string> = {
   asChild: "Render the child element instead, merging these props and behavior into it (Radix Slot).",
@@ -179,8 +191,7 @@ function PartReference({ api }: { api: ComponentApi }) {
 
 /** Props tables for a component's exports, in the order given. */
 export function ApiReference({ parts }: { parts: string[] }) {
-  const api = use(loadApi());
-  const found = parts.map((p) => api[p]).filter((p): p is ComponentApi => p !== undefined);
+  const found = use(loadParts(parts));
   return (
     <div className="flex flex-col gap-8">
       {found.map((part) => (

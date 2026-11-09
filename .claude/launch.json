@@ -56,6 +56,21 @@
         "5190"
       ],
       "port": 5190
+    },
+    {
+      "name": "docs-preview",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "--filter",
+        "@darkalpha/nova-docs",
+        "exec",
+        "vite",
+        "preview",
+        "--port",
+        "4173",
+        "--strictPort"
+      ],
+      "port": 4173
     }
   ]
 }
