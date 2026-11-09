@@ -26,6 +26,7 @@ import {
 import { ChevronRight, GitPullRequest, Languages, Menu, Monitor, Moon, SearchX, Sun } from "lucide-react";
 import { Suspense, useEffect, useState, type ReactNode } from "react";
 import { releaseLabel, to, useLinkInterception, useRoute } from "./docs/kit.tsx";
+import { SearchButton, SearchPalette, useSearchShortcut } from "./docs/search.tsx";
 import { nav, resolveRoute, routeLabel, type NavItem } from "./pages/index.tsx";
 
 function Logo() {
@@ -147,6 +148,8 @@ function ModeSwitch() {
 function Shell({ theme, setTheme, dir, setDir, children }: { theme: string; setTheme: (t: string) => void; dir: "ltr" | "rtl"; setDir: (d: "ltr" | "rtl") => void; children: ReactNode }) {
   const route = useRoute();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  useSearchShortcut(setSearchOpen);
   useLinkInterception();
   useEffect(() => {
     // Jump to `#anchor` once the (lazy) page has rendered it, else to the top.
@@ -185,6 +188,7 @@ function Shell({ theme, setTheme, dir, setDir, children }: { theme: string; setT
           </IconButton>
           <Logo />
           <div className="ms-auto flex items-center gap-1 sm:gap-2">
+            <SearchButton onClick={() => setSearchOpen(true)} />
             <Select value={theme} onValueChange={setTheme}>
               <SelectTrigger size="sm" aria-label="Theme preset" className="hidden w-36 sm:flex">
                 <SelectValue />
@@ -221,6 +225,7 @@ function Shell({ theme, setTheme, dir, setDir, children }: { theme: string; setT
         </main>
       </div>
 
+      <SearchPalette open={searchOpen} onOpenChange={setSearchOpen} />
       <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
         <SheetContent side="start" className="w-72 p-4">
           <SheetTitle className="sr-only">Navigation</SheetTitle>

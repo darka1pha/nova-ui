@@ -281,3 +281,18 @@ test("mobile navigation opens in a sheet @mobile", async ({ page }) => {
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
   expect(overflow).toBe(false);
 });
+
+// P3.3: ⌘K / Ctrl+K search over pages, components and props.
+test("search finds a prop and opens its API reference", async ({ page }) => {
+  const errors = await open(page, "home");
+  await page.keyboard.press("Control+K");
+  const dialog = page.getByRole("dialog", { name: "Search the docs" });
+  await expect(dialog).toBeVisible();
+  await page.keyboard.type("loadingText");
+  await expect(dialog.getByRole("option").first()).toContainText("Button.loadingText");
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(/\/components\/button#api-Button$/);
+  await expect(page.getByRole("heading", { level: 1, name: "Button" })).toBeVisible();
+  await expect(dialog).toBeHidden();
+  expect(errors).toEqual([]);
+});

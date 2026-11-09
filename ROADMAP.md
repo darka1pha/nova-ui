@@ -89,7 +89,8 @@ Every docs bug fixed above was visible in the browser but invisible to the test 
 2. ~~**Path-based routing with prerendering**~~ Done: routes are paths (`/components/button#api`)
    under `DOCS_BASE`, and `pnpm build:docs` prerenders all of them to static HTML (plus a
    `404.html` for GitHub Pages), which the client hydrates. Old `#/…` links redirect.
-3. **Search** (Cmd+K) over pages, components and props, reusing the `Command` component.
+3. ~~**Search**~~ Done: ⌘K / Ctrl+K (or the header button) opens a `CommandPalette` over
+   pages, components and every prop, ranked by name; a prop opens its API table.
 4. ~~**Generated prop tables**~~ Done: `scripts/api-extractor.ts` reads props, defaults and
    JSDoc from the TypeScript source for every component page's API reference.
 
