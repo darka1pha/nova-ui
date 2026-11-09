@@ -112,6 +112,9 @@ const isOptions = (m: unknown): m is Omit<ToastOptions, "id"> => typeof m === "o
  * toast when it settles. Returns the promise you passed in (or that the function returned),
  * so `await toast.promise(save(), ...)` still gives you the value or throws. If the person
  * dismisses the loading toast, the outcome isn't shown.
+ *
+ * A function that throws before returning a promise counts as a rejection: the error toast
+ * shows and the returned promise rejects (it doesn't throw synchronously).
  */
 toast.promise = <T,>(promise: Promise<T> | (() => Promise<T>), { loading, success, error, ...rest }: ToastPromiseOptions<T>): Promise<T> => {
   const id = show({ ...rest, ...(isOptions(loading) ? loading : { title: loading }), id: rest.id, duration: Infinity }, true);
@@ -121,11 +124,36 @@ toast.promise = <T,>(promise: Promise<T> | (() => Promise<T>), { loading, succes
     const resolved = typeof message === "function" ? message(value) : message;
     show({ ...rest, variant, duration: undefined, ...(isOptions(resolved) ? resolved : { title: resolved }), id });
   };
-  const p = typeof promise === "function" ? promise() : promise;
+  // Every path must settle the toast, or the spinner never stops: a factory that throws
+  // synchronously becomes a rejection, and Promise.resolve keeps a native promise as is
+  // (so callers still get their own promise back) while adopting other thenables.
+  let p: Promise<T>;
+  try {
+    p = Promise.resolve(typeof promise === "function" ? promise() : promise);
+  } catch (reason) {
+    p = Promise.reject(reason as Error);
+  }
   p.then(
-    (value) => settle(success, value, "success"),
-    (reason: unknown) => settle(error, reason, "danger"),
+    (value) => {
+      // A `success` function that throws is the caller's bug; show it as the error outcome.
+      try {
+        settle(success, value, "success");
+      } catch (reason) {
+        settleError(reason);
+      }
+    },
+    (reason: unknown) => settleError(reason),
   );
+  function settleError(reason: unknown) {
+    try {
+      settle(error, reason, "danger");
+    } catch (formatError) {
+      // The `error` function itself threw: close the spinner and report it. Rethrowing would
+      // only become an unhandled rejection on this internal chain, which nothing can catch.
+      close((t) => t.id === id && t.loading === true);
+      console.error("toast.promise: the `error` option threw while formatting the rejection.", formatError);
+    }
+  }
   return p;
 };
 

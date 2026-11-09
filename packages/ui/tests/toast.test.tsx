@@ -151,4 +151,54 @@ describe("toast.promise", () => {
     await act(async () => resolve(undefined));
     expect(screen.queryByText("Synced")).not.toBeInTheDocument();
   });
+
+  // Found in review of #16: a synchronous throw used to leave the spinner running forever.
+  it("treats a factory that throws synchronously as a rejection", async () => {
+    wrap(<Toaster />);
+    let returned!: Promise<unknown>;
+    act(() => {
+      returned = toast.promise(
+        () => {
+          throw new Error("not signed in");
+        },
+        { loading: "Publishing", success: "Published", error: (e) => `Couldn't publish: ${(e as Error).message}` },
+      );
+    });
+    await expect(returned).rejects.toThrow("not signed in");
+    const failed = (await screen.findByText("Couldn't publish: not signed in")).closest("li")!;
+    expect(failed.querySelector(".animate-nv-spin")).toBeNull();
+    expect(screen.queryByText("Publishing")).not.toBeInTheDocument();
+  });
+
+  it("shows the error outcome when the success formatter throws", async () => {
+    wrap(<Toaster />);
+    act(() => {
+      void toast.promise(Promise.resolve(null as unknown as { name: string }), {
+        loading: "Loading profile",
+        success: (profile) => `Hello ${profile.name}`, // null.name throws
+        error: "Couldn't load your profile",
+      });
+    });
+    expect(await screen.findByText("Couldn't load your profile")).toBeInTheDocument();
+  });
+
+  it("closes the spinner and reports it when the error formatter throws", async () => {
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+    wrap(<Toaster />);
+    act(() => {
+      void toast
+        .promise(Promise.reject(new Error("offline")), {
+          loading: "Refreshing",
+          success: "Refreshed",
+          error: () => {
+            throw new Error("formatter bug");
+          },
+        })
+        .catch(() => {});
+    });
+    await screen.findByText("Refreshing");
+    await waitFor(() => expect(screen.queryByText("Refreshing")).not.toBeInTheDocument());
+    expect(consoleError).toHaveBeenCalledWith(expect.stringContaining("toast.promise"), expect.objectContaining({ message: "formatter bug" }));
+    consoleError.mockRestore();
+  });
 });
