@@ -82,9 +82,8 @@ Fixed on branch `fix/audit-medium-low`, which is stacked on `fix/audit-high-issu
 
 | Status | Medium | Low |
 | --- | --- | --- |
-| ✅ Fixed | M-4, M-5, M-7, M-8, M-9, M-10, M-11, M-12, M-13, M-14 (breaking), M-16 (breaking), M-17, M-18, M-19, M-20 | L-1, L-3, L-4, L-5, L-6, L-7, L-9, L-10, L-11, L-13, L-14, L-15, L-16, L-18, L-20, L-21, L-22 |
+| ✅ Fixed | M-4, M-5, M-7, M-8, M-9, M-10, M-11, M-12, M-13, M-14 (breaking), M-16 (breaking), M-17, M-18, M-19, M-20 | L-1, L-3, L-4, L-5, L-6, L-7, L-9, L-10, L-11, L-13, L-14, L-15, L-16, L-18, L-19, L-20, L-21, L-22 |
 | 📝 Documented | M-2, M-6 | |
-| ◐ Partly | | L-19 |
 | ❎ Not reproduced / ➖ left as is | M-1 | L-12, L-17 |
 | ⏸ Deferred | M-3, M-15 | L-2, L-8, L-23 |
 
@@ -297,7 +296,7 @@ Fix: use `workspace:` / `link:` deps (add `examples/*` to the workspace), or doc
 - **L-16.** ✅ Fixed: `fallbackContext` calls `getResolvedTheme(defaultTheme)` at module load (`theme-provider.tsx:278`; `dist/theme/theme-provider.js:135`, not marked `/*#__PURE__*/`). Every import, including on the server, resolves both modes eagerly. Make it lazy. **Status:** The fallback context is built on first use.
 - **L-17.** ➖ Left as is: `@darkalpha/nova-tokens` publishes `src/` as well as `dist/` (`packages/tokens/package.json` `files`). Nothing in `exports` points at `src/`, so it's dead weight in the tarball. **Status:** *Correction:* `src/` isn't dead weight. The published `.d.ts.map` files point into it, so editors' "Go to definition" lands on real source.
 - **L-18.** ✅ Fixed: `useRipple`'s cleanup `setTimeout` isn't cleared on unmount (`button.tsx:100`). It's harmless in React 18+, but it's the only uncleared component timer.
-- **L-19.** ◐ Partly: The ESLint config enables only two `react-hooks` rules. The v7 plugin's recommended set (refs during render, purity, etc.) is off; `countdown.tsx:54` (`onCompleteRef.current = onComplete` during render) would be flagged. There's also no `jsx-a11y`, so a11y relies entirely on the axe unit tests and Playwright. **Status:** The React Compiler rules (`recommended-latest`) are on as **warnings**: 27 sites, mostly latest-value refs read during render and setState inside effects, in `rich-text-editor`, `react-hook-form`, `kanban`, `sortable`, `countdown`, `color-picker`, `tour`, `media`, `upload-list`, `charts`, `compose-refs`, `create-icon` and two docs examples. Fix those, then raise the rules to `error`. `jsx-a11y` isn't added.
+- **L-19.** ✅ Fixed (PR #13): The ESLint config enables only two `react-hooks` rules. The v7 plugin's recommended set (refs during render, purity, etc.) is off; `countdown.tsx:54` (`onCompleteRef.current = onComplete` during render) would be flagged. There's also no `jsx-a11y`, so a11y relies entirely on the axe unit tests and Playwright. **Status:** The React Compiler rules (`recommended-latest`) are on as **warnings**: 27 sites, mostly latest-value refs read during render and setState inside effects, in `rich-text-editor`, `react-hook-form`, `kanban`, `sortable`, `countdown`, `color-picker`, `tour`, `media`, `upload-list`, `charts`, `compose-refs`, `create-icon` and two docs examples. Fix those, then raise the rules to `error`. `jsx-a11y` isn't added. **Update:** all 27 sites are fixed (a `useLatestRef` helper, state adjusted during render), the compiler rules and `exhaustive-deps` are errors, `jsx-a11y` runs with the recommended preset, and `pnpm lint` fails on any warning.
 - **L-20.** ✅ Fixed: GitHub Actions are pinned by tag (`@v4`), not commit SHA, in a workflow that holds `NPM_TOKEN` and `id-token: write`. **Status:** Every action in all four workflows is pinned to a commit SHA, with the major tag in a comment.
 - **L-21.** ✅ Fixed: The docs deploy (`docs.yml`) doesn't wait for CI, so a broken `main` still deploys. **Status:** `docs.yml` runs on `workflow_run` of CI (success on `main`) and deploys the tested SHA; manual dispatch still works.
 

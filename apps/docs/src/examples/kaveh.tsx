@@ -347,7 +347,7 @@ export function KavehLayoutExamples() {
             nav={nav}
             actions={
               <>
-                <Button size="sm" variant="ghost">
+                <Button size="sm" variant="ghost" className="hidden sm:inline-flex">
                   فارسی
                 </Button>
                 <Button size="sm">Track a vessel</Button>
@@ -360,7 +360,7 @@ export function KavehLayoutExamples() {
             nav={nav}
             actions={
               <>
-                <Button size="sm" variant="ghost">
+                <Button size="sm" variant="ghost" className="hidden sm:inline-flex">
                   Sign in
                 </Button>
                 <Button size="sm">Request a quote</Button>

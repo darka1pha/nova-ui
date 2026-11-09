@@ -1,6 +1,6 @@
 # Nova UI roadmap
 
-Status as of 2026-11-08 (`0.4.0` plus the audit fixes; findings in `issues.md`).
+Status as of 2026-11-09 (`0.5.0` plus the lint and e2e route-sweep work; audit findings in `issues.md`).
 The 0.2.0 pass below is kept for history.
 
 ## Where things stand
@@ -8,7 +8,7 @@ The 0.2.0 pass below is kept for history.
 | Check | Result |
 | --- | --- |
 | `pnpm build` / `typecheck` | Clean |
-| `pnpm lint` | 0 errors; 27 React Compiler warnings to work down (issues.md L-19) |
+| `pnpm lint` | Clean with `--max-warnings 0`; React Compiler rules and `jsx-a11y` are errors (issues.md L-19) |
 | Unit tests (tokens + ui) | 527 passing (121 + 406) |
 | CI jobs | check, React 18 unit tests, example builds (Vite, Next), Playwright; release and docs deploy wait for CI |
 | Playwright on Windows (a11y, keyboard, visual) | 129 passing at 0.2.0; not re-run for the audit fixes |
@@ -49,11 +49,20 @@ Every docs bug fixed above was visible in the browser but invisible to the test 
 
 1. ~~**Console guard in e2e.**~~ Done: `open()` in `e2e/helpers.ts` fails on any console
    error or page error.
-2. **Route sweep at 375px and in RTL.** Partly done: one mobile test checks overflow on the
-   Forms page. Still to do: every entry in `nav`, in LTR and RTL, plus a unique
-   `document.title` and exactly one `h1`.
-3. **Skip-link and 404 tests.** Assert the skip link keeps the route and moves focus to
-   `<main>`, and that an unknown route shows "Page not found".
+2. ~~**Route sweep at 375px and in RTL.**~~ Done: `e2e/routes.spec.ts` opens every nav
+   entry (read from `src/pages/index.tsx` and the registry, so new pages are covered) at
+   375px in LTR and RTL. It checks for no horizontal overflow, exactly one `h1` and a
+   page-specific title, and a separate test checks that every title is unique. RTL
+   overflow is found by checking element boxes, since content past the left edge is cut
+   off rather than scrollable. The first run found and fixed overflow on Tokens, the
+   Sidebar demo, the Kaveh header demos and `KavehContactCard`, plus extra `h1`s from
+   `KavehPageHeader` demos (new `headingLevel` prop).
+   It also found that a `TabsList` wider than a phone pushed the page wide. Underline and
+   segmented bars now scroll sideways and keep the active tab in view, with an e2e test in
+   LTR and RTL; pills still wrap.
+3. ~~**Skip-link and 404 tests.**~~ Done: the skip link keeps the route, focuses `<main>`,
+   and the next Tab stays in the content; unknown pages and unknown components show
+   "Page not found" with its title, and the link back goes to the overview.
 4. ~~**Silence jsdom canvas noise.**~~ Done: `tests/setup.ts` stubs `getContext`.
 5. **Manual screen-reader pass** (NVDA + Firefox, VoiceOver + Safari) with the checklist on the
    Accessibility page, recorded per component before 1.0.

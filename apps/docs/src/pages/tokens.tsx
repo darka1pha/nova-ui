@@ -90,7 +90,8 @@ export function TokensPage() {
       </Section>
 
       <Section title="Scales">
-        <div className="grid gap-4 sm:grid-cols-2">
+        {/* min-w-0: the Motion table's long easing values would otherwise widen the single column past a phone screen. */}
+        <div className="grid gap-4 *:min-w-0 sm:grid-cols-2">
           <div className="flex flex-col gap-2">
             <Badge variant="neutral" className="w-fit">Radius (from --nv-radius-base)</Badge>
             <div className="flex flex-wrap items-end gap-3">
