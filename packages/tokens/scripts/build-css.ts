@@ -10,6 +10,7 @@ import { fileURLToPath } from "node:url";
 import {
   cssBlock,
   dtcgTokens,
+  figmaVariables,
   primitiveTokens,
   themeTokens,
   defaultTheme,
@@ -65,4 +66,8 @@ for (const theme of resolved) {
     writeFileSync(out(`dtcg/${theme.id}.${mode}.json`), JSON.stringify(themeTokens(theme, mode), null, 2));
   }
 }
-console.log("CSS, JSON and DTCG tokens written to dist/");
+// Figma variables: a `POST /v1/files/:key/variables` body per theme (Light and Dark modes),
+// for a file that doesn't have them yet. scripts/figma-sync.ts also updates existing ones.
+mkdirSync(out("figma"), { recursive: true });
+for (const theme of resolved) writeFileSync(out(`figma/${theme.id}.json`), JSON.stringify(figmaVariables([theme]), null, 2));
+console.log("CSS, JSON, DTCG and Figma tokens written to dist/");

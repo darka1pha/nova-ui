@@ -41,13 +41,15 @@
     "./tokens.json": "./dist/tokens.json",
     "./tokens.dtcg.json": "./dist/tokens.dtcg.json",
     "./dtcg/*": "./dist/dtcg/*",
+    "./figma/*": "./dist/figma/*",
     "./package.json": "./package.json"
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json && node scripts/build-css.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
-    "generate:primitives": "node scripts/generate-primitives.ts"
+    "generate:primitives": "node scripts/generate-primitives.ts",
+    "figma:sync": "node scripts/figma-sync.ts"
   },
   "devDependencies": {
     "vitest": "^5.0.5"
