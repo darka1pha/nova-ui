@@ -11,6 +11,48 @@ export function componentIds(): string[] {
   return [...source.matchAll(/\{ id: "([\w-]+)", name:/g)].map((m) => m[1]!);
 }
 
+/** Top-level page ids from the docs nav (`{ id: "home", label: … }` in `src/pages/index.tsx`). */
+export function pageIds(): string[] {
+  const source = readFileSync(new URL("../src/pages/index.tsx", import.meta.url), "utf8");
+  return [...source.matchAll(/\{ id: "([\w-]+)", label:/g)].map((m) => m[1]!);
+}
+
+/** Component category ids (`{ id: "layout", label: …, lead: … }` in the registry). */
+export function categoryIds(): string[] {
+  const source = readFileSync(new URL("../src/docs/registry.ts", import.meta.url), "utf8");
+  return [...source.matchAll(/\{ id: "([\w-]+)", label: "[^"]*", lead:/g)].map((m) => m[1]!);
+}
+
+/** Every route the nav links to: pages, category overviews, then one page per component. */
+export function navRoutes(): string[] {
+  return [...pageIds(), ...categoryIds(), ...componentIds().map((id) => `components/${id}`)];
+}
+
+/**
+ * Describes content that sticks out sideways, or returns null when everything fits.
+ * Right-side overflow shows up in `scrollWidth`. Left-side overflow doesn't: the docs put
+ * `dir="rtl"` on the theme root, not on <html>, so content past the left edge is cut off
+ * rather than scrollable. That case is found by checking boxes inside <main>, skipping
+ * anything inside a scroll container (code blocks, tables) or fixed to the viewport.
+ */
+export function horizontalOverflow(page: Page) {
+  return page.evaluate(() => {
+    const width = document.documentElement.clientWidth;
+    const scrollWidth = document.documentElement.scrollWidth;
+    if (scrollWidth > width + 1) return `page is ${scrollWidth}px wide at a ${width}px viewport`;
+    const insideScroller = (el: Element) => {
+      for (let p = el.parentElement; p && p !== document.body; p = p.parentElement) if (getComputedStyle(p).overflowX !== "visible") return true;
+      return false;
+    };
+    for (const el of document.querySelectorAll("main *")) {
+      const box = el.getBoundingClientRect();
+      if (box.width === 0 || box.left >= -1 || getComputedStyle(el).position === "fixed" || insideScroller(el)) continue;
+      return `<${el.tagName.toLowerCase()} class="${(el.getAttribute("class") ?? "").slice(0, 80)}"> starts at x=${Math.round(box.left)}`;
+    }
+    return null;
+  });
+}
+
 /** Opens a docs route with a fixed color mode and fails on any console error. */
 export async function open(page: Page, route: string, mode: "light" | "dark" = "light") {
   const errors: string[] = [];

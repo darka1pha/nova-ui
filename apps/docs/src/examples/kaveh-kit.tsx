@@ -194,7 +194,7 @@ export function KavehSectionsExamples() {
       >
         {kaveh(
           <div className="grid gap-6">
-            <KavehPageHeader
+            <KavehPageHeader headingLevel={2}
               breadcrumbs={<span>Operations / Fleet</span>}
               eyebrow="Operations"
               title="Vessels"
@@ -207,8 +207,8 @@ export function KavehSectionsExamples() {
                 </>
               }
             />
-            <KavehPageHeader variant="band" eyebrow="Shahid Rajaee · Berth 12" title="MV Persian Gulf" titleFa="شناور خلیج‌فارس" actions={<Button>Open voyage</Button>} />
-            <KavehPageHeader
+            <KavehPageHeader headingLevel={2} variant="band" eyebrow="Shahid Rajaee · Berth 12" title="MV Persian Gulf" titleFa="شناور خلیج‌فارس" actions={<Button>Open voyage</Button>} />
+            <KavehPageHeader headingLevel={2}
               variant="navy"
               breadcrumbs={<span>Reports</span>}
               title="Monthly port report"
@@ -645,7 +645,7 @@ export function KavehDashboardExamples() {
       <ThemeProvider theme="kaveh" mode="light" className="min-h-0! flex h-[760px] w-full overflow-hidden rounded-xl border border-border bg-surface-sunken">
         <KavehSidebar sections={sidebarSections} activeId={active} onNavigate={setActive} footer={userFooter(false)} />
         <main className="flex min-w-0 flex-1 flex-col gap-5 overflow-y-auto p-6">
-          <KavehPageHeader
+          <KavehPageHeader headingLevel={2}
             eyebrow="Shahid Rajaee"
             title="Operations"
             titleFa="عملیات بندری"

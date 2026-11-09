@@ -1,32 +1,11 @@
 import { expect, test, type Page } from "@playwright/test";
-import { axe, componentIds, open } from "./helpers.ts";
+import { axe, componentIds, navRoutes, open } from "./helpers.ts";
 
-const routes = [
-  "home",
-  "installation",
-  "getting-started",
-  "playground",
-  "template",
-  "blocks",
-  "theming",
-  "tokens",
-  "motion",
-  "icons",
-  "forms-validation",
-  "accessibility",
-  "i18n",
-  "styling",
-  "custom-components",
-  "migration",
-  "troubleshooting",
-  "contributing",
-];
-// Category overviews, then one page per component.
-const categories = ["layout", "actions", "forms", "feedback", "overlays", "navigation", "data", "animation"];
+// Read from the nav and registry, so a new page is covered without editing this file.
 const componentRoutes = componentIds().map((id) => `components/${id}`);
 
 test.describe("every page renders without errors", () => {
-  for (const route of [...routes, ...categories, ...componentRoutes]) {
+  for (const route of navRoutes()) {
     test(route, async ({ page }) => {
       const errors = await open(page, route);
       expect(errors).toEqual([]);
@@ -166,6 +145,37 @@ test("tab indicator glides to the selected tab", async ({ page }) => {
   const target = await list.getByRole("tab", { name: "Settings" }).evaluate((el: HTMLElement) => el.offsetLeft);
   await expect.poll(() => indicator.evaluate((el: HTMLElement) => el.style.translate)).toContain(`${target}px`);
 });
+
+for (const dir of ["ltr", "rtl"] as const) {
+  test(`a tab bar wider than a phone scrolls and keeps the active tab in view (${dir}) @mobile`, async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await open(page, "components/tabs");
+    if (dir === "rtl") await page.getByRole("button", { name: "Toggle text direction" }).click();
+
+    for (const variant of ["underline", "segmented"]) {
+      const list = page.getByRole("tablist", { name: `${variant} tabs`, exact: true });
+      const indicator = list.locator("[data-tabs-indicator]");
+      await expect(list).toHaveAttribute("data-indicator", "ready");
+      expect(await list.evaluate((el) => el.scrollWidth > el.clientWidth), `${variant} bar overflows`).toBe(true);
+
+      for (const [key, name] of [["End", "Settings"], ["Home", "Overview"]] as const) {
+        if (key === "End") await list.getByRole("tab", { name: "Overview" }).focus();
+        await page.keyboard.press(key);
+        const tab = list.getByRole("tab", { name });
+        await expect(tab).toHaveAttribute("data-state", "active");
+        // Fully inside the bar's visible area, with the indicator sitting on it.
+        await expect
+          .poll(async () => {
+            const [bar, t, ind] = await Promise.all([list.boundingBox(), tab.boundingBox(), indicator.boundingBox()]);
+            const inView = t!.x >= bar!.x - 1 && t!.x + t!.width <= bar!.x + bar!.width + 1;
+            const aligned = Math.abs(ind!.x - t!.x) <= 1 && Math.abs(ind!.width - t!.width) <= 1;
+            return { inView, aligned };
+          }, { message: `${variant} · ${name}` })
+          .toEqual({ inView: true, aligned: true });
+      }
+    }
+  });
+}
 
 test("date picker: keyboard selection and focus return", async ({ page }) => {
   await open(page, "components/date-picker");

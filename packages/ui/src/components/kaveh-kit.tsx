@@ -253,7 +253,8 @@ export const KavehContactCard = forwardRef<HTMLElement, KavehContactCardProps>(f
   const stacked = layout === "stacked";
   const initials = typeof name === "string" ? name.split(/\s+/).map((w) => w[0]).slice(0, 2).join("") : "";
   return (
-    <article ref={ref} className={cn("nv-kaveh-contact flex gap-4 rounded-lg border border-border bg-surface p-4 text-foreground", stacked ? "flex-col items-center text-center" : "items-start", className)} {...props}>
+    // min-w-0 here and on the email row let a long address truncate instead of widening the card in a grid or flex parent.
+    <article ref={ref} className={cn("nv-kaveh-contact flex min-w-0 gap-4 rounded-lg border border-border bg-surface p-4 text-foreground", stacked ? "flex-col items-center text-center" : "items-start", className)} {...props}>
       {avatar ? (
         <PortholeFrame src={avatar} alt="" size={stacked ? 96 : 64} variant={stacked ? "navy" : "thin"} />
       ) : (
@@ -275,8 +276,8 @@ export const KavehContactCard = forwardRef<HTMLElement, KavehContactCardProps>(f
             </li>
           ) : null}
           {email ? (
-            <li className="flex items-center gap-2">
-              <Mail aria-hidden className="size-4 text-secondary-text" />
+            <li className="flex min-w-0 items-center gap-2">
+              <Mail aria-hidden className="size-4 shrink-0 text-secondary-text" />
               <a href={`mailto:${email}`} className={cn("truncate rounded-xs hover:underline", focusRing)}>
                 {email}
               </a>
@@ -428,14 +429,17 @@ export interface KavehPageHeaderProps extends Omit<HTMLAttributes<HTMLElement>, 
   actions?: ReactNode;
   /** Tabs or filters under the header. */
   tabs?: ReactNode;
+  /** The title's heading level. Defaults to 1, since this is usually the page title; lower it when the header sits inside a page that already has an `h1`. */
+  headingLevel?: 1 | 2 | 3 | 4 | 5 | 6;
 }
 
 /** An app page's title area: breadcrumbs, bilingual title, actions and tabs. */
 export const KavehPageHeader = forwardRef<HTMLElement, KavehPageHeaderProps>(function KavehPageHeader(
-  { variant = "plain", title, titleFa, breadcrumbs, eyebrow, description, actions, tabs, className, ...props },
+  { variant = "plain", title, titleFa, breadcrumbs, eyebrow, description, actions, tabs, headingLevel = 1, className, ...props },
   ref,
 ) {
   const navy = variant === "navy";
+  const Title = `h${headingLevel}` as const;
   return (
     <header ref={ref} className={cn("nv-kaveh-page-header flex flex-col gap-4", navy && cn(NAVY, "rounded-lg px-6 pt-5"), !tabs && navy && "pb-5", className)} {...props}>
       {breadcrumbs ? <div className={cn("text-sm", navy && "text-white/75 [&_a]:text-white/75")}>{breadcrumbs}</div> : null}
@@ -443,7 +447,7 @@ export const KavehPageHeader = forwardRef<HTMLElement, KavehPageHeaderProps>(fun
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="min-w-0">
           {eyebrow && variant !== "band" ? <p className={cn("mb-1 text-xs font-semibold uppercase tracking-[0.2em]", navy ? "text-[#ffd0b0]" : "text-[light-dark(#b34700,#fc7d40)]")}>{eyebrow}</p> : null}
-          <h1 className={cn("font-display text-3xl font-bold leading-tight tracking-tight", !navy && "text-foreground")}>{title}</h1>
+          <Title className={cn("font-display text-3xl font-bold leading-tight tracking-tight", !navy && "text-foreground")}>{title}</Title>
           {titleFa ? <Fa className={cn("text-lg", navy ? "text-[#ffd0b0]" : "text-secondary-text")}>{titleFa}</Fa> : null}
           {description ? <p className={cn("mt-2 max-w-2xl text-sm", navy ? "text-white/75" : "text-foreground-secondary")}>{description}</p> : null}
         </div>

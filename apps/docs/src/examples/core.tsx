@@ -1369,7 +1369,7 @@ function InteractiveSidebarShowcase() {
     <div className="flex flex-col gap-3 w-full">
       {/* Top Interactive Controls Toolbar */}
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-surface-raised p-2.5 shadow-xs">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Badge size="sm" variant="primary">Interactive Demo</Badge>
           {/* A switcher, not tabs: there are no tab panels behind these. */}
           <ToggleGroup type="single" size="sm" aria-label="Sidebar variant" value={sidebarVariant} onValueChange={(v) => v && setSidebarVariant(v as never)}>
