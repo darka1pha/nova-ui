@@ -51,10 +51,19 @@ const tabsFilled: Record<TabsVariant, string> = {
   segmented: "",
 };
 
+// A horizontal bar that's wider than its container scrolls sideways (swipe, trackpad, or
+// arrow keys, which move focus and so scroll the tab into view) with the scrollbar hidden.
+// Scrolling clips the box, so the underline rule is an inset shadow (a border would be cut
+// off along with the indicator sitting on it). Pills wrap onto more lines instead.
+const tabsScroll = "data-[orientation=horizontal]:overflow-x-auto data-[orientation=horizontal]:overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden";
+
 const tabsList = {
-  underline: "relative flex gap-1 border-b border-border data-[orientation=vertical]:flex-col data-[orientation=vertical]:border-b-0 data-[orientation=vertical]:border-e",
+  underline: cn(
+    "relative flex max-w-full gap-1 border-border inset-shadow-[0_-1px_0_var(--nv-color-border)] data-[orientation=vertical]:flex-col data-[orientation=vertical]:border-e data-[orientation=vertical]:inset-shadow-none",
+    tabsScroll,
+  ),
   pills: "relative flex flex-wrap gap-1 data-[orientation=vertical]:flex-col",
-  segmented: "relative inline-flex w-fit gap-1 rounded-(--nv-button-radius) bg-surface-sunken p-1",
+  segmented: cn("relative inline-flex w-fit max-w-full gap-1 rounded-(--nv-button-radius) bg-surface-sunken p-1", tabsScroll),
 };
 
 /** The highlight that glides to the active tab. */
@@ -68,11 +77,12 @@ const tabsIndicator = {
 // tab carries its own highlight; once ready, the gliding indicator takes over.
 const tabsTrigger = {
   underline:
-    "relative z-10 -mb-px border-b-2 border-transparent px-3 py-2 text-foreground-muted hover:text-foreground data-[state=active]:border-primary data-[state=active]:text-foreground group-data-[indicator=ready]/tabslist:data-[state=active]:border-transparent data-[orientation=vertical]:mb-0 data-[orientation=vertical]:-me-px data-[orientation=vertical]:border-b-0 data-[orientation=vertical]:border-e-2",
+    // The focus ring is drawn inside the tab: the bar has no padding, so a ring outside would be clipped when it scrolls.
+    "relative z-10 shrink-0 border-b-2 border-transparent px-3 py-2 text-foreground-muted hover:text-foreground focus-visible:-outline-offset-2 data-[state=active]:border-primary data-[state=active]:text-foreground group-data-[indicator=ready]/tabslist:data-[state=active]:border-transparent data-[orientation=vertical]:-me-px data-[orientation=vertical]:border-b-0 data-[orientation=vertical]:border-e-2",
   pills:
     "relative z-10 rounded-full px-3.5 py-1.5 text-foreground-muted hover:bg-surface-hover hover:text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-on-solid group-data-[indicator=ready]/tabslist:data-[state=active]:bg-transparent",
   segmented:
-    "relative z-10 rounded-[calc(var(--nv-button-radius)-2px)] px-3 py-1.5 text-foreground-muted hover:text-foreground data-[state=active]:bg-surface data-[state=active]:text-foreground data-[state=active]:shadow-sm group-data-[indicator=ready]/tabslist:data-[state=active]:bg-transparent group-data-[indicator=ready]/tabslist:data-[state=active]:shadow-none",
+    "relative z-10 shrink-0 rounded-[calc(var(--nv-button-radius)-2px)] px-3 py-1.5 text-foreground-muted hover:text-foreground data-[state=active]:bg-surface data-[state=active]:text-foreground data-[state=active]:shadow-sm group-data-[indicator=ready]/tabslist:data-[state=active]:bg-transparent group-data-[indicator=ready]/tabslist:data-[state=active]:shadow-none",
 };
 
 export interface TabsListProps extends ComponentPropsWithoutRef<typeof TabsPrimitive.List> {
@@ -96,13 +106,25 @@ export const TabsList = forwardRef<HTMLDivElement, TabsListProps>(function TabsL
     return () => cancelAnimationFrame(id);
   }, [rect, animate]);
 
+  // Keep the active tab visible in a scrolling bar, e.g. when it's set from outside or on first render.
+  // Only the bar scrolls (scrollIntoView would also scroll the page). Offsets and scrollLeft share
+  // one coordinate space in both directions, so this needs no RTL branch.
+  useEffect(() => {
+    if (!list || !rect || list.getAttribute("aria-orientation") === "vertical" || list.scrollWidth <= list.clientWidth) return;
+    const margin = 16;
+    const start = list.scrollLeft;
+    const end = start + list.clientWidth;
+    if (rect.x < start) list.scrollTo({ left: rect.x - margin });
+    else if (rect.x + rect.w > end) list.scrollTo({ left: rect.x + rect.w - list.clientWidth + margin });
+  }, [list, rect]);
+
   // Offsets are physical (offsetLeft), so the indicator is positioned from the physical left edge.
   const style =
     rect &&
     (variant === "underline"
       ? list?.getAttribute("aria-orientation") === "vertical"
         ? { left: "auto", right: -1, top: 0, width: 2, height: rect.h, translate: `0 ${rect.y}px` }
-        : { left: 0, bottom: -1, width: rect.w, translate: `${rect.x}px 0` }
+        : { left: 0, bottom: 0, width: rect.w, translate: `${rect.x}px 0` }
       : { left: 0, top: 0, width: rect.w, height: rect.h, translate: `${rect.x}px ${rect.y}px` });
 
   return (
