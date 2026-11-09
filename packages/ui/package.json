@@ -68,7 +68,9 @@
     "typecheck": "node scripts/generate-css.ts && tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "size": "node scripts/size-report.ts"
+    "size": "node scripts/size-report.ts",
+    "api:report": "node scripts/api-report.ts",
+    "api:check": "node scripts/api-report.ts --check"
   },
   "peerDependencies": {
     "@tiptap/core": "^3.32.2",
