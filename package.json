@@ -22,7 +22,7 @@
     "check": "pnpm build && pnpm typecheck && pnpm lint && pnpm test && pnpm build:docs && pnpm verify:install",
     "changeset": "changeset",
     "version-packages": "changeset version",
-    "release": "pnpm build && changeset publish"
+    "release": "pnpm build && node scripts/changeset-publish.mjs"
   },
   "devDependencies": {
     "@changesets/cli": "^3.0.3",
