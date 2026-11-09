@@ -134,7 +134,7 @@ for (const tag of tags) {
 if (missingProvenance.length) {
   console.error(
     `\nNo provenance attestation on npm for: ${missingProvenance.join(", ")}.\n` +
-      "Check that publishConfig.provenance / PNPM_CONFIG_PROVENANCE are set and the job has `id-token: write`.",
+      "Check that `pnpm release` goes through scripts/changeset-publish.mjs (it adds `pnpm publish --provenance`) and the job has `id-token: write`.",
   );
   process.exit(1);
 }
