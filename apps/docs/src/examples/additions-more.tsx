@@ -152,7 +152,14 @@ export function CountdownExamples() {
       title="Countdown"
       description="Time left until a moment, with localized unit labels. The screen-reader label updates once a minute so it isn't noisy."
       code={`<Countdown to={launchDate} onComplete={() => setLive(true)} completed="We're live!" />
-<Countdown to={launchDate} variant="inline" showSeconds={false} />`}
+<Countdown to={launchDate} variant="inline" showSeconds={false} />
+<Countdown
+  to={launchDate}
+  format={({ days, hours, minutes, seconds, placeholder }) =>
+    placeholder ? "--:--:--" : [days * 24 + hours, minutes, seconds].map((n) => String(n).padStart(2, "0")).join(":")
+  }
+/>
+<Countdown as="div" to={launchDate} className="grid grid-cols-4" />`}
     >
       <Stack gap={4}>
         <Countdown to={launch} />
@@ -164,6 +171,16 @@ export function CountdownExamples() {
           {fired ? <span className="text-foreground-muted"> · onComplete fired</span> : null}
         </Text>
         <Countdown to={launch} locale="fa-IR" />
+        <Text size="sm">
+          Custom format:{" "}
+          <Countdown
+            to={launch}
+            className="font-mono font-semibold"
+            format={({ days, hours, minutes, seconds, placeholder }) =>
+              placeholder ? "--:--:--" : [days * 24 + hours, minutes, seconds].map((n) => String(n).padStart(2, "0")).join(":")
+            }
+          />
+        </Text>
       </Stack>
     </Example>
   );
