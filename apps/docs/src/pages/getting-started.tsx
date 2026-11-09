@@ -81,7 +81,7 @@ export function App() {
   brand={{ primary: "#6C5CE7", secondary: "#00C2A8", accent: "#FF6B6B" }}
   radius="lg"
   density="comfortable"
-  storageKey="app-color-mode"   // remembers light/dark choice
+  storageKey="app-color-mode"   // remembers light/dark choice, synced across tabs
 >
   <App />
 </ThemeProvider>`}
