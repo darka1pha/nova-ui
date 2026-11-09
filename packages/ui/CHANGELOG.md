@@ -1,5 +1,20 @@
 # @darkalpha/nova-ui
 
+## 0.6.0
+
+### Minor Changes
+
+- 70f6d14: Toast API additions:
+  
+  - `toast.promise(promise, { loading, success, error })` shows a spinner while the promise is pending, then turns the same toast into a success or error toast. `success` and `error` take a title, full toast options, or a function of the result or the rejection reason. It returns the promise you passed in (or that the function returned), so `await` still gives you the value or throws. If the loading toast is dismissed, the outcome isn't shown.
+  - `onDismiss(id)` on a toast runs once however it closes: its timer, the close button, a swipe, `toast.dismiss()`, or being pushed out by newer toasts. It doesn't run when a toast with the same `id` replaces it.
+  - `<Toaster max>` sets how many toasts can be open at once (default 5, as before). Lowering it closes the oldest open toasts right away.
+
+### Patch Changes
+
+- 20d0cb1: `toast.promise` always settles its toast. A function that throws before returning a promise now counts as a rejection: the error toast shows and the returned promise rejects. Before, the loading spinner never stopped. A `success` formatter that throws shows the error outcome. If the `error` formatter throws, the toast closes and the error is logged with `console.error`.
+- @darkalpha/nova-tokens@0.6.0
+
 ## 0.5.1
 
 ### Patch Changes
