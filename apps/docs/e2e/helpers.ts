@@ -53,6 +53,17 @@ export function horizontalOverflow(page: Page) {
   });
 }
 
+/** The URL path of a docs route: "home" is the site root, everything else is `/<route>`. */
+export const routeUrl = (route: string) => (route === "home" ? "/" : `/${route}`);
+
+/** Client-side navigation, as a link click does: no reload. */
+export async function goTo(page: Page, route: string) {
+  await page.evaluate((url) => {
+    window.history.pushState(null, "", url);
+    window.dispatchEvent(new Event("nova:navigate"));
+  }, routeUrl(route));
+}
+
 /** Opens a docs route with a fixed color mode and fails on any console error. */
 export async function open(page: Page, route: string, mode: "light" | "dark" = "light") {
   const errors: string[] = [];
@@ -61,7 +72,7 @@ export async function open(page: Page, route: string, mode: "light" | "dark" = "
     if (msg.type() === "error") errors.push(msg.text());
   });
   // Seed the stored mode once, then reload so the head script applies it like a returning visit.
-  await page.goto(`/#/${route}`);
+  await page.goto(routeUrl(route));
   await page.evaluate((m) => window.localStorage.setItem("nova-docs-mode", m), mode);
   await page.reload();
   // Pages are lazy-loaded; allow for a cold chunk under parallel workers.

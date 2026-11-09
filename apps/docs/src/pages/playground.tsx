@@ -43,7 +43,7 @@ import {
 import type { Density, MotionStyle, RadiusPreset } from "@darkalpha/nova-tokens";
 import { Check, Moon, RotateCcw, Sun, X } from "lucide-react";
 import { useDeferredValue, useMemo, useState } from "react";
-import { capitalize, CodeBlock } from "../docs/kit.tsx";
+import { capitalize, CodeBlock, to } from "../docs/kit.tsx";
 
 type BrandKey = "primary" | "secondary" | "accent";
 
@@ -85,7 +85,7 @@ function Preview() {
     <div className="flex flex-col gap-5 p-5 sm:p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Breadcrumbs>
-          <BreadcrumbItem href="#/playground">Workspace</BreadcrumbItem>
+          <BreadcrumbItem href={to("playground")}>Workspace</BreadcrumbItem>
           <BreadcrumbItem current>Billing</BreadcrumbItem>
         </Breadcrumbs>
         <div className="flex items-center gap-2">

@@ -15,7 +15,7 @@ import {
   Tideband,
   VesselStatusBadge,
 } from "@darkalpha/nova-ui/kaveh";
-import { Example } from "../docs/kit.tsx";
+import { Example, to } from "../docs/kit.tsx";
 
 export function KavehLogoExamples() {
   return (
@@ -321,12 +321,12 @@ export function VesselStatusExamples() {
 export function KavehLayoutExamples() {
   const nav = (
     <>
-      <a href="#/components/kaveh-layout" aria-current="page">
+      <a href={to("components/kaveh-layout")} aria-current="page">
         Services
       </a>
-      <a href="#/components/kaveh-layout">Ports</a>
-      <a href="#/components/kaveh-layout">Fleet</a>
-      <a href="#/components/kaveh-layout">About</a>
+      <a href={to("components/kaveh-layout")}>Ports</a>
+      <a href={to("components/kaveh-layout")}>Fleet</a>
+      <a href={to("components/kaveh-layout")}>About</a>
     </>
   );
   return (
@@ -379,11 +379,11 @@ export function KavehLayoutExamples() {
               logo={<KavehLogo layout="persian" size={30} tagline={false} />}
               nav={
                 <>
-                  <a href="#/components/kaveh-layout" aria-current="page">
+                  <a href={to("components/kaveh-layout")} aria-current="page">
                     خدمات
                   </a>
-                  <a href="#/components/kaveh-layout">بنادر</a>
-                  <a href="#/components/kaveh-layout">ناوگان</a>
+                  <a href={to("components/kaveh-layout")}>بنادر</a>
+                  <a href={to("components/kaveh-layout")}>ناوگان</a>
                 </>
               }
               actions={<Button size="sm">درخواست قیمت</Button>}

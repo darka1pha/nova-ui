@@ -33,9 +33,12 @@ jobs:
       - run: pnpm install --frozen-lockfile
       # The docs import @darkalpha/nova-ui from its built dist/, so build the libraries first.
       - run: pnpm build
+      # Path routes (/components/button) need the base the site is served from:
+      # https://<owner>.github.io/<repo>/. With a custom domain, set DOCS_BASE to "/".
+      # build:docs also prerenders every route to its own index.html, plus a 404.html.
       - run: pnpm build:docs
-      # The site uses relative asset paths and hash routing, so it works from
-      # https://<owner>.github.io/<repo>/ or a custom domain without extra config.
+        env:
+          DOCS_BASE: /${{ github.event.repository.name }}/
       - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with:
           path: apps/docs/dist

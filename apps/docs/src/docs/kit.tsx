@@ -10,14 +10,76 @@ export const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 /* ----------------------------------------------------------------- Routing */
 
+// Path-based routes under the site's base (`/` locally, `/<repo>/` on GitHub
+// Pages): `/installation`, `/components/button#api`. Every route is prerendered
+// to its own index.html at build time (scripts/prerender.ts), so pages are
+// indexable and in-page anchors work; navigation after load is client-side.
+
+/** The site's base path, always ending in "/". */
+export const BASE = import.meta.env.BASE_URL.endsWith("/") ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+
+/** The URL of a route: `to("installation")`, `to("components/button#api")`. "home" is the site root. */
+export function to(route: string): string {
+  const [path = "", hash] = route.split("#");
+  const clean = path.replace(/^\/+|\/+$/g, "");
+  return `${BASE}${clean === "home" ? "" : clean}${hash ? `#${hash}` : ""}`;
+}
+
+/** The route for a pathname: "/nova-ui/components/button/" → "components/button". */
+export function routeFromPath(pathname: string): string {
+  const path = pathname.startsWith(BASE) ? pathname.slice(BASE.length) : pathname.replace(/^\/+/, "");
+  return decodeURIComponent(path.replace(/\/+$/, "").replace(/(^|\/)index\.html$/, "")) || "home";
+}
+
+const NAVIGATE = "nova:navigate";
 const subscribe = (cb: () => void) => {
-  window.addEventListener("hashchange", cb);
-  return () => window.removeEventListener("hashchange", cb);
+  window.addEventListener("popstate", cb);
+  window.addEventListener(NAVIGATE, cb);
+  return () => {
+    window.removeEventListener("popstate", cb);
+    window.removeEventListener(NAVIGATE, cb);
+  };
 };
-const getHash = () => window.location.hash.replace(/^#\/?/, "") || "home";
+const getRoute = () => routeFromPath(window.location.pathname);
+
+// The prerenderer sets this before rendering each route.
+let serverRoute = "home";
+export const setServerRoute = (route: string) => {
+  serverRoute = route;
+};
 
 export function useRoute(): string {
-  return useSyncExternalStore(subscribe, getHash, () => "home");
+  return useSyncExternalStore(subscribe, getRoute, () => serverRoute);
+}
+
+/** Client-side navigation to a route (or a full URL path under BASE). */
+export function navigate(route: string, { replace = false } = {}) {
+  const url = route.startsWith("/") ? route : to(route);
+  if (replace) window.history.replaceState(null, "", url);
+  else window.history.pushState(null, "", url);
+  window.dispatchEvent(new Event(NAVIGATE));
+}
+
+/**
+ * Turns clicks on same-site links into client-side navigation. Links stay real
+ * `<a href>`s, so they open in new tabs, can be copied, and work without JS.
+ */
+export function useLinkInterception() {
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      const a = (e.target as Element | null)?.closest?.("a");
+      if (!a || !a.href || (a.target && a.target !== "_self") || a.hasAttribute("download")) return;
+      const url = new URL(a.href);
+      if (url.origin !== window.location.origin || !url.pathname.startsWith(BASE)) return;
+      // A same-page anchor: let the browser jump to it.
+      if (url.pathname === window.location.pathname && url.hash) return;
+      e.preventDefault();
+      navigate(url.pathname + url.search + url.hash);
+    };
+    document.addEventListener("click", onClick);
+    return () => document.removeEventListener("click", onClick);
+  }, []);
 }
 
 /* ------------------------------------------------------------- Copy helper */

@@ -2,7 +2,7 @@ import { Badge, Card, Heading, LoadingState, Text } from "@darkalpha/nova-ui";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Suspense } from "react";
 import { ApiSection } from "../docs/api.tsx";
-import { A11yNotes, CodeBlock, Page } from "../docs/kit.tsx";
+import { A11yNotes, CodeBlock, Page, to } from "../docs/kit.tsx";
 import { categories, componentById, components, type CategoryId } from "../docs/registry.ts";
 
 /** One component: import line, live examples, accessibility notes and the generated API reference. */
@@ -28,7 +28,7 @@ export function ComponentPage({ id }: { id: string }) {
       <ApiSection parts={entry.parts} />
       <nav aria-label={`More in ${category.label}`} className="grid gap-3 border-t border-border pt-6 sm:grid-cols-2">
         {prev ? (
-          <a href={`#/components/${prev.id}`} className="group flex flex-col gap-1 rounded-lg border border-border p-4 hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-focus-ring">
+          <a href={to(`components/${prev.id}`)} className="group flex flex-col gap-1 rounded-lg border border-border p-4 hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-focus-ring">
             <span className="flex items-center gap-1 text-xs text-foreground-muted">
               <ArrowLeft className="size-3.5 rtl:-scale-x-100" /> Previous
             </span>
@@ -38,7 +38,7 @@ export function ComponentPage({ id }: { id: string }) {
           <span />
         )}
         {next ? (
-          <a href={`#/components/${next.id}`} className="group flex flex-col items-end gap-1 rounded-lg border border-border p-4 text-end hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-focus-ring">
+          <a href={to(`components/${next.id}`)} className="group flex flex-col items-end gap-1 rounded-lg border border-border p-4 text-end hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-focus-ring">
             <span className="flex items-center gap-1 text-xs text-foreground-muted">
               Next <ArrowRight className="size-3.5 rtl:-scale-x-100" />
             </span>
@@ -61,7 +61,7 @@ export function CategoryPage({ id }: { id: CategoryId }) {
         {items.map((c) => (
           <li key={c.id}>
             <Card asChild interactive className="h-full gap-2 p-5">
-              <a href={`#/components/${c.id}`}>
+              <a href={to(`components/${c.id}`)}>
                 <Heading level={2} size="xs">
                   {c.name}
                 </Heading>

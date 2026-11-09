@@ -18,7 +18,7 @@ import {
   yaldaMotifs,
   type SeasonalPatternName,
 } from "@darkalpha/nova-ui/kaveh";
-import { Example } from "../docs/kit.tsx";
+import { Example, to } from "../docs/kit.tsx";
 
 
 export function SeasonalThemeExamples() {
@@ -40,7 +40,7 @@ export function SeasonalThemeExamples() {
                   <span className="text-xs font-semibold uppercase tracking-widest opacity-80">{theme === "kaveh" ? "core" : theme.replace("kaveh-", "")}</span>
                 </div>
                 <p className="text-sm">
-                  Vessel <b>MV Persian Gulf</b> berths at 14:30. <Link href="#/components/seasonal-themes">View documents</Link>
+                  Vessel <b>MV Persian Gulf</b> berths at 14:30. <Link href={to("components/seasonal-themes")}>View documents</Link>
                 </p>
                 <Progress value={72} tone="primary" aria-label="Clearance progress" />
                 <div className="flex flex-wrap gap-2">

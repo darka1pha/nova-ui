@@ -21,7 +21,7 @@ import {
 } from "@darkalpha/nova-ui";
 import { ArrowRight } from "lucide-react";
 import { useState } from "react";
-import { CodeBlock, Example, Page, Prose, Section } from "../docs/kit.tsx";
+import { CodeBlock, Example, Page, Prose, Section, to } from "../docs/kit.tsx";
 
 function MotionSample({ style }: { style: MotionStyle }) {
   const [tab, setTab] = useState("a");
@@ -146,7 +146,7 @@ export function MotionPage() {
               <code className="ms-2 text-2xs text-foreground-muted">.{cls}</code>
             </button>
           ))}
-          <a href="#/motion" className="nv-underline text-sm font-semibold text-primary-text">
+          <a href={to("motion")} className="nv-underline text-sm font-semibold text-primary-text">
             Animated underline
           </a>
         </Example>
@@ -155,8 +155,8 @@ export function MotionPage() {
       <Section title="Motion components">
         <Prose>
           <p>
-            Each has its own page with examples and props: <a href="#/components/reveal">Reveal</a>, <a href="#/components/animated-number">AnimatedNumber</a>,{" "}
-            <a href="#/components/marquee">Marquee</a>, and <a href="#/components/effects">GradientText, SpotlightCard and AnimatedBorder</a>.
+            Each has its own page with examples and props: <a href={to("components/reveal")}>Reveal</a>, <a href={to("components/animated-number")}>AnimatedNumber</a>,{" "}
+            <a href={to("components/marquee")}>Marquee</a>, and <a href={to("components/effects")}>GradientText, SpotlightCard and AnimatedBorder</a>.
           </p>
         </Prose>
         <Example title="Ripple" description="Opt-in ink ripple from the press point." code={`<Button ripple>Ripple</Button>`}>

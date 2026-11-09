@@ -441,7 +441,7 @@ pnpm changeset      # describe your change for the changelog`}
       <Section title="Documenting a component">
         <Prose>
           <p>
-            Each component has its own page at <code>#/components/&lt;id&gt;</code>. To add one, write an <code>&lt;Name&gt;Examples</code> function in{" "}
+            Each component has its own page at <code>/components/&lt;id&gt;</code>. To add one, write an <code>&lt;Name&gt;Examples</code> function in{" "}
             <code>apps/docs/src/examples/</code> and add an entry to <code>apps/docs/src/docs/registry.ts</code> with its category, summary, the exports
             to document and any accessibility notes.
           </p>

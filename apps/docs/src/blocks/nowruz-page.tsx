@@ -14,15 +14,16 @@ import {
   seasonalColors,
 } from "@darkalpha/nova-ui/kaveh";
 import { FileText, Fuel, Ship } from "lucide-react";
+import { to } from "../docs/kit.tsx";
 
 const nav = (
   <>
-    <a href="#/seasonal-pages" aria-current="page">
+    <a href={to("seasonal-pages")} aria-current="page">
       Nowruz
     </a>
-    <a href="#/seasonal-pages">Services</a>
-    <a href="#/seasonal-pages">Ports</a>
-    <a href="#/seasonal-pages">Contact</a>
+    <a href={to("seasonal-pages")}>Services</a>
+    <a href={to("seasonal-pages")}>Ports</a>
+    <a href={to("seasonal-pages")}>Contact</a>
   </>
 );
 
@@ -30,25 +31,25 @@ const footerColumns = [
   {
     title: "Services",
     links: [
-      { label: "Ship agency", href: "#/seasonal-pages" },
-      { label: "Clearance", href: "#/seasonal-pages" },
-      { label: "Bunkering", href: "#/seasonal-pages" },
+      { label: "Ship agency", href: to("seasonal-pages") },
+      { label: "Clearance", href: to("seasonal-pages") },
+      { label: "Bunkering", href: to("seasonal-pages") },
     ],
   },
   {
     title: "Ports",
     links: [
-      { label: "Shahid Rajaee", href: "#/seasonal-pages" },
-      { label: "Bushehr", href: "#/seasonal-pages" },
-      { label: "Chabahar", href: "#/seasonal-pages" },
+      { label: "Shahid Rajaee", href: to("seasonal-pages") },
+      { label: "Bushehr", href: to("seasonal-pages") },
+      { label: "Chabahar", href: to("seasonal-pages") },
     ],
   },
   {
     title: "Company",
     links: [
-      { label: "About", href: "#/seasonal-pages" },
-      { label: "Careers", href: "#/seasonal-pages" },
-      { label: "Contact", href: "#/seasonal-pages" },
+      { label: "About", href: to("seasonal-pages") },
+      { label: "Careers", href: to("seasonal-pages") },
+      { label: "Contact", href: to("seasonal-pages") },
     ],
   },
 ];
@@ -138,14 +139,14 @@ export function NowruzPageBlock() {
                 title="Ship agency"
                 titleFa="نمایندگی کشتیرانی"
                 description="Port calls and crew change, with a holiday duty team."
-                href="#/seasonal-pages"
+                href={to("seasonal-pages")}
               />
               <KavehServiceCard
                 icon={<FileText />}
                 title="Clearance"
                 titleFa="ترخیص"
                 description="File by 20 March and clear before the new year."
-                href="#/seasonal-pages"
+                href={to("seasonal-pages")}
                 variant="tinted"
               />
               <KavehServiceCard
@@ -153,7 +154,7 @@ export function NowruzPageBlock() {
                 title="Bunkering"
                 titleFa="سوخت‌رسانی"
                 description="Fuel at anchorage through the holiday, booked 72 hours ahead."
-                href="#/seasonal-pages"
+                href={to("seasonal-pages")}
                 variant="navy"
               />
             </div>

@@ -1,12 +1,12 @@
 import { Alert, Badge, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@darkalpha/nova-ui";
-import { CodeBlock, Page, Prose, Section } from "../docs/kit.tsx";
+import { CodeBlock, Page, Prose, Section, to } from "../docs/kit.tsx";
 
 export function GettingStartedPage() {
   return (
     <Page eyebrow="Start" title="Getting started" lead="Install the package, import one stylesheet, wrap your app in a ThemeProvider and start building.">
       <Alert variant="primary" title="New here? Follow the step-by-step installation guide.">
         It tailors every command and file to your framework and package manager.{" "}
-        <a className="font-medium underline" href="#/installation">
+        <a className="font-medium underline" href={to("installation")}>
           Open the installation guide
         </a>
       </Alert>

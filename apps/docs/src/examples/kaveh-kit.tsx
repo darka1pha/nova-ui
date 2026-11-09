@@ -23,7 +23,7 @@ import {
 import { Anchor, ContainerShip, ShipWheel, Tanker, Tugboat, VesselTracking } from "@darkalpha/nova-ui/icons";
 import { BarChart3, Bell, FileText, Fuel, Home, LifeBuoy, LogOut, MapPin, Settings, Ship, User, Users } from "lucide-react";
 import { useState } from "react";
-import { Example } from "../docs/kit.tsx";
+import { Example, to } from "../docs/kit.tsx";
 
 const harbour =
   "data:image/svg+xml," +
@@ -80,9 +80,9 @@ export function KavehCardsExamples() {
       >
         {kaveh(
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <KavehServiceCard icon={<Ship />} title="Ship agency" titleFa="نمایندگی کشتیرانی" description="Port calls, crew change, husbandry." href="#/components/kaveh-cards" />
-            <KavehServiceCard icon={<FileText />} title="Clearance" titleFa="ترخیص" description="Customs and port documents in 24 hours." href="#/components/kaveh-cards" variant="tinted" />
-            <KavehServiceCard icon={<Fuel />} title="Bunkering" titleFa="سوخت‌رسانی" description="Fuel coordination at anchorage." href="#/components/kaveh-cards" variant="navy" />
+            <KavehServiceCard icon={<Ship />} title="Ship agency" titleFa="نمایندگی کشتیرانی" description="Port calls, crew change, husbandry." href={to("components/kaveh-cards")} />
+            <KavehServiceCard icon={<FileText />} title="Clearance" titleFa="ترخیص" description="Customs and port documents in 24 hours." href={to("components/kaveh-cards")} variant="tinted" />
+            <KavehServiceCard icon={<Fuel />} title="Bunkering" titleFa="سوخت‌رسانی" description="Fuel coordination at anchorage." href={to("components/kaveh-cards")} variant="navy" />
             <KavehServiceCard icon={<ContainerShip />} title="Cargo logistics" titleFa="لجستیک کالا" description="From berth to warehouse." />
           </div>,
         )}
@@ -570,7 +570,7 @@ export function KavehDataExamples() {
             <KavehNotice variant="warning" title="Strong winds at Bushehr" titleFa="باد شدید در بوشهر">
               Pilotage is suspended until 18:00.
             </KavehNotice>
-            <KavehNotice variant="navy" title="Our operations centre is open 24/7" action={<KavehLink href="#/components/kaveh-data" className="text-[#ffd0b0]">Contact ops</KavehLink>} />
+            <KavehNotice variant="navy" title="Our operations centre is open 24/7" action={<KavehLink href={to("components/kaveh-data")} className="text-[#ffd0b0]">Contact ops</KavehLink>} />
             {dismissed ? (
               <Button size="sm" variant="outline" className="w-fit" onClick={() => setDismissed(false)}>
                 Show campaign notice
@@ -611,11 +611,11 @@ export function KavehDataExamples() {
             <span className="grid size-16 place-items-center rounded-lg bg-[#0b1f3f]">
               <KavehLoader variant="ring" tone="reversed" size={40} />
             </span>
-            <KavehLink href="#/components/kaveh-data">All services</KavehLink>
-            <KavehLink variant="underline" href="#/components/kaveh-data">
+            <KavehLink href={to("components/kaveh-data")}>All services</KavehLink>
+            <KavehLink variant="underline" href={to("components/kaveh-data")}>
               Our story
             </KavehLink>
-            <KavehLink variant="button" href="#/components/kaveh-data">
+            <KavehLink variant="button" href={to("components/kaveh-data")}>
               Request a quote
             </KavehLink>
           </div>,

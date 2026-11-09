@@ -26,7 +26,7 @@ export default defineConfig({
     { name: "mobile", use: { ...devices["Pixel 7"] }, grep: /@mobile/ },
   ],
   webServer: {
-    command: "pnpm exec vite build && pnpm exec vite preview --port 4173 --strictPort",
+    command: "pnpm exec vite build && pnpm run prerender && pnpm exec vite preview --port 4173 --strictPort",
     url: "http://localhost:4173",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

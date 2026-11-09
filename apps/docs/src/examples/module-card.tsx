@@ -1,7 +1,7 @@
 import { ModuleCard, ThemeProvider, type ModuleCardTone } from "@darkalpha/nova-ui";
 import { BillOfLading, Chart, Container, ContainerShip, Download, Settings } from "@darkalpha/nova-ui/icons";
 import type { ReactNode } from "react";
-import { Example } from "../docs/kit.tsx";
+import { Example, to } from "../docs/kit.tsx";
 
 const modules = [
   { title: "واردات", description: "مدیریت عملیات واردات", tone: "teal", icon: <Download variant="soft" /> },
@@ -28,7 +28,7 @@ export function ModuleCardExamples() {
       >
         <div dir="rtl" lang="fa" className="grid w-full gap-4 rounded-xl bg-[light-dark(#eef2fb,transparent)] p-4 sm:grid-cols-2 lg:grid-cols-3">
           {modules.map((m) => (
-            <ModuleCard key={m.title} href="#/components/module-card" tone={m.tone} icon={m.icon} title={m.title} description={m.description} />
+            <ModuleCard key={m.title} href={to("components/module-card")} tone={m.tone} icon={m.icon} title={m.title} description={m.description} />
           ))}
         </div>
       </Example>
@@ -40,7 +40,7 @@ export function ModuleCardExamples() {
       >
         <div className="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {tones.map((tone) => (
-            <ModuleCard key={tone} tone={tone} href="#/components/module-card" icon={<Container variant="soft" />} title={tone} description="Track and assign empty boxes" />
+            <ModuleCard key={tone} tone={tone} href={to("components/module-card")} icon={<Container variant="soft" />} title={tone} description="Track and assign empty boxes" />
           ))}
         </div>
       </Example>
@@ -69,10 +69,10 @@ export function ModuleCardExamples() {
 <ModuleCard href="/customs" disabled tone="green" icon={<Download variant="soft" />} title="Customs" description="Coming soon" />`}
       >
         <div className="grid w-full gap-4 md:grid-cols-2">
-          <ModuleCard href="#/components/module-card" tone="orange" badge="12" icon={<BillOfLading variant="soft" />} title="Documents" description="Bills of lading awaiting review" />
+          <ModuleCard href={to("components/module-card")} tone="orange" badge="12" icon={<BillOfLading variant="soft" />} title="Documents" description="Bills of lading awaiting review" />
           <ModuleCard size="lg" onClick={() => undefined} tone="cyan" icon={<Chart variant="soft" />} title="Reports" description="Throughput and dwell time" />
           <ModuleCard tone="sky" icon={<Settings variant="soft" />} title="Settings" description="Static, no arrow" />
-          <ModuleCard href="#/components/module-card" disabled tone="green" badge="Soon" icon={<Download variant="soft" />} title="Customs" description="Coming soon" />
+          <ModuleCard href={to("components/module-card")} disabled tone="green" badge="Soon" icon={<Download variant="soft" />} title="Customs" description="Coming soon" />
         </div>
       </Example>
 
@@ -84,7 +84,7 @@ export function ModuleCardExamples() {
         <ThemeProvider mode="dark" className="min-h-0! w-full rounded-xl bg-background p-4">
           <div dir="rtl" lang="fa" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {modules.slice(0, 3).map((m) => (
-              <ModuleCard key={m.title} href="#/components/module-card" tone={m.tone} icon={m.icon} title={m.title} description={m.description} />
+              <ModuleCard key={m.title} href={to("components/module-card")} tone={m.tone} icon={m.icon} title={m.title} description={m.description} />
             ))}
           </div>
         </ThemeProvider>
