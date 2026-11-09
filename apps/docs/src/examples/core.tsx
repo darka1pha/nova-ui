@@ -738,24 +738,93 @@ export function SelectExamples() {
   );
 }
 
+const countries = ["Argentina", "Australia", "Brazil", "Canada", "Egypt", "France", "Germany", "India", "Iran", "Italy", "Japan", "Kenya", "Mexico", "Norway", "Spain", "Turkey"].map(
+  (label) => ({ value: label.toLowerCase(), label }),
+);
+
+/** A fake server search: 400 ms latency, honours the abort signal. */
+function searchCountries(query: string, signal: AbortSignal) {
+  return new Promise<typeof countries>((resolve, reject) => {
+    const id = setTimeout(() => resolve(countries.filter((c) => c.label.toLowerCase().includes(query.toLowerCase())).slice(0, 8)), 400);
+    signal.addEventListener("abort", () => {
+      clearTimeout(id);
+      reject(signal.reason);
+    });
+  });
+}
+
 export function ComboboxExamples() {
   const [fw, setFw] = useState<string | null>("react");
+  const [country, setCountry] = useState<string | null>(null);
+  const [tags, setTags] = useState([
+    { value: "design", label: "Design" },
+    { value: "research", label: "Research" },
+  ]);
+  const [tag, setTag] = useState<string | null>(null);
   return (
-    <Example
-      title="Combobox"
-      description="A searchable select: type to filter, arrows to move, Enter to pick."
-      code={`<Combobox options={frameworks} value={fw} onValueChange={setFw} />`}
-    >
-      <Stack gap={3} className="w-full max-w-xs">
-        <FormField label="Framework">
-          <Combobox
-            value={fw}
-            onValueChange={setFw}
-            options={["React", "Next.js", "Remix", "Astro", "Vite", "Gatsby", "Expo"].map((l) => ({ value: l.toLowerCase(), label: l }))}
-          />
-        </FormField>
-      </Stack>
-    </Example>
+    <>
+      <Example
+        title="Combobox"
+        description="A searchable select: type to filter, arrows to move, Enter to pick."
+        code={`<Combobox options={frameworks} value={fw} onValueChange={setFw} />`}
+      >
+        <Stack gap={3} className="w-full max-w-xs">
+          <FormField label="Framework">
+            <Combobox
+              value={fw}
+              onValueChange={setFw}
+              options={["React", "Next.js", "Remix", "Astro", "Vite", "Gatsby", "Expo"].map((l) => ({ value: l.toLowerCase(), label: l }))}
+            />
+          </FormField>
+        </Stack>
+      </Example>
+      <Example
+        title="Async search"
+        description="loadOptions fetches as you type (debounced). A newer query aborts the older request through its signal, and a spinner shows while it's pending."
+        code={`<Combobox
+    loadOptions={(query, signal) =>
+      fetch(\`/api/countries?q=\${query}\`, { signal }).then((r) => r.json())
+    }
+    value={country}
+    onValueChange={setCountry}
+  />`}
+      >
+        <Stack gap={3} className="w-full max-w-xs">
+          <FormField label="Country">
+            <Combobox loadOptions={searchCountries} value={country} onValueChange={setCountry} searchPlaceholder="Search countries…" />
+          </FormField>
+        </Stack>
+      </Example>
+      <Example
+        title="Creatable"
+        description="When the search doesn't match an option exactly, a Create item adds it. onCreate can return the new option (or a promise of one)."
+        code={`<Combobox
+    options={tags}
+    creatable
+    onCreate={(label) => {
+      const option = { value: slug(label), label };
+      setTags((t) => [...t, option]);
+      return option;
+    }}
+  />`}
+      >
+        <Stack gap={3} className="w-full max-w-xs">
+          <FormField label="Tag">
+            <Combobox
+              options={tags}
+              value={tag}
+              onValueChange={setTag}
+              creatable
+              onCreate={(label) => {
+                const option = { value: label.toLowerCase().replace(/\s+/g, "-"), label };
+                setTags((t) => [...t, option]);
+                return option;
+              }}
+            />
+          </FormField>
+        </Stack>
+      </Example>
+    </>
   );
 }
 

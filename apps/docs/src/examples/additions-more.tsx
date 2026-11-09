@@ -6,6 +6,7 @@ import {
   CopyButton,
   Countdown,
   ExpandableText,
+  FileUploader,
   FileUploadList,
   Gauge,
   Message,
@@ -39,6 +40,56 @@ const permissions = [
 export function FileUploadListExamples() {
   return (
     <UploadsExample />
+  );
+}
+
+/** A fake upload: ticks progress, honours the abort signal, and fails files named "fail…". */
+function fakeUpload(file: File, { signal, onProgress }: { signal: AbortSignal; onProgress: (p: number) => void }) {
+  return new Promise<void>((resolve, reject) => {
+    let progress = 0;
+    const id = setInterval(() => {
+      progress += 10 + Math.random() * 15;
+      onProgress(progress);
+      if (progress >= 60 && file.name.toLowerCase().startsWith("fail")) {
+        clearInterval(id);
+        reject(new Error("The server rejected this file"));
+      } else if (progress >= 100) {
+        clearInterval(id);
+        resolve();
+      }
+    }, 300);
+    signal.addEventListener("abort", () => clearInterval(id));
+  });
+}
+
+export function FileUploaderExamples() {
+  return (
+    <Example
+      title="FileUploader"
+      description="FileDropzone and FileUploadList wired together: files upload as soon as they're dropped, two at a time, with progress, cancel and retry. Name a file fail-something to see an error."
+      code={`<FileUploader
+  accept="image/*,.pdf"
+  maxSize={10 * 1024 ** 2}
+  concurrency={2}
+  upload={(file, { signal, onProgress }) => uploadWithXhr("/api/files", file, { signal, onProgress })}
+  getErrorMessage={(e) => (e instanceof Error ? e.message : undefined)}
+  onUploaded={(item, file, result) => save(result)}
+/>
+
+// Or lay it out yourself:
+const uploads = useFileUploads({ upload });
+<FileDropzone files={[]} onFilesChange={uploads.add} />
+<FileUploadList items={uploads.items} onCancel={uploads.cancel} onRetry={uploads.retry} onRemove={uploads.remove} />`}
+    >
+      <FileUploader
+        className="w-full max-w-lg"
+        concurrency={2}
+        upload={fakeUpload}
+        getErrorMessage={(e) => (e instanceof Error ? e.message : undefined)}
+        description="Anything up to 10 MB. Nothing leaves your browser."
+        maxSize={10 * 1024 ** 2}
+      />
+    </Example>
   );
 }
 
@@ -152,7 +203,14 @@ export function CountdownExamples() {
       title="Countdown"
       description="Time left until a moment, with localized unit labels. The screen-reader label updates once a minute so it isn't noisy."
       code={`<Countdown to={launchDate} onComplete={() => setLive(true)} completed="We're live!" />
-<Countdown to={launchDate} variant="inline" showSeconds={false} />`}
+<Countdown to={launchDate} variant="inline" showSeconds={false} />
+<Countdown
+  to={launchDate}
+  format={({ days, hours, minutes, seconds, placeholder }) =>
+    placeholder ? "--:--:--" : [days * 24 + hours, minutes, seconds].map((n) => String(n).padStart(2, "0")).join(":")
+  }
+/>
+<Countdown as="div" to={launchDate} className="grid grid-cols-4" />`}
     >
       <Stack gap={4}>
         <Countdown to={launch} />
@@ -164,6 +222,16 @@ export function CountdownExamples() {
           {fired ? <span className="text-foreground-muted"> · onComplete fired</span> : null}
         </Text>
         <Countdown to={launch} locale="fa-IR" />
+        <Text size="sm">
+          Custom format:{" "}
+          <Countdown
+            to={launch}
+            className="font-mono font-semibold"
+            format={({ days, hours, minutes, seconds, placeholder }) =>
+              placeholder ? "--:--:--" : [days * 24 + hours, minutes, seconds].map((n) => String(n).padStart(2, "0")).join(":")
+            }
+          />
+        </Text>
       </Stack>
     </Example>
   );

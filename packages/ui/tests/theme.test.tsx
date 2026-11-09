@@ -1,7 +1,8 @@
 import { act, render, screen } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
+import { useEffect } from "react";
 import { describe, expect, it, vi } from "vitest";
-import { Button, getThemeCss, getThemeScript, ThemeProvider, useTheme } from "../src/index.ts";
+import { Button, getThemeCss, getThemeScript, getResolvedTheme, ThemeProvider, useTheme, useThemeVariables } from "../src/index.ts";
 
 function ModeProbe() {
   const { mode, resolvedMode, setMode, dir } = useTheme();
@@ -113,6 +114,71 @@ describe("ThemeProvider", () => {
       </ThemeProvider>,
     );
     expect(screen.getByTestId("mode")).toHaveTextContent("dark");
+  });
+
+  it("follows a mode change made in another tab", () => {
+    window.localStorage.setItem("sync-mode", "light");
+    const onModeChange = vi.fn();
+    render(
+      <ThemeProvider storageKey="sync-mode" onModeChange={onModeChange}>
+        <ModeProbe />
+      </ThemeProvider>,
+    );
+    expect(screen.getByTestId("mode")).toHaveTextContent("light");
+    // Another tab writes the key: the browser fires `storage` here only.
+    const fire = (key: string | null, value: string | null) => {
+      if (value === null) window.localStorage.removeItem("sync-mode");
+      else window.localStorage.setItem("sync-mode", value);
+      act(() => void window.dispatchEvent(new StorageEvent("storage", { key, newValue: value, storageArea: window.localStorage })));
+    };
+    fire("sync-mode", "dark");
+    expect(screen.getByTestId("mode")).toHaveTextContent("dark");
+    expect(document.documentElement).toHaveAttribute("data-nv-mode", "dark");
+    expect(onModeChange).toHaveBeenLastCalledWith("dark");
+    fire("other-key", "light");
+    expect(screen.getByTestId("mode")).toHaveTextContent("dark");
+    // Removed (or localStorage.clear(), key null): back to the default.
+    fire(null, null);
+    expect(screen.getByTestId("mode")).toHaveTextContent("system");
+    expect(document.documentElement).not.toHaveAttribute("data-nv-mode");
+    expect(onModeChange).toHaveBeenCalledTimes(2);
+  });
+
+  it("ignores other tabs when the mode is controlled", () => {
+    render(
+      <ThemeProvider storageKey="sync-mode-2" mode="light">
+        <ModeProbe />
+      </ThemeProvider>,
+    );
+    window.localStorage.setItem("sync-mode-2", "dark");
+    act(() => void window.dispatchEvent(new StorageEvent("storage", { key: "sync-mode-2", newValue: "dark", storageArea: window.localStorage })));
+    expect(screen.getByTestId("mode")).toHaveTextContent("light");
+  });
+
+  it("useThemeVariables gives the colors for the mode in effect", async () => {
+    const box: { seen?: ReturnType<typeof useThemeVariables> } = {};
+    function Probe() {
+      const vars = useThemeVariables();
+      useEffect(() => {
+        box.seen = vars;
+      });
+      const { setMode } = useTheme();
+      return <button onClick={() => setMode("dark")}>dark</button>;
+    }
+    render(
+      <ThemeProvider theme="ocean" defaultMode="light">
+        <Probe />
+      </ThemeProvider>,
+    );
+    const ocean = getResolvedTheme("ocean");
+    expect(box.seen?.mode).toBe("light");
+    expect(box.seen?.colors["primary-solid"]).toBe(ocean.light["primary-solid"]);
+    expect(box.seen?.chart).toHaveLength(8);
+    expect(box.seen?.chart[0]).toBe(ocean.light["chart-1"]);
+    expect(box.seen?.cssVar("primary-solid")).toBe("var(--nv-color-primary-solid)");
+    await userEvent.click(screen.getByRole("button", { name: "dark" }));
+    expect(box.seen?.mode).toBe("dark");
+    expect(box.seen?.colors["primary-solid"]).toBe(ocean.dark["primary-solid"]);
   });
 
   it("supports controlled mode", async () => {
