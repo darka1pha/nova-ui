@@ -107,7 +107,7 @@ export { Tour, type TourProps, type TourStep, type TourLabels } from "./componen
 export { ColorPicker, ColorInput, defaultSwatches, type ColorPickerProps, type ColorInputProps, type ColorPickerLabels } from "./components/color-picker.tsx";
 export { CodeBlock, ExpandableText, type CodeBlockProps, type ExpandableTextProps } from "./components/code-block.tsx";
 export { Popconfirm, type PopconfirmProps } from "./components/popconfirm.tsx";
-export { Countdown, Gauge, splitDuration, type CountdownProps, type GaugeProps } from "./components/countdown.tsx";
+export { Countdown, Gauge, splitDuration, type CountdownParts, type CountdownProps, type GaugeProps } from "./components/countdown.tsx";
 export { TransferList, type TransferListProps, type TransferItem, type TransferListLabels } from "./components/transfer-list.tsx";
 export { FileUploadList, formatFileSize, type FileUploadListProps, type UploadItem, type UploadStatus, type FileUploadListLabels } from "./components/upload-list.tsx";
 // Chat

@@ -23,7 +23,24 @@ export function splitDuration(ms: number): Record<Unit, number> {
   return out;
 }
 
-export interface CountdownProps extends Omit<HTMLAttributes<HTMLSpanElement>, "children"> {
+/** What a `format` render prop gets: the time left, already rounded for display. */
+export interface CountdownParts {
+  days: number;
+  hours: number;
+  minutes: number;
+  /** Always 0 when `showSeconds` is false. */
+  seconds: number;
+  /** Milliseconds left, rounded up to the shown precision. */
+  total: number;
+  done: boolean;
+  /**
+   * True on the server and while hydrating when no `initialNow` is given: the
+   * numbers are zeros and shouldn't be shown. Render a placeholder like "--:--".
+   */
+  placeholder: boolean;
+}
+
+export interface CountdownProps extends Omit<HTMLAttributes<HTMLElement>, "children"> {
   /** The moment it counts down to. */
   to: Date | string | number;
   /** Called once when it reaches zero. */
@@ -42,6 +59,17 @@ export interface CountdownProps extends Omit<HTMLAttributes<HTMLSpanElement>, "c
    * markup never mismatches.
    */
   initialNow?: number;
+  /**
+   * The element to render. `span` (default) fits inside a sentence; use `div`
+   * for block layouts so it can hold block content without invalid nesting.
+   */
+  as?: "span" | "div";
+  /**
+   * Custom layout for the time left, e.g. `({ hours, minutes, seconds }) => [hours, minutes, seconds].map(pad).join(":")`.
+   * Replaces the `variant` markup (not `completed`, which still shows once done).
+   * The output is hidden from screen readers; the timer keeps its spoken label.
+   */
+  format?: (parts: CountdownParts) => ReactNode;
 }
 
 const noopSubscribe = () => () => {};
@@ -52,10 +80,11 @@ const useHydrated = () => useSyncExternalStore(noopSubscribe, () => true, () => 
  * Time left until a moment, ticking every second (or minute without seconds).
  * Unit labels come from Intl, so they're localized. It's a `role="timer"`
  * whose accessible name updates once a minute, so screen readers aren't flooded.
- * Renders a `<span>`, so it can sit inside a sentence ("Sale ends in …").
+ * Renders a `<span>`, so it can sit inside a sentence ("Sale ends in …");
+ * pass `as="div"` for block layouts, and `format` for a custom layout.
  */
-export const Countdown = forwardRef<HTMLSpanElement, CountdownProps>(function Countdown(
-  { to, onComplete, variant = "blocks", showSeconds = true, completed, locale: localeProp, initialNow, className, ...props },
+export const Countdown = forwardRef<HTMLElement, CountdownProps>(function Countdown(
+  { to, onComplete, variant = "blocks", showSeconds = true, completed, locale: localeProp, initialNow, as: Tag = "span", format: render, className, ...props },
   ref,
 ) {
   const { locale } = useLocale(localeProp);
@@ -125,17 +154,37 @@ export const Countdown = forwardRef<HTMLSpanElement, CountdownProps>(function Co
 
   if (invalid) return null;
 
+  const custom =
+    render &&
+    render({
+      days: placeholder ? 0 : parts.day,
+      hours: placeholder ? 0 : parts.hour,
+      minutes: placeholder ? 0 : parts.minute,
+      seconds: placeholder || !showSeconds ? 0 : parts.second,
+      total: placeholder ? 0 : Math.ceil(remaining / step) * step,
+      done: done && !placeholder,
+      placeholder,
+    });
+  // A block wrapper keeps the flex layout; the inline one stays in the text flow.
+  const Inner = Tag;
+
   return (
-    <span
-      ref={ref}
+    <Tag
+      ref={ref as never}
       role="timer"
       aria-label={placeholder ? undefined : done && typeof completed === "string" ? completed : spoken}
       data-done={(done && !placeholder) || undefined}
-      className={cn(variant === "blocks" ? "inline-flex gap-2" : "inline-flex items-baseline gap-1 tabular-nums", className)}
+      className={cn(
+        render ? "tabular-nums" : variant === "blocks" ? "inline-flex gap-2" : "inline-flex items-baseline gap-1 tabular-nums",
+        Tag === "div" && !render && "flex",
+        className,
+      )}
       {...props}
     >
       {done && completed && !placeholder ? (
-        <span aria-hidden>{completed}</span>
+        <Inner aria-hidden>{completed}</Inner>
+      ) : render ? (
+        <Inner aria-hidden>{custom}</Inner>
       ) : variant === "blocks" ? (
         shown.map((unit) => (
           <span key={unit} aria-hidden className="flex min-w-16 flex-col items-center gap-1 rounded-(--nv-card-radius) border border-border bg-surface px-3 py-2 shadow-xs">
@@ -151,7 +200,7 @@ export const Countdown = forwardRef<HTMLSpanElement, CountdownProps>(function Co
           </span>
         ))
       )}
-    </span>
+    </Tag>
   );
 });
 
