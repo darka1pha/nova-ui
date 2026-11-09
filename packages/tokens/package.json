@@ -1,6 +1,6 @@
 {
   "name": "@darkalpha/nova-tokens",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "description": "Design tokens, color engine and theme definitions for the Nova UI design system. Framework-agnostic.",
   "license": "MIT",
   "author": "DarkAlpha",
