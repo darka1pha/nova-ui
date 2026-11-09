@@ -98,9 +98,23 @@ Every docs bug fixed above was visible in the browser but invisible to the test 
 
 ## Toward 1.0
 
-- Freeze the public API: audit every export in `packages/ui/src/index.ts` and mark anything
-  experimental under a separate entry point.
-- Write a 0.x → 1.0 migration guide (the Upgrading page has a placeholder).
-- Publish the tokens as Figma variables from the existing DTCG output.
+- Freeze the public API. **In place:** `packages/ui/api-report.md` lists all 980 exports of
+  the seven entries (both packages), and `pnpm check` (CI) fails when it's out of date, so
+  any API change is a reviewed diff. **Audit findings, decision pending** (moving any of
+  these is breaking, so it belongs in the last 0.x minor):
+  - Implementation details exported from the main entry, to make internal or move to a
+    `/utils` entry: `buttonVariants`, `fieldVariants` (cva class maps: freezing them freezes
+    the class strings), `useRipple`, `useComposedRefs`, `getPageItems`, `TooltipRoot`.
+  - Candidates for `@darkalpha/nova-ui/experimental` (newest, least-used APIs): `KanbanBoard`,
+    `Tour`, `SignaturePad`, `NotificationCenter`, the chat kit (`ChatComposer`, `Message*`,
+    `TypingIndicator`), the charts (`AreaChart`, `BarChart`, `LineChart`, `DonutChart`,
+    `Sparkline`, `BarList`), `VirtualTable` and `FileUploader`/`useFileUploads`.
+  - Duplicated surface: nine token helpers (`createTheme`, `presets`, `contrastRatio`…) are
+    exported from both packages. Keep one canonical home, or document both as stable.
+- ~~Write a 0.x → 1.0 migration guide.~~ Done: the Upgrading page lists every breaking or
+  behavior change since 0.3 with what to do, and what 1.0 freezes.
+- ~~Publish the tokens as Figma variables.~~ Done: `figmaVariables()` and
+  `dist/figma/<theme>.json` (Variables REST API bodies, palette aliases kept), and
+  `pnpm --filter @darkalpha/nova-tokens figma:sync` to push or update a file.
 - ~~Set a bundle budget per component in `size-report.ts` and fail CI when it's exceeded.~~
   Done: each case has a gzip budget about 5% over its size, and the CI step fails when one is over.

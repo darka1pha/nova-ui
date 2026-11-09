@@ -14,6 +14,12 @@ import {
   NumberInput,
   Pagination,
   Stat,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
   Text,
   ThemeProvider,
 } from "@darkalpha/nova-ui";
@@ -342,6 +348,25 @@ export function StatCard({ label, value, delta }: { label: string; value: string
   );
 }
 
+/** Breaking or behavior changes in 0.x, oldest first: [since, what changed, what to do]. */
+const migrationSteps: [string, string, string][] = [
+  [
+    "0.3",
+    "Apps that run Tailwind CSS v4 should import @darkalpha/nova-ui/tailwind.css instead of styles.css. Loading both lets your base utilities override the components' breakpoint classes.",
+    "In a Tailwind v4 app, replace the styles.css import with @import \"@darkalpha/nova-ui/tailwind.css\" after @import \"tailwindcss\". Apps without Tailwind keep styles.css.",
+  ],
+  ["0.3", "Icons have rounded corners: createIcon fillets the corners of straight segments.", "To keep sharp corners on a custom icon, pass createIcon(name, elements, { corner: 0 })."],
+  ["0.3", "The kaveh preset follows a two-color rule (navy base, orange for actions); the periwinkle secondary and accent are gone.", "Check screens themed with kaveh; brand={…} still overrides any seed."],
+  ["0.3", "Countdown renders a <span> (it was a <div>), and its ref is a span.", "Since 0.7, pass as=\"div\" for block layouts. Ref types: use HTMLElement."],
+  ["0.5", "Tiptap and ProseMirror are optional peer dependencies.", "If you import @darkalpha/nova-ui/rich-text-editor, install the @tiptap/* packages (command below)."],
+  ["0.5", "The Kaveh brand kit and the Yalda/Nowruz artwork moved out of the main entry.", "Import them from @darkalpha/nova-ui/kaveh. The kaveh, kaveh-yalda and kaveh-nowruz themes still work by name."],
+  ["0.5", "color-scheme is set on theme roots, not :root, so importing the CSS no longer darkens the host page's scrollbars.", "If you relied on it, set color-scheme on :root yourself."],
+  ["0.5", "Semantic overrides containing ; { } < > a backslash or /* are refused, and failing contrast pairs warn in development.", "Pass plain color values in overrides; read the dev warnings."],
+  ["0.5", "Labels dim inside a disabled FormField, and DataTable rows no longer carry aria-selected (the row checkbox has the state).", "Update visual baselines and tests that queried aria-selected on rows."],
+  ["0.5", "Button asChild renders its icons, spinner and ripple, and blocks activation while disabled or loading.", "Remove workarounds that rendered icons inside an asChild link by hand."],
+  ["0.7", "Combobox options is optional (it can load them with loadOptions), and its popup is named after the field.", "No change needed. Tests that found the popup as an unnamed dialog should use its name."],
+];
+
 export function MigrationPage() {
   return (
     <Page eyebrow="Guides" title="Upgrading" lead="Nova UI follows semantic versioning. Releases are managed with Changesets and every change is listed in the package changelogs.">
@@ -367,10 +392,55 @@ export function MigrationPage() {
       <Section title="Upgrading">
         <CodeBlock language="bash" code={`pnpm up @darkalpha/nova-ui@latest\n# then run your type check — removed or renamed props surface as TypeScript errors`} />
       </Section>
-      <Section title="0.x → 1.0 (planned)">
+      <Section title="Before 1.0">
         <Alert variant="info" title="Pre-1.0">
           0.x minors may contain small breaking changes, always called out in the changelog. Pin a minor range (<code>~{__NOVA_VERSION__.replace(/\.\d+$/, ".0")}</code>) until 1.0.
         </Alert>
+        <Prose>
+          <p>
+            1.0 freezes the public API: every export of <code>@darkalpha/nova-ui</code>, its subpath entries and <code>@darkalpha/nova-tokens</code>, their props,
+            token names and CSS variables. From then on only a major release removes or renames any of them. The list of exports is checked in CI (
+            <code>packages/ui/api-report.md</code>), so a change to it is always deliberate.
+          </p>
+        </Prose>
+      </Section>
+      <Section title="Upgrading from an older 0.x" id="from-0x">
+        <Prose>
+          <p>
+            Going from any 0.x to the latest, work down this list from your current version. Each item says what changed and what to do; anything not listed
+            here kept working.
+          </p>
+        </Prose>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-24">Since</TableHead>
+              <TableHead>Change</TableHead>
+              <TableHead>What to do</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {migrationSteps.map(([since, change, action]) => (
+              <TableRow key={change}>
+                <TableCell className="align-top font-mono text-xs">{since}</TableCell>
+                <TableCell className="align-top">{change}</TableCell>
+                <TableCell className="align-top">{action}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+        <CodeBlock
+          language="tsx"
+          code={`// 0.5: the Kaveh kit and Persian seasonal art have their own entry
+- import { KavehLogo, SeasonalGreeting } from "@darkalpha/nova-ui";
++ import { KavehLogo, SeasonalGreeting } from "@darkalpha/nova-ui/kaveh";
+
+// 0.5: the rich text editor's engine is an optional peer, install it yourself
+pnpm add @tiptap/core @tiptap/pm @tiptap/react @tiptap/starter-kit @tiptap/extensions @tiptap/suggestion \\
+  @tiptap/extension-bubble-menu @tiptap/extension-highlight @tiptap/extension-image @tiptap/extension-list \\
+  @tiptap/extension-subscript @tiptap/extension-superscript @tiptap/extension-table @tiptap/extension-text-align \\
+  @tiptap/extension-text-style @tiptap/extension-typography`}
+        />
       </Section>
     </Page>
   );

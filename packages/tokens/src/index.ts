@@ -12,3 +12,4 @@ export { createTheme, registerTheme, getTheme, listThemes, getResolvedTheme } fr
 export { themeVariables, staticVariables, derivedVariables, THEME_ROOT_SELECTOR, COLOR_SCHEME_CSS, themeCss, cssBlock, tailwindThemeCss } from "./css.ts";
 export { auditContrast, contrastPairs, type ContrastCheck } from "./validate.ts";
 export { dtcgTokens, primitiveTokens, themeTokens, type DtcgGroup, type DtcgToken } from "./dtcg.ts";
+export { figmaVariables, type FigmaLocalVariables, type FigmaVariablesOptions, type FigmaVariablesPayload } from "./figma.ts";
