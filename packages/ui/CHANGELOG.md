@@ -1,5 +1,24 @@
 # @darkalpha/nova-ui
 
+## 0.5.1
+
+### Patch Changes
+
+- 408eead: `KavehPageHeader` takes a `headingLevel` prop (1–6, default 1) for headers that sit inside a page that already has an `h1`, such as a dashboard panel or a docs preview.
+  
+  `KavehContactCard` no longer grows past its container when the email address is long; the address truncates as intended.
+- 16e2de7: Internal cleanup so components follow the React Compiler rules (no public API changes):
+  
+  - Callbacks that hold the latest props (Countdown's `onComplete`, Kanban's pointer drag, RichTextEditor's handlers) update in a layout effect instead of during render, which stays correct under concurrent rendering.
+  - State that follows a prop is adjusted during render instead of in an effect, saving a re-render: ColorPicker's controlled `value`, `Image` resetting on a new `src`, Lightbox zoom resetting on close, FileUploadList announcements and the editor's link field. `Image` checks for an already-loaded server-rendered image through a callback ref.
+  - Countdown with `initialNow` switches to the browser clock on hydration instead of in a follow-up effect.
+  - Tour no longer shows the previous step's spotlight for a frame when reopened.
+  - RichTextEditor's image and link popovers drop `autoFocus`; the popover already focuses its first field when it opens.
+- 408eead: A horizontal `TabsList` (underline and segmented) that's wider than its container now scrolls sideways instead of pushing the page wider. The scrollbar is hidden; swiping, a trackpad, or the arrow keys move along it, and the active tab is scrolled into view when it changes. Pills still wrap onto more lines.
+  
+  The underline rule is now an inset shadow instead of a bottom border, so scrolling doesn't clip it or the indicator, and the underline variant's focus ring is drawn inside the tab. It looks the same as before.
+- @darkalpha/nova-tokens@0.5.1
+
 ## 0.5.0
 
 ### Minor Changes
