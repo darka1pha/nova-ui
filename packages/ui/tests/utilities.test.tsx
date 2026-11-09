@@ -1,6 +1,6 @@
 import { act, render, screen, waitFor } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
-import { useState } from "react";
+import { createRef, useState } from "react";
 import { describe, expect, it, vi } from "vitest";
 import {
   Button,
@@ -124,6 +124,38 @@ describe("Countdown", () => {
     } finally {
       vi.useRealTimers();
     }
+  });
+
+  it("renders a custom layout with format and keeps the spoken label", () => {
+    vi.useFakeTimers({ now: new Date("2026-10-29T10:00:00Z") });
+    try {
+      const pad = (n: number) => String(n).padStart(2, "0");
+      const format = vi.fn(({ days, hours, minutes, seconds }: { days: number; hours: number; minutes: number; seconds: number }) =>
+        [days * 24 + hours, minutes, seconds].map(pad).join(":"),
+      );
+      wrap(<Countdown to="2026-10-30T12:15:09Z" locale="en" format={format} />);
+      const timer = screen.getByRole("timer");
+      expect(timer).toHaveTextContent(/^26:15:09$/);
+      expect(timer).toHaveAccessibleName("1 day, 2 hours, 15 minutes");
+      expect(format).toHaveBeenLastCalledWith(expect.objectContaining({ days: 1, hours: 2, minutes: 15, seconds: 9, done: false, placeholder: false }));
+      act(() => void vi.advanceTimersByTime(1100));
+      expect(timer).toHaveTextContent(/^26:15:08$/);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("renders a div with as=\"div\" and shows completed over format once done", () => {
+    const ref = createRef<HTMLElement>();
+    const { unmount } = wrap(<Countdown ref={ref} as="div" to={Date.now() + 60_000} format={({ minutes }) => <p>{minutes} min</p>} />);
+    const timer = screen.getByRole("timer");
+    expect(timer.tagName).toBe("DIV");
+    expect(ref.current).toBe(timer);
+    // Block content inside a block wrapper: no <span><p> nesting.
+    expect(timer.querySelector("p")?.parentElement?.tagName).toBe("DIV");
+    unmount();
+    wrap(<Countdown as="div" to={Date.now() - 1} completed="Over" format={() => "never"} />);
+    expect(screen.getByRole("timer")).toHaveTextContent("Over");
   });
 });
 

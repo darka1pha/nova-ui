@@ -314,7 +314,9 @@ export function StatCard({ label, value, delta }: { label: string; value: string
               Wire custom inputs to FormField with <code>useFormField(props)</code>, and portal overlays with <code>{"<Portal>"}</code> so they inherit the theme.
             </li>
             <li>
-              Read theme state with <code>useTheme()</code> (resolved colors, mode, dir) — for example to color a canvas chart.
+              Read theme state with <code>useTheme()</code> (mode, dir, locale). For a canvas or chart library that can&apos;t read CSS variables, use{" "}
+              <code>useThemeVariables()</code>: it returns the colors for the mode in effect (<code>colors[&quot;primary-solid&quot;]</code>, the eight{" "}
+              <code>chart</code> colors) and updates when the theme or mode changes.
             </li>
           </ul>
         </Prose>

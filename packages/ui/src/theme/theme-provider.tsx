@@ -1,6 +1,8 @@
 "use client";
 
 import {
+  CHART_ROLES,
+  colorVar,
   defaultTheme,
   getResolvedTheme,
   primitives,
@@ -11,6 +13,7 @@ import {
   type MotionStyle,
   type RadiusPreset,
   type ResolvedTheme,
+  type SemanticColorName,
   type SemanticOverrides,
   type SurfaceStyle,
   type ThemeDefinition,
@@ -31,6 +34,7 @@ import {
   type ReactNode,
 } from "react";
 import { devWarn } from "../utils/dev.ts";
+import { useLatestRef } from "../utils/use-latest-ref.ts";
 
 export type ModePreference = ColorMode | "system";
 export type MotionPreference = "system" | "reduce";
@@ -51,6 +55,8 @@ export interface ThemeProviderProps extends Omit<HTMLAttributes<HTMLDivElement>,
   /**
    * Persist the mode preference in localStorage under this key. Pair with
    * `<ThemeScript storageKey>` in the document head to avoid a flash on load.
+   * Other tabs and windows on the same origin follow a change made in one of
+   * them (via the `storage` event); `onModeChange` runs there too.
    */
   storageKey?: string;
   radius?: RadiusPreset;
@@ -189,6 +195,29 @@ export function ThemeProvider({
     setStorageRead(true);
   }, [storageKey]);
 
+  // Follow changes made in other tabs. The event only fires in the *other*
+  // documents, so this never echoes the tab's own write.
+  const fallbackMode = defaultMode ?? resolved.preferredMode ?? "system";
+  const onModeChangeRef = useLatestRef(onModeChange);
+  const internalModeRef = useLatestRef(internalMode);
+  useEffect(() => {
+    if (!storageKey || modeProp !== undefined || typeof window === "undefined") return;
+    const onStorage = (event: StorageEvent) => {
+      // `key` is null when another tab called localStorage.clear().
+      if (event.key !== null && event.key !== storageKey) return;
+      if (event.storageArea && event.storageArea !== window.localStorage) return;
+      const next = readStoredMode(storageKey) ?? fallbackMode;
+      if (next !== internalModeRef.current) {
+        setInternalMode(next);
+        onModeChangeRef.current?.(next);
+      }
+      if (next === "system") delete document.documentElement.dataset.nvMode;
+      else document.documentElement.dataset.nvMode = next;
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, [storageKey, modeProp, fallbackMode, onModeChangeRef, internalModeRef]);
+
   const localSetMode = useCallback(
     (next: ModePreference) => {
       if (modeProp === undefined) setInternalMode(next);
@@ -307,6 +336,41 @@ function getFallbackContext(): ThemeContextValue {
     portalContainer: null,
   };
   return fallback;
+}
+
+export interface ThemeVariables {
+  /** The mode in effect for the nearest provider. */
+  mode: ColorMode;
+  /** Every semantic color for that mode, e.g. `colors["primary-solid"]`. */
+  colors: Record<SemanticColorName, string>;
+  /** The eight chart colors in order (`chart-1` … `chart-8`). */
+  chart: string[];
+  /** `var(--nv-color-…)` for a color, for libraries that accept CSS values. */
+  cssVar: (name: SemanticColorName) => string;
+}
+
+/**
+ * The nearest theme's colors as plain values for the mode in effect, for
+ * canvas, WebGL and chart libraries that can't read CSS variables. It updates
+ * when the theme, brand or mode (including the OS setting) changes. Values are
+ * hex unless a semantic override passed another CSS color.
+ *
+ * ```tsx
+ * const { colors, chart } = useThemeVariables();
+ * ctx.strokeStyle = colors["primary-solid"];
+ * ```
+ */
+export function useThemeVariables(): ThemeVariables {
+  const { theme, resolvedMode } = useOptionalTheme() ?? getFallbackContext();
+  return useMemo(() => {
+    const colors = theme[resolvedMode];
+    return {
+      mode: resolvedMode,
+      colors,
+      chart: CHART_ROLES.map((role) => colors[role]),
+      cssVar: (name) => `var(${colorVar(name)})`,
+    };
+  }, [theme, resolvedMode]);
 }
 
 /** The density multiplier for a density preset; handy for custom components. */
