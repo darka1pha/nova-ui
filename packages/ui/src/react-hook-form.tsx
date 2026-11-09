@@ -14,7 +14,6 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
   type FormEvent,
   type FormHTMLAttributes,
@@ -223,7 +222,7 @@ export function Form<T extends FieldValues>({
   children,
   ...props
 }: FormProps<T>) {
-  const labels = useRef(new Map<string, ReactNode>()).current;
+  const [labels] = useState(() => new Map<string, ReactNode>());
   const messageKey = JSON.stringify(Object.keys(messages ?? {}));
   const value = useMemo<NovaFormContextValue>(
     () => ({ schema, indicate, messages: { ...defaultMessages, ...messages }, formatError, labels }),

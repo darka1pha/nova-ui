@@ -3,7 +3,7 @@
 import { contrastRatio, generateScale, normalizeHex, palette, parseHex, SCALE_STEPS, toHex, WCAG, type Rgb } from "@darkalpha/nova-tokens";
 import { Check, Pipette, X } from "lucide-react";
 import { Popover as PopoverPrimitive } from "radix-ui";
-import { forwardRef, useEffect, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from "react";
+import { forwardRef, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from "react";
 import { cn } from "../utils/cn.ts";
 import { Input, InputGroup, type InputProps } from "./input.tsx";
 import { usePortalContainer } from "./portal.tsx";
@@ -103,12 +103,12 @@ export const ColorPicker = forwardRef<HTMLDivElement, ColorPickerProps>(function
   const hex = hsvToHex(hsv);
 
   // Follow a controlled value, but keep our hue when the new color is gray (hex can't carry it).
-  useEffect(() => {
-    if (value === undefined || normalizeHex(value) === hex) return;
-    const next = hexToHsv(value);
+  const [prevValue, setPrevValue] = useState(value);
+  if (value !== prevValue) {
+    setPrevValue(value);
+    const next = value === undefined || normalizeHex(value) === hex ? null : hexToHsv(value);
     if (next) setHsv(next.s === 0 || next.v === 0 ? { ...next, h: hsv.h } : next);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value]);
+  }
 
   const update = (next: Hsv) => {
     setHsv(next);

@@ -436,6 +436,7 @@ function CartesianChart<T>({
       className={className}
       rest={rest}
     >
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- the chart is a focusable, keyboard-explorable group (arrow keys move between points) */}
       <div
         ref={box}
         role="group"
@@ -578,13 +579,12 @@ export const DonutChart = forwardRef<HTMLElement, DonutChartProps>(function Donu
   const circumference = 2 * Math.PI * rMid;
   // 2px surface gap between slices, measured along the ring.
   const gap = data.length > 1 ? 2 : 0;
-  let offset = 0;
-  const slices = data.map((d, i) => {
-    const len = total ? (Math.max(0, d.value) / total) * circumference : 0;
-    const slice = { i, start: offset, len: Math.max(0, len - gap) };
+  const slices: { i: number; start: number; len: number }[] = [];
+  for (let i = 0, offset = 0; i < data.length; i++) {
+    const len = total ? (Math.max(0, (data[i] as (typeof data)[number]).value) / total) * circumference : 0;
+    slices.push({ i, start: offset, len: Math.max(0, len - gap) });
     offset += len;
-    return slice;
-  });
+  }
 
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
@@ -613,6 +613,7 @@ export const DonutChart = forwardRef<HTMLElement, DonutChartProps>(function Donu
       rest={rest}
     >
       <div className="flex flex-wrap items-center gap-6">
+        {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- the chart is a focusable, keyboard-explorable group (arrow keys move between slices) */}
         <div
           role="group"
           aria-roledescription="chart"

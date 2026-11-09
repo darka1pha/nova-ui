@@ -336,6 +336,7 @@ export const TimeInput = forwardRef<HTMLDivElement, TimeInputProps>(function Tim
   return (
     <div className={cn("relative inline-flex w-fit max-w-full", className)}>
       {name ? <input type="hidden" name={name} value={complete ? fromMinutes((draft.hour ?? 0) * 60 + (draft.minute ?? 0)) : ""} /> : null}
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- arrow keys from the segment inputs bubble here */}
       <div
         ref={ref}
         role="group"

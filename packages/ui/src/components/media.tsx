@@ -2,7 +2,7 @@
 
 import { ChevronLeft, ChevronRight, ImageOff, X, ZoomIn, ZoomOut } from "lucide-react";
 import { Dialog as DialogPrimitive } from "radix-ui";
-import { forwardRef, useEffect, useRef, useState, type ImgHTMLAttributes, type PointerEvent, type ReactNode } from "react";
+import { forwardRef, useCallback, useEffect, useRef, useState, type ImgHTMLAttributes, type PointerEvent, type ReactNode } from "react";
 import { useOptionalTheme } from "../theme/theme-provider.tsx";
 import { cn } from "../utils/cn.ts";
 import { useComposedRefs } from "../utils/compose-refs.ts";
@@ -33,15 +33,16 @@ export interface ImageProps extends ImgHTMLAttributes<HTMLImageElement> {
  */
 export const Image = forwardRef<HTMLImageElement, ImageProps>(function Image({ alt, ratio, fit = "cover", fallback, wrapperClassName, className, onLoad, onError, loading = "lazy", src, ...props }, ref) {
   const [status, setStatus] = useState<"loading" | "loaded" | "error">("loading");
-  const inner = useRef<HTMLImageElement>(null);
-  const composed = useComposedRefs(ref, inner);
-
-  useEffect(() => {
+  const [prevSrc, setPrevSrc] = useState(src);
+  if (src !== prevSrc) {
+    setPrevSrc(src);
     setStatus("loading");
-    // A cached image can finish before React attaches onLoad.
-    const img = inner.current;
-    if (img?.complete) setStatus(img.naturalWidth > 0 ? "loaded" : src ? "error" : "loading");
-  }, [src]);
+  }
+  // A server-rendered image can finish before hydration attaches onLoad, so check it on attach.
+  const checkComplete = useCallback((img: HTMLImageElement | null) => {
+    if (img?.complete) setStatus(img.naturalWidth > 0 ? "loaded" : img.getAttribute("src") ? "error" : "loading");
+  }, []);
+  const composed = useComposedRefs(ref, checkComplete);
 
   return (
     <span
@@ -158,9 +159,11 @@ export function Lightbox({ images, open, onOpenChange, index: indexProp, default
   const canPrev = loop || index > 0;
   const canNext = loop || index < total - 1;
 
-  useEffect(() => {
+  const [prevOpen, setPrevOpen] = useState(open);
+  if (open !== prevOpen) {
+    setPrevOpen(open);
     if (!open) setZoomed(false);
-  }, [open]);
+  }
 
   // Warm the cache for the neighbors so arrowing through feels instant.
   useEffect(() => {
@@ -231,6 +234,7 @@ export function Lightbox({ images, open, onOpenChange, index: indexProp, default
             onPointerCancel={() => (swipe.current = null)}
           >
             {image ? (
+              // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions -- click-to-zoom is a mouse shortcut for the zoom buttons
               <img
                 key={image.src}
                 src={image.src}

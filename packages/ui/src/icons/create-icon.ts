@@ -108,6 +108,8 @@ export function createIcon(name: string, source: IconElement[], { corner = CORNE
 
     return createElement(
       "svg",
+      // Forwarding the ref, not reading it: JSX's `ref={ref}`, which the compiler can't tell from createElement.
+      // eslint-disable-next-line react-hooks/refs
       {
         ref,
         xmlns: "http://www.w3.org/2000/svg",

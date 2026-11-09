@@ -1,7 +1,7 @@
 "use client";
 
 import { CircleCheck, CircleX, File, FileArchive, FileAudio, FileImage, FileText, FileVideo, RotateCw, X } from "lucide-react";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { cn } from "../utils/cn.ts";
 import { Progress } from "./feedback.tsx";
 import { focusRing, transition } from "./shared.ts";
@@ -98,22 +98,21 @@ export interface FileUploadListProps {
 export function FileUploadList({ items, onCancel, onRetry, onRemove, labels: labelsProp, locale, renderActions, className }: FileUploadListProps) {
   const labels = { ...defaultLabels, ...labelsProp };
   const [announcement, setAnnouncement] = useState("");
-  const previous = useRef(new Map<string, UploadStatus>());
-
-  useEffect(() => {
+  // Announce items that just finished or failed, comparing with the previous render's items.
+  const [previous, setPrevious] = useState(items);
+  if (items !== previous) {
+    setPrevious(items);
+    const before = new Map(previous.map((i) => [i.id, i.status]));
     const changes: string[] = [];
     for (const item of items) {
-      const before = previous.current.get(item.id);
-      if (before && before !== item.status) {
+      const status = before.get(item.id);
+      if (status && status !== item.status) {
         if (item.status === "done") changes.push(labels.announceDone(item.name));
         if (item.status === "error") changes.push(labels.announceError(item.name));
       }
     }
-    previous.current = new Map(items.map((i) => [i.id, i.status]));
     if (changes.length) setAnnouncement(changes.join(" "));
-    // Labels are display strings; re-running on their identity would re-announce.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [items]);
+  }
 
   const iconButton = cn("inline-flex size-7 shrink-0 items-center justify-center rounded-sm text-foreground-muted hover:bg-surface-hover hover:text-foreground [&_svg]:size-4", transition, focusRing);
 

@@ -327,6 +327,7 @@ const CalendarCore = forwardRef<HTMLDivElement, CalendarCoreProps>(function Cale
   };
 
   return (
+    // eslint-disable-next-line jsx-a11y/no-static-element-interactions -- arrow keys from the day buttons bubble here (roving tabindex)
     <div ref={composedRef} onKeyDown={onKeyDown} className={cn("relative inline-flex w-fit flex-col p-1", className)} {...props}>
       {/* Month buttons sit over the outer months' titles. */}
       <button type="button" className={cn(navButton, "absolute start-1 top-1 z-10")} aria-label={labels?.previousMonth ?? "Previous month"} onClick={() => shiftView(-1)}>
@@ -504,6 +505,7 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(functio
             aria-invalid={field["aria-invalid"]}
             aria-required={field.required}
             // A field that opens a picker: combobox allows invalid/required states (a plain button does not).
+            // eslint-disable-next-line jsx-a11y/role-has-required-aria-props -- PopoverTrigger asChild adds aria-controls and aria-expanded at runtime
             role="combobox"
             aria-haspopup="dialog"
             onBlur={() => {
@@ -704,6 +706,7 @@ export const DateRangePicker = forwardRef<HTMLButtonElement, DateRangePickerProp
             aria-describedby={field["aria-describedby"]}
             aria-invalid={field["aria-invalid"]}
             aria-required={field.required}
+            // eslint-disable-next-line jsx-a11y/role-has-required-aria-props -- PopoverTrigger asChild adds aria-controls and aria-expanded at runtime
             role="combobox"
             aria-haspopup="dialog"
             onBlur={() => {

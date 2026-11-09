@@ -50,15 +50,18 @@ const resolve = (target: TourStep["target"]) =>
 
 /** The target's box in viewport coordinates, kept current while scrolling and resizing. */
 function useTargetRect(el: HTMLElement | null) {
-  const [rect, setRect] = useState<DOMRect | null>(null);
+  // Keyed by element, so a stale box never shows for a new (or no) target.
+  const [measured, setMeasured] = useState<{ el: HTMLElement; rect: DOMRect } | null>(null);
   useLayoutEffect(() => {
-    if (!el) return setRect(null);
+    if (!el) return;
     let frame = 0;
     const update = () => {
       cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(() => setRect(el.getBoundingClientRect()));
+      frame = requestAnimationFrame(() => setMeasured({ el, rect: el.getBoundingClientRect() }));
     };
-    setRect(el.getBoundingClientRect());
+    // Measuring the DOM before paint is what a layout effect is for.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMeasured({ el, rect: el.getBoundingClientRect() });
     window.addEventListener("scroll", update, true);
     window.addEventListener("resize", update);
     const resize = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(update);
@@ -70,7 +73,7 @@ function useTargetRect(el: HTMLElement | null) {
       resize?.disconnect();
     };
   }, [el]);
-  return rect;
+  return measured && measured.el === el ? measured.rect : null;
 }
 
 /**
@@ -84,17 +87,21 @@ export function Tour({ steps, open, onOpenChange, step: stepProp, defaultStep = 
   const [stepState, setStepState] = useState(defaultStep);
   const index = Math.min(steps.length - 1, Math.max(0, stepProp ?? stepState));
   const current = steps[index];
-  const [target, setTarget] = useState<HTMLElement | null>(null);
+  // The resolved element for a step; it only counts while that step is open.
+  const [resolved, setResolved] = useState<{ step: TourStep; el: HTMLElement | null } | null>(null);
+  const target = open && current && resolved?.step === current ? resolved.el : null;
   const anchor = useRef<HTMLElement | null>(null);
   const titleId = useId();
   const bodyId = useId();
-  const rect = useTargetRect(open ? target : null);
+  const rect = useTargetRect(target);
 
   useEffect(() => {
-    if (!open || !current) return setTarget(null);
+    if (!open || !current) return;
     const el = resolve(current.target);
     anchor.current = el;
-    setTarget(el);
+    // The target is found in the DOM, which only exists after commit.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setResolved({ step: current, el });
     if (el) {
       const reduce = typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       el.scrollIntoView?.({ block: "center", inline: "nearest", behavior: reduce ? "auto" : "smooth" });

@@ -216,6 +216,7 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
           }}
           className="group/treeitem list-none outline-none"
         >
+          {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- mouse target for the row; the keyboard is handled on the treeitem (<li>) */}
           <div
             onClick={() => {
               focusRow(item.id);

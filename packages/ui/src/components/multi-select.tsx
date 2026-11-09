@@ -158,6 +158,7 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(funct
             <button
               ref={ref}
               type="button"
+              // eslint-disable-next-line jsx-a11y/role-has-required-aria-props -- PopoverTrigger asChild adds aria-controls and aria-expanded at runtime
               role="combobox"
               aria-expanded={open}
               aria-required={required}

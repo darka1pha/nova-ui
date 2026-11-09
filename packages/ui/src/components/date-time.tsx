@@ -131,6 +131,7 @@ export const DateTimePicker = forwardRef<HTMLButtonElement, DateTimePickerProps>
             aria-describedby={field["aria-describedby"]}
             aria-invalid={field["aria-invalid"]}
             aria-required={field.required}
+            // eslint-disable-next-line jsx-a11y/role-has-required-aria-props -- PopoverTrigger asChild adds aria-controls and aria-expanded at runtime
             role="combobox"
             aria-haspopup="dialog"
             aria-expanded={open}

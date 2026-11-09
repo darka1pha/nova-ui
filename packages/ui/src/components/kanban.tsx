@@ -3,6 +3,7 @@
 import { GripVertical } from "lucide-react";
 import { useEffect, useId, useLayoutEffect, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from "react";
 import { cn } from "../utils/cn.ts";
+import { useLatestRef } from "../utils/use-latest-ref.ts";
 import { focusRing, transition } from "./shared.ts";
 
 export interface KanbanColumn<T> {
@@ -213,8 +214,7 @@ export function KanbanBoard<T>({
 
   // Moving into another column remounts the card (and its handle), which drops pointer
   // capture, so a pointer drag listens on the window until it ends.
-  const pointer = useRef({ move: onPointerMove, up: () => {}, cancel: () => {} });
-  pointer.current = { move: onPointerMove, up: () => drag && commit(drag), cancel: () => cancel() };
+  const pointer = useLatestRef({ move: onPointerMove, up: () => drag && commit(drag), cancel: () => cancel() });
   const pointerDragging = drag?.via === "pointer";
   useEffect(() => {
     if (!pointerDragging) return;
@@ -229,7 +229,7 @@ export function KanbanBoard<T>({
       window.removeEventListener("pointerup", up);
       window.removeEventListener("pointercancel", cancelDrag);
     };
-  }, [pointerDragging]);
+  }, [pointerDragging, pointer]);
 
   return (
     <>

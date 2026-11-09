@@ -247,6 +247,7 @@ function IconExplorer() {
 
       <div className="flex flex-col @min-[40rem]:grid @min-[40rem]:grid-cols-[minmax(0,1fr)_18rem]">
         {/* Grid */}
+        {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions -- arrow keys from the icon buttons bubble here for grid navigation */}
         <div className="min-w-0 p-3 sm:p-4" ref={gridRef} onKeyDown={onGridKeyDown}>
           <p aria-live="polite" className="mb-3 text-xs text-foreground-muted">
             {visible.length === iconCatalog.length ? `${visible.length} icons` : `${visible.length} of ${iconCatalog.length} icons`}

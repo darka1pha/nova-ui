@@ -7,6 +7,8 @@ function setRef<T>(ref: Ref<T> | undefined, value: T | null) {
 
 /** Merges several refs into one callback ref. */
 export function useComposedRefs<T>(...refs: (Ref<T> | undefined)[]): RefCallback<T> {
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // The refs themselves are the dependencies (a variable-length list), so the
+  // callback only changes when one of them does. Same approach as Radix.
+  // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
   return useCallback((node: T | null) => refs.forEach((ref) => setRef(ref, node)), refs);
 }
