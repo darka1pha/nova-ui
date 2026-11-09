@@ -27,8 +27,9 @@ describe("Combobox loadOptions", () => {
     expect(loadOptions).toHaveBeenNthCalledWith(1, "", expect.any(AbortSignal));
 
     await userEvent.keyboard("shi");
-    await waitFor(() => expect(screen.queryByRole("option", { name: "Tehran" })).not.toBeInTheDocument());
-    expect(screen.getByRole("option", { name: "Shiraz" })).toBeInTheDocument();
+    // Wait for the results themselves: options also disappear while the query is loading.
+    expect(await screen.findByRole("option", { name: "Shiraz" })).toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: "Tehran" })).not.toBeInTheDocument();
     // Earlier queries were superseded; the last one ran with the full text.
     expect(loadOptions).toHaveBeenLastCalledWith("shi", expect.any(AbortSignal));
     expect(signals.slice(0, -1).every((s) => s.aborted)).toBe(true);
