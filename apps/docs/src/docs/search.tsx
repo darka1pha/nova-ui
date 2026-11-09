@@ -1,6 +1,6 @@
-import { CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandPalette, CommandShortcut, Kbd } from "@darkalpha/nova-ui";
-import { Blocks, FileText, Search, SlidersHorizontal } from "lucide-react";
-import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandPalette } from "@darkalpha/nova-ui";
+import { Blocks, FileText, SlidersHorizontal } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import type { ApiData } from "../../scripts/api-types.ts";
 import { nav } from "../pages/index.tsx";
 import { navigate } from "./kit.tsx";
@@ -72,19 +72,6 @@ function score(entry: Entry, words: string[]): number {
 
 const LIMITS = { page: 8, component: 12, prop: 20 } as const;
 const startHere = staticEntries.filter((e) => ["installation", "getting-started", "theming", "playground", "forms-validation"].includes(e.route));
-
-export function useSearchShortcut(setOpen: (open: boolean | ((o: boolean) => boolean)) => void) {
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
-        e.preventDefault();
-        setOpen((o) => !o);
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [setOpen]);
-}
 
 export function SearchPalette({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
   const [query, setQuery] = useState("");
@@ -166,26 +153,5 @@ export function SearchPalette({ open, onOpenChange }: { open: boolean; onOpenCha
         )}
       </CommandList>
     </CommandPalette>
-  );
-}
-
-const noopSubscribe = () => () => {};
-
-/** The header button that opens the palette, showing the shortcut. */
-export function SearchButton({ onClick }: { onClick: () => void }) {
-  const mac = useSyncExternalStore(noopSubscribe, () => /Mac|iPhone|iPad/.test(navigator.platform), () => false);
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-keyshortcuts="Control+K Meta+K"
-      className="flex h-8 items-center gap-2 rounded-md border border-border bg-surface px-2.5 text-sm text-foreground-muted transition-colors hover:bg-surface-hover hover:text-foreground focus-visible:outline-2 focus-visible:outline-focus-ring max-sm:w-8 max-sm:justify-center max-sm:px-0"
-    >
-      <Search aria-hidden className="size-4" />
-      <span className="max-sm:sr-only">Search</span>
-      <CommandShortcut className="ms-3 max-md:hidden">
-        <Kbd>{mac ? "⌘" : "Ctrl"}</Kbd> <Kbd>K</Kbd>
-      </CommandShortcut>
-    </button>
   );
 }

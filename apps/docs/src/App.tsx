@@ -24,9 +24,12 @@ import {
   type ModePreference,
 } from "@darkalpha/nova-ui";
 import { ChevronRight, GitPullRequest, Languages, Menu, Monitor, Moon, SearchX, Sun } from "lucide-react";
-import { Suspense, useEffect, useState, type ReactNode } from "react";
+import { lazy, Suspense, useCallback, useEffect, useState, type ReactNode } from "react";
 import { releaseLabel, to, useLinkInterception, useRoute } from "./docs/kit.tsx";
-import { SearchButton, SearchPalette, useSearchShortcut } from "./docs/search.tsx";
+import { SearchButton, useSearchShortcut } from "./docs/search-button.tsx";
+
+// The palette (cmdk and the search index) loads the first time it's opened.
+const SearchPalette = lazy(() => import("./docs/search.tsx").then((m) => ({ default: m.SearchPalette })));
 import { nav, resolveRoute, routeLabel, type NavItem } from "./pages/index.tsx";
 
 function Logo() {
@@ -148,7 +151,13 @@ function ModeSwitch() {
 function Shell({ theme, setTheme, dir, setDir, children }: { theme: string; setTheme: (t: string) => void; dir: "ltr" | "rtl"; setDir: (d: "ltr" | "rtl") => void; children: ReactNode }) {
   const route = useRoute();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchOpen, setSearchOpenState] = useState(false);
+  // Mount the palette only once it has been asked for, then keep it (for its close animation).
+  const [searchUsed, setSearchUsed] = useState(false);
+  const setSearchOpen = useCallback((next: boolean | ((open: boolean) => boolean)) => {
+    setSearchUsed(true);
+    setSearchOpenState(next);
+  }, []);
   useSearchShortcut(setSearchOpen);
   useLinkInterception();
   useEffect(() => {
@@ -225,7 +234,11 @@ function Shell({ theme, setTheme, dir, setDir, children }: { theme: string; setT
         </main>
       </div>
 
-      <SearchPalette open={searchOpen} onOpenChange={setSearchOpen} />
+      {searchUsed ? (
+        <Suspense fallback={null}>
+          <SearchPalette open={searchOpen} onOpenChange={setSearchOpen} />
+        </Suspense>
+      ) : null}
       <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
         <SheetContent side="start" className="w-72 p-4">
           <SheetTitle className="sr-only">Navigation</SheetTitle>

@@ -15,8 +15,9 @@ import {
   type IconVariant,
 } from "@darkalpha/nova-ui/icons";
 import { iconCatalog, iconCategories, type IconEntry } from "@darkalpha/nova-ui/icons/catalog";
-import { createElement, useDeferredValue, useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
-import { renderToStaticMarkup } from "react-dom/server";
+import { createElement, useDeferredValue, useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactElement } from "react";
+import { flushSync } from "react-dom";
+import { createRoot } from "react-dom/client";
 import { ApiSection } from "../docs/api.tsx";
 import { CodeBlock, Example, Page, Prose, Section } from "../docs/kit.tsx";
 
@@ -49,8 +50,22 @@ function matches(query: string): IconEntry[] {
   return index.filter(({ text }) => words.every((w) => text.includes(w))).map(({ entry }) => entry);
 }
 
+/**
+ * The icon's SVG source. Rendered into a detached element with the client
+ * renderer the page already has, rather than pulling react-dom/server (~190 kB)
+ * into the bundle for one button.
+ */
+function renderToMarkup(element: ReactElement) {
+  const host = document.createElement("div");
+  const root = createRoot(host);
+  flushSync(() => root.render(element));
+  const html = host.innerHTML;
+  root.unmount();
+  return html;
+}
+
 function svgMarkup(Icon: IconComponent, variant: IconVariant, strokeWidth: number) {
-  return renderToStaticMarkup(createElement(Icon, { variant, strokeWidth, "aria-hidden": undefined, focusable: undefined }))
+  return renderToMarkup(createElement(Icon, { variant, strokeWidth, "aria-hidden": undefined, focusable: undefined }))
     .replace(/ (class|data-variant|focusable|aria-hidden)="[^"]*"/g, "");
 }
 

@@ -83,9 +83,10 @@ Every docs bug fixed above was visible in the browser but invisible to the test 
 
 ## P3: docs site
 
-1. **Bundle size.** The entry chunk is 275 kB, `icons` 230 kB, `components` 212 kB and
-   `surfaces` 201 kB (minified). Split `components.tsx` per page, load the icon catalog
-   on demand, and lazy-load the template preview's heavy sections.
+1. ~~**Bundle size.**~~ Done: component pages load only their own props (about 1 kB per
+   export instead of the 246 kB API file), the icons page dropped `react-dom/server` (229 →
+   28 kB), and search loads on first use. Pages were already split per route. The entry is
+   304 kB, 199 kB of it `react-dom`; `surfaces` (212 kB) is the shared Nova UI chunk.
 2. ~~**Path-based routing with prerendering**~~ Done: routes are paths (`/components/button#api`)
    under `DOCS_BASE`, and `pnpm build:docs` prerenders all of them to static HTML (plus a
    `404.html` for GitHub Pages), which the client hydrates. Old `#/…` links redirect.
