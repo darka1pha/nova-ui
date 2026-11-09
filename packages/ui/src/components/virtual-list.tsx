@@ -129,6 +129,7 @@ export function VirtualList<T>({
     <div
       ref={viewport}
       // A scrollable region must be reachable by keyboard so it can be scrolled with arrow keys.
+      // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- a scrollable region must be focusable so keyboard users can scroll it
       tabIndex={0}
       onScroll={(e) => setScrollTop(e.currentTarget.scrollTop)}
       style={{ height }}

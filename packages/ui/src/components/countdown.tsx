@@ -4,6 +4,7 @@ import { forwardRef, useEffect, useMemo, useRef, useState, useSyncExternalStore,
 import { useLocale } from "../theme/theme-provider.tsx";
 import { cn } from "../utils/cn.ts";
 import { devWarn } from "../utils/dev.ts";
+import { useLatestRef } from "../utils/use-latest-ref.ts";
 
 /* --------------------------------------------------------------- Countdown */
 
@@ -64,18 +65,18 @@ export const Countdown = forwardRef<HTMLSpanElement, CountdownProps>(function Co
     if (invalid) devWarn(`Countdown: "${String(to)}" is not a valid date; nothing is rendered.`);
   }, [invalid, to]);
   const hydrated = useHydrated();
-  const [now, setNow] = useState(() => initialNow ?? Date.now());
-  // The server's clock (or a hydration-time snapshot) is stale once mounted.
-  useEffect(() => setNow(Date.now()), []);
+  // The client's clock, read when this mounts and on every tick.
+  const [clientNow, setNow] = useState(() => Date.now());
   // Server and hydration renders must produce identical markup: either the
   // caller-supplied clock or placeholders, never the machine's own clock.
+  // Once hydrated, the server's clock is stale, so switch to the client's.
+  const now = hydrated || initialNow === undefined ? clientNow : initialNow;
   const placeholder = !hydrated && initialNow === undefined;
   const remaining = Math.max(0, target - now);
   const done = remaining <= 0;
   const step = showSeconds ? MS.second : MS.minute;
   const fired = useRef(false);
-  const onCompleteRef = useRef(onComplete);
-  onCompleteRef.current = onComplete;
+  const onCompleteRef = useLatestRef(onComplete);
 
   useEffect(() => {
     fired.current = false;
@@ -93,12 +94,7 @@ export const Countdown = forwardRef<HTMLSpanElement, CountdownProps>(function Co
     // Tick just after the shown value changes, not on a drifting interval.
     const id = setTimeout(() => setNow(Date.now()), (remaining % step || step) + 15);
     return () => clearTimeout(id);
-  }, [now, done, remaining, step, invalid]);
-
-  // Round up, like any countdown: 1:02 stays on screen until a full second has passed.
-  const parts = splitDuration(Math.ceil(remaining / step) * step);
-  const shown = UNITS.filter((u) => (u === "day" ? parts.day > 0 && !placeholder : u === "second" ? showSeconds : true));
-  const digitsOf = (unit: Unit) => (placeholder ? "--" : unit === "day" && variant === "inline" ? String(parts.day) : format.digits.format(parts[unit]));
+  }, [now, done, remaining, step, invalid, onCompleteRef]);
 
   // Formatters are built once per locale, not on every tick.
   const format = useMemo(() => {
@@ -116,6 +112,12 @@ export const Countdown = forwardRef<HTMLSpanElement, CountdownProps>(function Co
     const list = new Intl.ListFormat(locale, { type: "unit", style: "long" });
     return { unitText, full, digits, list };
   }, [locale]);
+
+  // Round up, like any countdown: 1:02 stays on screen until a full second has passed.
+  const parts = splitDuration(Math.ceil(remaining / step) * step);
+  const shown = UNITS.filter((u) => (u === "day" ? parts.day > 0 && !placeholder : u === "second" ? showSeconds : true));
+  const digitsOf = (unit: Unit) => (placeholder ? "--" : unit === "day" && variant === "inline" ? String(parts.day) : format.digits.format(parts[unit]));
+
 
   // Minute precision for the spoken label: "2 days, 4 hours, 9 minutes".
   const spokenUnits = UNITS.filter((u) => u !== "second" && (u !== "day" || parts.day > 0));

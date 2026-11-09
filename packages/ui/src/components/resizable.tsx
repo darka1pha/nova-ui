@@ -339,6 +339,7 @@ export const ResizableHandle = forwardRef<HTMLDivElement, ResizableHandleProps>(
   };
 
   return (
+    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- a focusable separator is a widget (WAI-ARIA window splitter pattern)
     <div
       ref={ref}
       role="separator"

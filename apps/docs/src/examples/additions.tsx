@@ -210,7 +210,7 @@ function activity(end: Date) {
 }
 
 export function DescriptionListExamples() {
-  const now = useMemo(() => Date.now(), []);
+  const [now] = useState(() => Date.now());
   return (
     <Example
       title="DescriptionList"
@@ -252,7 +252,7 @@ export function DescriptionListExamples() {
 }
 
 export function RelativeTimeExamples() {
-  const now = useMemo(() => Date.now(), []);
+  const [now] = useState(() => Date.now());
   return (
     <Example
       title="RelativeTime"

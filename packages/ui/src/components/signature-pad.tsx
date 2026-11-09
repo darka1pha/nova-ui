@@ -187,6 +187,7 @@ export const SignaturePad = forwardRef<SignaturePadApi, SignaturePadProps>(funct
     <div className={cn("flex flex-col gap-2", className)} {...props}>
       {name ? <input type="hidden" name={name} value={dataUrl} disabled={field.disabled} /> : null}
       <div className="relative">
+        {/* eslint-disable-next-line jsx-a11y/role-supports-aria-props -- aria-invalid is the field's styling hook; the error is announced through aria-describedby */}
         <canvas
           ref={canvas}
           id={mode === "draw" ? field.id : undefined}

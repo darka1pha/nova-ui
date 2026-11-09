@@ -602,6 +602,7 @@ export const Carousel = forwardRef<HTMLElement, CarouselProps>(function Carousel
         <div
           ref={track}
           // Focusable so keyboard users can scroll it with the arrow keys.
+          // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- a scrollable region must be focusable so keyboard users can scroll it
           tabIndex={0}
           aria-live={rotates && !paused ? "off" : "polite"}
           className={cn("flex snap-x snap-mandatory overflow-x-auto scroll-smooth rounded-lg [scrollbar-width:none] motion-reduce:scroll-auto [&::-webkit-scrollbar]:hidden", focusRing)}

@@ -87,6 +87,7 @@ import {
 import { useLocale } from "../theme/theme-provider.tsx";
 import { cn } from "../utils/cn.ts";
 import { devWarn } from "../utils/dev.ts";
+import { useIsomorphicLayoutEffect, useLatestRef } from "../utils/use-latest-ref.ts";
 import { Button } from "./button.tsx";
 import { toggleVariants } from "./button.tsx";
 import { useFormField, useFormFieldContext } from "./field.tsx";
@@ -632,13 +633,12 @@ export const RichTextEditor = forwardRef<HTMLDivElement, RichTextEditorProps>(fu
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Latest values for callbacks that the editor captured at creation.
-  const latest = useRef({ onChange, onImageUpload, onImageUploadError, placeholder, labels, onFocus, onBlur, name });
-  latest.current = { onChange, onImageUpload, onImageUploadError, placeholder, labels, onFocus, onBlur, name };
+  const latestRef = useLatestRef({ onChange, onImageUpload, onImageUploadError, placeholder, labels, onFocus, onBlur, name });
   const openLinkRef = useRef<() => void>(() => {});
   const editorInstance = useRef<Editor | null>(null);
 
   const uploadFiles = useCallback(async (files: File[], pos?: number) => {
-    const upload = latest.current.onImageUpload;
+    const upload = latestRef.current.onImageUpload;
     const editor = editorInstance.current;
     if (!upload || !editor) return;
     for (const file of files.filter((f) => f.type.startsWith("image/"))) {
@@ -651,20 +651,19 @@ export const RichTextEditor = forwardRef<HTMLDivElement, RichTextEditorProps>(fu
         else chain.setImage({ src, alt: file.name.replace(/\.[^.]+$/, "") });
         chain.run();
       } catch (error) {
-        if (latest.current.onImageUploadError) latest.current.onImageUploadError(error, file);
+        if (latestRef.current.onImageUploadError) latestRef.current.onImageUploadError(error, file);
         else devWarn(`RichTextEditor: image upload failed (${String(error)}). Pass onImageUploadError to handle it.`);
       } finally {
         setUploading((n) => n - 1);
       }
     }
-  }, []);
+  }, [latestRef]);
 
   const pickImage = useCallback(() => fileInputRef.current?.click(), []);
   const hasUpload = !!onImageUpload;
 
   const slashEnabled = slashCommands !== false;
-  const slashItemsRef = useRef<RichTextSlashCommand[]>([]);
-  slashItemsRef.current = Array.isArray(slashCommands) ? slashCommands : defaultSlashCommands(labels, hasUpload ? pickImage : null);
+  const slashSource = useLatestRef({ slashCommands, labels, hasUpload });
 
   const extensions = useMemo<Extensions>(() => {
     const list: Extensions = [
@@ -691,12 +690,14 @@ export const RichTextEditor = forwardRef<HTMLDivElement, RichTextEditorProps>(fu
       Image.configure({ allowBase64: true, resize: { enabled: true, alwaysPreserveAspectRatio: true, minWidth: 48, minHeight: 48 } }),
       Typography,
       Selection,
+      // Tiptap calls these callbacks after mount, never during render, so reading refs in them is safe.
+      // eslint-disable-next-line react-hooks/refs
       Placeholder.configure({
         includeChildren: false,
         placeholder: ({ editor, node }) => {
-          if (editor.isEmpty) return latest.current.placeholder ?? "";
-          if (node.type.name === "heading") return latest.current.labels.heading(node.attrs.level as number);
-          if (node.type.name === "paragraph" && slashEnabled) return latest.current.labels.slashHint;
+          if (editor.isEmpty) return latestRef.current.placeholder ?? "";
+          if (node.type.name === "heading") return latestRef.current.labels.heading(node.attrs.level as number);
+          if (node.type.name === "paragraph" && slashEnabled) return latestRef.current.labels.slashHint;
           return "";
         },
       }),
@@ -742,6 +743,8 @@ export const RichTextEditor = forwardRef<HTMLDivElement, RichTextEditorProps>(fu
     ];
     if (slashEnabled) {
       list.push(
+        // As above: the plugin's callbacks run after mount, not during render.
+        // eslint-disable-next-line react-hooks/refs
         Extension.create({
           name: "nvSlashCommand",
           addProseMirrorPlugins() {
@@ -750,7 +753,11 @@ export const RichTextEditor = forwardRef<HTMLDivElement, RichTextEditorProps>(fu
                 editor: this.editor,
                 char: "/",
                 allow: ({ state }) => !state.selection.$from.parent.type.spec.code,
-                items: ({ query }) => filterCommands(slashItemsRef.current, query).slice(0, 12),
+                items: ({ query }) => {
+                  const { slashCommands: custom, labels: l, hasUpload: upload } = slashSource.current;
+                  const all = Array.isArray(custom) ? custom : defaultSlashCommands(l, upload ? pickImage : null);
+                  return filterCommands(all, query).slice(0, 12);
+                },
                 command: ({ editor, range, props: item }) => item.run(editor, range),
                 render: () => {
                   const open = (p: SuggestionProps<RichTextSlashCommand, RichTextSlashCommand>) => {
@@ -806,29 +813,29 @@ export const RichTextEditor = forwardRef<HTMLDivElement, RichTextEditorProps>(fu
       editorProps: {
         handlePaste: (_view, event) => {
           const files = Array.from(event.clipboardData?.files ?? []).filter((f) => f.type.startsWith("image/"));
-          if (!files.length || !latest.current.onImageUpload) return false;
+          if (!files.length || !latestRef.current.onImageUpload) return false;
           void uploadFiles(files);
           return true;
         },
         handleDrop: (view, event, _slice, moved) => {
           if (moved) return false;
           const files = Array.from(event.dataTransfer?.files ?? []).filter((f) => f.type.startsWith("image/"));
-          if (!files.length || !latest.current.onImageUpload) return false;
+          if (!files.length || !latestRef.current.onImageUpload) return false;
           const pos = view.posAtCoords({ left: event.clientX, top: event.clientY })?.pos;
           void uploadFiles(files, pos);
           return true;
         },
       },
       onCreate: ({ editor }) => {
-        if (latest.current.name) setHtml(editor.isEmpty ? "" : editor.getHTML());
+        if (latestRef.current.name) setHtml(editor.isEmpty ? "" : editor.getHTML());
       },
       onUpdate: ({ editor }) => {
         const out = editor.isEmpty ? "" : editor.getHTML();
-        if (latest.current.name) setHtml(out);
-        latest.current.onChange?.(out, editor);
+        if (latestRef.current.name) setHtml(out);
+        latestRef.current.onChange?.(out, editor);
       },
-      onFocus: () => latest.current.onFocus?.(),
-      onBlur: () => latest.current.onBlur?.(),
+      onFocus: () => latestRef.current.onFocus?.(),
+      onBlur: () => latestRef.current.onBlur?.(),
     },
     [extensions],
   );
@@ -847,8 +854,9 @@ export const RichTextEditor = forwardRef<HTMLDivElement, RichTextEditorProps>(fu
       if (value === current || (value === "" && editor.isEmpty)) return;
     } else if (JSON.stringify(value) === JSON.stringify(editor.getJSON())) return;
     editor.commands.setContent(value, { emitUpdate: false });
-    if (latest.current.name) setHtml(editor.isEmpty ? "" : editor.getHTML());
-  }, [editor, value]);
+    // The hidden form input mirrors the editor's new content.
+    if (latestRef.current.name) setHtml(editor.isEmpty ? "" : editor.getHTML());
+  }, [editor, value, latestRef]);
 
   useEffect(() => {
     if (editor && !editor.isDestroyed && editor.isEditable !== editable) editor.setEditable(editable, false);
@@ -892,7 +900,9 @@ export const RichTextEditor = forwardRef<HTMLDivElement, RichTextEditorProps>(fu
     }
     setLinkOpen(true);
   }, []);
-  openLinkRef.current = openLinkEditor;
+  useIsomorphicLayoutEffect(() => {
+    openLinkRef.current = openLinkEditor;
+  }, [openLinkEditor]);
 
   useEffect(() => {
     if (!fullscreen) return;
@@ -908,6 +918,7 @@ export const RichTextEditor = forwardRef<HTMLDivElement, RichTextEditorProps>(fu
   const counting = showCount ?? (editable || maxLength !== undefined);
 
   return (
+    // eslint-disable-next-line jsx-a11y/no-static-element-interactions -- keyboard shortcuts from inside the editor bubble here
     <div
       ref={(node) => {
         rootRef.current = node;
@@ -956,6 +967,7 @@ export const RichTextEditor = forwardRef<HTMLDivElement, RichTextEditorProps>(fu
         />
       )}
 
+      {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions -- clicking empty space focuses the editor; keyboard users tab into it */}
       <div
         className={cn("nv-rte-content min-h-0 flex-1 overflow-y-auto px-4 py-3", disabled && "pointer-events-none", contentClassName)}
         data-editable={editable}
@@ -1504,6 +1516,7 @@ function TablePicker({ editor, labels: l, disabled }: { editor: Editor | null; l
         </PopoverTrigger>
       </Tooltip>
       <PopoverContent align="start" className="w-auto p-2.5" onCloseAutoFocus={(e) => e.preventDefault()}>
+        {/* eslint-disable-next-line jsx-a11y/interactive-supports-focus -- the grid's cells carry the roving tabindex, not the grid itself */}
         <div ref={gridRef} role="grid" aria-label={l.table} className="grid gap-1" style={{ gridTemplateColumns: `repeat(${size}, 1fr)` }} onKeyDown={move}>
           {Array.from({ length: size * size }, (_, i) => {
             const r = Math.floor(i / size) + 1;
@@ -1622,7 +1635,7 @@ function ImagePopover({ editor, labels: l, disabled, onPickImage, uploading }: {
       </Tooltip>
       <PopoverContent align="start" className="w-80 p-3" onCloseAutoFocus={(e) => e.preventDefault()}>
         <form className="flex flex-col gap-2" onSubmit={submit}>
-          <Input size="sm" type="url" dir="ltr" inputMode="url" placeholder="https://" aria-label={l.imageUrl} value={src} onChange={(e) => setSrc(e.target.value)} autoFocus />
+          <Input size="sm" type="url" dir="ltr" inputMode="url" placeholder="https://" aria-label={l.imageUrl} value={src} onChange={(e) => setSrc(e.target.value)} />
           <Input size="sm" placeholder={l.imageAlt} aria-label={l.imageAlt} value={alt} onChange={(e) => setAlt(e.target.value)} />
           <div className="flex items-center justify-between gap-2">
             {onPickImage ? (
@@ -1652,13 +1665,16 @@ function ImagePopover({ editor, labels: l, disabled, onPickImage, uploading }: {
 }
 
 function LinkEditor({ editor, labels: l, open, onOpenChange, anchorStyle }: { editor: Editor; labels: RichTextEditorLabels; open: boolean; onOpenChange: (open: boolean) => void; anchorStyle: CSSProperties }) {
-  const [href, setHref] = useState("");
   const current = open ? ((editor.getAttributes("link").href as string | undefined) ?? "") : "";
+  const [href, setHref] = useState(current);
   // Content can come from saved HTML: never hand an unsafe stored href to the "open" button.
   const openHref = current ? normalizeUrl(current) : "";
-  useEffect(() => {
-    if (open) setHref((editor.getAttributes("link").href as string | undefined) ?? "");
-  }, [open, editor]);
+  // Start from the link under the selection each time the editor opens.
+  const [prevOpen, setPrevOpen] = useState(open);
+  if (open !== prevOpen) {
+    setPrevOpen(open);
+    if (open) setHref(current);
+  }
   const apply = (e: FormEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -1687,7 +1703,6 @@ function LinkEditor({ editor, labels: l, open, onOpenChange, anchorStyle }: { ed
             aria-label={l.linkUrl}
             value={href}
             onChange={(e) => setHref(e.target.value)}
-            autoFocus
             className="flex-1"
           />
           <Button type="submit" size="sm" aria-label={l.linkApply}>
@@ -1782,6 +1797,7 @@ function SlashMenu({ state, labels: l, idPrefix, dir, onHover }: { state: SlashS
   };
   return (
     <Portal>
+      {/* eslint-disable-next-line jsx-a11y/interactive-supports-focus -- focus stays in the editor, which drives this listbox through aria-activedescendant */}
       <div
         ref={listRef}
         id={`${idPrefix}-commands`}
@@ -1799,6 +1815,7 @@ function SlashMenu({ state, labels: l, idPrefix, dir, onHover }: { state: SlashS
           state.items.map((item, i) => {
             const Icon = item.icon ?? Pilcrow;
             return (
+              // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/interactive-supports-focus -- focus stays in the editor, which drives this listbox through aria-activedescendant
               <div
                 key={item.id}
                 id={`${idPrefix}-cmd-${item.id}`}

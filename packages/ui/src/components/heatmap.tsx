@@ -151,6 +151,7 @@ export function CalendarHeatmap({
               </span>
             ))}
           </div>
+          {/* eslint-disable-next-line jsx-a11y/interactive-supports-focus -- the grid's cells carry the roving tabindex, not the grid itself */}
           <div ref={grid} role="grid" aria-label={ariaLabel} onKeyDown={onKeyDown} className="flex flex-col gap-[3px]">
             {weekdays.map((weekday, r) => (
               <div key={r} role="row" className="flex items-center gap-[3px]">

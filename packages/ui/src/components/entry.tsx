@@ -200,6 +200,7 @@ export const TagInput = forwardRef<HTMLDivElement, TagInputProps>(function TagIn
   };
 
   return (
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- clicking the padding focuses the input; keyboard users focus the input directly
     <div
       ref={ref}
       onClick={() => inputRef.current?.focus()}

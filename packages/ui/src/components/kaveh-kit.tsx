@@ -522,6 +522,7 @@ export const KavehTimeline = forwardRef<HTMLOListElement, KavehTimelineProps>(fu
     <ol
       ref={ref}
       // A horizontal timeline scrolls sideways: it must be focusable so keyboard users can scroll it (WCAG 2.1.1).
+      // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- a scrollable region must be focusable so keyboard users can scroll it
       tabIndex={horizontal ? 0 : undefined}
       className={cn("nv-kaveh-timeline", horizontal ? cn("flex gap-6 overflow-x-auto pb-2 rounded-sm", focusRing) : "flex flex-col", className)}
       {...props}

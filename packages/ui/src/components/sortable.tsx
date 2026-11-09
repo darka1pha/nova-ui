@@ -1,7 +1,7 @@
 "use client";
 
 import { GripVertical } from "lucide-react";
-import { useId, useLayoutEffect, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from "react";
+import { useId, useLayoutEffect, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode, type RefObject } from "react";
 import { cn } from "../utils/cn.ts";
 import { focusRing, transition } from "./shared.ts";
 
@@ -63,7 +63,7 @@ const move = <T,>(list: readonly T[], from: number, to: number) => {
  * is on screen. Timing follows the theme's motion tokens, read from `list`'s
  * computed animation duration and easing, so reduced motion turns it off.
  */
-function useReorderAnimation(list: HTMLElement | null, rows: Map<string | number, HTMLElement>, order: string) {
+function useReorderAnimation(list: HTMLElement | null, rowsRef: RefObject<Map<string | number, HTMLElement>>, order: string) {
   // Layout offsets from the list's corner: page scrolling and the picked-up row's scale don't count as movement.
   const layout = useRef(new Map<string | number, { x: number; y: number }>());
   useLayoutEffect(() => {
@@ -72,7 +72,7 @@ function useReorderAnimation(list: HTMLElement | null, rows: Map<string | number
     const duration = parseFloat(style.animationDuration) * (style.animationDuration.endsWith("ms") ? 1 : 1000);
     const animate = duration >= 1 && typeof Element.prototype.animate === "function";
     const next = new Map<string | number, { x: number; y: number }>();
-    rows.forEach((row, key) => {
+    rowsRef.current.forEach((row, key) => {
       const visual = row.getBoundingClientRect();
       row.getAnimations?.().forEach((a) => {
         if (a.id === "nv-reorder") a.cancel();
@@ -118,7 +118,7 @@ export function SortableList<T>({ items, getKey, getLabel, onReorder, renderItem
   const instructionsId = useId();
   const [list, setList] = useState<HTMLUListElement | null>(null);
   const shown = drag ? move(items, drag.from, drag.to) : items;
-  useReorderAnimation(list, rows.current, JSON.stringify(shown.map(getKey)));
+  useReorderAnimation(list, rows, JSON.stringify(shown.map(getKey)));
   const total = items.length;
   const labelAt = (index: number) => getLabel(items[index] as T);
 

@@ -21,7 +21,7 @@ import {
   type UploadItem,
 } from "@darkalpha/nova-ui";
 import { Plus, Trash2 } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Example } from "../docs/kit.tsx";
 
 /* ------------------------------------------------------------------- Forms */
@@ -144,8 +144,8 @@ export function GaugeExamples() {
 }
 
 export function CountdownExamples() {
-  const launch = useMemo(() => Date.now() + ((3 * 24 + 5) * 60 + 42) * 60_000 + 18_000, []);
-  const soon = useMemo(() => Date.now() + 12_000, []);
+  const [launch] = useState(() => Date.now() + ((3 * 24 + 5) * 60 + 42) * 60_000 + 18_000);
+  const [soon] = useState(() => Date.now() + 12_000);
   const [fired, setFired] = useState(false);
   return (
     <Example
