@@ -848,6 +848,15 @@ export function BadgeExamples() {
 
 export function ToastExamples() {
   return (
+    <>
+      <ToastBasicExample />
+      <ToastPromiseExamples />
+    </>
+  );
+}
+
+function ToastBasicExample() {
+  return (
     <Example
       title="Toast"
       description="Call toast() from anywhere. Mount <Toaster /> once inside your ThemeProvider."
@@ -864,6 +873,59 @@ toast.error("Upload failed", { action: { label: "Retry", altText: "Retry upload"
         Error with action
       </Button>
     </Example>
+  );
+}
+
+// Settles after a moment; every third call fails, so both outcomes are easy to see.
+let demoSaves = 0;
+const fakeSave = () =>
+  new Promise<{ name: string }>((resolve, reject) => {
+    const fail = ++demoSaves % 3 === 0;
+    setTimeout(() => (fail ? reject(new Error("The server took too long to respond.")) : resolve({ name: "Q3 report" })), 1800);
+  });
+
+function ToastPromiseExamples() {
+  return (
+    <>
+      <Example
+        title="Promise"
+        description="toast.promise() shows a spinner while the work runs, then turns the same toast into a success or error. It returns your promise, so you can still await the value or catch the error. Try it a few times: every third save fails."
+        code={`await toast.promise(saveReport(), {
+  loading: "Saving report…",
+  success: (report) => \`Saved "\${report.name}"\`,
+  error: (e) => ({ title: "Couldn't save", description: e.message }),
+});`}
+      >
+        <Button
+          variant="outline"
+          onClick={() =>
+            toast
+              .promise(fakeSave, {
+                loading: "Saving report…",
+                success: (report) => `Saved “${report.name}”`,
+                error: (e) => ({ title: "Couldn't save", description: (e as Error).message }),
+              })
+              .catch(() => {})
+          }
+        >
+          Save with a promise
+        </Button>
+      </Example>
+      <Example
+        title="Limit and dismiss callback"
+        description="<Toaster max> sets how many toasts can be open at once (default 5); the oldest close to make room. onDismiss runs once however a toast closes: its timer, the close button, a swipe, toast.dismiss(), or the limit."
+        code={`<Toaster max={3} />
+
+toast("Draft deleted", {
+  action: { label: "Undo", altText: "Undo deleting the draft", onClick: restore },
+  onDismiss: () => purgeDraft(),
+});`}
+      >
+        <Button variant="outline" onClick={() => toast("Draft deleted", { action: { label: "Undo", altText: "Undo deleting the draft", onClick: () => toast.info("Draft restored") }, onDismiss: () => toast.info("Draft removed for good") })}>
+          Delete with undo
+        </Button>
+      </Example>
+    </>
   );
 }
 
