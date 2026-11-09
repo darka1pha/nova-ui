@@ -4,6 +4,8 @@ export {
   useOptionalTheme,
   useSystemDarkMode,
   useLocale,
+  useThemeVariables,
+  type ThemeVariables,
   calendarForLocale,
   type CalendarSystemName,
   densityFactor,

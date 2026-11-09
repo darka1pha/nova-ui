@@ -312,6 +312,6 @@ Fix: use `workspace:` / `link:` deps (add `examples/*` to the workspace), or doc
 | --- | --- |
 | P0.2 Toast swipe for centered positions | Fixed (M-8) |
 | P0.3 React 18 CI job | Fixed (M-18) |
-| P2.1 `toast.promise`, `onDismiss`, `<Toaster max>` | Open (`MAX_OPEN = 5` is still fixed, `toast.tsx:37`) |
+| P2.1 `toast.promise`, `onDismiss`, `<Toaster max>` | Fixed (PR #16) |
 | P2.3 Carousel hover/focus pause | Fixed (H-2) |
-| P2.6 Cross-tab mode sync (`storage` event) | Open (no listener in `theme-provider.tsx`) |
+| P2.6 Cross-tab mode sync (`storage` event) | Fixed (`storage` listener in `ThemeProvider`) |

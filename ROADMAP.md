@@ -78,8 +78,8 @@ Every docs bug fixed above was visible in the browser but invisible to the test 
 4. **Data:** column virtualization and row selection for `Table`, built on `VirtualList`.
 5. **Forms:** `Combobox` with async search and creatable options; a `FileDrop` that pairs
    with `FileUploadList`.
-6. **Theming:** cross-tab sync of the stored mode (`storage` event in `ThemeProvider`) and a
-   `useThemeVariables()` hook for canvas and chart libraries that can't read CSS variables.
+6. ~~**Theming:**~~ Done: a provider with `storageKey` follows mode changes from other tabs
+   (`storage` event), and `useThemeVariables()` gives canvas and chart libraries plain colors.
 
 ## P3: docs site
 
