@@ -110,6 +110,14 @@ export { Popconfirm, type PopconfirmProps } from "./components/popconfirm.tsx";
 export { Countdown, Gauge, splitDuration, type CountdownProps, type GaugeProps } from "./components/countdown.tsx";
 export { TransferList, type TransferListProps, type TransferItem, type TransferListLabels } from "./components/transfer-list.tsx";
 export { FileUploadList, formatFileSize, type FileUploadListProps, type UploadItem, type UploadStatus, type FileUploadListLabels } from "./components/upload-list.tsx";
+export {
+  FileUploader,
+  useFileUploads,
+  type FileUploaderProps,
+  type FileUploads,
+  type UploadContext,
+  type UseFileUploadsOptions,
+} from "./components/file-uploader.tsx";
 // Chat
 export {
   MessageList,

@@ -76,8 +76,8 @@ Every docs bug fixed above was visible in the browser but invisible to the test 
 3. ~~**Carousel.**~~ Done in PR #7 (issues.md H-2). Originally: pausing on hover and on focus are tracked by one flag, so moving the pointer
    out while a slide button has focus resumes autoplay. Track the two separately.
 4. **Data:** column virtualization and row selection for `Table`, built on `VirtualList`.
-5. **Forms:** `Combobox` with async search and creatable options; a `FileDrop` that pairs
-   with `FileUploadList`.
+5. ~~**Forms:**~~ Done: `Combobox` `loadOptions` (async search) and `creatable`, and
+   `FileUploader` / `useFileUploads`, which pair `FileDropzone` with `FileUploadList`.
 6. **Theming:** cross-tab sync of the stored mode (`storage` event in `ThemeProvider`) and a
    `useThemeVariables()` hook for canvas and chart libraries that can't read CSS variables.
 

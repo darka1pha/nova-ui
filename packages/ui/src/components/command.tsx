@@ -1,15 +1,17 @@
 "use client";
 
 import { Command as CommandPrimitive } from "cmdk";
-import { Check, ChevronsUpDown, Search } from "lucide-react";
+import { Check, ChevronsUpDown, Plus, Search } from "lucide-react";
 import { Dialog as DialogPrimitive, VisuallyHidden as VisuallyHiddenPrimitive } from "radix-ui";
-import { forwardRef, useState, type ComponentPropsWithoutRef, type HTMLAttributes, type ReactNode } from "react";
+import { forwardRef, useEffect, useState, type ComponentPropsWithoutRef, type HTMLAttributes, type ReactNode } from "react";
 import { cn } from "../utils/cn.ts";
+import { useLatestRef } from "../utils/use-latest-ref.ts";
 import { useFormField } from "./field.tsx";
 import { fieldVariants } from "./input.tsx";
 import { Popover, PopoverContent, PopoverTrigger } from "./overlay.tsx";
 import { usePortalContainer } from "./portal.tsx";
 import { menuItem } from "./shared.ts";
+import { Spinner } from "./spinner.tsx";
 
 /* ----------------------------------------------------------------- Command */
 
@@ -116,8 +118,31 @@ export interface ComboboxOption {
 }
 
 export interface ComboboxProps {
-  /** The choices: `{ value, label, disabled? }`. */
-  options: ComboboxOption[];
+  /** The choices: `{ value, label, disabled? }`. With `loadOptions`, the ones shown until the first load finishes. */
+  options?: ComboboxOption[];
+  /**
+   * Fetch options as the user types, instead of filtering `options`. Called on
+   * open with "" and then (debounced) for each query. Abort your request when
+   * `signal` fires: a newer query or closing the list supersedes it.
+   */
+  loadOptions?: (query: string, signal: AbortSignal) => Promise<ComboboxOption[]> | ComboboxOption[];
+  /** Debounce for `loadOptions`, in ms. Default 250. */
+  debounceMs?: number;
+  /** Shown while `loadOptions` is pending. */
+  loadingMessage?: ReactNode;
+  /** Shown when `loadOptions` rejects. */
+  errorMessage?: ReactNode;
+  /**
+   * Offer a "Create …" item when the search doesn't exactly match an option.
+   * Choosing it calls `onCreate` with the text; if that returns an option (or a
+   * promise of one), its value is selected, otherwise the text itself is.
+   */
+  creatable?: boolean;
+  /** Called with the typed text when the create item is chosen. Return the new option, its value, or nothing to use the text. */
+  // eslint-disable-next-line @typescript-eslint/no-invalid-void-type -- a callback that returns nothing selects the typed text
+  onCreate?: (label: string) => ComboboxOption | string | void | Promise<ComboboxOption | string | void>;
+  /** Text of the create item. Default: `Create "query"`. */
+  formatCreateLabel?: (query: string) => ReactNode;
   value?: string | null;
   defaultValue?: string | null;
   onValueChange?: (value: string | null) => void;
@@ -145,10 +170,21 @@ export interface ComboboxProps {
   onBlur?: () => void;
 }
 
-/** A searchable single-select. Use Select when the list is short. */
+/**
+ * A searchable single-select. Use Select when the list is short. Pass
+ * `loadOptions` to search a server, and `creatable` to let people add a
+ * value that isn't in the list.
+ */
 export const Combobox = forwardRef<HTMLButtonElement, ComboboxProps>(function Combobox(
   {
-    options,
+    options: optionsProp = [],
+    loadOptions,
+    debounceMs = 250,
+    loadingMessage = "Loading…",
+    errorMessage = "Couldn't load options.",
+    creatable = false,
+    onCreate,
+    formatCreateLabel = (query) => `Create "${query}"`,
     value,
     defaultValue = null,
     onValueChange,
@@ -164,16 +200,70 @@ export const Combobox = forwardRef<HTMLButtonElement, ComboboxProps>(function Co
   },
   ref,
 ) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpenState] = useState(false);
   const [internal, setInternal] = useState<string | null>(defaultValue);
   const current = value !== undefined ? value : internal;
-  const selected = options.find((o) => o.value === current);
   const { disabled, required, ...fieldProps } = useFormField(rest);
+  const [search, setSearch] = useState("");
+  const async = loadOptions !== undefined;
+  const [loaded, setLoaded] = useState<ComboboxOption[] | null>(null);
+  const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
+  // Options from earlier loads or created here, so the trigger still shows the
+  // label of a value that isn't in the current results.
+  const [known, setKnown] = useState<Record<string, ComboboxOption>>({});
+  const options = async ? (loaded ?? optionsProp) : optionsProp;
+  const selected =
+    options.find((o) => o.value === current) ?? optionsProp.find((o) => o.value === current) ?? (current !== null ? known[current] : undefined);
+
+  const setOpen = (next: boolean) => {
+    setOpenState(next);
+    // Each opening starts from an empty search.
+    setSearch("");
+    if (next && async) setStatus("loading");
+  };
+
+  const loadRef = useLatestRef(loadOptions);
+  useEffect(() => {
+    const load = loadRef.current;
+    if (!open || !load) return;
+    const controller = new AbortController();
+    const run = async () => {
+      try {
+        const result = await load(search, controller.signal);
+        if (controller.signal.aborted) return;
+        setLoaded(result);
+        setKnown((prev) => ({ ...prev, ...Object.fromEntries(result.map((o) => [o.value, o])) }));
+        setStatus("idle");
+      } catch {
+        if (!controller.signal.aborted) setStatus("error");
+      }
+    };
+    const id = setTimeout(() => void run(), search === "" ? 0 : debounceMs);
+    return () => {
+      clearTimeout(id);
+      controller.abort();
+    };
+  }, [open, search, debounceMs, loadRef]);
 
   const choose = (next: string) => {
     const resolved = clearable && next === current ? null : next;
     if (value === undefined) setInternal(resolved);
     onValueChange?.(resolved);
+    setOpen(false);
+  };
+
+  const query = search.trim();
+  const lower = query.toLocaleLowerCase();
+  const canCreate = creatable && query !== "" && status !== "loading" && !options.some((o) => o.value === query || o.label.toLocaleLowerCase() === lower);
+  const create = async () => {
+    const result = await onCreate?.(query);
+    const option: ComboboxOption =
+      typeof result === "object" && result !== null
+        ? result
+        : { value: typeof result === "string" ? result : query, label: query };
+    setKnown((prev) => ({ ...prev, [option.value]: option }));
+    if (value === undefined) setInternal(option.value);
+    onValueChange?.(option.value);
     setOpen(false);
   };
 
@@ -208,12 +298,36 @@ export const Combobox = forwardRef<HTMLButtonElement, ComboboxProps>(function Co
           <ChevronsUpDown aria-hidden className="size-4 shrink-0 text-foreground-muted" />
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-(--radix-popover-trigger-width) min-w-56 p-0" align="start" sideOffset={6}>
-        <Command>
-          <CommandInput placeholder={searchPlaceholder} />
-          <CommandList>
-            <CommandEmpty>{emptyMessage}</CommandEmpty>
-            {options.map((option) => (
+      <PopoverContent
+        // The popup is a dialog; name it after the field so it isn't announced as an unnamed one.
+        aria-label={rest["aria-label"] ?? searchPlaceholder}
+        className="w-(--radix-popover-trigger-width) min-w-56 p-0"
+        align="start"
+        sideOffset={6}
+      >
+        <Command shouldFilter={!async}>
+          <CommandInput
+            placeholder={searchPlaceholder}
+            value={search}
+            onValueChange={(next) => {
+              setSearch(next);
+              if (async) setStatus("loading");
+            }}
+          />
+          <CommandList aria-busy={status === "loading" || undefined}>
+            {status === "loading" ? (
+              <CommandPrimitive.Loading className="flex items-center justify-center gap-2 py-6 text-sm text-foreground-muted">
+                <Spinner size="sm" label="" />
+                {loadingMessage}
+              </CommandPrimitive.Loading>
+            ) : status === "error" ? (
+              <div role="alert" className="py-6 text-center text-sm text-danger-text">
+                {errorMessage}
+              </div>
+            ) : canCreate ? null : (
+              <CommandEmpty>{emptyMessage}</CommandEmpty>
+            )}
+            {status === "loading" ? null : options.map((option) => (
               <CommandItem
                 key={option.value}
                 value={option.value}
@@ -226,6 +340,12 @@ export const Combobox = forwardRef<HTMLButtonElement, ComboboxProps>(function Co
                 <Check aria-hidden className={cn("ms-auto text-primary-text", option.value === current ? "opacity-100" : "opacity-0")} />
               </CommandItem>
             ))}
+            {canCreate ? (
+              <CommandItem forceMount value={`\u0000create:${query}`} onSelect={() => void create()}>
+                <Plus aria-hidden className="text-primary-text" />
+                <span className="truncate">{formatCreateLabel(query)}</span>
+              </CommandItem>
+            ) : null}
           </CommandList>
         </Command>
       </PopoverContent>
