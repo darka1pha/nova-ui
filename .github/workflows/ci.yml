@@ -22,7 +22,9 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm check
-      - name: Bundle size report
+      # Writes the size table to the run summary and fails when an import is
+      # over its gzip budget (packages/ui/scripts/size-report.ts).
+      - name: Bundle size budget
         run: pnpm size >> "$GITHUB_STEP_SUMMARY"
 
   react18:

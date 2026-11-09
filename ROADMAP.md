@@ -90,4 +90,5 @@ Every docs bug fixed above was visible in the browser but invisible to the test 
   experimental under a separate entry point.
 - Write a 0.x → 1.0 migration guide (the Upgrading page has a placeholder).
 - Publish the tokens as Figma variables from the existing DTCG output.
-- Set a bundle budget per component in `size-report.ts` and fail CI when it's exceeded.
+- ~~Set a bundle budget per component in `size-report.ts` and fail CI when it's exceeded.~~
+  Done: each case has a gzip budget about 5% over its size, and the CI step fails when one is over.

@@ -4,6 +4,10 @@
  * raw and gzip sizes. Proves tree-shaking: importing Button must not pull in
  * DataTable or cmdk.
  *
+ * Each case has a gzip budget. The script exits with code 1 when one is over,
+ * which fails CI. When an increase is deliberate, raise that budget in the same
+ * change and say why. Budgets sit about 5% above the size when they were set.
+ *
  * Usage: pnpm --filter @darkalpha/nova-ui build && node scripts/size-report.ts
  */
 import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
@@ -16,23 +20,26 @@ import { build } from "vite";
 const pkgRoot = fileURLToPath(new URL("..", import.meta.url));
 const entry = join(pkgRoot, "dist", "index.js");
 
-const cases: Record<string, string> = {
-  "Button": "Button",
-  "Button + Card + Badge + Input": "Button, Card, Badge, Input",
-  "ThemeProvider (custom brand)": "ThemeProvider",
-  "Dialog": "Dialog, DialogContent, DialogTitle, DialogTrigger",
-  "Select": "Select, SelectContent, SelectItem, SelectTrigger, SelectValue",
-  "Combobox (cmdk)": "Combobox",
-  "DataTable": "DataTable",
-  "Toast": "toast, Toaster",
-  "Everything": "*",
+/** Imports to measure, each with its gzip budget in kB. */
+const cases: Record<string, { names: string; budget: number }> = {
+  "Button": { names: "Button", budget: 15 },
+  "Button + Card + Badge + Input": { names: "Button, Card, Badge, Input", budget: 17.5 },
+  "ThemeProvider (custom brand)": { names: "ThemeProvider", budget: 12 },
+  "Dialog": { names: "Dialog, DialogContent, DialogTitle, DialogTrigger", budget: 30.5 },
+  "Select": { names: "Select, SelectContent, SelectItem, SelectTrigger, SelectValue", budget: 49.5 },
+  "Combobox (cmdk)": { names: "Combobox", budget: 49.5 },
+  "DataTable": { names: "DataTable", budget: 59 },
+  "Toast": { names: "toast, Toaster", budget: 28.5 },
+  "Everything": { names: "*", budget: 208 },
 };
+/** Gzip budget in kB for the full stylesheet. */
+const cssBudget = 33;
 
 const work = mkdtempSync(join(tmpdir(), "nova-ui-size-"));
-const rows: [string, number, number][] = [];
+const rows: [label: string, raw: number, gzip: number, budget: number][] = [];
 
 try {
-  for (const [label, names] of Object.entries(cases)) {
+  for (const [label, { names, budget }] of Object.entries(cases)) {
     const dir = join(work, String(rows.length));
     mkdirSync(dir);
     const importLine = names === "*" ? `import * as all from ${JSON.stringify(entry)}; console.log(all);` : `import { ${names} } from ${JSON.stringify(entry)}; console.log(${names});`;
@@ -53,19 +60,29 @@ try {
     const file = readdirSync(outDir).find((f) => /\.m?js$/.test(f));
     if (!file) throw new Error(`No output for ${label}`);
     const code = readFileSync(join(outDir, file));
-    rows.push([label, code.length, gzipSync(code).length]);
+    rows.push([label, code.length, gzipSync(code).length, budget]);
   }
 } finally {
   rmSync(work, { recursive: true, force: true });
 }
 
 const css = readFileSync(join(pkgRoot, "dist", "styles.css"));
+rows.push(["styles.css (all components)", css.length, gzipSync(css).length, cssBudget]);
+
 const kb = (n: number) => `${(n / 1024).toFixed(1)} kB`;
+const isOver = (gzip: number, budget: number) => gzip > budget * 1024;
 const lines = [
-  "| Import | Minified | Gzip |",
-  "| --- | ---: | ---: |",
-  ...rows.map(([label, raw, gz]) => `| ${label} | ${kb(raw)} | ${kb(gz)} |`),
-  `| styles.css (all components) | ${kb(css.length)} | ${kb(gzipSync(css).length)} |`,
+  "| Import | Minified | Gzip | Gzip budget | |",
+  "| --- | ---: | ---: | ---: | :---: |",
+  ...rows.map(([label, raw, gz, budget]) => `| ${label} | ${kb(raw)} | ${kb(gz)} | ${budget.toFixed(1)} kB | ${isOver(gz, budget) ? "❌ over" : "✅"} |`),
 ];
 console.log("JS excludes react/react-dom (peer dependencies).\n");
 console.log(lines.join("\n"));
+
+const over = rows.filter(([, , gz, budget]) => isOver(gz, budget));
+if (over.length) {
+  // stderr, so it shows in the CI log while stdout goes to the step summary.
+  for (const [label, , gz, budget] of over) console.error(`Over budget: ${label} is ${kb(gz)} gzip (budget ${budget.toFixed(1)} kB).`);
+  console.error("If the increase is deliberate, raise the budget in packages/ui/scripts/size-report.ts and say why.");
+  process.exitCode = 1;
+}
