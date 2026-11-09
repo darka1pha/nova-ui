@@ -101,6 +101,7 @@ export { InfiniteScroll, type InfiniteScrollProps, type InfiniteScrollLabels } f
 export { DescriptionList, DescriptionItem, type DescriptionListProps, type DescriptionItemProps } from "./components/description-list.tsx";
 export { RelativeTime, formatRelativeTime, type RelativeTimeProps, type RelativeTimeInput } from "./components/relative-time.tsx";
 export { VirtualList, type VirtualListProps, type VirtualListApi } from "./components/virtual-list.tsx";
+export { VirtualTable, virtualRange, type VirtualTableApi, type VirtualTableColumn, type VirtualTableProps } from "./components/virtual-table.tsx";
 export { CalendarHeatmap, type CalendarHeatmapProps, type HeatmapDatum } from "./components/heatmap.tsx";
 export { Image, Lightbox, ImageGallery, type ImageProps, type LightboxProps, type LightboxImage, type LightboxLabels, type ImageGalleryProps } from "./components/media.tsx";
 export { Tour, type TourProps, type TourStep, type TourLabels } from "./components/tour.tsx";

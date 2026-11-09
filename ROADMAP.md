@@ -75,7 +75,8 @@ Every docs bug fixed above was visible in the browser but invisible to the test 
    a `format` render prop for custom layouts like `02:15:09`.
 3. ~~**Carousel.**~~ Done in PR #7 (issues.md H-2). Originally: pausing on hover and on focus are tracked by one flag, so moving the pointer
    out while a slide button has focus resumes autoplay. Track the two separately.
-4. **Data:** column virtualization and row selection for `Table`, built on `VirtualList`.
+4. ~~**Data:**~~ Done: `VirtualTable` virtualizes rows and (opt-in) columns, with pinned
+   columns, range selection across all rows and sorting; it shares `virtualRange` with `VirtualList`.
 5. **Forms:** `Combobox` with async search and creatable options; a `FileDrop` that pairs
    with `FileUploadList`.
 6. **Theming:** cross-tab sync of the stored mode (`storage` event in `ThemeProvider`) and a
