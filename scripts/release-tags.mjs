@@ -1,9 +1,13 @@
 /**
- * Finishes a release after `changeset publish`:
- *   1. pushes the git tags it created (one per published package, e.g.
- *      `@darkalpha/nova-ui@0.5.0`),
- *   2. creates a GitHub Release per tag, with that version's CHANGELOG section,
- *   3. checks npm shows a provenance attestation for each published version.
+ * Finishes a release after `changeset publish`. For each package it reports:
+ *   1. waits (up to 15 minutes) until npm serves that version (fresh versions take
+ *      minutes to appear, and `changeset publish` has reported a package as
+ *      published that never reached the registry, as nova-ui 0.6.0 did),
+ *   2. pushes the git tag the CLI created (e.g. `@darkalpha/nova-ui@0.5.0`),
+ *   3. creates a GitHub Release with that version's CHANGELOG section,
+ *   4. checks npm shows a provenance attestation for it.
+ * A version that isn't on npm gets no tag and no release. Every package is
+ * handled before the script fails, so one bad package doesn't hold up the rest.
  *
  * Why this exists: changesets/action v1 learns what was published by matching
  * "New tag:" lines in the CLI output. @changesets/cli v3 no longer prints them,
@@ -80,33 +84,47 @@ const run = (cmd, cmdArgs) => {
   return execFileSync(cmd, cmdArgs, { cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "inherit"] });
 };
 
-async function hasProvenance(name, version) {
-  // Fresh versions can take a minute to show up in the registry.
-  for (let attempt = 1; attempt <= 12; attempt++) {
-    const res = await fetch(`https://registry.npmjs.org/${name.replace("/", "%2F")}/${version}`, { headers: { "cache-control": "no-cache" } });
-    if (res.ok) {
-      const manifest = await res.json();
-      return Boolean(manifest.dist?.attestations);
-    }
-    await new Promise((r) => setTimeout(r, 10_000));
+/**
+ * Waits up to 15 minutes for npm to serve `name@version`; its manifest, or null if it never shows up.
+ * For 0.6.0, npm recorded the packages 2 and 6 minutes after `changeset publish` finished
+ * (provenance is verified before a version is listed), and a cached 404 lasted longer still.
+ */
+const REGISTRY_WAIT_MS = Number(process.env.RELEASE_TAGS_REGISTRY_WAIT_MS ?? 15 * 60_000); // env shortens it for testing
+async function registryManifest(name, version) {
+  const base = `https://registry.npmjs.org/${name.replace("/", "%2F")}/${version}`;
+  const deadline = Date.now() + REGISTRY_WAIT_MS;
+  for (let delay = 5_000; ; delay = Math.min(delay * 2, 30_000)) {
+    // A unique query string gets past a CDN-cached 404 from an earlier request.
+    const res = await fetch(`${base}?t=${Date.now()}`, { headers: { "cache-control": "no-cache" } }).catch(() => null);
+    if (res?.ok) return res.json();
+    if (Date.now() + delay > deadline) return null;
+    await new Promise((r) => setTimeout(r, delay));
   }
-  throw new Error(`${name}@${version} did not appear on the npm registry`);
 }
 
 const tags = readTags();
 if (tags.length === 0) process.exit(0);
 const notesDir = mkdtempSync(join(tmpdir(), "release-notes-"));
 const missingProvenance = [];
+const notOnNpm = [];
 
 for (const tag of tags) {
   const { name, version } = parseTag(tag);
   console.log(`▸ ${tag}`);
 
-  // 1. Push the tag the CLI created locally.
+  // 1. Only tag and announce what npm actually has.
+  const manifest = dryRun ? {} : await registryManifest(name, version);
+  if (!manifest) {
+    console.log("  not on npm: no tag or release created");
+    notOnNpm.push(tag);
+    continue;
+  }
+
+  // 2. Push the tag the CLI created locally.
   run("git", ["push", "origin", `refs/tags/${tag}`]);
   if (!dryRun) console.log("  tag pushed");
 
-  // 2. GitHub Release with the changelog section. The ui package is the headline release.
+  // 3. GitHub Release with the changelog section. The ui package is the headline release.
   const notes = join(notesDir, `${name.replace(/\W+/g, "-")}-${version}.md`);
   writeFileSync(notes, changelogSection(name, version) + "\n");
   const exists = !dryRun && (() => {
@@ -124,17 +142,23 @@ for (const tag of tags) {
     if (!dryRun) console.log("  release created");
   }
 
-  // 3. Provenance: published from CI, every version must carry an attestation.
+  // 4. Provenance: published from CI, every version must carry an attestation.
   if (!skipProvenance && !dryRun) {
-    if (await hasProvenance(name, version)) console.log("  provenance attestation present");
+    if (manifest.dist?.attestations) console.log("  provenance attestation present");
     else missingProvenance.push(tag);
   }
 }
 
+if (notOnNpm.length) {
+  console.error(
+    `\nReported as published but not on npm after ${REGISTRY_WAIT_MS / 60_000} minutes: ${notOnNpm.join(", ")}.\n` +
+      "Re-run this job: `changeset publish` skips what's already on npm and retries the rest.",
+  );
+}
 if (missingProvenance.length) {
   console.error(
     `\nNo provenance attestation on npm for: ${missingProvenance.join(", ")}.\n` +
       "Check that `pnpm release` goes through scripts/changeset-publish.mjs (it adds `pnpm publish --provenance`) and the job has `id-token: write`.",
   );
-  process.exit(1);
 }
+if (notOnNpm.length || missingProvenance.length) process.exit(1);
