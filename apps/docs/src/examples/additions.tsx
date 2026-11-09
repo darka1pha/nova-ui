@@ -23,6 +23,8 @@ import {
   Text,
   Tour,
   VirtualList,
+  VirtualTable,
+  type VirtualTableColumn,
 } from "@darkalpha/nova-ui";
 import { Columns3, LayoutGrid, List } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
@@ -345,6 +347,75 @@ export function VirtualListExamples() {
         />
         <Text size="xs" tone="muted">
           {rows.length.toLocaleString()} rows loaded
+        </Text>
+      </div>
+    </Example>
+  );
+}
+
+interface Metric {
+  id: string;
+  host: string;
+  region: string;
+  [hour: `h${number}`]: number;
+}
+
+const regions = ["eu-west", "us-east", "ap-south", "me-central"];
+const metricRows: Metric[] = Array.from({ length: 50_000 }, (_, i) => {
+  const row: Metric = { id: `host-${i}`, host: `node-${String(i).padStart(5, "0")}`, region: regions[i % regions.length] as string };
+  for (let h = 0; h < 48; h++) row[`h${h}`] = ((i * 31 + h * 17) % 97) + 3;
+  return row;
+});
+const metricColumns: VirtualTableColumn<Metric>[] = [
+  { id: "host", header: "Host", pinned: true, width: 130, sortable: true, cell: (r) => <span className="font-mono">{r.host}</span> },
+  { id: "region", header: "Region", width: 120, sortable: true },
+  ...Array.from({ length: 48 }, (_, h): VirtualTableColumn<Metric> => ({
+    id: `h${h}`,
+    header: `${String(h % 24).padStart(2, "0")}:00`,
+    width: 84,
+    align: "end",
+    sortable: true,
+    cell: (r) => {
+      const v = r[`h${h}`] ?? 0;
+      return <span className={v > 90 ? "font-semibold text-danger-text" : v > 75 ? "text-warning-text" : undefined}>{v}%</span>;
+    },
+  })),
+];
+
+export function VirtualTableExamples() {
+  const [selected, setSelected] = useState<string[]>([]);
+  return (
+    <Example
+      title="VirtualTable"
+      description="50,000 rows × 50 columns. Only what's in view is rendered, rows and columns both. The host column is pinned, the header sticks, and shift-click selects a range."
+      code={`<VirtualTable
+  aria-label="CPU by host"
+  data={rows}               // 50,000
+  columns={columns}         // 50, each with a px width
+  getRowId={(r) => r.id}
+  height={420}
+  virtualizeColumns
+  selectable
+  selectedIds={selected}
+  onSelectionChange={setSelected}
+/>`}
+    >
+      <div className="flex w-full min-w-0 flex-col gap-2">
+        <VirtualTable
+          aria-label="CPU by host"
+          data={metricRows}
+          columns={metricColumns}
+          getRowId={(r) => r.id}
+          height={420}
+          density="compact"
+          virtualizeColumns
+          selectable
+          selectedIds={selected}
+          onSelectionChange={setSelected}
+          labels={{ selectRow: (r) => `Select ${r.host}` }}
+        />
+        <Text size="xs" tone="muted">
+          {selected.length.toLocaleString()} of {metricRows.length.toLocaleString()} selected
         </Text>
       </div>
     </Example>

@@ -3,6 +3,7 @@
 import { useEffect, useImperativeHandle, useRef, useState, type CSSProperties, type ReactNode, type Ref } from "react";
 import { cn } from "../utils/cn.ts";
 import { focusRing } from "./shared.ts";
+import { virtualRange } from "./virtual-table.tsx";
 
 export interface VirtualListApi {
   /** Scroll so the item is visible. `auto` scrolls only if it isn't already. */
@@ -73,10 +74,7 @@ export function VirtualList<T>({
   }, [height]);
 
   const total = items.length;
-  const first = Math.max(0, Math.floor(scrollTop / itemHeight) - overscan);
-  // Before the viewport is measured, render one screen's worth so there's something to see.
-  const visibleCount = Math.ceil((viewportHeight || itemHeight * 20) / itemHeight);
-  const last = Math.min(total - 1, Math.floor(scrollTop / itemHeight) + visibleCount + overscan);
+  const [first, last] = virtualRange(scrollTop, viewportHeight, itemHeight, total, overscan);
 
   useEffect(() => {
     if (!onEndReached || total === 0) return;
