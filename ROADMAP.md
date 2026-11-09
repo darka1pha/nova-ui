@@ -69,8 +69,8 @@ Every docs bug fixed above was visible in the browser but invisible to the test 
 
 ## P2: components and API
 
-1. **Toast API:** `toast.promise(promise, { loading, success, error })`, an `onDismiss`
-   callback, and a configurable limit on `<Toaster max>` instead of the fixed five.
+1. ~~**Toast API:**~~ Done: `toast.promise(promise, { loading, success, error })`, an
+   `onDismiss` callback, and `<Toaster max>` (default 5) instead of the fixed five.
 2. **Countdown:** an `as` prop (or `asChild`) for block layouts that want a `<div>`, and
    a `format` render prop for custom layouts like `02:15:09`.
 3. ~~**Carousel.**~~ Done in PR #7 (issues.md H-2). Originally: pausing on hover and on focus are tracked by one flag, so moving the pointer

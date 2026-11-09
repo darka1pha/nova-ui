@@ -1,8 +1,8 @@
 "use client";
 
-import { AlertTriangle, CheckCircle2, Info, X, XCircle } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Info, LoaderCircle, X, XCircle } from "lucide-react";
 import { Toast as ToastPrimitive } from "radix-ui";
-import { useState, useSyncExternalStore, type ReactNode } from "react";
+import { isValidElement, useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
 import { cn } from "../utils/cn.ts";
 import { useOptionalTheme } from "../theme/theme-provider.tsx";
 import { usePortalContainer } from "./portal.tsx";
@@ -20,11 +20,19 @@ export interface ToastOptions {
   /** A single action. `altText` describes it for screen readers (required by Radix). */
   action?: { label: string; altText: string; onClick: () => void };
   id?: string;
+  /**
+   * Called once when the toast closes for any reason: its timer, the close button, a swipe,
+   * `toast.dismiss()`, or being pushed out by newer toasts. Not called when a toast with the
+   * same `id` replaces its content.
+   */
+  onDismiss?: (id: string) => void;
 }
 
 interface ToastRecord extends ToastOptions {
   id: string;
   open: boolean;
+  /** Set while `toast.promise` waits: shows a spinner and never times out. */
+  loading?: boolean;
 }
 
 /* A tiny external store, so `toast()` works from anywhere (event handlers, data layers). */
@@ -32,19 +40,44 @@ let toasts: ToastRecord[] = [];
 const listeners = new Set<() => void>();
 const emit = () => listeners.forEach((l) => l());
 let counter = 0;
-/** At most this many toasts are open at once; the oldest make way for new ones. */
-const MAX_OPEN = 5;
+/** At most this many toasts are open at once; the oldest make way for new ones. Set by `<Toaster max>`. */
+const DEFAULT_MAX = 5;
+let maxOpen = DEFAULT_MAX;
 
 /** Closes toasts, then drops them once their exit animation has played (unless reopened). */
 function close(shouldClose: (t: ToastRecord) => boolean) {
-  const ids = new Set(toasts.filter((t) => t.open && shouldClose(t)).map((t) => t.id));
-  if (ids.size === 0) return;
+  const closing = toasts.filter((t) => t.open && shouldClose(t));
+  if (closing.length === 0) return;
+  const ids = new Set(closing.map((t) => t.id));
   toasts = toasts.map((t) => (ids.has(t.id) ? { ...t, open: false } : t));
   emit();
+  // After the store update, so a callback that shows another toast sees a consistent stack.
+  for (const t of closing) t.onDismiss?.(t.id);
   setTimeout(() => {
     toasts = toasts.filter((t) => !ids.has(t.id) || t.open);
     emit();
   }, 400);
+}
+
+/** Closes the oldest open toasts beyond the limit. Closing ones are still animating out and don't count. */
+function enforceMax() {
+  const overflow = new Set(
+    toasts
+      .filter((t) => t.open)
+      .slice(0, -maxOpen)
+      .map((t) => t.id),
+  );
+  close((t) => overflow.has(t.id));
+}
+
+function show(opts: ToastOptions, loading = false): string {
+  const id = opts.id ?? `nv-toast-${++counter}`;
+  const existing = toasts.some((t) => t.id === id);
+  // Replacing a toast keeps its place in the stack; `loading` is reset unless set again.
+  toasts = existing ? toasts.map((t) => (t.id === id ? { ...t, ...opts, id, open: true, loading } : t)) : [...toasts, { ...opts, id, open: true, loading }];
+  emit();
+  enforceMax();
+  return id;
 }
 
 /**
@@ -52,22 +85,49 @@ function close(shouldClose: (t: ToastRecord) => boolean) {
  * Returns the toast id.
  */
 export function toast(options: ToastOptions | string, rest: Omit<ToastOptions, "title"> = {}): string {
-  const opts = typeof options === "string" ? { ...rest, title: options } : options;
-  const id = opts.id ?? `nv-toast-${++counter}`;
-  const existing = toasts.some((t) => t.id === id);
-  toasts = existing ? toasts.map((t) => (t.id === id ? { ...t, ...opts, id, open: true } : t)) : [...toasts, { ...opts, id, open: true }];
-  emit();
-  // Count only open toasts: closing ones are still animating out and must not
-  // push a long-lived (e.g. `duration: Infinity`) toast off the stack.
-  const overflow = new Set(toasts.filter((t) => t.open).slice(0, -MAX_OPEN).map((t) => t.id));
-  close((t) => overflow.has(t.id));
-  return id;
+  return show(typeof options === "string" ? { ...rest, title: options } : options);
 }
 toast.success = (title: ReactNode, rest: Omit<ToastOptions, "title" | "variant"> = {}) => toast({ ...rest, title, variant: "success" });
 toast.error = (title: ReactNode, rest: Omit<ToastOptions, "title" | "variant"> = {}) => toast({ ...rest, title, variant: "danger" });
 toast.warning = (title: ReactNode, rest: Omit<ToastOptions, "title" | "variant"> = {}) => toast({ ...rest, title, variant: "warning" });
 toast.info = (title: ReactNode, rest: Omit<ToastOptions, "title" | "variant"> = {}) => toast({ ...rest, title, variant: "info" });
 toast.dismiss = (id?: string) => close((t) => id === undefined || t.id === id);
+
+/** A message for one stage of `toast.promise`: a title, full options, or a function of the result. */
+export type ToastPromiseMessage<V> = ReactNode | Omit<ToastOptions, "id"> | ((value: V) => ReactNode | Omit<ToastOptions, "id">);
+
+export interface ToastPromiseOptions<T> extends Omit<ToastOptions, "title" | "variant" | "duration"> {
+  /** Shown while the promise is pending, with a spinner. It doesn't time out. */
+  loading: ReactNode | Omit<ToastOptions, "id">;
+  /** Shown when it resolves (a success toast). A function receives the resolved value. */
+  success: ToastPromiseMessage<T>;
+  /** Shown when it rejects (a danger toast). A function receives the rejection reason. */
+  error: ToastPromiseMessage<unknown>;
+}
+
+const isOptions = (m: unknown): m is Omit<ToastOptions, "id"> => typeof m === "object" && m !== null && !isValidElement(m) && "title" in m;
+
+/**
+ * Shows a loading toast for a promise, then turns the same toast into a success or error
+ * toast when it settles. Returns the promise you passed in (or that the function returned),
+ * so `await toast.promise(save(), ...)` still gives you the value or throws. If the person
+ * dismisses the loading toast, the outcome isn't shown.
+ */
+toast.promise = <T,>(promise: Promise<T> | (() => Promise<T>), { loading, success, error, ...rest }: ToastPromiseOptions<T>): Promise<T> => {
+  const id = show({ ...rest, ...(isOptions(loading) ? loading : { title: loading }), id: rest.id, duration: Infinity }, true);
+  const settle = <V,>(message: ToastPromiseMessage<V>, value: V, variant: ToastVariant) => {
+    // Dismissed while loading (or replaced by the caller): leave it closed.
+    if (!toasts.some((t) => t.id === id && t.open && t.loading)) return;
+    const resolved = typeof message === "function" ? message(value) : message;
+    show({ ...rest, variant, duration: undefined, ...(isOptions(resolved) ? resolved : { title: resolved }), id });
+  };
+  const p = typeof promise === "function" ? promise() : promise;
+  p.then(
+    (value) => settle(success, value, "success"),
+    (reason: unknown) => settle(error, reason, "danger"),
+  );
+  return p;
+};
 
 const subscribe = (l: () => void) => {
   listeners.add(l);
@@ -109,6 +169,8 @@ export interface ToasterProps {
   label?: string;
   /** Accessible name of each toast's close button. */
   closeLabel?: string;
+  /** How many toasts can be open at once; the oldest close to make room. Default 5. */
+  max?: number;
 }
 
 const positions: Record<NonNullable<ToasterProps["position"]>, string> = {
@@ -121,8 +183,16 @@ const positions: Record<NonNullable<ToasterProps["position"]>, string> = {
 };
 
 /** Renders queued toasts. Mount once, inside ThemeProvider. */
-export function Toaster({ position = "bottom-end", label = "Notifications ({hotkey})", closeLabel = "Dismiss notification" }: ToasterProps) {
+export function Toaster({ position = "bottom-end", label = "Notifications ({hotkey})", closeLabel = "Dismiss notification", max = DEFAULT_MAX }: ToasterProps) {
   const items = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  // The limit lives in the store, so `toast()` enforces it wherever it's called from.
+  useEffect(() => {
+    maxOpen = Math.max(1, Math.floor(max));
+    enforceMax();
+    return () => {
+      maxOpen = DEFAULT_MAX;
+    };
+  }, [max]);
   const container = usePortalContainer();
   // "start" and "end" are logical: in RTL the start edge is on the right.
   const rtl = useOptionalTheme()?.dir === "rtl";
@@ -147,7 +217,8 @@ export function Toaster({ position = "bottom-end", label = "Notifications ({hotk
 
 function ToastItem({ toast: t, closeLabel }: { toast: ToastRecord; closeLabel: string }) {
   const variant = t.variant ?? "default";
-  const duration = t.duration ?? 5000;
+  const duration = t.loading ? Infinity : (t.duration ?? 5000);
+  const icon = t.loading ? <LoaderCircle aria-hidden className="animate-nv-spin text-foreground-muted motion-reduce:animate-none" /> : icons[variant];
   // Radix pauses every toast's timer while the viewport is hovered or focused and
   // while the window is in the background; the countdown bar follows the same events.
   const [paused, setPaused] = useState(false);
@@ -171,9 +242,16 @@ function ToastItem({ toast: t, closeLabel }: { toast: ToastRecord; closeLabel: s
         "data-[swipe=move]:translate-x-(--radix-toast-swipe-move-x) data-[swipe=move]:translate-y-(--radix-toast-swipe-move-y) data-[swipe=cancel]:translate-x-0 data-[swipe=cancel]:translate-y-0 data-[swipe=end]:animate-nv-fade-out",
       )}
     >
-      {icons[variant] ? <span className="mt-0.5 shrink-0 animate-nv-bounce-in [&_svg]:size-5">{icons[variant]}</span> : null}
+      {/* Keyed so the icon pops in again when a promise toast settles. */}
+      {icon ? (
+        <span key={t.loading ? "loading" : variant} className="mt-0.5 shrink-0 animate-nv-bounce-in [&_svg]:size-5">
+          {icon}
+        </span>
+      ) : null}
       {Number.isFinite(duration) ? (
         <span
+          // Remount on settle so the countdown starts from full.
+          key={`countdown-${variant}`}
           aria-hidden
           data-slot="toast-countdown"
           className={cn("absolute inset-x-0 bottom-0 h-0.5 origin-left animate-nv-countdown opacity-60 rtl:origin-right motion-reduce:hidden", countdown[variant])}

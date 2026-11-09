@@ -46,7 +46,7 @@ export * from "./components/command.tsx";
 // Feedback
 export { Alert, Badge, Progress, StatusIndicator, EmptyState, ErrorState, LoadingState } from "./components/feedback.tsx";
 export type { AlertProps, BadgeProps, BadgeVariant, ProgressProps, StatusIndicatorProps, StateProps, LoadingStateProps } from "./components/feedback.tsx";
-export { toast, Toaster, type ToastOptions, type ToasterProps, type ToastVariant } from "./components/toast.tsx";
+export { toast, Toaster, type ToastOptions, type ToasterProps, type ToastPromiseMessage, type ToastPromiseOptions, type ToastVariant } from "./components/toast.tsx";
 export * from "./components/overlay.tsx";
 
 // Surfaces & navigation
