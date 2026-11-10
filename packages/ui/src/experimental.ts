@@ -14,3 +14,4 @@ export {
   type UploadContext,
   type UseFileUploadsOptions,
 } from "./components/file-uploader.tsx";
+export { MentionTextarea, type MentionTextareaProps, type MentionOption, type MentionTrigger, type MentionLabels } from "./components/mention-textarea.tsx";
