@@ -1,18 +1,15 @@
 import { clsx, type ClassValue } from "clsx";
-import { extendTailwindMerge } from "tailwind-merge";
+import { createTailwindMerge } from "tailwind-merge";
+import { getNovaMergeConfig } from "./tw-merge-config.generated.ts";
 
 /**
- * tailwind-merge only knows Tailwind's built-in animation names. Registering the
- * library's `animate-nv-*` utilities lets a consumer's `animate-none` or
- * `animate-spin` replace a component's entrance animation instead of stacking on it.
+ * tailwind-merge with a config cut down to the class groups the components use and the
+ * groups that conflict with them (scripts/generate-tw-merge.ts). A conflict always involves
+ * a component class, so this resolves the same as the full config at a fraction of the size.
+ * It also registers the library's `animate-nv-*` utilities, so a consumer's `animate-none`
+ * replaces a component's entrance animation instead of stacking on it.
  */
-const twMerge = extendTailwindMerge({
-  extend: {
-    classGroups: {
-      animate: [{ animate: [(value: string) => value.startsWith("nv-")] }],
-    },
-  },
-});
+const twMerge = createTailwindMerge(getNovaMergeConfig);
 
 /**
  * Composes class names and resolves Tailwind conflicts so a consumer's

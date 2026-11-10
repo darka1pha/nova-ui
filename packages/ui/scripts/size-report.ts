@@ -18,12 +18,12 @@ import { gzipSync } from "node:zlib";
 import { build } from "vite";
 
 const pkgRoot = fileURLToPath(new URL("..", import.meta.url));
-const entry = join(pkgRoot, "dist", "index.js");
+const mainEntry = join(pkgRoot, "dist", "index.js");
 
 /** Imports to measure, each with its gzip budget in kB. */
 const cases: Record<string, { names: string; budget: number }> = {
-  "Button": { names: "Button", budget: 15 },
-  "Button + Card + Badge + Input": { names: "Button, Card, Badge, Input", budget: 17.5 },
+  "Button": { names: "Button", budget: 12.5 },
+  "Button + Card + Badge + Input": { names: "Button, Card, Badge, Input", budget: 15 },
   "ThemeProvider (custom brand)": { names: "ThemeProvider", budget: 12 },
   "Dialog": { names: "Dialog, DialogContent, DialogTitle, DialogTrigger", budget: 30.5 },
   "Select": { names: "Select, SelectContent, SelectItem, SelectTrigger, SelectValue", budget: 49.5 },
@@ -31,7 +31,12 @@ const cases: Record<string, { names: string; budget: number }> = {
   // +2.8 kB for in-place cell editing (InlineEdit) and the column resize/reorder/group code.
   "DataTable": { names: "DataTable", budget: 62.3 },
   "Toast": { names: "toast, Toaster", budget: 28.5 },
+  "Select": { names: "Select, SelectContent, SelectItem, SelectTrigger, SelectValue", budget: 47 },
+  "Combobox (cmdk)": { names: "Combobox", budget: 48 },
+  "Toast": { names: "toast, Toaster", budget: 26.3 },
   "Everything": { names: "*", budget: 208 },
+  // Static rich text from the rich-text-editor entry: no Tiptap / ProseMirror in it.
+  "RichTextContentView": { names: "RichTextContentView", budget: 13.5, entry: "rich-text-editor.js" },
 };
 /** Gzip budget in kB for the full stylesheet. */
 const cssBudget = 33;
@@ -40,7 +45,8 @@ const work = mkdtempSync(join(tmpdir(), "nova-ui-size-"));
 const rows: [label: string, raw: number, gzip: number, budget: number][] = [];
 
 try {
-  for (const [label, { names, budget }] of Object.entries(cases)) {
+  for (const [label, { names, budget, entry: entryFile }] of Object.entries(cases)) {
+    const entry = entryFile ? join(pkgRoot, "dist", entryFile) : mainEntry;
     const dir = join(work, String(rows.length));
     mkdirSync(dir);
     const importLine = names === "*" ? `import * as all from ${JSON.stringify(entry)}; console.log(all);` : `import { ${names} } from ${JSON.stringify(entry)}; console.log(${names});`;
