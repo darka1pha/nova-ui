@@ -60,8 +60,8 @@ import {
   Toaster,
   Toggle,
   toast,
-  getPageItems,
 } from "../src/index.ts";
+import { getPageItems } from "../src/utils/page-items.ts";
 import { axeViolations } from "./axe.ts";
 
 const wrap = (ui: React.ReactNode) => render(<ThemeProvider>{ui}</ThemeProvider>);

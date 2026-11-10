@@ -26,7 +26,10 @@ import { toLatinDigits } from "../utils/jalali.ts";
 import { useFormField } from "./field.tsx";
 import { transition } from "./shared.ts";
 
-/** The shared look of every text-entry control. */
+/**
+ * The shared look of every text-entry control, for styling your own inputs to match.
+ * Stable as a function that returns a class string; the classes it returns may change in a minor release.
+ */
 export const fieldVariants = cva(
   // `nv-field` marks every text-entry control for theme materials (glass, clay, neomorphic).
   `nv-field w-full min-w-0 rounded-(--nv-input-radius) border border-input bg-surface text-foreground shadow-xs ${transition} ` +

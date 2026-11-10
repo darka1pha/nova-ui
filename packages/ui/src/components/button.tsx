@@ -30,6 +30,10 @@ import { Spinner } from "./spinner.tsx";
 const lift = "hover:translate-y-(--nv-hover-lift) active:translate-y-0 motion-reduce:hover:translate-y-0";
 const sheen = "shadow-[inset_0_1px_0_0_rgb(255_255_255/0.16),var(--nv-shadow-xs)]";
 
+/**
+ * The Button classes, for styling a link or other element as a button.
+ * Stable as a function that returns a class string; the classes it returns may change in a minor release.
+ */
 export const buttonVariants = cva(
   `group/button relative isolate inline-flex shrink-0 select-none items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-(--nv-button-radius) border border-transparent font-semibold [&_svg]:pointer-events-none [&_svg]:shrink-0 ${focusRing} ${transition} ${pressable} ${disabledState}`,
   {

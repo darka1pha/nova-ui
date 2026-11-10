@@ -365,6 +365,8 @@ const migrationSteps: [string, string, string][] = [
   ["0.5", "Labels dim inside a disabled FormField, and DataTable rows no longer carry aria-selected (the row checkbox has the state).", "Update visual baselines and tests that queried aria-selected on rows."],
   ["0.5", "Button asChild renders its icons, spinner and ripple, and blocks activation while disabled or loading.", "Remove workarounds that rendered icons inside an asChild link by hand."],
   ["0.7", "Combobox options is optional (it can load them with loadOptions), and its popup is named after the field.", "No change needed. Tests that found the popup as an unnamed dialog should use its name."],
+  ["0.8", "VirtualTable, virtualRange, FileUploader and useFileUploads moved to @darkalpha/nova-ui/experimental, outside the 1.0 freeze.", "Import them from \"@darkalpha/nova-ui/experimental\"."],
+  ["0.8", "useComposedRefs and getPageItems are no longer exported; they were internal helpers.", "Use Radix's useComposedRefs (@radix-ui/react-compose-refs) or a local helper; render Pagination for page lists."],
 ];
 
 export function MigrationPage() {
@@ -401,6 +403,13 @@ export function MigrationPage() {
             1.0 freezes the public API: every export of <code>@darkalpha/nova-ui</code>, its subpath entries and <code>@darkalpha/nova-tokens</code>, their props,
             token names and CSS variables. From then on only a major release removes or renames any of them. The list of exports is checked in CI (
             <code>packages/ui/api-report.md</code>), so a change to it is always deliberate.
+          </p>
+          <p>
+            Two exceptions. <code>@darkalpha/nova-ui/experimental</code> holds the newest components (currently <code>VirtualTable</code> and{" "}
+            <code>FileUploader</code>), whose API may still change in a minor; they move to the main entry once settled. And <code>buttonVariants</code> and{" "}
+            <code>fieldVariants</code> are stable as functions that return class strings, but the classes they return may change in a minor, so don't match on
+            them. The token helpers nova-ui re-exports (<code>createTheme</code>, <code>presets</code>, <code>contrastRatio</code> and the rest) are the same
+            functions as in <code>@darkalpha/nova-tokens</code>, stable from either package.
           </p>
         </Prose>
       </Section>

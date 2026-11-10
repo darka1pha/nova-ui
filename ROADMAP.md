@@ -77,10 +77,10 @@ Every docs bug fixed above was visible in the browser but invisible to the test 
    out while a slide button has focus resumes autoplay. Track the two separately.
 4. ~~**Data:**~~ Done: `VirtualTable` virtualizes rows and (opt-in) columns, with pinned
    columns, range selection across all rows and sorting; it shares `virtualRange` with `VirtualList`.
-5. **Forms:** `Combobox` with async search and creatable options; a `FileDrop` that pairs
-   with `FileUploadList`.
-6. **Theming:** cross-tab sync of the stored mode (`storage` event in `ThemeProvider`) and a
-   `useThemeVariables()` hook for canvas and chart libraries that can't read CSS variables.
+5. ~~**Forms:**~~ Done in 0.7.0: `Combobox` `loadOptions` and `creatable`, and `FileUploader`/
+   `useFileUploads` paired with `FileUploadList`.
+6. ~~**Theming:**~~ Done in 0.7.0: cross-tab sync of the stored mode in `ThemeProvider` and
+   `useThemeVariables()`.
 
 ## P3: docs site
 
@@ -98,19 +98,14 @@ Every docs bug fixed above was visible in the browser but invisible to the test 
 
 ## Toward 1.0
 
-- Freeze the public API. **In place:** `packages/ui/api-report.md` lists all 980 exports of
-  the seven entries (both packages), and `pnpm check` (CI) fails when it's out of date, so
-  any API change is a reviewed diff. **Audit findings, decision pending** (moving any of
-  these is breaking, so it belongs in the last 0.x minor):
-  - Implementation details exported from the main entry, to make internal or move to a
-    `/utils` entry: `buttonVariants`, `fieldVariants` (cva class maps: freezing them freezes
-    the class strings), `useRipple`, `useComposedRefs`, `getPageItems`, `TooltipRoot`.
-  - Candidates for `@darkalpha/nova-ui/experimental` (newest, least-used APIs): `KanbanBoard`,
-    `Tour`, `SignaturePad`, `NotificationCenter`, the chat kit (`ChatComposer`, `Message*`,
-    `TypingIndicator`), the charts (`AreaChart`, `BarChart`, `LineChart`, `DonutChart`,
-    `Sparkline`, `BarList`), `VirtualTable` and `FileUploader`/`useFileUploads`.
-  - Duplicated surface: nine token helpers (`createTheme`, `presets`, `contrastRatio`…) are
-    exported from both packages. Keep one canonical home, or document both as stable.
+- ~~Freeze the public API.~~ Decided for 0.8: `packages/ui/api-report.md` lists every export
+  and `pnpm check` (CI) fails when it's out of date, so any API change is a reviewed diff.
+  - `useComposedRefs` and `getPageItems` are internal now. `buttonVariants`, `fieldVariants`,
+    `useRipple` and `TooltipRoot` stay public; the variant class strings are not frozen.
+  - `@darkalpha/nova-ui/experimental` holds `VirtualTable`, `virtualRange`, `FileUploader` and
+    `useFileUploads`, outside semver until they graduate. The other candidates (KanbanBoard,
+    Tour, SignaturePad, chat kit, charts) stay in the main entry.
+  - The token helpers stay exported from both packages, documented as the same functions.
 - ~~Write a 0.x → 1.0 migration guide.~~ Done: the Upgrading page lists every breaking or
   behavior change since 0.3 with what to do, and what 1.0 freezes.
 - ~~Publish the tokens as Figma variables.~~ Done: `figmaVariables()` and
