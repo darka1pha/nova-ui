@@ -1,17 +1,21 @@
 "use client";
 
-import { ArrowDown, ArrowUp, ChevronRight, ChevronsUpDown, Columns3 } from "lucide-react";
+import { ArrowDown, ArrowUp, ChevronRight, ChevronsUpDown, Columns3, GripVertical } from "lucide-react";
 import {
   forwardRef,
   Fragment,
   useMemo,
+  useRef,
   useState,
+  type DragEvent,
   type HTMLAttributes,
+  type KeyboardEvent,
+  type PointerEvent,
   type ReactNode,
   type TdHTMLAttributes,
   type ThHTMLAttributes,
 } from "react";
-import { useLocale } from "../theme/theme-provider.tsx";
+import { useLocale, useOptionalTheme } from "../theme/theme-provider.tsx";
 import { cn } from "../utils/cn.ts";
 import { Button } from "./button.tsx";
 import { Checkbox } from "./controls.tsx";
@@ -19,6 +23,7 @@ import { SearchInput } from "./input.tsx";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./menu.tsx";
 import { Pagination } from "./navigation.tsx";
 import { EmptyState } from "./feedback.tsx";
+import { InlineEdit } from "./inline-edit.tsx";
 import { focusRing } from "./shared.ts";
 import { Skeleton } from "./skeleton.tsx";
 
@@ -120,6 +125,10 @@ export interface DataTableColumn<T> {
   hideable?: boolean;
   /** Label for the columns menu when `header` is not plain text. */
   menuLabel?: string;
+  /** Edit the cell in place (with `onCellEdit` on the table). A function decides per row. */
+  editable?: boolean | ((row: T) => boolean);
+  /** The text being edited. Defaults to `row[id]`. */
+  editValue?: (row: T) => string;
 }
 
 export interface SortState {
@@ -163,6 +172,16 @@ export interface DataTableProps<T> extends Omit<TableProps, "children"> {
     noMatches?: string;
     /** Header of the expand-toggle column (screen readers only). */
     details?: string;
+    /** Name of a column's resize handle. */
+    resize?: (column: string) => string;
+    /** Name of a column's move button. */
+    move?: (column: string) => string;
+    /** Announced after a move, e.g. (column, position, count) => `${column}, column ${position} of ${count}`. */
+    moved?: (column: string, position: number, count: number) => string;
+    /** Name of the toggle on a group's header row. */
+    group?: (value: string, count: number) => string;
+    /** Name of an editable cell, e.g. (column) => `Edit ${column}`. */
+    edit?: (column: string) => string;
   };
   locale?: string;
 
@@ -199,9 +218,32 @@ export interface DataTableProps<T> extends Omit<TableProps, "children"> {
 
   /** Extra toolbar content, e.g. filters or an export button. */
   toolbar?: ReactNode;
+
+  /** Drag the edge of a header (or focus it and use the arrow keys) to resize the column. */
+  resizableColumns?: boolean;
+  /** Controlled column widths in px, by column id. */
+  columnWidths?: Record<string, number>;
+  /** Called with every column's width once one is resized. */
+  onColumnWidthsChange?: (widths: Record<string, number>) => void;
+  /** Drag a header, or use its grip button with the arrow keys, to move the column. */
+  reorderableColumns?: boolean;
+  /** Controlled column order (ids). Columns missing from it follow in their given order. */
+  columnOrder?: string[];
+  /** Called with the new order of column ids. */
+  onColumnOrderChange?: (ids: string[]) => void;
+  /**
+   * Saves an edited cell (columns with `editable`). May be async; return or resolve a string
+   * to reject the value with that message, or throw. Update `data` to show the new value.
+   */
+  onCellEdit?: (row: T, columnId: string, value: string) => unknown;
+  /** Group rows by this column's value, under collapsible header rows with a count. */
+  groupBy?: string;
+  /** Renders a group's heading. Defaults to the value as text. */
+  renderGroup?: (value: unknown, rows: T[]) => ReactNode;
 }
 
 const alignClass = { start: "text-start", center: "text-center", end: "text-end" } as const;
+const MIN_COLUMN_WIDTH = 48;
 
 function defaultValue<T>(row: T, id: string): unknown {
   return (row as Record<string, unknown>)[id];
@@ -241,16 +283,41 @@ export function DataTable<T>({
   onHiddenColumnsChange,
   renderExpanded,
   toolbar,
+  resizableColumns,
+  columnWidths: widthsProp,
+  onColumnWidthsChange,
+  reorderableColumns,
+  columnOrder: orderProp,
+  onColumnOrderChange,
+  onCellEdit,
+  groupBy,
+  renderGroup,
   ...tableProps
 }: DataTableProps<T>) {
   const { locale } = useLocale(localeProp);
+  const rtl = (useOptionalTheme()?.dir ?? "ltr") === "rtl";
   const [internalSearch, setInternalSearch] = useState("");
   const search = searchProp ?? internalSearch;
   const [internalPage, setInternalPage] = useState(1);
   const [internalHidden, setInternalHidden] = useState<string[]>(defaultHiddenColumns);
   const hidden = hiddenProp ?? internalHidden;
   const [expanded, setExpanded] = useState<string[]>([]);
-  const visibleColumns = columns.filter((c) => !hidden.includes(c.id));
+  const [internalOrder, setInternalOrder] = useState<string[]>([]);
+  const order = orderProp ?? internalOrder;
+  const orderedColumns = useMemo(() => {
+    const rank = (id: string) => {
+      const i = order.indexOf(id);
+      return i === -1 ? order.length + columns.findIndex((c) => c.id === id) : i;
+    };
+    return [...columns].sort((a, b) => rank(a.id) - rank(b.id));
+  }, [columns, order]);
+  const visibleColumns = orderedColumns.filter((c) => !hidden.includes(c.id));
+  const [internalWidths, setInternalWidths] = useState<Record<string, number>>({});
+  const widths = widthsProp ?? internalWidths;
+  const fixedLayout = Object.keys(widths).length > 0;
+  const [collapsedGroups, setCollapsedGroups] = useState<string[]>([]);
+  const [announcement, setAnnouncement] = useState("");
+  const headRefs = useRef(new Map<string, HTMLTableCellElement>());
   const [internalSort, setInternalSort] = useState<SortState | null>(null);
   const sort = sortProp !== undefined ? sortProp : internalSort;
   const [internalSelected, setInternalSelected] = useState<string[]>([]);
@@ -333,83 +400,96 @@ export function DataTable<T>({
   const to = pageSize ? Math.min(total, page * pageSize) : total;
   const columnName = (c: DataTableColumn<T>) => c.menuLabel ?? (typeof c.header === "string" ? c.header : c.id);
   const showToolbar = searchable || columnToggle || toolbar;
+  const moveLabel = labels?.move ?? ((name: string) => `Move ${name}`);
 
-  const table = (
-    <Table aria-busy={loading || undefined} {...tableProps}>
-      {caption ? <TableCaption>{caption}</TableCaption> : null}
-      <TableHeader>
-        <TableRow className="hover:bg-transparent">
-          {renderExpanded ? (
-            <TableHead className="w-10">
-              <span className="sr-only">{labels?.details ?? "Details"}</span>
-            </TableHead>
-          ) : null}
-          {selectable ? (
-            <TableHead className="w-10">
-              <Checkbox
-                size="sm"
-                aria-label={labels?.selectAll ?? "Select all rows"}
-                checked={allSelected ? true : someSelected ? "indeterminate" : false}
-                onCheckedChange={(v) => setSelected(v === true ? allIds : [])}
-              />
-            </TableHead>
-          ) : null}
-          {visibleColumns.map((column) => {
-            const active = sort?.id === column.id;
-            return (
-              <TableHead
-                key={column.id}
-                style={column.width ? { width: column.width } : undefined}
-                className={alignClass[column.align ?? "start"]}
-                aria-sort={column.sortable ? (active ? (sort.direction === "asc" ? "ascending" : "descending") : "none") : undefined}
-              >
-                {column.sortable ? (
-                  <button
-                    type="button"
-                    onClick={() => toggleSort(column.id)}
-                    className={cn("-mx-1 inline-flex items-center gap-1 rounded-xs px-1 uppercase hover:text-foreground", active && "text-foreground", focusRing)}
-                  >
-                    {column.header}
-                    {active ? (
-                      sort.direction === "asc" ? (
-                        <ArrowUp aria-hidden className="size-3.5" />
-                      ) : (
-                        <ArrowDown aria-hidden className="size-3.5" />
-                      )
-                    ) : (
-                      <ChevronsUpDown aria-hidden className="size-3.5 opacity-50" />
-                    )}
-                  </button>
-                ) : (
-                  column.header
-                )}
-              </TableHead>
-            );
-          })}
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {loading ? (
-          Array.from({ length: 4 }, (_, i) => (
-            <TableRow key={`loading-${i}`}>
-              <TableCell colSpan={colSpan}>
-                <Skeleton shape="text" className={i % 2 ? "w-2/3" : "w-full"} />
-                {i === 0 ? <span className="sr-only">{labels?.loading ?? "Loading rows"}</span> : null}
-              </TableCell>
-            </TableRow>
-          ))
-        ) : rows.length === 0 ? (
-          <TableRow className="hover:bg-transparent">
-            <TableCell colSpan={colSpan}>
-              {search && data.length > 0 ? (
-                <EmptyState size="sm" title={labels?.noMatches ?? "No matching rows"} description={`“${search}”`} />
-              ) : (
-                (empty ?? <EmptyState size="sm" title="No results" description="There is nothing to show here yet." />)
-              )}
-            </TableCell>
-          </TableRow>
-        ) : (
-          rows.map((row) => {
+  /* Column order */
+  const moveColumn = (id: string, toIndex: number) => {
+    const visibleIds = visibleColumns.map((c) => c.id);
+    const from = visibleIds.indexOf(id);
+    const to = Math.max(0, Math.min(visibleIds.length - 1, toIndex));
+    const target = visibleIds[to];
+    if (from === -1 || from === to || !target) return;
+    const ids = orderedColumns.map((c) => c.id).filter((x) => x !== id);
+    ids.splice(ids.indexOf(target) + (to > from ? 1 : 0), 0, id);
+    if (orderProp === undefined) setInternalOrder(ids);
+    onColumnOrderChange?.(ids);
+    const column = columns.find((c) => c.id === id);
+    if (column) setAnnouncement((labels?.moved ?? ((name, pos, count) => `${name}, column ${pos} of ${count}`))(columnName(column), to + 1, visibleIds.length));
+  };
+  const dragged = useRef<string | null>(null);
+  const onHeadDragStart = (id: string) => (e: DragEvent<HTMLTableCellElement>) => {
+    dragged.current = id;
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", id);
+  };
+  const onHeadDrop = (id: string) => (e: DragEvent<HTMLTableCellElement>) => {
+    e.preventDefault();
+    const source = dragged.current;
+    dragged.current = null;
+    if (source && source !== id) moveColumn(source, visibleColumns.findIndex((c) => c.id === id));
+  };
+  const onMoveKey = (id: string) => (e: KeyboardEvent<HTMLButtonElement>) => {
+    const step = { ArrowRight: rtl ? -1 : 1, ArrowLeft: rtl ? 1 : -1 }[e.key];
+    if (step === undefined) return;
+    e.preventDefault();
+    moveColumn(id, visibleColumns.findIndex((c) => c.id === id) + step);
+  };
+
+  /* Column widths: the first resize freezes every visible column at its rendered width. */
+  const measured = (id: string) => Math.round(headRefs.current.get(id)?.getBoundingClientRect().width || 120);
+  const currentWidth = (id: string) => widths[id] ?? measured(id);
+  const setWidth = (id: string, width: number) => {
+    const base: Record<string, number> = {};
+    for (const c of visibleColumns) base[c.id] = currentWidth(c.id);
+    const next = { ...base, ...widths, [id]: Math.max(MIN_COLUMN_WIDTH, Math.round(width)) };
+    if (widthsProp === undefined) setInternalWidths(next);
+    onColumnWidthsChange?.(next);
+  };
+  const onResizePointerDown = (id: string) => (e: PointerEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const handle = e.currentTarget;
+    handle.setPointerCapture?.(e.pointerId);
+    const startX = e.clientX;
+    const startWidth = currentWidth(id);
+    const move = (ev: globalThis.PointerEvent) => setWidth(id, startWidth + (ev.clientX - startX) * (rtl ? -1 : 1));
+    const up = () => {
+      handle.removeEventListener("pointermove", move);
+      handle.removeEventListener("pointerup", up);
+      handle.removeEventListener("pointercancel", up);
+    };
+    handle.addEventListener("pointermove", move);
+    handle.addEventListener("pointerup", up);
+    handle.addEventListener("pointercancel", up);
+  };
+  const onResizeKey = (id: string) => (e: KeyboardEvent<HTMLDivElement>) => {
+    // The handle sits on the column's end edge: the key toward the end widens it.
+    const grow = { ArrowRight: rtl ? -1 : 1, ArrowLeft: rtl ? 1 : -1 }[e.key];
+    if (grow === undefined) return;
+    e.preventDefault();
+    setWidth(id, currentWidth(id) + grow * (e.shiftKey ? 50 : 10));
+  };
+  const tableWidth = fixedLayout
+    ? visibleColumns.reduce((sum, c) => sum + (widths[c.id] ?? 120), 0) + (selectable ? 40 : 0) + (renderExpanded ? 40 : 0)
+    : undefined;
+
+  /* Groups */
+  const groupColumn = groupBy ? columns.find((c) => c.id === groupBy) : undefined;
+  const groups = groupBy
+    ? (() => {
+        const map = new Map<string, { value: unknown; rows: T[] }>();
+        for (const row of rows) {
+          const value = groupColumn?.sortValue ? groupColumn.sortValue(row) : defaultValue(row, groupBy);
+          const key = value instanceof Date ? value.toISOString() : String(value ?? "");
+          const group = map.get(key) ?? { value, rows: [] };
+          group.rows.push(row);
+          map.set(key, group);
+        }
+        return [...map.entries()];
+      })()
+    : null;
+
+  const renderRow = (row: T) => {
             const id = getRowId(row);
             const isSelected = selected.includes(id);
             const isExpanded = expanded.includes(id);
@@ -441,11 +521,25 @@ export function DataTable<T>({
                     />
                   </TableCell>
                 ) : null}
-                {visibleColumns.map((column) => (
-                  <TableCell key={column.id} className={alignClass[column.align ?? "start"]}>
-                    {column.cell ? column.cell(row) : String(defaultValue(row, column.id) ?? "")}
-                  </TableCell>
-                ))}
+                {visibleColumns.map((column) => {
+                  const content = column.cell ? column.cell(row) : String(defaultValue(row, column.id) ?? "");
+                  const editable = !!onCellEdit && (typeof column.editable === "function" ? column.editable(row) : !!column.editable);
+                  return (
+                    <TableCell key={column.id} className={cn(alignClass[column.align ?? "start"], fixedLayout && "truncate")}>
+                      {editable && onCellEdit ? (
+                        <InlineEdit
+                          size="sm"
+                          label={(labels?.edit ?? ((name: string) => name))(columnName(column))}
+                          value={column.editValue ? column.editValue(row) : String(defaultValue(row, column.id) ?? "")}
+                          renderValue={() => content}
+                          onSave={(value) => onCellEdit(row, column.id, value)}
+                        />
+                      ) : (
+                        content
+                      )}
+                    </TableCell>
+                  );
+                })}
               </TableRow>
               {renderExpanded && isExpanded ? (
                 <TableRow id={detailId} className="bg-surface-sunken/50 hover:bg-surface-sunken/50">
@@ -456,13 +550,156 @@ export function DataTable<T>({
               ) : null}
               </Fragment>
             );
-          })
+  };
+
+  const table = (
+    <Table
+      aria-busy={loading || undefined}
+      {...tableProps}
+      className={cn(fixedLayout && "table-fixed", tableProps.className)}
+      style={tableWidth ? { width: tableWidth, ...tableProps.style } : tableProps.style}
+    >
+      {caption ? <TableCaption>{caption}</TableCaption> : null}
+      <TableHeader>
+        <TableRow className="hover:bg-transparent">
+          {renderExpanded ? (
+            <TableHead className="w-10">
+              <span className="sr-only">{labels?.details ?? "Details"}</span>
+            </TableHead>
+          ) : null}
+          {selectable ? (
+            <TableHead className="w-10">
+              <Checkbox
+                size="sm"
+                aria-label={labels?.selectAll ?? "Select all rows"}
+                checked={allSelected ? true : someSelected ? "indeterminate" : false}
+                onCheckedChange={(v) => setSelected(v === true ? allIds : [])}
+              />
+            </TableHead>
+          ) : null}
+          {visibleColumns.map((column) => {
+            const active = sort?.id === column.id;
+            return (
+              <TableHead
+                key={column.id}
+                ref={(el: HTMLTableCellElement | null) => {
+                  if (el) headRefs.current.set(column.id, el);
+                  else headRefs.current.delete(column.id);
+                }}
+                style={widths[column.id] ? { width: widths[column.id] } : column.width ? { width: column.width } : undefined}
+                className={cn(alignClass[column.align ?? "start"], (resizableColumns || reorderableColumns) && "relative")}
+                aria-sort={column.sortable ? (active ? (sort.direction === "asc" ? "ascending" : "descending") : "none") : undefined}
+                draggable={reorderableColumns || undefined}
+                onDragStart={reorderableColumns ? onHeadDragStart(column.id) : undefined}
+                onDragOver={reorderableColumns ? (e: DragEvent<HTMLTableCellElement>) => e.preventDefault() : undefined}
+                onDrop={reorderableColumns ? onHeadDrop(column.id) : undefined}
+              >
+                {reorderableColumns ? (
+                  <button
+                    type="button"
+                    aria-label={moveLabel(columnName(column))}
+                    title={moveLabel(columnName(column))}
+                    onKeyDown={onMoveKey(column.id)}
+                    className={cn("-ms-1 me-0.5 inline-flex cursor-grab rounded-xs align-middle text-foreground-muted hover:text-foreground", focusRing)}
+                  >
+                    <GripVertical aria-hidden className="size-3.5" />
+                  </button>
+                ) : null}
+                {column.sortable ? (
+                  <button
+                    type="button"
+                    onClick={() => toggleSort(column.id)}
+                    className={cn("-mx-1 inline-flex items-center gap-1 rounded-xs px-1 uppercase hover:text-foreground", active && "text-foreground", focusRing)}
+                  >
+                    {column.header}
+                    {active ? (
+                      sort.direction === "asc" ? (
+                        <ArrowUp aria-hidden className="size-3.5" />
+                      ) : (
+                        <ArrowDown aria-hidden className="size-3.5" />
+                      )
+                    ) : (
+                      <ChevronsUpDown aria-hidden className="size-3.5 opacity-50" />
+                    )}
+                  </button>
+                ) : (
+                  column.header
+                )}
+                {resizableColumns ? (
+                  // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- a focusable separator is a widget (WAI-ARIA window splitter pattern)
+                  <div
+                    role="separator"
+                    aria-orientation="vertical"
+                    aria-label={(labels?.resize ?? ((name: string) => `Resize ${name}`))(columnName(column))}
+                    aria-valuenow={widths[column.id]}
+                    aria-valuemin={MIN_COLUMN_WIDTH}
+                    tabIndex={0}
+                    onPointerDown={onResizePointerDown(column.id)}
+                    onKeyDown={onResizeKey(column.id)}
+                    className={cn(
+                      "absolute inset-y-1 -end-1 z-10 w-2 cursor-col-resize touch-none rounded-full after:absolute after:inset-y-0 after:start-1/2 after:w-px after:bg-border hover:after:bg-foreground-muted",
+                      focusRing,
+                    )}
+                  />
+                ) : null}
+              </TableHead>
+            );
+          })}
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {loading ? (
+          Array.from({ length: 4 }, (_, i) => (
+            <TableRow key={`loading-${i}`}>
+              <TableCell colSpan={colSpan}>
+                <Skeleton shape="text" className={i % 2 ? "w-2/3" : "w-full"} />
+                {i === 0 ? <span className="sr-only">{labels?.loading ?? "Loading rows"}</span> : null}
+              </TableCell>
+            </TableRow>
+          ))
+        ) : rows.length === 0 ? (
+          <TableRow className="hover:bg-transparent">
+            <TableCell colSpan={colSpan}>
+              {search && data.length > 0 ? (
+                <EmptyState size="sm" title={labels?.noMatches ?? "No matching rows"} description={`“${search}”`} />
+              ) : (
+                (empty ?? <EmptyState size="sm" title="No results" description="There is nothing to show here yet." />)
+              )}
+            </TableCell>
+          </TableRow>
+        ) : (
+          groups
+            ? groups.map(([key, group]) => {
+                const collapsed = collapsedGroups.includes(key);
+                const name = String(group.value ?? "");
+                return (
+                  <Fragment key={`group-${key}`}>
+                    <TableRow className="bg-surface-sunken/60 hover:bg-surface-sunken/60">
+                      <TableCell colSpan={colSpan} className="py-1.5">
+                        <button
+                          type="button"
+                          aria-expanded={!collapsed}
+                          aria-label={(labels?.group ?? ((value: string, count: number) => `${value}, ${count === 1 ? "1 row" : `${count} rows`}`))(name, group.rows.length)}
+                          onClick={() => setCollapsedGroups((keys) => (keys.includes(key) ? keys.filter((k) => k !== key) : [...keys, key]))}
+                          className={cn("-mx-1 inline-flex items-center gap-1.5 rounded-xs px-1 text-sm font-medium text-foreground", focusRing)}
+                        >
+                          <ChevronRight aria-hidden className={cn("size-4 transition-transform duration-(--nv-duration-normal) rtl:-scale-x-100", !collapsed && "rotate-90 rtl:-rotate-90")} />
+                          {renderGroup ? renderGroup(group.value, group.rows) : name}
+                          <span className="rounded-full bg-surface-hover px-1.5 text-xs tabular-nums text-foreground-muted">{number.format(group.rows.length)}</span>
+                        </button>
+                      </TableCell>
+                    </TableRow>
+                    {collapsed ? null : group.rows.map(renderRow)}
+                  </Fragment>
+                );
+              })
+            : rows.map(renderRow)
         )}
       </TableBody>
     </Table>
   );
 
-  if (!showToolbar && !pageSize) return table;
+  if (!showToolbar && !pageSize && !reorderableColumns) return table;
 
   return (
     <div className="flex w-full flex-col gap-3">
@@ -514,6 +751,11 @@ export function DataTable<T>({
         </div>
       ) : null}
       {table}
+      {reorderableColumns ? (
+        <p aria-live="polite" className="sr-only">
+          {announcement}
+        </p>
+      ) : null}
       {pageSize ? (
         <div className="flex flex-wrap items-center justify-between gap-3">
           <p aria-live="polite" className="text-xs tabular-nums text-foreground-muted">

@@ -1998,6 +1998,15 @@ export function AvatarExamples() {
 }
 
 export function DataTableExamples() {
+  return (
+    <>
+      <DataTableBasicExample />
+      <DataTableColumnsExample />
+    </>
+  );
+}
+
+function DataTableBasicExample() {
   const [selected, setSelected] = useState<string[]>([]);
   const columns: DataTableColumn<Invoice>[] = [
     { id: "id", header: "Invoice", sortable: true, cell: (r) => <span className="font-mono text-xs font-semibold">{r.id}</span> },
@@ -2060,6 +2069,65 @@ export function DataTableExamples() {
           selectedIds={selected}
           onSelectionChange={setSelected}
           caption="Recent invoices"
+        />
+      </Stack>
+    </Example>
+  );
+}
+
+interface Shipment {
+  id: string;
+  vessel: string;
+  port: string;
+  cargo: string;
+  teu: number;
+}
+
+const initialShipments: Shipment[] = [
+  { id: "KMS-94812", vessel: "Alvand Voyager", port: "Bandar Abbas", cargo: "Containers", teu: 8000 },
+  { id: "KMS-94813", vessel: "Zagros Pioneer", port: "Bushehr", cargo: "Steel", teu: 4200 },
+  { id: "KMS-94814", vessel: "Damavand Star", port: "Bandar Abbas", cargo: "Containers", teu: 13000 },
+  { id: "KMS-94815", vessel: "Caspian Breeze", port: "Anzali", cargo: "Grain", teu: 1800 },
+  { id: "KMS-94816", vessel: "Persian Gulf Pride", port: "Bushehr", cargo: "Petrochemicals", teu: 10500 },
+];
+
+function DataTableColumnsExample() {
+  const [shipments, setShipments] = useState(initialShipments);
+  const [grouped, setGrouped] = useState(true);
+  const columns: DataTableColumn<Shipment>[] = [
+    { id: "id", header: "Tracking", cell: (r) => <span className="font-mono text-xs font-semibold">{r.id}</span> },
+    { id: "vessel", header: "Vessel", editable: true },
+    { id: "port", header: "Port" },
+    { id: "cargo", header: "Cargo", editable: true },
+    { id: "teu", header: "TEU", align: "end", cell: (r) => r.teu.toLocaleString() },
+  ];
+  return (
+    <Example
+      title="Columns: resize, reorder, edit, group"
+      description="resizableColumns adds a handle on each header edge: drag it, or focus it and use the arrow keys (Shift for bigger steps). reorderableColumns lets people drag headers, or move them with the grip button and arrow keys. Columns marked editable edit in place and call onCellEdit. groupBy puts rows under collapsible headings."
+      code={`<DataTable
+  data={shipments}
+  columns={[{ id: "vessel", header: "Vessel", editable: true }, …]}
+  getRowId={(r) => r.id}
+  resizableColumns
+  reorderableColumns
+  groupBy="port"
+  onCellEdit={(row, column, value) => save(row.id, { [column]: value })}
+/>`}
+    >
+      <Stack gap={3} className="w-full">
+        <FormField label="Group by port" inline>
+          <Switch checked={grouped} onCheckedChange={setGrouped} />
+        </FormField>
+        <DataTable
+          data={shipments}
+          columns={columns}
+          getRowId={(r) => r.id}
+          resizableColumns
+          reorderableColumns
+          groupBy={grouped ? "port" : undefined}
+          onCellEdit={(row, column, value) => setShipments((list) => list.map((s) => (s.id === row.id ? { ...s, [column]: value } : s)))}
+          caption="Shipments"
         />
       </Stack>
     </Example>

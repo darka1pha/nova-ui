@@ -28,7 +28,8 @@ const cases: Record<string, { names: string; budget: number }> = {
   "Dialog": { names: "Dialog, DialogContent, DialogTitle, DialogTrigger", budget: 30.5 },
   "Select": { names: "Select, SelectContent, SelectItem, SelectTrigger, SelectValue", budget: 49.5 },
   "Combobox (cmdk)": { names: "Combobox", budget: 49.5 },
-  "DataTable": { names: "DataTable", budget: 59 },
+  // +2.8 kB for in-place cell editing (InlineEdit) and the column resize/reorder/group code.
+  "DataTable": { names: "DataTable", budget: 62.3 },
   "Toast": { names: "toast, Toaster", budget: 28.5 },
   "Everything": { names: "*", budget: 208 },
 };
