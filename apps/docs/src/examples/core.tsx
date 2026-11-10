@@ -178,6 +178,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { capitalize, Example, navigate, to } from "../docs/kit.tsx";
+import { useToasterPosition, type ToastPosition } from "../docs/toaster-position.tsx";
 
 /* ---------------------------------------------------------- Layout & type */
 
@@ -946,8 +947,46 @@ export function ToastExamples() {
   return (
     <>
       <ToastBasicExample />
+      <ToastPositionExample />
       <ToastPromiseExamples />
     </>
+  );
+}
+
+const toastPositions: [ToastPosition, string][] = [
+  ["top-start", "Top start"],
+  ["top-center", "Top center"],
+  ["top-end", "Top end"],
+  ["bottom-start", "Bottom start"],
+  ["bottom-center", "Bottom center"],
+  ["bottom-end", "Bottom end"],
+];
+
+function ToastPositionExample() {
+  const { position, setPosition } = useToasterPosition();
+  // Put the docs Toaster back where every other page expects it.
+  useEffect(() => () => setPosition("bottom-end"), [setPosition]);
+  return (
+    <Example
+      title="Position"
+      description="<Toaster position> places the stack; start and end follow the reading direction. Swipe a toast away toward its edge: sideways for the corners, up or down for the centered positions."
+      code={`<Toaster position="top-center" />`}
+    >
+      {toastPositions.map(([value, label]) => (
+        <Button
+          key={value}
+          variant={position === value ? "primary" : "outline"}
+          size="sm"
+          aria-pressed={position === value}
+          onClick={() => {
+            setPosition(value);
+            toast(label, { description: "Swipe it away or wait." });
+          }}
+        >
+          {label}
+        </Button>
+      ))}
+    </Example>
   );
 }
 
