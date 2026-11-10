@@ -14,3 +14,4 @@ export {
   type UploadContext,
   type UseFileUploadsOptions,
 } from "./components/file-uploader.tsx";
+export { Splitter, type SplitterPane, type SplitterProps } from "./components/splitter.tsx";

@@ -56,6 +56,7 @@ const workflow: Loader = () => import("../examples/workflow.tsx");
 const seasonal: Loader = () => import("../examples/seasonal.tsx");
 const kaveh: Loader = () => import("../examples/kaveh.tsx");
 const kavehKit: Loader = () => import("../examples/kaveh-kit.tsx");
+const splitter: Loader = () => import("../examples/splitter.tsx");
 
 export const components: ComponentEntry[] = [
   { id: "typography", name: "Typography", summary: "Headings, body text, links, inline code and keyboard keys on the theme's type scale.", category: "layout", parts: ["Heading", "Text", "Link", "Code", "Kbd"], examples: examples(core, "TypographyExamples") },
@@ -64,6 +65,7 @@ export const components: ComponentEntry[] = [
   { id: "skeleton", name: "Skeleton", summary: "Placeholder shapes that hold the layout while content loads.", category: "layout", parts: ["Skeleton"], examples: examples(core, "SkeletonExamples") },
   { id: "spinner", name: "Spinner", summary: "An indeterminate loading indicator for short waits.", category: "layout", parts: ["Spinner"], examples: examples(core, "SpinnerExamples") },
   { id: "resizable", name: "Resizable panels", summary: "Split views people resize by dragging or with the keyboard, with saved layouts.", category: "layout", parts: ["ResizablePanelGroup", "ResizablePanel", "ResizableHandle"], examples: examples(core, "ResizableExamples") },
+  { id: "splitter", name: "Splitter", summary: "Resizable panes from a list, with the handles and their names done for you.", category: "layout", parts: ["Splitter"], entry: "experimental", examples: examples(splitter, "SplitterExamples"), a11y: ["Each handle is a separator named after the pane before it (\"Resize Folders\"), with its size as aria-valuenow. Arrow keys resize, Home/End jump to the limits, Enter toggles a collapsible pane."] },
   { id: "scroll-area", name: "ScrollArea", summary: "A scroll container with slim, themed scrollbars.", category: "layout", parts: ["ScrollArea"], examples: examples(extras, "ScrollAreaExamples") },
   { id: "aspect-ratio", name: "AspectRatio", summary: "Keeps media at a fixed width-to-height ratio.", category: "layout", parts: ["AspectRatio"], examples: examples(extras, "AspectRatioExamples") },
   { id: "button", name: "Button", summary: "Triggers an action. Variants express intent, sizes follow the density.", category: "actions", parts: ["Button", "IconButton"], examples: examples(core, "ButtonExamples"), a11y: ["Buttons render a native <button type=\"button\"> so Enter and Space work and forms are not submitted by accident.", "IconButton requires aria-label at the type level.", "Use a link (asChild with <a>) for navigation and a button for actions."] },
