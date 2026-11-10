@@ -14,3 +14,4 @@ export {
   type UploadContext,
   type UseFileUploadsOptions,
 } from "./components/file-uploader.tsx";
+export { Scheduler, type SchedulerProps, type SchedulerEvent, type SchedulerView, type SchedulerLabels } from "./components/scheduler.tsx";
