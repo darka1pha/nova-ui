@@ -56,6 +56,7 @@ const workflow: Loader = () => import("../examples/workflow.tsx");
 const seasonal: Loader = () => import("../examples/seasonal.tsx");
 const kaveh: Loader = () => import("../examples/kaveh.tsx");
 const kavehKit: Loader = () => import("../examples/kaveh-kit.tsx");
+const chartsMore: Loader = () => import("../examples/charts-more.tsx");
 
 export const components: ComponentEntry[] = [
   { id: "typography", name: "Typography", summary: "Headings, body text, links, inline code and keyboard keys on the theme's type scale.", category: "layout", parts: ["Heading", "Text", "Link", "Code", "Kbd"], examples: examples(core, "TypographyExamples") },
@@ -139,6 +140,8 @@ export const components: ComponentEntry[] = [
   { id: "line-chart", name: "LineChart & AreaChart", summary: "Trends over time, as lines or filled areas.", category: "data", parts: ["LineChart", "AreaChart"], examples: examples(core, "LineChartExamples"), a11y: ["Charts are labelled figures with a data table that is always available to screen readers and one click away for everyone; the plot is focusable and arrow keys announce each point."] },
   { id: "bar-chart", name: "BarChart", summary: "Compare values across categories.", category: "data", parts: ["BarChart"], examples: examples(core, "BarChartExamples"), a11y: ["Charts are labelled figures with a data table that is always available to screen readers and one click away for everyone."] },
   { id: "donut-chart", name: "DonutChart", summary: "Parts of a whole.", category: "data", parts: ["DonutChart"], examples: examples(core, "DonutChartExamples") },
+  { id: "scatter-chart", name: "ScatterChart", summary: "How two numbers relate across many items, optionally sized and grouped.", category: "data", parts: ["ScatterChart"], entry: "experimental", examples: examples(chartsMore, "ScatterChartExamples"), a11y: ["Like the other charts: a labelled figure with a data table that is always available to screen readers and one click away for everyone; the plot is focusable and arrow keys announce each value."] },
+  { id: "radar-chart", name: "RadarChart", summary: "Several measures for a few items at once, as polygons on shared spokes.", category: "data", parts: ["RadarChart"], entry: "experimental", examples: examples(chartsMore, "RadarChartExamples"), a11y: ["Like the other charts: a labelled figure with a data table that is always available to screen readers and one click away for everyone; the plot is focusable and arrow keys announce each value."] },
   { id: "bar-list", name: "BarList", summary: "A ranked list with proportional bars.", category: "data", parts: ["BarList"], examples: examples(core, "BarListExamples"), a11y: ["BarList is a list with visible values, so it reads correctly with a screen reader."] },
   { id: "stat", name: "Stat & Sparkline", summary: "A key number with its change and trend.", category: "data", parts: ["Stat", "Sparkline"], examples: examples(extras, "StatExamples") },
   { id: "timeline", name: "Timeline", summary: "Events in order, with times and icons.", category: "data", parts: ["Timeline"], examples: examples(extras, "TimelineExamples") },

@@ -14,3 +14,4 @@ export {
   type UploadContext,
   type UseFileUploadsOptions,
 } from "./components/file-uploader.tsx";
+export { ScatterChart, RadarChart, type ScatterChartProps, type RadarChartProps } from "./components/charts.tsx";
