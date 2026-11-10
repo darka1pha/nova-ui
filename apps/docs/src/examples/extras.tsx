@@ -589,6 +589,15 @@ export function ToolbarExamples() {
 }
 
 export function TreeViewExamples() {
+  return (
+    <>
+      <TreeViewSingleExample />
+      <TreeViewCheckableExample />
+    </>
+  );
+}
+
+function TreeViewSingleExample() {
   const [berth, setBerth] = useState<string | null>("sr-berth-2");
   return (
     <Example
@@ -613,6 +622,31 @@ export function TreeViewExamples() {
       />
       <Text size="sm" tone="muted">
         Selected: <code>{berth ?? "none"}</code>
+      </Text>
+    </Example>
+  );
+}
+
+function TreeViewCheckableExample() {
+  const [checked, setChecked] = useState<string[]>(["sr-berth-2"]);
+  return (
+    <Example
+      title="Checkboxes"
+      description="checkable picks several items. Checking a branch checks every leaf under it, and a branch shows checked, mixed or unchecked from its leaves. Space toggles; clicking a branch row still opens it. The value is the checked leaf ids."
+      code={`<TreeView label="Berths" items={portTree} checkable checkedIds={checked} onCheckedIdsChange={setChecked} />`}
+      className="items-start"
+    >
+      <TreeView
+        label="Berths"
+        items={portTree}
+        checkable
+        defaultExpanded={["bandar-abbas"]}
+        checkedIds={checked}
+        onCheckedIdsChange={setChecked}
+        className="w-full max-w-sm rounded-lg border border-border bg-surface p-1.5"
+      />
+      <Text size="sm" tone="muted">
+        Checked: <code>{checked.length ? checked.join(", ") : "none"}</code>
       </Text>
     </Example>
   );
