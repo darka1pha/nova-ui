@@ -1,5 +1,30 @@
 # @darkalpha/nova-ui
 
+## 0.7.0
+
+### Minor Changes
+
+- 46c03f4: Combobox async search and creatable options, and a FileUploader:
+  
+  - `Combobox` `loadOptions(query, signal)` fetches options as the user types (debounced by `debounceMs`, default 250). A newer query or closing the list aborts the older request through `signal`. `loadingMessage` and `errorMessage` cover the pending and failed states. `options` is now optional.
+  - `Combobox` `creatable` adds a "Create …" item when the search doesn't exactly match an option. `onCreate(label)` can return the new option or its value (or a promise of either); `formatCreateLabel` changes the text.
+  - The Combobox popup is now named after the field (`aria-label`, else `searchPlaceholder`), so it isn't announced as an unnamed dialog.
+  - `useFileUploads({ upload, concurrency })` manages an upload queue for `FileUploadList`: progress through `onProgress`, cancel through an `AbortSignal`, retry, image thumbnails, and abort on unmount. `FileUploader` wires it to a `FileDropzone`.
+- da4d658: `Countdown` gains `as` and `format`:
+  
+  - `as="div"` renders a block element for layouts that hold block content (the default is still an inline `<span>`). The ref type is now `HTMLElement`; a `RefObject<HTMLSpanElement>` still type-checks.
+  - `format={(parts) => …}` replaces the built-in markup with your own, e.g. `02:15:09`. It gets `days`, `hours`, `minutes`, `seconds`, `total`, `done` and `placeholder` (true on the server without `initialNow`). The timer keeps its spoken label, and `completed` still wins once it finishes. `CountdownParts` is exported.
+- c055cd0: Theming additions:
+  
+  - A `ThemeProvider` with `storageKey` now follows mode changes made in other tabs and windows of the same origin (the `storage` event), and runs `onModeChange` there too. If the key is removed or storage is cleared, it falls back to `defaultMode` (or the theme's preferred mode, else "system"). Controlled providers (`mode`) ignore it.
+  - `useThemeVariables()` returns the nearest theme's colors for the mode in effect: `colors` (every semantic color), `chart` (the eight chart colors), `mode`, and `cssVar(name)`. Use it for canvas, WebGL and chart libraries that can't read CSS variables; it updates when the theme, brand or mode changes.
+- 2e776d3: New `VirtualTable` for very large data. Only the rows in view are rendered, and with `virtualizeColumns` only the columns in view too, so 100,000 rows × 50 columns scroll smoothly. It stays a real `<table>` with `aria-rowcount`/`aria-rowindex` and `aria-colcount`/`aria-colindex`, a sticky header, and `pinned` leading columns. `selectable` adds a checkbox column: shift-click selects a range, and "Select all" covers every row, not only the rendered ones. It also has client-side sorting (or controlled `sort`), `onEndReached` for loading more, and `apiRef.scrollToRow()`. `virtualRange()`, the range math it shares with `VirtualList`, is exported.
+
+### Patch Changes
+
+- Updated dependencies [97a9038]
+  - @darkalpha/nova-tokens@0.7.0
+
 ## 0.6.0
 
 ### Minor Changes
