@@ -16,6 +16,7 @@ import {
   type ThHTMLAttributes,
 } from "react";
 import { useLocale, useOptionalTheme } from "../theme/theme-provider.tsx";
+import { useIsomorphicLayoutEffect } from "../utils/use-latest-ref.ts";
 import { cn } from "../utils/cn.ts";
 import { Button } from "./button.tsx";
 import { Checkbox } from "./controls.tsx";
@@ -178,8 +179,8 @@ export interface DataTableProps<T> extends Omit<TableProps, "children"> {
     move?: (column: string) => string;
     /** Announced after a move, e.g. (column, position, count) => `${column}, column ${position} of ${count}`. */
     moved?: (column: string, position: number, count: number) => string;
-    /** Name of the toggle on a group's header row. */
-    group?: (value: string, count: number) => string;
+    /** Read after a group's name on its toggle, e.g. (n) => `${n} rows`. */
+    groupRows?: (count: number) => string;
     /** Name of an editable cell, e.g. (column) => `Edit ${column}`. */
     edit?: (column: string) => string;
   };
@@ -318,6 +319,15 @@ export function DataTable<T>({
   const [collapsedGroups, setCollapsedGroups] = useState<string[]>([]);
   const [announcement, setAnnouncement] = useState("");
   const headRefs = useRef(new Map<string, HTMLTableCellElement>());
+  // Rendered widths, so a resize handle reports its column's size before the first resize.
+  const [measuredWidths, setMeasuredWidths] = useState<Record<string, number>>({});
+  const visibleKey = columns.map((c) => (hidden.includes(c.id) ? "" : c.id)).join(",");
+  useIsomorphicLayoutEffect(() => {
+    if (!resizableColumns) return;
+    const next: Record<string, number> = {};
+    headRefs.current.forEach((el, id) => (next[id] = Math.round(el.getBoundingClientRect().width || 120)));
+    setMeasuredWidths((prev) => (JSON.stringify(prev) === JSON.stringify(next) ? prev : next));
+  }, [resizableColumns, visibleKey]);
   const [internalSort, setInternalSort] = useState<SortState | null>(null);
   const sort = sortProp !== undefined ? sortProp : internalSort;
   const [internalSelected, setInternalSelected] = useState<string[]>([]);
@@ -631,7 +641,7 @@ export function DataTable<T>({
                     role="separator"
                     aria-orientation="vertical"
                     aria-label={(labels?.resize ?? ((name: string) => `Resize ${name}`))(columnName(column))}
-                    aria-valuenow={widths[column.id]}
+                    aria-valuenow={widths[column.id] ?? measuredWidths[column.id] ?? 120}
                     aria-valuemin={MIN_COLUMN_WIDTH}
                     tabIndex={0}
                     onPointerDown={onResizePointerDown(column.id)}
@@ -679,13 +689,15 @@ export function DataTable<T>({
                         <button
                           type="button"
                           aria-expanded={!collapsed}
-                          aria-label={(labels?.group ?? ((value: string, count: number) => `${value}, ${count === 1 ? "1 row" : `${count} rows`}`))(name, group.rows.length)}
                           onClick={() => setCollapsedGroups((keys) => (keys.includes(key) ? keys.filter((k) => k !== key) : [...keys, key]))}
                           className={cn("-mx-1 inline-flex items-center gap-1.5 rounded-xs px-1 text-sm font-medium text-foreground", focusRing)}
                         >
                           <ChevronRight aria-hidden className={cn("size-4 transition-transform duration-(--nv-duration-normal) rtl:-scale-x-100", !collapsed && "rotate-90 rtl:-rotate-90")} />
                           {renderGroup ? renderGroup(group.value, group.rows) : name}
-                          <span className="rounded-full bg-surface-hover px-1.5 text-xs tabular-nums text-foreground-muted">{number.format(group.rows.length)}</span>
+                          <span aria-hidden className="rounded-full bg-surface-hover px-1.5 text-xs tabular-nums text-foreground-muted">
+                            {number.format(group.rows.length)}
+                          </span>
+                          <span className="sr-only">, {(labels?.groupRows ?? ((n: number) => (n === 1 ? "1 row" : `${n} rows`)))(group.rows.length)}</span>
                         </button>
                       </TableCell>
                     </TableRow>

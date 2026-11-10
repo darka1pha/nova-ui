@@ -38,7 +38,8 @@ const consumerClasses = [
   ...["fill-current", "stroke-2", "object-cover", "aspect-square", "col-span-2", "row-start-1", "grid-cols-2", "table-fixed", "align-middle", "list-none", "sr-only", "not-sr-only", "appearance-none", "resize-none"],
 ];
 
-describe("cn() with the trimmed tailwind-merge config", () => {
+// Tens of thousands of merges: slow when the whole suite shares the CPU.
+describe("cn() with the trimmed tailwind-merge config", { timeout: 60_000 }, () => {
   it("found the component classes", () => {
     expect(componentClasses.length).toBeGreaterThan(500);
   });

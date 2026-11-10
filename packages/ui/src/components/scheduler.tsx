@@ -270,12 +270,17 @@ export const Scheduler = forwardRef<HTMLDivElement, SchedulerProps>(function Sch
         e.stopPropagation();
         onEventClick?.(event);
       }}
-      aria-label={`${event.title}, ${timeRange(event)}`}
-      className={cn("flex w-full min-w-0 items-center gap-1 rounded-sm px-1 py-0.5 text-start text-xs hover:bg-surface-hover", focusRing)}
+      className={cn("flex min-h-6 w-full min-w-0 items-center gap-1 rounded-sm px-1 text-start text-xs hover:bg-surface-hover", focusRing)}
     >
       <span aria-hidden className="size-1.5 shrink-0 rounded-full" style={{ background: colorOf(event) }} />
-      {!event.allDay ? <span className="shrink-0 tabular-nums text-foreground-muted">{fmt.time.format(event.start)}</span> : null}
+      {!event.allDay ? (
+        <span aria-hidden className="shrink-0 tabular-nums text-foreground-muted">
+          {fmt.time.format(event.start)}
+        </span>
+      ) : null}
       <span className="truncate text-foreground">{event.title}</span>
+      {/* The name reads "title, time range"; the start time above is the short visual form. */}
+      <span className="sr-only">, {timeRange(event)}</span>
     </button>
   );
 
@@ -306,7 +311,6 @@ export const Scheduler = forwardRef<HTMLDivElement, SchedulerProps>(function Sch
                   role="gridcell"
                   tabIndex={isCursor ? 0 : -1}
                   aria-selected={isCursor}
-                  aria-label={`${fmt.day(d)}${list.length ? `, ${l.events(list.length)}` : ""}`}
                   aria-current={sameDay(d, today) ? "date" : undefined}
                   onClick={() => {
                     setDate(d);
@@ -319,6 +323,7 @@ export const Scheduler = forwardRef<HTMLDivElement, SchedulerProps>(function Sch
                     isCursor && "ring-2 ring-inset ring-focus-ring/0 focus-visible:ring-focus-ring",
                   )}
                 >
+                  <span className="sr-only">{`${fmt.day(d)}${list.length ? `, ${l.events(list.length)}` : ""}`}</span>
                   <span
                     aria-hidden
                     className={cn(
@@ -340,7 +345,7 @@ export const Scheduler = forwardRef<HTMLDivElement, SchedulerProps>(function Sch
                         setDate(d);
                         setView("day");
                       }}
-                      className={cn("self-start rounded-sm px-1 text-xs font-medium text-foreground-secondary hover:bg-surface-hover", focusRing)}
+                      className={cn("inline-flex min-h-6 items-center self-start rounded-sm px-1 text-xs font-medium text-foreground-secondary hover:bg-surface-hover", focusRing)}
                     >
                       {l.more(list.length - shown.length)}
                     </button>
@@ -415,7 +420,7 @@ export const Scheduler = forwardRef<HTMLDivElement, SchedulerProps>(function Sch
                   {timed.map((e) => {
                     const place = layout.get(e.id) ?? { col: 0, cols: 1 };
                     const top = toY(e.start);
-                    const height = Math.max(20, toY(e.end) - top);
+                    const height = Math.max(24, toY(e.end) - top);
                     return (
                       <button
                         key={e.id}
@@ -424,7 +429,6 @@ export const Scheduler = forwardRef<HTMLDivElement, SchedulerProps>(function Sch
                           ev.stopPropagation();
                           onEventClick?.(e);
                         }}
-                        aria-label={`${e.title}, ${timeRange(e)}`}
                         className={cn("absolute overflow-hidden rounded-md border-s-4 bg-surface-raised px-1.5 py-0.5 text-start text-xs shadow-xs hover:bg-surface-hover", focusRing)}
                         style={{
                           top,
@@ -435,6 +439,7 @@ export const Scheduler = forwardRef<HTMLDivElement, SchedulerProps>(function Sch
                         }}
                       >
                         <span className="block truncate font-medium text-foreground">{e.title}</span>
+                        <span className="sr-only">, </span>
                         <span className="block truncate tabular-nums text-foreground-muted">{timeRange(e)}</span>
                       </button>
                     );

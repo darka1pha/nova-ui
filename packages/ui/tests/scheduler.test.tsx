@@ -22,10 +22,14 @@ describe("Scheduler", () => {
     const { container } = render(<Scheduler label="Berths" events={events} defaultDate={at(12, 0)} weekStartsOn={6} locale="en-US" onViewChange={onViewChange} />);
     const grid = screen.getByRole("grid", { name: "Berths, November 2026" });
     expect(within(grid).getAllByRole("columnheader")[0]).toHaveAccessibleName("Saturday");
-    const day = within(grid).getByRole("gridcell", { name: "Thursday, November 12, 2026, 4 events" });
+    const day = within(grid).getByRole("gridcell", { name: /^Thursday, November 12, 2026, 4 events/ });
     expect(day).toHaveAttribute("tabindex", "0");
     // Three slots: two events and "+2 more".
-    expect(within(day).getAllByRole("button").map((b) => b.textContent)).toEqual(["9:00 AMDamavand Star berthing", "10:00 AMCustoms inspection", "+2 more"]);
+    expect(within(day).getAllByRole("button").map((b) => b.textContent)).toEqual([
+      "9:00 AMDamavand Star berthing, 9:00 AM–11:00 AM",
+      "10:00 AMCustoms inspection, 10:00 AM–12:00 PM",
+      "+2 more",
+    ]);
     expect(await axeViolations(container)).toEqual([]);
 
     await user.click(within(day).getByRole("button", { name: "+2 more" }));
