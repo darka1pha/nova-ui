@@ -74,7 +74,9 @@
     "test:watch": "vitest",
     "size": "node scripts/size-report.ts",
     "api:report": "node scripts/api-report.ts",
-    "api:check": "node scripts/api-report.ts --check"
+    "api:check": "node scripts/api-report.ts --check",
+    "merge:config": "node scripts/generate-tw-merge.ts",
+    "merge:check": "node scripts/generate-tw-merge.ts --check"
   },
   "peerDependencies": {
     "@tiptap/core": "^3.32.2",
