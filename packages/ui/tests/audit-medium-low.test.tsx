@@ -2,7 +2,7 @@ import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import { renderToString } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { normalizeUrl } from "../src/components/rich-text-editor.tsx";
+import { normalizeUrl } from "../src/utils/safe-url.ts";
 import { Button, Countdown, DataTable, Fieldset, FormField, Input, Rating, ThemeProvider, toast, Toaster, cn, getThemeScript } from "../src/index.ts";
 import { axeViolations } from "./axe.ts";
 
