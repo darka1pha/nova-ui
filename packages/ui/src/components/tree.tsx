@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronRight } from "lucide-react";
+import { Check, ChevronRight, Minus } from "lucide-react";
 import { forwardRef, useMemo, useRef, useState, type HTMLAttributes, type KeyboardEvent, type ReactNode } from "react";
 import { useOptionalTheme } from "../theme/theme-provider.tsx";
 import { cn } from "../utils/cn.ts";
@@ -16,7 +16,7 @@ export interface TreeItem {
   children?: TreeItem[];
 }
 
-export interface TreeViewProps extends Omit<HTMLAttributes<HTMLUListElement>, "onSelect"> {
+export interface TreeViewProps extends Omit<HTMLAttributes<HTMLUListElement>, "onSelect" | "defaultChecked"> {
   /** Accessible name for the tree. */
   label: string;
   /** The tree: each item has an id, a label and optional children. */
@@ -37,6 +37,35 @@ export interface TreeViewProps extends Omit<HTMLAttributes<HTMLUListElement>, "o
   size?: "sm" | "md";
   /** Faint vertical guides that show which branch a row belongs to. */
   guides?: boolean;
+  /**
+   * Checkboxes for picking several items. Checking a branch checks every leaf under it, and a
+   * branch shows checked, mixed or unchecked from its leaves. Space toggles; clicking a branch
+   * row still opens it. The value is the checked leaf ids.
+   */
+  checkable?: boolean;
+  /** Controlled checked leaf ids (with `checkable`). */
+  checkedIds?: string[];
+  /** Leaf ids checked on first render. */
+  defaultCheckedIds?: string[];
+  /** Called with the checked leaf ids. */
+  onCheckedIdsChange?: (ids: string[]) => void;
+}
+
+/** Ids of the enabled leaves under an item (the item itself when it is a leaf). */
+function leafIds(item: TreeItem, out: string[] = []): string[] {
+  if (item.disabled) return out;
+  if (item.children?.length) item.children.forEach((child) => leafIds(child, out));
+  else out.push(item.id);
+  return out;
+}
+
+/** A leaf's checked state, or a branch's from its leaves. */
+function checkState(item: TreeItem, checked: Set<string>): boolean | "mixed" {
+  if (!item.children?.length) return checked.has(item.id);
+  const states = item.children.filter((c) => !c.disabled).map((c) => checkState(c, checked));
+  if (states.length === 0) return false;
+  if (states.every((s) => s === true)) return true;
+  return states.some((s) => s !== false) ? "mixed" : false;
 }
 
 interface Row {
@@ -84,11 +113,25 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
     onSelectedChange,
     size = "md",
     guides = true,
+    checkable = false,
+    checkedIds: checkedProp,
+    defaultCheckedIds = [],
+    onCheckedIdsChange,
     className,
     ...props
   },
   ref,
 ) {
+  const [internalChecked, setInternalChecked] = useState<string[]>(defaultCheckedIds);
+  const checkedIds = checkedProp ?? internalChecked;
+  const checked = useMemo(() => new Set(checkedIds), [checkedIds]);
+  const toggleCheck = (item: TreeItem) => {
+    if (item.disabled) return;
+    const leaves = leafIds(item);
+    const next = checkState(item, checked) === true ? checkedIds.filter((id) => !leaves.includes(id)) : [...new Set([...checkedIds, ...leaves])];
+    if (checkedProp === undefined) setInternalChecked(next);
+    onCheckedIdsChange?.(next);
+  };
   const rtl = (useOptionalTheme()?.dir ?? "ltr") === "rtl";
   const [internalExpanded, setInternalExpanded] = useState<string[]>(defaultExpanded);
   const expandedIds = expandedProp ?? internalExpanded;
@@ -155,6 +198,12 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
       case "Enter":
       case " ":
         return go(() => {
+          if (checkable) {
+            // Space checks; Enter opens a branch and checks a leaf.
+            if (e.key === "Enter" && hasChildren) toggle(row.item.id);
+            else toggleCheck(row.item);
+            return;
+          }
           select(row.item);
           if (e.key === "Enter" && hasChildren) toggle(row.item.id);
         });
@@ -194,7 +243,8 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
       const row: Row = { item, depth, parent, pos: i + 1, size: levelItems.length };
       const hasChildren = !!item.children?.length;
       const isOpen = hasChildren && expanded.has(item.id);
-      const isSelected = selected === item.id;
+      const isSelected = !checkable && selected === item.id;
+      const state = checkable ? checkState(item, checked) : false;
       return (
         <li
           key={item.id}
@@ -207,7 +257,8 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
           aria-posinset={row.pos}
           aria-setsize={row.size}
           aria-expanded={hasChildren ? isOpen : undefined}
-          aria-selected={isSelected}
+          aria-selected={checkable ? undefined : isSelected}
+          aria-checked={checkable ? state : undefined}
           aria-disabled={item.disabled || undefined}
           tabIndex={item.id === tabStop ? 0 : -1}
           onKeyDown={onKeyDown(row)}
@@ -220,6 +271,11 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
           <div
             onClick={() => {
               focusRow(item.id);
+              if (checkable) {
+                if (hasChildren) toggle(item.id);
+                else toggleCheck(item);
+                return;
+              }
               select(item);
               if (hasChildren) toggle(item.id);
             }}
@@ -250,6 +306,24 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
                 />
               ) : null}
             </span>
+            {checkable ? (
+              // The row is the checkbox (aria-checked); this box is its picture and a click target for branches.
+              <span
+                aria-hidden
+                data-state={state === "mixed" ? "indeterminate" : state ? "checked" : "unchecked"}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  focusRow(item.id);
+                  toggleCheck(item);
+                }}
+                className={cn(
+                  "flex size-4 shrink-0 items-center justify-center rounded-[4px] border transition-colors duration-(--nv-duration-fast) [&_svg]:size-3",
+                  state ? "border-primary bg-primary text-primary-on-solid" : "border-input bg-surface",
+                )}
+              >
+                {state === "mixed" ? <Minus strokeWidth={3} /> : state ? <Check strokeWidth={3} /> : null}
+              </span>
+            ) : null}
             {item.icon ? (
               <span aria-hidden className={cn("flex shrink-0 items-center [&_svg]:size-4", isSelected ? "text-primary-text" : "text-foreground-muted")}>
                 {item.icon}
@@ -268,7 +342,7 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
     });
 
   return (
-    <ul ref={ref} role="tree" aria-label={label} className={cn("m-0 flex list-none flex-col gap-px p-0", className)} {...props}>
+    <ul ref={ref} role="tree" aria-label={label} aria-multiselectable={checkable || undefined} className={cn("m-0 flex list-none flex-col gap-px p-0", className)} {...props}>
       {renderLevel(items, 0, null)}
     </ul>
   );

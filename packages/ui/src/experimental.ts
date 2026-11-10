@@ -14,3 +14,4 @@ export {
   type UploadContext,
   type UseFileUploadsOptions,
 } from "./components/file-uploader.tsx";
+export { TreeSelect, type TreeSelectProps, type TreeSelectSingleProps, type TreeSelectMultipleProps, type TreeSelectLabels } from "./components/tree-select.tsx";

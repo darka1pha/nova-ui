@@ -56,6 +56,7 @@ const workflow: Loader = () => import("../examples/workflow.tsx");
 const seasonal: Loader = () => import("../examples/seasonal.tsx");
 const kaveh: Loader = () => import("../examples/kaveh.tsx");
 const kavehKit: Loader = () => import("../examples/kaveh-kit.tsx");
+const treeSelect: Loader = () => import("../examples/tree-select.tsx");
 
 export const components: ComponentEntry[] = [
   { id: "typography", name: "Typography", summary: "Headings, body text, links, inline code and keyboard keys on the theme's type scale.", category: "layout", parts: ["Heading", "Text", "Link", "Code", "Kbd"], examples: examples(core, "TypographyExamples") },
@@ -87,6 +88,7 @@ export const components: ComponentEntry[] = [
   { id: "select", name: "Select", summary: "One choice from a list, in a dropdown.", category: "forms", parts: ["Select", "SelectTrigger", "SelectValue", "SelectContent", "SelectItem", "SelectGroup", "SelectLabel", "SelectSeparator"], examples: examples(core, "SelectExamples") },
   { id: "combobox", name: "Combobox", summary: "One choice from a long list, with search.", category: "forms", parts: ["Combobox"], examples: examples(core, "ComboboxExamples") },
   { id: "multi-select", name: "MultiSelect", summary: "Several choices from a long list, with search, chips and optional creation.", category: "forms", parts: ["MultiSelect"], examples: examples(workflow, "MultiSelectExamples"), a11y: ["The field is a combobox; chosen options are spoken as \"selected\" and each chip has a labelled remove button.", "Backspace on the field removes the last value."] },
+  { id: "tree-select", name: "TreeSelect", summary: "Pick one or several items from a hierarchy, with search.", category: "forms", parts: ["TreeSelect"], entry: "experimental", examples: examples(treeSelect, "TreeSelectExamples"), a11y: ["The trigger is a combobox that opens a searchable tree; Down moves from the search box into it. With multiple, the tree is multiselectable and every item has aria-checked (mixed for a partly checked branch)."] },
   { id: "slider", name: "Slider", summary: "A value, or a range, picked along a track.", category: "forms", parts: ["Slider"], examples: examples(core, "SliderExamples") },
   { id: "date-picker", name: "DatePicker & Calendar", summary: "A date field with a calendar popover; Gregorian or Jalali.", category: "forms", parts: ["DatePicker", "Calendar"], examples: examples(extras, "DatePickerExamples"), a11y: ["Calendar follows the WAI-ARIA date grid pattern: arrows, Home/End, Page Up/Down (Shift for years); arrows mirror in RTL."] },
   { id: "date-time-picker", name: "DateTimePicker", summary: "A date and time in one field: a calendar and a time input in a popover.", category: "forms", parts: ["DateTimePicker"], examples: examples(workflow, "DateTimePickerExamples"), a11y: ["The calendar follows the date grid pattern and the time segments are spin buttons.", "The popover stays open until Done or Escape and returns focus to the field."] },
