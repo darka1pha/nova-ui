@@ -675,3 +675,383 @@ export const DonutChart = forwardRef<HTMLElement, DonutChartProps>(function Donu
     </ChartFrame>
   );
 });
+
+/* ---------------------------------------------------------------- Scatter */
+
+export interface ScatterChartProps<T> extends Omit<HTMLAttributes<HTMLElement>, "title"> {
+  /** Accessible name for the chart and its table. */
+  label: string;
+  /** One object per point. */
+  data: T[];
+  /** Numeric field for the horizontal position. */
+  x: keyof T & string;
+  /** Numeric field for the vertical position. */
+  y: keyof T & string;
+  /** Numeric field that sizes each point (a bubble chart). Area follows the value. */
+  size?: keyof T & string;
+  /** Field that splits points into colored groups, with a legend. */
+  group?: keyof T & string;
+  /** Field that names each point in the tooltip and table. */
+  pointLabel?: keyof T & string;
+  /** Axis titles, also used as table headers. */
+  xLabel?: string;
+  yLabel?: string;
+  formatX?: (value: number) => string;
+  formatY?: (value: number) => string;
+  formatSize?: (value: number) => string;
+  /** Plot height in px (axes included). */
+  height?: number;
+  tableToggle?: boolean;
+  labels?: BaseChartProps<unknown>["labels"] & { point?: string; group?: string; size?: string };
+}
+
+const extent = (values: number[]): [number, number] => (values.length ? [Math.min(...values), Math.max(...values)] : [0, 1]);
+
+/**
+ * How two numbers relate across many items, optionally sized (bubbles) and grouped.
+ * Hover or arrow through the points in x order; the data table lists every point.
+ */
+export function ScatterChart<T>({
+  label,
+  data,
+  x,
+  y,
+  size,
+  group,
+  pointLabel,
+  xLabel,
+  yLabel,
+  formatX,
+  formatY,
+  formatSize,
+  height = 280,
+  tableToggle = true,
+  labels,
+  className,
+  ...rest
+}: ScatterChartProps<T>) {
+  const [box, width] = useWidth<HTMLDivElement>();
+  const rtl = (useOptionalTheme()?.dir ?? "ltr") === "rtl";
+  const base = useFormatters<Record<string, never>>();
+  const fx = formatX ?? base.value;
+  const fy = formatY ?? base.value;
+  const fs = formatSize ?? base.value;
+  const [active, setActive] = useState<number | null>(null);
+  const [keyboard, setKeyboard] = useState(false);
+  const liveId = useId();
+
+  const num = (row: T | undefined, key: (keyof T & string) | undefined) => (row && key ? Number(row[key]) || 0 : 0);
+  const groups = group ? [...new Set(data.map((row) => String(row[group])))] : [];
+  const groupSeries = groups.map(() => ({}));
+  const colorOf = (row: T) => (group ? seriesColor(groupSeries, groups.indexOf(String(row[group]))) : seriesColor([{}], 0));
+  const nameOf = (row: T, i: number) => (pointLabel ? String(row[pointLabel]) : `${labels?.point ?? "Point"} ${i + 1}`);
+
+  const xs = data.map((row) => num(row, x));
+  const ys = data.map((row) => num(row, y));
+  const xTicks = niceTicks(...extent(xs));
+  const yTicks = niceTicks(...extent(ys));
+  const x0 = xTicks[0] ?? 0;
+  const x1 = xTicks[xTicks.length - 1] ?? 1;
+  const y0 = yTicks[0] ?? 0;
+  const y1 = yTicks[yTicks.length - 1] ?? 1;
+
+  const titleRoom = 16;
+  const bottom = AXIS.bottom + (xLabel ? titleRoom : 0);
+  const plotW = Math.max(0, width - AXIS.side - AXIS.gutter - (yLabel ? titleRoom : 0));
+  const plotH = height - AXIS.top - bottom;
+  const plotStart = rtl ? AXIS.gutter : AXIS.side + (yLabel ? titleRoom : 0);
+  // Values grow in reading direction, as categories do in the other charts.
+  const px = (v: number) => {
+    const t = (v - x0) / (x1 - x0 || 1);
+    return plotStart + (rtl ? 1 - t : t) * plotW;
+  };
+  const py = (v: number) => AXIS.top + plotH - ((v - y0) / (y1 - y0 || 1)) * plotH;
+  const maxSize = size ? Math.max(1, ...data.map((row) => Math.abs(num(row, size)))) : 1;
+  const radius = (row: T) => (size ? 4 + 12 * Math.sqrt(Math.abs(num(row, size)) / maxSize) : 5);
+
+  // Keyboard order: by x, then y.
+  const order = data.map((_, i) => i).sort((a, b) => (xs[a] ?? 0) - (xs[b] ?? 0) || (ys[a] ?? 0) - (ys[b] ?? 0));
+
+  const onPointerMove = (e: PointerEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    let best: number | null = null;
+    let dist = 24 ** 2; // only points within about 24px respond
+    data.forEach((row, i) => {
+      const d = (px(xs[i] ?? 0) - mx) ** 2 + (py(ys[i] ?? 0) - my) ** 2 - radius(row) ** 2;
+      if (d < dist) {
+        dist = d;
+        best = i;
+      }
+    });
+    setKeyboard(false);
+    setActive(best);
+  };
+  const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    const step = { ArrowRight: rtl ? -1 : 1, ArrowLeft: rtl ? 1 : -1 }[e.key];
+    if (step === undefined && e.key !== "Home" && e.key !== "End" && e.key !== "Escape") return;
+    e.preventDefault();
+    setKeyboard(true);
+    if (e.key === "Escape") return setActive(null);
+    if (!order.length) return;
+    if (e.key === "Home") return setActive(order[0] ?? null);
+    if (e.key === "End") return setActive(order[order.length - 1] ?? null);
+    const pos = active === null ? (step === 1 ? -1 : order.length) : order.indexOf(active);
+    setActive(order[Math.min(order.length - 1, Math.max(0, pos + (step ?? 0)))] ?? null);
+  };
+
+  const activeRow = active !== null ? data[active] : undefined;
+  const describe = (row: T, i: number) =>
+    [nameOf(row, i), group ? String(row[group]) : null, `${xLabel ?? x} ${fx(num(row, x))}`, `${yLabel ?? y} ${fy(num(row, y))}`, size ? `${labels?.size ?? size} ${fs(num(row, size))}` : null]
+      .filter(Boolean)
+      .join(", ");
+
+  const table = (
+    <DataTableView
+      caption={label}
+      head={[labels?.point ?? (pointLabel ? String(pointLabel) : "Point"), ...(group ? [labels?.group ?? String(group)] : []), xLabel ?? x, yLabel ?? y, ...(size ? [labels?.size ?? String(size)] : [])]}
+      rows={data.map((row, i) => [nameOf(row, i), ...(group ? [String(row[group])] : []), fx(num(row, x)), fy(num(row, y)), ...(size ? [fs(num(row, size))] : [])])}
+    />
+  );
+
+  return (
+    <ChartFrame
+      label={label}
+      legend={groups.length > 1 ? <Legend kind="dot" items={groups.map((g, i) => ({ label: g, color: seriesColor(groupSeries, i) }))} /> : null}
+      table={table}
+      tableToggle={tableToggle}
+      labels={labels}
+      className={className}
+      rest={rest}
+    >
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- the chart is a focusable, keyboard-explorable group (arrow keys move between points) */}
+      <div
+        ref={box}
+        role="group"
+        aria-roledescription="chart"
+        aria-label={label}
+        aria-describedby={liveId}
+        tabIndex={0}
+        onPointerMove={onPointerMove}
+        onPointerLeave={() => setActive(null)}
+        onKeyDown={onKeyDown}
+        onBlur={() => keyboard && setActive(null)}
+        className={cn("relative w-full touch-pan-y rounded-md", focusRing)}
+        style={{ height }}
+      >
+        {width > 0 ? (
+          <svg width={width} height={height} aria-hidden className="block overflow-visible">
+            {yTicks.map((t) => (
+              <g key={`y${t}`}>
+                <line x1={plotStart} x2={plotStart + plotW} y1={py(t)} y2={py(t)} stroke="var(--nv-color-border)" strokeWidth={1} shapeRendering="crispEdges" />
+                <text x={rtl ? plotStart + plotW + 8 : plotStart - 8} y={py(t)} dy="0.32em" textAnchor={rtl ? "start" : "end"} className="fill-foreground-muted text-[11px] tabular-nums">
+                  {base.tick(t)}
+                </text>
+              </g>
+            ))}
+            {xTicks.map((t) => (
+              <g key={`x${t}`}>
+                <line x1={px(t)} x2={px(t)} y1={AXIS.top} y2={AXIS.top + plotH} stroke="var(--nv-color-border)" strokeWidth={1} strokeOpacity={0.6} shapeRendering="crispEdges" />
+                <text x={px(t)} y={AXIS.top + plotH + 18} textAnchor="middle" className="fill-foreground-muted text-[11px] tabular-nums">
+                  {base.tick(t)}
+                </text>
+              </g>
+            ))}
+            {xLabel ? (
+              <text x={plotStart + plotW / 2} y={height - 4} textAnchor="middle" className="fill-foreground-secondary text-xs">
+                {xLabel}
+              </text>
+            ) : null}
+            {yLabel ? (
+              <text transform={`translate(${rtl ? width - 4 : 10},${AXIS.top + plotH / 2}) rotate(${rtl ? 90 : -90})`} textAnchor="middle" className="fill-foreground-secondary text-xs">
+                {yLabel}
+              </text>
+            ) : null}
+            <g>
+              {data.map((row, i) => (
+                <circle
+                  key={i}
+                  cx={px(xs[i] ?? 0)}
+                  cy={py(ys[i] ?? 0)}
+                  r={radius(row) + (active === i ? 1.5 : 0)}
+                  fill={colorOf(row)}
+                  fillOpacity={active !== null && active !== i ? 0.35 : size ? 0.6 : 0.85}
+                  stroke="var(--nv-color-surface)"
+                  strokeWidth={1.5}
+                  className="transition-opacity duration-(--nv-duration-fast)"
+                />
+              ))}
+            </g>
+          </svg>
+        ) : null}
+        {activeRow && active !== null ? (
+          <Tooltip
+            x={px(xs[active] ?? 0)}
+            width={width}
+            title={nameOf(activeRow, active)}
+            rows={[
+              ...(group ? [{ label: labels?.group ?? String(group), value: String(activeRow[group]), color: colorOf(activeRow), kind: "dot" as const }] : []),
+              { label: xLabel ?? x, value: fx(num(activeRow, x)), color: colorOf(activeRow), kind: "dot" as const },
+              { label: yLabel ?? y, value: fy(num(activeRow, y)), color: colorOf(activeRow), kind: "dot" as const },
+              ...(size ? [{ label: labels?.size ?? String(size), value: fs(num(activeRow, size)), color: colorOf(activeRow), kind: "dot" as const }] : []),
+            ]}
+          />
+        ) : null}
+        <p id={liveId} aria-live="polite" className="sr-only">
+          {keyboard && activeRow && active !== null ? describe(activeRow, active) : "Use arrow keys to read values."}
+        </p>
+      </div>
+    </ChartFrame>
+  );
+}
+
+/* ------------------------------------------------------------------ Radar */
+
+export type RadarChartProps<T> = BaseChartProps<T>;
+
+/**
+ * Compares a few series across several measures at once: one spoke per row of `data`
+ * (the `index` field names it), one polygon per series, from a shared zero center.
+ * Arrow keys step around the spokes. Keep it to about 3–8 spokes and 1–3 series.
+ */
+export function RadarChart<T>({ label, data, index, series, height = 320, formatValue, formatIndex, tableToggle = true, labels, className, ...rest }: RadarChartProps<T>) {
+  const [box, width] = useWidth<HTMLDivElement>();
+  const rtl = (useOptionalTheme()?.dir ?? "ltr") === "rtl";
+  const fmt = useFormatters(formatValue, formatIndex);
+  const [active, setActive] = useState<number | null>(null);
+  const [keyboard, setKeyboard] = useState(false);
+  const liveId = useId();
+
+  const values = (row: T | undefined, key: string) => (row ? Math.max(0, Number(row[key as keyof T]) || 0) : 0);
+  const ticks = niceTicks(0, Math.max(0, ...data.flatMap((row) => series.map((s) => values(row, s.key)))), 4).filter((t) => t > 0);
+  const max = ticks[ticks.length - 1] ?? 1;
+  const cx = width / 2;
+  const cy = height / 2;
+  const r = Math.max(0, Math.min(width / 2 - 72, height / 2 - 28));
+  // Spoke 0 points up; spokes go clockwise, counter-clockwise in RTL (mirrored).
+  const angle = (i: number) => -Math.PI / 2 + ((rtl ? -1 : 1) * 2 * Math.PI * i) / Math.max(1, data.length);
+  const point = (i: number, v: number) => ({ x: cx + Math.cos(angle(i)) * r * (v / max), y: cy + Math.sin(angle(i)) * r * (v / max) });
+  const toPath = (pts: { x: number; y: number }[]) => `${pts.map((p, i) => `${i ? "L" : "M"}${p.x},${p.y}`).join("")}Z`;
+
+  const onPointerMove = (e: PointerEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const a = Math.atan2(e.clientY - rect.top - cy, e.clientX - rect.left - cx);
+    let best = 0;
+    let dist = Infinity;
+    data.forEach((_, i) => {
+      const d = Math.abs(Math.atan2(Math.sin(a - angle(i)), Math.cos(a - angle(i))));
+      if (d < dist) {
+        dist = d;
+        best = i;
+      }
+    });
+    setKeyboard(false);
+    setActive(data.length ? best : null);
+  };
+  const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+    if (step === undefined && e.key !== "Home" && e.key !== "End" && e.key !== "Escape") return;
+    e.preventDefault();
+    setKeyboard(true);
+    if (e.key === "Escape") return setActive(null);
+    if (!data.length) return;
+    if (e.key === "Home") return setActive(0);
+    if (e.key === "End") return setActive(data.length - 1);
+    // Around the circle, wrapping.
+    setActive((a) => ((a ?? (step === 1 ? -1 : 0)) + (step ?? 0) + data.length) % data.length);
+  };
+
+  const activeRow = active !== null ? data[active] : undefined;
+  const table = (
+    <DataTableView
+      caption={label}
+      head={[labels?.category ?? index, ...series.map((s) => s.label)]}
+      rows={data.map((row) => [fmt.index(row[index]), ...series.map((s) => fmt.value(values(row, s.key)))])}
+    />
+  );
+
+  return (
+    <ChartFrame
+      label={label}
+      legend={series.length > 1 ? <Legend kind="line" items={series.map((s, i) => ({ label: s.label, color: seriesColor(series, i) }))} /> : null}
+      table={table}
+      tableToggle={tableToggle}
+      labels={labels}
+      className={className}
+      rest={rest}
+    >
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- the chart is a focusable, keyboard-explorable group (arrow keys move between spokes) */}
+      <div
+        ref={box}
+        role="group"
+        aria-roledescription="chart"
+        aria-label={label}
+        aria-describedby={liveId}
+        tabIndex={0}
+        onPointerMove={onPointerMove}
+        onPointerLeave={() => setActive(null)}
+        onKeyDown={onKeyDown}
+        onBlur={() => keyboard && setActive(null)}
+        className={cn("relative w-full touch-pan-y rounded-md", focusRing)}
+        style={{ height }}
+      >
+        {width > 0 && data.length > 0 ? (
+          <svg width={width} height={height} aria-hidden className="block overflow-visible">
+            {ticks.map((t) => (
+              <path key={t} d={toPath(data.map((_, i) => point(i, t)))} fill="none" stroke="var(--nv-color-border)" strokeWidth={1} />
+            ))}
+            {data.map((_, i) => {
+              const end = point(i, max);
+              return <line key={i} x1={cx} y1={cy} x2={end.x} y2={end.y} stroke={active === i ? "var(--nv-color-border-strong)" : "var(--nv-color-border)"} strokeWidth={1} />;
+            })}
+            {ticks.map((t) => (
+              <text key={`t${t}`} x={cx + 4} y={point(0, t).y} dy="-0.25em" className="fill-foreground-muted text-[10px] tabular-nums">
+                {fmt.tick(t)}
+              </text>
+            ))}
+            {series.map((s, si) => {
+              const pts = data.map((row, i) => point(i, values(row, s.key)));
+              const color = seriesColor(series, si);
+              return (
+                <g key={s.key}>
+                  <path d={toPath(pts)} fill={color} fillOpacity={0.12} stroke={color} strokeWidth={2} strokeLinejoin="round" />
+                  {pts.map((p, i) => (
+                    <circle key={i} cx={p.x} cy={p.y} r={active === i ? 4.5 : 3} fill={color} stroke="var(--nv-color-surface)" strokeWidth={1.5} />
+                  ))}
+                </g>
+              );
+            })}
+            {data.map((row, i) => {
+              const p = point(i, max * 1.12);
+              const cos = Math.cos(angle(i));
+              return (
+                <text
+                  key={i}
+                  x={p.x}
+                  y={p.y}
+                  dy="0.32em"
+                  textAnchor={cos > 0.3 ? "start" : cos < -0.3 ? "end" : "middle"}
+                  className={cn("text-[11px]", active === i ? "fill-foreground font-medium" : "fill-foreground-muted")}
+                >
+                  {fmt.index(row[index])}
+                </text>
+              );
+            })}
+          </svg>
+        ) : null}
+        {activeRow && active !== null ? (
+          <Tooltip
+            x={point(active, max).x}
+            width={width}
+            title={fmt.index(activeRow[index])}
+            rows={series.map((s, si) => ({ label: s.label, value: fmt.value(values(activeRow, s.key)), color: seriesColor(series, si), kind: "line" as const }))}
+          />
+        ) : null}
+        <p id={liveId} aria-live="polite" className="sr-only">
+          {keyboard && activeRow ? `${fmt.index(activeRow[index])}: ${series.map((s) => `${s.label} ${fmt.value(values(activeRow, s.key))}`).join(", ")}` : "Use arrow keys to read values."}
+        </p>
+      </div>
+    </ChartFrame>
+  );
+}
