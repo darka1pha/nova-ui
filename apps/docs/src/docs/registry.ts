@@ -61,6 +61,7 @@ const mentionTextarea: Loader = () => import("../examples/mention-textarea.tsx")
 const treeSelect: Loader = () => import("../examples/tree-select.tsx");
 const chartsMore: Loader = () => import("../examples/charts-more.tsx");
 const splitter: Loader = () => import("../examples/splitter.tsx");
+const qrCode: Loader = () => import("../examples/qr-code.tsx");
 
 export const components: ComponentEntry[] = [
   { id: "typography", name: "Typography", summary: "Headings, body text, links, inline code and keyboard keys on the theme's type scale.", category: "layout", parts: ["Heading", "Text", "Link", "Code", "Kbd"], examples: examples(core, "TypographyExamples") },
