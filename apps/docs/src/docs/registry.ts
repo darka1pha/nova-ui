@@ -56,6 +56,7 @@ const workflow: Loader = () => import("../examples/workflow.tsx");
 const seasonal: Loader = () => import("../examples/seasonal.tsx");
 const kaveh: Loader = () => import("../examples/kaveh.tsx");
 const kavehKit: Loader = () => import("../examples/kaveh-kit.tsx");
+const scheduler: Loader = () => import("../examples/scheduler.tsx");
 const mentionTextarea: Loader = () => import("../examples/mention-textarea.tsx");
 const treeSelect: Loader = () => import("../examples/tree-select.tsx");
 const chartsMore: Loader = () => import("../examples/charts-more.tsx");
@@ -160,6 +161,7 @@ export const components: ComponentEntry[] = [
   { id: "kanban-board", name: "KanbanBoard", summary: "Columns of cards moved by dragging or with the keyboard, with WIP limits.", category: "data", parts: ["KanbanBoard"], examples: examples(workflow, "KanbanBoardExamples"), a11y: ["Space picks a card up; arrows move it within and across columns (mirrored in RTL); every step is announced.", "Each column is a region named by its heading."] },
   { id: "masonry", name: "Masonry", summary: "Items of different heights packed into balanced columns.", category: "data", parts: ["Masonry"], examples: examples(workflow, "MasonryExamples"), a11y: ["Items keep source order in the DOM, so Tab and screen readers follow reading order."] },
   { id: "infinite-scroll", name: "InfiniteScroll", summary: "Loads more as people near the end of a list, with a Load more fallback.", category: "data", parts: ["InfiniteScroll"], examples: examples(workflow, "InfiniteScrollExamples"), a11y: ["Loading sets aria-busy and is announced politely.", "A real Load more button is always the fallback; autoLoadPages hands over to it so footers stay reachable."] },
+  { id: "scheduler", name: "Scheduler", summary: "Events in month, week and day views, in the Gregorian or Persian calendar.", category: "data", parts: ["Scheduler"], entry: "experimental", examples: examples(scheduler, "SchedulerExamples"), a11y: ["Month view is a grid: the focused day is the one tab stop, arrows move (mirrored in RTL), PageUp/PageDown change month, Enter picks the day, and Tab reaches that day's events. Each day is named with its date and event count. Week and day views group events per day; every event is a button named with its title and time."] },
   { id: "calendar-heatmap", name: "CalendarHeatmap", summary: "Activity per day across a year.", category: "data", parts: ["CalendarHeatmap"], examples: examples(additions, "CalendarHeatmapExamples") },
   { id: "qr-code", name: "QRCode", summary: "A QR code for a URL or text, drawn as SVG with a built-in encoder.", category: "data", parts: ["QRCode"], entry: "experimental", examples: examples(qrCode, "QRCodeExamples"), a11y: ["role=\"img\" with the label you give: say where the code leads, and show the URL or text next to it for people who can't scan."] },
   { id: "image", name: "Image & ImageGallery", summary: "Images with a placeholder and a full-screen gallery.", category: "data", parts: ["Image", "ImageGallery", "Lightbox"], examples: examples(additions, "ImageExamples") },
