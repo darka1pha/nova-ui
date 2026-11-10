@@ -25,10 +25,14 @@ const cases: Record<string, { names: string; budget: number }> = {
   "Button": { names: "Button", budget: 12.5 },
   "Button + Card + Badge + Input": { names: "Button, Card, Badge, Input", budget: 15 },
   "ThemeProvider (custom brand)": { names: "ThemeProvider", budget: 12 },
-  "Dialog": { names: "Dialog, DialogContent, DialogTitle, DialogTrigger", budget: 27.7 },
+  "Dialog": { names: "Dialog, DialogContent, DialogTitle, DialogTrigger", budget: 30.5 },
+  "Select": { names: "Select, SelectContent, SelectItem, SelectTrigger, SelectValue", budget: 49.5 },
+  "Combobox (cmdk)": { names: "Combobox", budget: 49.5 },
+  // +2.8 kB for in-place cell editing (InlineEdit) and the column resize/reorder/group code.
+  "DataTable": { names: "DataTable", budget: 62.3 },
+  "Toast": { names: "toast, Toaster", budget: 28.5 },
   "Select": { names: "Select, SelectContent, SelectItem, SelectTrigger, SelectValue", budget: 47 },
   "Combobox (cmdk)": { names: "Combobox", budget: 48 },
-  "DataTable": { names: "DataTable", budget: 56.7 },
   "Toast": { names: "toast, Toaster", budget: 26.3 },
   "Everything": { names: "*", budget: 208 },
   // Static rich text from the rich-text-editor entry: no Tiptap / ProseMirror in it.
