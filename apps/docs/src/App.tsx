@@ -14,7 +14,6 @@ import {
   SheetContent,
   SheetTitle,
   ThemeProvider,
-  Toaster,
   ToggleGroup,
   ToggleGroupItem,
   Tooltip,
@@ -27,6 +26,7 @@ import { ChevronRight, GitPullRequest, Languages, Menu, Monitor, Moon, SearchX, 
 import { lazy, Suspense, useCallback, useEffect, useState, type ReactNode } from "react";
 import { releaseLabel, to, useLinkInterception, useRoute } from "./docs/kit.tsx";
 import { SearchButton, useSearchShortcut } from "./docs/search-button.tsx";
+import { DocsToaster, ToasterPositionProvider } from "./docs/toaster-position.tsx";
 
 // The palette (cmdk and the search index) loads the first time it's opened.
 const SearchPalette = lazy(() => import("./docs/search.tsx").then((m) => ({ default: m.SearchPalette })));
@@ -274,12 +274,14 @@ export function App() {
 
   return (
     <ThemeProvider theme={theme} dir={dir} storageKey="nova-docs-mode" defaultMode="system">
-      <Shell theme={theme} setTheme={setTheme} dir={dir} setDir={setDir}>
-        <Suspense fallback={<LoadingState title="Loading page…" className="py-24" />}>
-          {current ?? <NotFound />}
-        </Suspense>
-      </Shell>
-      <Toaster />
+      <ToasterPositionProvider>
+        <Shell theme={theme} setTheme={setTheme} dir={dir} setDir={setDir}>
+          <Suspense fallback={<LoadingState title="Loading page…" className="py-24" />}>
+            {current ?? <NotFound />}
+          </Suspense>
+        </Shell>
+        <DocsToaster />
+      </ToasterPositionProvider>
     </ThemeProvider>
   );
 }

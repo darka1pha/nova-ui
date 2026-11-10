@@ -96,6 +96,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { Popover, PopoverAnchor, PopoverContent, PopoverTrigger, Tooltip, TooltipProvider } from "./overlay.tsx";
 import { Portal } from "./portal.tsx";
 import { floatingSurface, menuItem, transition } from "./shared.ts";
+import { RichTextContentView } from "./rich-text-static.tsx";
+import { normalizeUrl } from "../utils/safe-url.ts";
 
 /* ------------------------------------------------------------------ Labels */
 
@@ -166,6 +168,8 @@ export interface RichTextEditorLabels {
   slashHint: string;
   slashEmpty: string;
   commands: string;
+  /** Name of a task item's checkbox, from the item's text. */
+  taskItem: (text: string) => string;
 }
 
 const enLabels: RichTextEditorLabels = {
@@ -234,6 +238,7 @@ const enLabels: RichTextEditorLabels = {
   slashHint: "Type / for commands",
   slashEmpty: "No matching blocks",
   commands: "Insert block",
+  taskItem: (text) => (text ? `Task: ${text}` : "Task"),
 };
 
 const faLabels: RichTextEditorLabels = {
@@ -302,6 +307,7 @@ const faLabels: RichTextEditorLabels = {
   slashHint: "برای فرمان‌ها / را بزنید",
   slashEmpty: "موردی یافت نشد",
   commands: "درج بلوک",
+  taskItem: (text) => (text ? `کار: ${text}` : "کار"),
 };
 
 /* ----------------------------------------------------------------- Toolbar */
@@ -408,26 +414,6 @@ const isMac = typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigat
 const mod = isMac ? "⌘" : "Ctrl+";
 const shift = isMac ? "⇧" : "Shift+";
 
-/** Adds https:// to bare domains; leaves relative, anchor, mailto: and tel: links alone. */
-/** Schemes a link may use. Anything else (javascript:, data:, vbscript:…) is refused. */
-const SAFE_LINK_SCHEMES = new Set(["http:", "https:", "mailto:", "tel:"]);
-
-/**
- * Turns what the user typed into a link href: bare domains get https://, bare
- * emails get mailto:. Returns "" for a scheme outside {@link SAFE_LINK_SCHEMES},
- * which removes the link instead of storing a script URL.
- */
-export function normalizeUrl(raw: string): string {
-  // Browsers ignore ASCII whitespace and control characters inside a scheme ("java\tscript:").
-  // eslint-disable-next-line no-control-regex
-  const url = raw.trim().replace(/[\u0000-\u001f\u007f]/g, "");
-  if (!url) return url;
-  const scheme = /^([a-z][a-z\d+.-]*):/i.exec(url)?.[1];
-  if (scheme) return SAFE_LINK_SCHEMES.has(`${scheme.toLowerCase()}:`) ? url : "";
-  if (/^[/#?]/.test(url)) return url;
-  if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(url)) return `mailto:${url}`;
-  return `https://${url}`;
-}
 
 /* ---------------------------------------------------------- Slash commands */
 
@@ -685,7 +671,8 @@ export const RichTextEditor = forwardRef<HTMLDivElement, RichTextEditorProps>(fu
       Subscript,
       Superscript,
       TaskList,
-      TaskItem.configure({ nested: true }),
+      // eslint-disable-next-line react-hooks/refs -- called by Tiptap when it renders a task item, not during React render
+      TaskItem.configure({ nested: true, a11y: { checkboxLabel: (node) => latestRef.current.labels.taskItem(node.firstChild?.textContent ?? "") } }),
       TableKit.configure({ table: { resizable: true, allowTableNodeSelection: true } }),
       Image.configure({ allowBase64: true, resize: { enabled: true, alwaysPreserveAspectRatio: true, minWidth: 48, minHeight: 48 } }),
       Typography,
@@ -1894,11 +1881,32 @@ export interface RichTextViewerProps extends Omit<RichTextEditorProps, "toolbar"
 }
 
 /**
- * Read-only rendering of editor content with the same typography. Content is
- * parsed through the editor schema, so unknown tags, scripts and event
- * handlers in the HTML are dropped rather than rendered.
+ * Read-only rendering of editor content with the same typography.
+ *
+ * JSON content (`editor.getJSON()`) renders as plain elements with no editor engine, so it
+ * shows up in server-rendered HTML. HTML strings are parsed through the editor schema on the
+ * client (unknown tags, scripts and event handlers are dropped), so they render empty on the
+ * server; store JSON when the page is server-rendered.
  */
 export const RichTextViewer = forwardRef<HTMLDivElement, RichTextViewerProps>(function RichTextViewer({ bordered = false, minHeight = 0, className, contentClassName, ...props }, ref) {
+  const { locale } = useLocale(props.locale);
+  const content = props.value ?? props.defaultValue;
+  if (content && typeof content === "object" && !Array.isArray(content)) {
+    const { value: _value, defaultValue: _defaultValue, labels, extensions: _extensions, editorRef, onImageUpload: _upload, onImageUploadError: _uploadError, maxLength: _maxLength, locale: _locale, autoFocus: _autoFocus, name: _name, required: _required, disabled: _disabled, onFocus: _onFocus, onBlur: _onBlur, content: _htmlContent, ...rest } = props;
+    setRef(editorRef, null);
+    return (
+      <RichTextContentView
+        ref={ref}
+        content={content as JSONContent}
+        bordered={bordered}
+        minHeight={minHeight}
+        className={className}
+        contentClassName={contentClassName}
+        labels={{ taskItem: labels?.taskItem ?? (locale?.toLowerCase().startsWith("fa") ? faLabels : enLabels).taskItem }}
+        {...rest}
+      />
+    );
+  }
   return (
     <RichTextEditor
       ref={ref}

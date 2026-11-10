@@ -221,3 +221,48 @@ test.describe("NotificationCenter", () => {
     await expect(page.getByRole("status").filter({ hasText: "1 new notification" })).toHaveCount(1);
   });
 });
+
+test.describe("Toast swipe", () => {
+  /** A real touch drag (touch events, so pointerType "touch"), the way a finger swipes. */
+  async function touchDrag(page: Page, target: Locator, dx: number, dy: number) {
+    const box = await target.boundingBox();
+    if (!box) throw new Error("toast has no box");
+    const x = box.x + box.width / 2;
+    const y = box.y + box.height / 2;
+    const cdp = await page.context().newCDPSession(page);
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x, y }] });
+    for (let i = 1; i <= 12; i++) {
+      await cdp.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x: x + (dx * i) / 12, y: y + (dy * i) / 12 }] });
+    }
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+    await cdp.detach();
+  }
+
+  const cases: [position: string, dir: "ltr" | "rtl", dx: number, dy: number][] = [
+    ["Bottom end", "ltr", 160, 0],
+    ["Bottom end", "rtl", -160, 0],
+    ["Top center", "ltr", 0, -120],
+    ["Bottom center", "ltr", 0, 120],
+  ];
+
+  for (const [position, dir, dx, dy] of cases) {
+    test(`a touch swipe toward the edge closes a ${position.toLowerCase()} toast (${dir}) @mobile`, async ({ page }) => {
+      await open(page, "components/toast");
+      if (dir === "rtl") await page.getByRole("button", { name: "Toggle text direction" }).click();
+      const section = exampleSection(page, "Position");
+      await section.scrollIntoViewIfNeeded();
+      const notifications = page.getByRole("region", { name: /^Notifications/ });
+
+      // The wrong way first: movement against the swipe direction doesn't start a swipe.
+      await section.getByRole("button", { name: position, exact: true }).click();
+      const toast = notifications.getByRole("listitem").filter({ hasText: position });
+      await expect(toast).toBeVisible();
+      await touchDrag(page, toast, -dx, -dy);
+      await expect(toast).not.toHaveAttribute("data-swipe");
+      await expect(toast).toHaveAttribute("data-state", "open");
+
+      await touchDrag(page, toast, dx, dy);
+      await expect(toast).toHaveCount(0);
+    });
+  }
+});
