@@ -178,6 +178,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { capitalize, Example, navigate, to } from "../docs/kit.tsx";
+import { useToasterPosition, type ToastPosition } from "../docs/toaster-position.tsx";
 
 /* ---------------------------------------------------------- Layout & type */
 
@@ -830,10 +831,37 @@ export function ComboboxExamples() {
 
 export function SliderExamples() {
   return (
-    <Example title="Slider" code={`<Slider defaultValue={[20, 80]} thumbLabels={["Minimum", "Maximum"]} />`}>
-      <Stack gap={6} className="w-full max-w-sm">
-        <Slider defaultValue={[40]} thumbLabels={["Volume"]} />
-        <Slider defaultValue={[20, 80]} thumbLabels={["Minimum price", "Maximum price"]} />
+    <>
+      <Example title="Slider" code={`<Slider defaultValue={[20, 80]} thumbLabels={["Minimum", "Maximum"]} />`}>
+        <Stack gap={6} className="w-full max-w-sm">
+          <Slider defaultValue={[40]} thumbLabels={["Volume"]} />
+          <Slider defaultValue={[20, 80]} thumbLabels={["Minimum price", "Maximum price"]} />
+        </Stack>
+      </Example>
+      <RangeSliderExample />
+    </>
+  );
+}
+
+function RangeSliderExample() {
+  const [range, setRange] = useState([12_000, 38_000]);
+  const tons = (n: number) => `${n.toLocaleString()} t`;
+  return (
+    <Example
+      title="Range"
+      description="Pass two values for a range: one thumb each, named by thumbLabels. minStepsBetweenThumbs keeps them apart; show the values next to the track, since a thumb alone doesn't say what it's set to."
+      code={`const [range, setRange] = useState([12_000, 38_000]);
+<Slider value={range} onValueChange={setRange} min={0} max={50_000} step={1_000}
+  minStepsBetweenThumbs={5} thumbLabels={["Minimum cargo weight", "Maximum cargo weight"]} />`}
+    >
+      <Stack gap={2} className="w-full max-w-sm">
+        <div className="flex justify-between text-sm">
+          <span>Cargo weight</span>
+          <span className="tabular-nums text-foreground-muted">
+            {tons(range[0] ?? 0)} – {tons(range[1] ?? 0)}
+          </span>
+        </div>
+        <Slider value={range} onValueChange={setRange} min={0} max={50_000} step={1_000} minStepsBetweenThumbs={5} thumbLabels={["Minimum cargo weight", "Maximum cargo weight"]} />
       </Stack>
     </Example>
   );
@@ -919,8 +947,46 @@ export function ToastExamples() {
   return (
     <>
       <ToastBasicExample />
+      <ToastPositionExample />
       <ToastPromiseExamples />
     </>
+  );
+}
+
+const toastPositions: [ToastPosition, string][] = [
+  ["top-start", "Top start"],
+  ["top-center", "Top center"],
+  ["top-end", "Top end"],
+  ["bottom-start", "Bottom start"],
+  ["bottom-center", "Bottom center"],
+  ["bottom-end", "Bottom end"],
+];
+
+function ToastPositionExample() {
+  const { position, setPosition } = useToasterPosition();
+  // Put the docs Toaster back where every other page expects it.
+  useEffect(() => () => setPosition("bottom-end"), [setPosition]);
+  return (
+    <Example
+      title="Position"
+      description="<Toaster position> places the stack; start and end follow the reading direction. Swipe a toast away toward its edge: sideways for the corners, up or down for the centered positions."
+      code={`<Toaster position="top-center" />`}
+    >
+      {toastPositions.map(([value, label]) => (
+        <Button
+          key={value}
+          variant={position === value ? "primary" : "outline"}
+          size="sm"
+          aria-pressed={position === value}
+          onClick={() => {
+            setPosition(value);
+            toast(label, { description: "Swipe it away or wait." });
+          }}
+        >
+          {label}
+        </Button>
+      ))}
+    </Example>
   );
 }
 

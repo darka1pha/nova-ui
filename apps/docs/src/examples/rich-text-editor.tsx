@@ -1,5 +1,5 @@
 import { Button, FormField, ThemeProvider } from "@darkalpha/nova-ui";
-import { RichTextEditor, RichTextViewer } from "@darkalpha/nova-ui/rich-text-editor";
+import { RichTextContentView, RichTextEditor, RichTextViewer, type RichTextJSONContent } from "@darkalpha/nova-ui/rich-text-editor";
 import { useState } from "react";
 import { Example } from "../docs/kit.tsx";
 
@@ -19,6 +19,31 @@ const article = `<h2>Release notes</h2>
 const persian = `<h2>یادداشت جلسه</h2>
 <p>در این جلسه دربارهٔ <strong>برنامهٔ انتشار</strong> و هماهنگی با تیم <span style="color: light-dark(#1d4ed8, #60a5fa)">Design System</span> گفت‌وگو شد.</p>
 <ol><li><p>بازبینی طرح‌ها تا پایان هفته</p></li><li><p>انتشار نسخهٔ آزمایشی</p></li></ol>`;
+
+/** Stored editor JSON (editor.getJSON()): renders on the server with no editor engine. */
+const storedDoc: RichTextJSONContent = {
+  type: "doc",
+  content: [
+    { type: "heading", attrs: { level: 3 }, content: [{ type: "text", text: "Shipping update" }] },
+    {
+      type: "paragraph",
+      content: [
+        { type: "text", text: "Vessels berthed at " },
+        { type: "text", text: "Bandar Abbas", marks: [{ type: "bold" }] },
+        { type: "text", text: " clear customs in under " },
+        { type: "text", text: "two hours", marks: [{ type: "highlight", attrs: { color: "#bbf7d0" } }] },
+        { type: "text", text: "." },
+      ],
+    },
+    {
+      type: "taskList",
+      content: [
+        { type: "taskItem", attrs: { checked: true }, content: [{ type: "paragraph", content: [{ type: "text", text: "Berth assigned" }] }] },
+        { type: "taskItem", attrs: { checked: false }, content: [{ type: "paragraph", content: [{ type: "text", text: "Cargo released" }] }] },
+      ],
+    },
+  ],
+};
 
 /** A stand-in upload that reads the file as a data URL after a short delay. */
 const fakeUpload = (file: File) =>
@@ -108,6 +133,20 @@ export function RichTextEditorExamples() {
         code={`<RichTextViewer value={post.html} />`}
       >
         <RichTextViewer aria-label="Release notes" value={article} className="w-full" />
+      </Example>
+
+      <Example
+        title="Server-rendered content"
+        description="Store editor JSON (editor.getJSON()) to render on the server. RichTextViewer switches to plain elements for JSON, with no editor engine; RichTextContentView is that renderer on its own, so a page that only displays content never loads Tiptap. URLs, colors and unknown nodes are checked, so the JSON can come from users."
+        code={`// Saving
+<RichTextEditor onChange={() => {}} editorRef={editorRef} />
+save(editorRef.current.getJSON());
+
+// Displaying (works in server components and SSR)
+import { RichTextContentView } from "@darkalpha/nova-ui/rich-text-editor";
+<RichTextContentView content={post.json} />`}
+      >
+        <RichTextContentView content={storedDoc} className="w-full" />
       </Example>
 
       <Example

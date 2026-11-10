@@ -31,11 +31,18 @@ mkdirSync(out("css"), { recursive: true });
 
 const header = "/* @darkalpha/nova-tokens — generated, do not edit. */\n";
 const defaults = getResolvedTheme(defaultTheme);
+// light-dark() values are also declared on the outermost theme root, where color-scheme is set.
+// Natively they'd resolve the same from :root, but CSS pipelines that lower light-dark() for older
+// browsers (Lightning CSS, which Tailwind v4 runs) resolve it where it's declared, and only theme
+// roots carry the switch: declared on :root alone, system mode got "#fff#1a1510" for every color.
+const OUTER_THEME_ROOT = ":where(.nv-theme, [data-nv-theme]):not(:where(.nv-theme, [data-nv-theme]) *)";
+const schemeDependent = (vars: Record<string, string>) => Object.fromEntries(Object.entries(vars).filter(([, value]) => value.includes("light-dark(")));
 
 writeFileSync(
   out("css/tokens.css"),
   header +
     cssBlock(":where(:root)", { ...staticVariables(), ...themeVariables(defaults) }) +
+    cssBlock(OUTER_THEME_ROOT, schemeDependent({ ...staticVariables(), ...themeVariables(defaults) })) +
     cssBlock(THEME_ROOT_SELECTOR, derivedVariables()) +
     COLOR_SCHEME_CSS,
 );
