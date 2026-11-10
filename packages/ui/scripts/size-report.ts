@@ -22,14 +22,14 @@ const entry = join(pkgRoot, "dist", "index.js");
 
 /** Imports to measure, each with its gzip budget in kB. */
 const cases: Record<string, { names: string; budget: number }> = {
-  "Button": { names: "Button", budget: 15 },
-  "Button + Card + Badge + Input": { names: "Button, Card, Badge, Input", budget: 17.5 },
+  "Button": { names: "Button", budget: 12.5 },
+  "Button + Card + Badge + Input": { names: "Button, Card, Badge, Input", budget: 15 },
   "ThemeProvider (custom brand)": { names: "ThemeProvider", budget: 12 },
-  "Dialog": { names: "Dialog, DialogContent, DialogTitle, DialogTrigger", budget: 30.5 },
-  "Select": { names: "Select, SelectContent, SelectItem, SelectTrigger, SelectValue", budget: 49.5 },
-  "Combobox (cmdk)": { names: "Combobox", budget: 49.5 },
-  "DataTable": { names: "DataTable", budget: 59 },
-  "Toast": { names: "toast, Toaster", budget: 28.5 },
+  "Dialog": { names: "Dialog, DialogContent, DialogTitle, DialogTrigger", budget: 27.7 },
+  "Select": { names: "Select, SelectContent, SelectItem, SelectTrigger, SelectValue", budget: 47 },
+  "Combobox (cmdk)": { names: "Combobox", budget: 48 },
+  "DataTable": { names: "DataTable", budget: 56.7 },
+  "Toast": { names: "toast, Toaster", budget: 26.3 },
   "Everything": { names: "*", budget: 208 },
 };
 /** Gzip budget in kB for the full stylesheet. */
