@@ -56,6 +56,7 @@ const workflow: Loader = () => import("../examples/workflow.tsx");
 const seasonal: Loader = () => import("../examples/seasonal.tsx");
 const kaveh: Loader = () => import("../examples/kaveh.tsx");
 const kavehKit: Loader = () => import("../examples/kaveh-kit.tsx");
+const qrCode: Loader = () => import("../examples/qr-code.tsx");
 
 export const components: ComponentEntry[] = [
   { id: "typography", name: "Typography", summary: "Headings, body text, links, inline code and keyboard keys on the theme's type scale.", category: "layout", parts: ["Heading", "Text", "Link", "Code", "Kbd"], examples: examples(core, "TypographyExamples") },
@@ -152,6 +153,7 @@ export const components: ComponentEntry[] = [
   { id: "masonry", name: "Masonry", summary: "Items of different heights packed into balanced columns.", category: "data", parts: ["Masonry"], examples: examples(workflow, "MasonryExamples"), a11y: ["Items keep source order in the DOM, so Tab and screen readers follow reading order."] },
   { id: "infinite-scroll", name: "InfiniteScroll", summary: "Loads more as people near the end of a list, with a Load more fallback.", category: "data", parts: ["InfiniteScroll"], examples: examples(workflow, "InfiniteScrollExamples"), a11y: ["Loading sets aria-busy and is announced politely.", "A real Load more button is always the fallback; autoLoadPages hands over to it so footers stay reachable."] },
   { id: "calendar-heatmap", name: "CalendarHeatmap", summary: "Activity per day across a year.", category: "data", parts: ["CalendarHeatmap"], examples: examples(additions, "CalendarHeatmapExamples") },
+  { id: "qr-code", name: "QRCode", summary: "A QR code for a URL or text, drawn as SVG with a built-in encoder.", category: "data", parts: ["QRCode"], entry: "experimental", examples: examples(qrCode, "QRCodeExamples"), a11y: ["role=\"img\" with the label you give: say where the code leads, and show the URL or text next to it for people who can't scan."] },
   { id: "image", name: "Image & ImageGallery", summary: "Images with a placeholder and a full-screen gallery.", category: "data", parts: ["Image", "ImageGallery", "Lightbox"], examples: examples(additions, "ImageExamples") },
   { id: "code-block", name: "CodeBlock", summary: "Highlighted code with line numbers and copy.", category: "data", parts: ["CodeBlock"], examples: examples(additionsMore, "CodeBlockExamples") },
   { id: "expandable-text", name: "ExpandableText", summary: "Long text clamped to a few lines, with Show more.", category: "data", parts: ["ExpandableText"], examples: examples(additionsMore, "ExpandableTextExamples") },
