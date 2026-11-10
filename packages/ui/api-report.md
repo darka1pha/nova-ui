@@ -5,6 +5,7 @@ run `pnpm api:report` after changing an export, and review the diff. A removed o
 name is a breaking change (a major release after 1.0).
 
 996 exports across 8 entries.
+998 exports across 8 entries.
 
 ## `@darkalpha/nova-ui`
 
@@ -811,10 +812,11 @@ name is a breaking change (a major release after 1.0).
 
 ## `@darkalpha/nova-ui/rich-text-editor`
 
-3 values, 8 types.
+4 values, 10 types.
 
 ### Values
 
+- `RichTextContentView`
 - `RichTextEditor`
 - `RichTextEditorInstance`
 - `RichTextViewer`
@@ -822,6 +824,8 @@ name is a breaking change (a major release after 1.0).
 ### Types
 
 - `RichTextContent`
+- `RichTextContentLabels`
+- `RichTextContentViewProps`
 - `RichTextEditorLabels`
 - `RichTextEditorProps`
 - `RichTextJSONContent`
@@ -956,23 +960,29 @@ name is a breaking change (a major release after 1.0).
 
 ## `@darkalpha/nova-ui/experimental`
 
-6 values, 9 types.
+6 values, 11 types.
 
 ### Values
 
+- `encodeQR`
 - `FileUploader`
 - `RadarChart`
 - `ScatterChart`
+- `QRCode`
 - `useFileUploads`
 - `virtualRange`
 - `VirtualTable`
 
 ### Types
 
+- `EncodeQROptions`
 - `FileUploaderProps`
 - `FileUploads`
 - `RadarChartProps`
 - `ScatterChartProps`
+- `QRCodeProps`
+- `QRErrorCorrection`
+- `QRMatrix`
 - `UploadContext`
 - `UseFileUploadsOptions`
 - `VirtualTableApi`

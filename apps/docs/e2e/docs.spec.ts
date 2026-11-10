@@ -263,6 +263,26 @@ test("RTL mirrors layout and overlays", async ({ page }) => {
   expect(box!.x).toBeLessThan(10);
 });
 
+// The docs CSS goes through Tailwind's Lightning CSS, which lowers light-dark() to variables that only
+// theme roots switch. Tokens declared on :root alone broke every color in system mode ("#fff#1a1510").
+for (const scheme of ["light", "dark"] as const) {
+  test(`system mode follows the OS (${scheme})`, async ({ page }) => {
+    await page.emulateMedia({ colorScheme: scheme });
+    await page.goto("/");
+    await page.evaluate(() => window.localStorage.setItem("nova-docs-mode", "system"));
+    await page.reload();
+    await expect(page.locator("main h1").first()).toBeVisible();
+    const colors = await page.evaluate(() => {
+      const root = document.querySelector(".nv-theme") as HTMLElement;
+      const style = getComputedStyle(root);
+      return { surface: style.getPropertyValue("--nv-color-surface").trim(), background: style.backgroundColor, text: style.color };
+    });
+    expect(colors.surface).toBe(scheme === "dark" ? "#1a1510" : "#fff");
+    expect(colors.background).toBe(scheme === "dark" ? "rgb(17, 14, 10)" : "rgb(251, 250, 248)");
+    expect(colors.text).toBe(scheme === "dark" ? "rgb(251, 250, 248)" : "rgb(17, 14, 10)");
+  });
+}
+
 test("reduced motion collapses durations @mobile", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await open(page, "home");

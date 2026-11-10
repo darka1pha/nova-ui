@@ -21,7 +21,8 @@
     "size": "pnpm --filter @darkalpha/nova-ui run size",
     "api:report": "pnpm --filter @darkalpha/nova-ui run api:report",
     "api:check": "pnpm --filter @darkalpha/nova-ui run api:check",
-    "check": "pnpm build && pnpm api:check && pnpm typecheck && pnpm lint && pnpm test && pnpm build:docs && pnpm verify:install",
+    "merge:check": "pnpm --filter @darkalpha/nova-ui run merge:check",
+    "check": "pnpm build && pnpm api:check && pnpm merge:check && pnpm typecheck && pnpm lint && pnpm test && pnpm build:docs && pnpm verify:install",
     "changeset": "changeset",
     "version-packages": "changeset version",
     "release": "pnpm build && node scripts/changeset-publish.mjs"
