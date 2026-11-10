@@ -38,7 +38,8 @@ The 0.2.0 pass below is kept for history.
    Regenerate after the audit fixes (empty rating stars, disabled field labels, AlertDialog
    title tracking) with the *Update visual baselines* workflow.
 2. ~~**Make toast swipe work for the centered positions.**~~ Done (issues.md M-8): the toast
-   follows `--radix-toast-swipe-move-y` too. Still open: a Playwright test with a touch drag.
+   follows `--radix-toast-swipe-move-y` too. `e2e/interactions.spec.ts` swipes toasts with real touch
+   events for bottom-end (LTR and RTL), top-center and bottom-center.
 3. ~~**Add a React 18 CI job.**~~ Done (issues.md M-18): the `react18` job in `ci.yml`.
 4. ~~**Repository name.**~~ Done: the repository is now `github.com/darka1pha/nova-ui` (the old
    `Kaleido` URL redirects), and both `package.json` files point at it.

@@ -1,5 +1,22 @@
 # @darkalpha/nova-ui
 
+## 0.8.0
+
+### Minor Changes
+
+- e07d415: Prepare the public API for the 1.0 freeze (breaking):
+  
+  - `VirtualTable`, `virtualRange`, `FileUploader` and `useFileUploads` (and their types) move to a new `@darkalpha/nova-ui/experimental` entry. APIs there may still change in a minor release; they move to the main entry once settled. Import them from `"@darkalpha/nova-ui/experimental"`.
+  - `useComposedRefs` and `getPageItems` are no longer exported. They were internal helpers; use `@radix-ui/react-compose-refs` or a local helper, and `Pagination` for page lists.
+  - `buttonVariants` and `fieldVariants` stay public and stable as functions that return class strings; the classes they return may change in a minor release.
+  - The token helpers nova-ui re-exports (`createTheme`, `presets`, `contrastRatio`…) are the same functions as `@darkalpha/nova-tokens` exports, and stay stable from both packages.
+
+### Patch Changes
+
+- fd7bdc7: Fix system color mode in apps whose CSS pipeline lowers `light-dark()`, including every Tailwind v4 app that imports `@darkalpha/nova-ui/tailwind.css` (Tailwind's Lightning CSS targets browsers without `light-dark()`). The lowered form only resolves where `color-scheme` is set, and the default color tokens were declared on `:root` alone, so with no explicit mode every color became an invalid value like `#fff#1a1510`: black text on no background. The `light-dark()` tokens are now also declared on the outermost theme root (`.nv-theme` / `[data-nv-theme]`), where the color scheme lives. Explicit light and dark modes, nested themes and native `light-dark()` are unaffected.
+- Updated dependencies [fd7bdc7]
+  - @darkalpha/nova-tokens@0.8.0
+
 ## 0.7.0
 
 ### Minor Changes

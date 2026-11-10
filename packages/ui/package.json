@@ -1,6 +1,6 @@
 {
   "name": "@darkalpha/nova-ui",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "Colorful, accessible, themeable React components for the Nova UI design system.",
   "license": "MIT",
   "author": "DarkAlpha",
@@ -74,7 +74,9 @@
     "test:watch": "vitest",
     "size": "node scripts/size-report.ts",
     "api:report": "node scripts/api-report.ts",
-    "api:check": "node scripts/api-report.ts --check"
+    "api:check": "node scripts/api-report.ts --check",
+    "merge:config": "node scripts/generate-tw-merge.ts",
+    "merge:check": "node scripts/generate-tw-merge.ts --check"
   },
   "peerDependencies": {
     "@tiptap/core": "^3.32.2",

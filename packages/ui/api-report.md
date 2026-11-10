@@ -811,10 +811,11 @@ name is a breaking change (a major release after 1.0).
 
 ## `@darkalpha/nova-ui/rich-text-editor`
 
-3 values, 8 types.
+4 values, 10 types.
 
 ### Values
 
+- `RichTextContentView`
 - `RichTextEditor`
 - `RichTextEditorInstance`
 - `RichTextViewer`
@@ -822,6 +823,8 @@ name is a breaking change (a major release after 1.0).
 ### Types
 
 - `RichTextContent`
+- `RichTextContentLabels`
+- `RichTextContentViewProps`
 - `RichTextEditorLabels`
 - `RichTextEditorProps`
 - `RichTextJSONContent`
