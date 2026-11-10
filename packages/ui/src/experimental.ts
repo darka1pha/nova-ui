@@ -14,5 +14,6 @@ export {
   type UploadContext,
   type UseFileUploadsOptions,
 } from "./components/file-uploader.tsx";
+export { Splitter, type SplitterPane, type SplitterProps } from "./components/splitter.tsx";
 export { QRCode, type QRCodeProps } from "./components/qr-code.tsx";
 export { encodeQR, type EncodeQROptions, type QRErrorCorrection, type QRMatrix } from "./utils/qr.ts";
