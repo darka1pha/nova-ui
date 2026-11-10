@@ -6,7 +6,6 @@ import {
   CopyButton,
   Countdown,
   ExpandableText,
-  FileUploader,
   FileUploadList,
   Gauge,
   Message,
@@ -21,6 +20,7 @@ import {
   TypingIndicator,
   type UploadItem,
 } from "@darkalpha/nova-ui";
+import { FileUploader } from "@darkalpha/nova-ui/experimental";
 import { Plus, Trash2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Example } from "../docs/kit.tsx";

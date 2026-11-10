@@ -101,7 +101,6 @@ export { InfiniteScroll, type InfiniteScrollProps, type InfiniteScrollLabels } f
 export { DescriptionList, DescriptionItem, type DescriptionListProps, type DescriptionItemProps } from "./components/description-list.tsx";
 export { RelativeTime, formatRelativeTime, type RelativeTimeProps, type RelativeTimeInput } from "./components/relative-time.tsx";
 export { VirtualList, type VirtualListProps, type VirtualListApi } from "./components/virtual-list.tsx";
-export { VirtualTable, virtualRange, type VirtualTableApi, type VirtualTableColumn, type VirtualTableProps } from "./components/virtual-table.tsx";
 export { CalendarHeatmap, type CalendarHeatmapProps, type HeatmapDatum } from "./components/heatmap.tsx";
 export { Image, Lightbox, ImageGallery, type ImageProps, type LightboxProps, type LightboxImage, type LightboxLabels, type ImageGalleryProps } from "./components/media.tsx";
 export { Tour, type TourProps, type TourStep, type TourLabels } from "./components/tour.tsx";
@@ -111,14 +110,6 @@ export { Popconfirm, type PopconfirmProps } from "./components/popconfirm.tsx";
 export { Countdown, Gauge, splitDuration, type CountdownParts, type CountdownProps, type GaugeProps } from "./components/countdown.tsx";
 export { TransferList, type TransferListProps, type TransferItem, type TransferListLabels } from "./components/transfer-list.tsx";
 export { FileUploadList, formatFileSize, type FileUploadListProps, type UploadItem, type UploadStatus, type FileUploadListLabels } from "./components/upload-list.tsx";
-export {
-  FileUploader,
-  useFileUploads,
-  type FileUploaderProps,
-  type FileUploads,
-  type UploadContext,
-  type UseFileUploadsOptions,
-} from "./components/file-uploader.tsx";
 // Chat
 export {
   MessageList,
@@ -188,7 +179,6 @@ export { useRipple } from "./components/button.tsx";
 
 // Utilities
 export { cn } from "./utils/cn.ts";
-export { useComposedRefs } from "./utils/compose-refs.ts";
 export {
   toJalali,
   fromJalali,
@@ -201,8 +191,12 @@ export {
 
 // The Kaveh brand kit and the Yalda/Nowruz seasonal artwork live in their own
 // entry: @darkalpha/nova-ui/kaveh.
+// VirtualTable, virtualRange, FileUploader and useFileUploads are in
+// @darkalpha/nova-ui/experimental until they graduate.
 
-// Token engine re-exports, so most apps need a single import.
+// Token engine re-exports, so most apps need a single import. These are the same
+// functions as @darkalpha/nova-tokens exports, and are stable here for as long as
+// they are stable there.
 export {
   presets,
   createTheme,

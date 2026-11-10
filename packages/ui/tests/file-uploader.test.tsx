@@ -1,7 +1,8 @@
 import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import { FileUploader, ThemeProvider, type UploadContext } from "../src/index.ts";
+import { FileUploader, type UploadContext } from "../src/experimental.ts";
+import { ThemeProvider } from "../src/index.ts";
 import { axeViolations } from "./axe.ts";
 
 const wrap = (ui: React.ReactNode) => render(<ThemeProvider>{ui}</ThemeProvider>);

@@ -57,6 +57,10 @@
       "types": "./dist/kaveh.d.ts",
       "default": "./dist/kaveh.js"
     },
+    "./experimental": {
+      "types": "./dist/experimental.d.ts",
+      "default": "./dist/experimental.js"
+    },
     "./styles.css": "./dist/styles.css",
     "./themes.css": "./dist/themes.css",
     "./tailwind.css": "./dist/tailwind.css",

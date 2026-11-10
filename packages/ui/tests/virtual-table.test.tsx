@@ -2,7 +2,8 @@ import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import { createRef } from "react";
 import { describe, expect, it, vi } from "vitest";
-import { ThemeProvider, VirtualTable, virtualRange, type VirtualTableApi, type VirtualTableColumn } from "../src/index.ts";
+import { VirtualTable, virtualRange, type VirtualTableApi, type VirtualTableColumn } from "../src/experimental.ts";
+import { ThemeProvider } from "../src/index.ts";
 import { axeViolations } from "./axe.ts";
 
 const wrap = (ui: React.ReactNode) => render(<ThemeProvider>{ui}</ThemeProvider>);

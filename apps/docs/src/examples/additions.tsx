@@ -23,9 +23,8 @@ import {
   Text,
   Tour,
   VirtualList,
-  VirtualTable,
-  type VirtualTableColumn,
 } from "@darkalpha/nova-ui";
+import { VirtualTable, type VirtualTableColumn } from "@darkalpha/nova-ui/experimental";
 import { Columns3, LayoutGrid, List } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { Example } from "../docs/kit.tsx";
