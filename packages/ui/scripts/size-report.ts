@@ -21,22 +21,28 @@ const pkgRoot = fileURLToPath(new URL("..", import.meta.url));
 const mainEntry = join(pkgRoot, "dist", "index.js");
 
 /** Imports to measure, each with its gzip budget in kB. */
-const cases: Record<string, { names: string; budget: number }> = {
+const cases: Record<string, { names: string; budget: number; entry?: string }> = {
   "Button": { names: "Button", budget: 12.5 },
   "Button + Card + Badge + Input": { names: "Button, Card, Badge, Input", budget: 15 },
   "ThemeProvider (custom brand)": { names: "ThemeProvider", budget: 12 },
-  "Dialog": { names: "Dialog, DialogContent, DialogTitle, DialogTrigger", budget: 30.5 },
-  "Select": { names: "Select, SelectContent, SelectItem, SelectTrigger, SelectValue", budget: 49.5 },
-  "Combobox (cmdk)": { names: "Combobox", budget: 49.5 },
-  // +2.8 kB for in-place cell editing (InlineEdit) and the column resize/reorder/group code.
-  "DataTable": { names: "DataTable", budget: 62.3 },
-  "Toast": { names: "toast, Toaster", budget: 28.5 },
+  "Dialog": { names: "Dialog, DialogContent, DialogTitle, DialogTrigger", budget: 27.7 },
   "Select": { names: "Select, SelectContent, SelectItem, SelectTrigger, SelectValue", budget: 47 },
   "Combobox (cmdk)": { names: "Combobox", budget: 48 },
+  // Includes in-place cell editing (InlineEdit) and the column resize/reorder/group code (+2.8 kB).
+  "DataTable": { names: "DataTable", budget: 59.6 },
   "Toast": { names: "toast, Toaster", budget: 26.3 },
   "Everything": { names: "*", budget: 208 },
   // Static rich text from the rich-text-editor entry: no Tiptap / ProseMirror in it.
-  "RichTextContentView": { names: "RichTextContentView", budget: 13.5, entry: "rich-text-editor.js" },
+  "RichTextContentView": { names: "RichTextContentView", budget: 10.6, entry: "rich-text-editor.js" },
+  // Experimental entry.
+  "QRCode": { names: "QRCode", budget: 11.8, entry: "experimental.js" },
+  "Splitter": { names: "Splitter", budget: 12.5, entry: "experimental.js" },
+  "ScatterChart + RadarChart": { names: "ScatterChart, RadarChart", budget: 13.1, entry: "experimental.js" },
+  "TreeSelect": { names: "TreeSelect", budget: 44.4, entry: "experimental.js" },
+  "MentionTextarea": { names: "MentionTextarea", budget: 12.4, entry: "experimental.js" },
+  "Scheduler": { names: "Scheduler", budget: 29.9, entry: "experimental.js" },
+  "VirtualTable": { names: "VirtualTable", budget: 20.7, entry: "experimental.js" },
+  "FileUploader": { names: "FileUploader", budget: 18.4, entry: "experimental.js" },
 };
 /** Gzip budget in kB for the full stylesheet. */
 const cssBudget = 33;
