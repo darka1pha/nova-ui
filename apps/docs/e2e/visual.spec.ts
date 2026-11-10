@@ -64,7 +64,10 @@ for (const mode of ["light", "dark"] as const) {
         await page.getByRole("button", { name: material, exact: true }).first().click();
         const app = page.locator("[data-slot=sidebar-wrapper]");
         await app.scrollIntoViewIfNeeded();
-        await expect(app).toHaveScreenshot(`template-${material.toLowerCase()}-${mode}.png`, { mask: [page.locator("time")] });
+        // The docs site's sticky header overlaps the top of the template; mask it so docs
+        // header changes (like the search button) don't fail the material screenshots.
+        const docsHeader = page.locator("header.sticky.z-40");
+        await expect(app).toHaveScreenshot(`template-${material.toLowerCase()}-${mode}.png`, { mask: [page.locator("time"), docsHeader] });
       });
     }
 
