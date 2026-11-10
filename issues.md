@@ -82,10 +82,10 @@ Fixed on branch `fix/audit-medium-low`, which is stacked on `fix/audit-high-issu
 
 | Status | Medium | Low |
 | --- | --- | --- |
-| ✅ Fixed | M-4, M-5, M-7, M-8, M-9, M-10, M-11, M-12, M-13, M-14 (breaking), M-16 (breaking), M-17, M-18, M-19, M-20 | L-1, L-3, L-4, L-5, L-6, L-7, L-9, L-10, L-11, L-13, L-14, L-15, L-16, L-18, L-19, L-20, L-21, L-22 |
+| ✅ Fixed | M-3, M-4, M-5, M-7, M-8, M-9, M-10, M-11, M-12, M-13, M-14 (breaking), M-16 (breaking), M-17, M-18, M-19, M-20 | L-1, L-3, L-4, L-5, L-6, L-7, L-9, L-10, L-11, L-13, L-14, L-15, L-16, L-18, L-19, L-20, L-21, L-22 |
 | 📝 Documented | M-2, M-6 | |
 | ❎ Not reproduced / ➖ left as is | M-1 | L-12, L-17 |
-| ⏸ Deferred | M-3, M-15 | L-2, L-8, L-23 |
+| ⏸ Deferred | M-15 | L-2, L-8, L-23 |
 
 **Visual baselines** may need regenerating: screenshots containing a disabled FormField label (L-6) or an AlertDialog title (L-11). Token colors are unchanged for every preset.
 
@@ -115,13 +115,15 @@ Fix: document the constraint, or offer `portalContainer` / `portalTarget="body"`
 
 **Status:** The constraint is now in `ThemeProvider`'s JSDoc. A body-level portal host that copies the provider's variables is still an option if this keeps coming up.
 
-**M-3. ⏸ Deferred — `RichTextViewer` renders nothing on the server.**
+**M-3. ✅ Fixed — `RichTextViewer` renders nothing on the server.**
 `packages/ui/src/components/rich-text-editor.tsx:769,1843-1858`
 The viewer is a full read-only Tiptap editor with `immediatelyRender: false`, so SSR/SSG output is empty.
 That's bad for SEO, causes a layout shift, and pulls the whole ProseMirror engine into the bundle just to display content.
 Fix: render static HTML for the viewer (`generateHTML` from `@tiptap/html`, or a small JSON→React renderer) and keep the editor for editing.
 
 **Status:** Rendering saved content statically needs `@tiptap/html` (plus a DOM implementation on the server to parse HTML input) and a sanitizing pass. That's a new dependency and a design decision, so it's out of scope for a fix pass.
+
+**Done:** `RichTextContentView` (rich-text-editor entry) renders editor JSON as plain React elements with no Tiptap code (12.6 kB gzip, a size-report case). `RichTextViewer` uses it for JSON content, so stored JSON renders on the server. The markup matches `getHTML()` for every node and mark (a parity test), and URLs (`normalizeUrl`, `safeImageSrc`), colors and alignments are checked, so untrusted JSON is safe. HTML strings still go through the editor on the client: store JSON for server rendering.
 
 **M-4. ✅ Fixed — Link URL normalization doesn't block dangerous schemes.**
 `packages/ui/src/components/rich-text-editor.tsx:387-393,1628,1659`
