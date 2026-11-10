@@ -965,6 +965,7 @@ name is a breaking change (a major release after 1.0).
 
 - `encodeQR`
 - `FileUploader`
+- `MentionTextarea`
 - `TreeSelect`
 - `RadarChart`
 - `ScatterChart`
@@ -978,6 +979,10 @@ name is a breaking change (a major release after 1.0).
 - `EncodeQROptions`
 - `FileUploaderProps`
 - `FileUploads`
+- `MentionLabels`
+- `MentionOption`
+- `MentionTextareaProps`
+- `MentionTrigger`
 - `TreeSelectLabels`
 - `TreeSelectMultipleProps`
 - `TreeSelectProps`

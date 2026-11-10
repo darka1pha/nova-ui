@@ -14,6 +14,7 @@ export {
   type UploadContext,
   type UseFileUploadsOptions,
 } from "./components/file-uploader.tsx";
+export { MentionTextarea, type MentionTextareaProps, type MentionOption, type MentionTrigger, type MentionLabels } from "./components/mention-textarea.tsx";
 export { TreeSelect, type TreeSelectProps, type TreeSelectSingleProps, type TreeSelectMultipleProps, type TreeSelectLabels } from "./components/tree-select.tsx";
 export { ScatterChart, RadarChart, type ScatterChartProps, type RadarChartProps } from "./components/charts.tsx";
 export { Splitter, type SplitterPane, type SplitterProps } from "./components/splitter.tsx";
