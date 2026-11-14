@@ -95,9 +95,14 @@ export const premium: ThemeDefinition = {
  */
 const kavehNavy = "#295097";
 const kavehOrange = "#f37537";
-/** Kaveh orange lifted 0.04 and 0.06 in OKLCH lightness, same hue and chroma. Navy text keeps 6.7:1 and 7.3:1. */
-const kavehOrangeHover = "#ff8349";
-const kavehOrangeActive = "#ff8f5c";
+/**
+ * Button fill: Kaveh orange lifted 0.03 in OKLCH lightness, same hue and chroma, so solid
+ * buttons read a touch brighter than the brand mark. Navy text on it is 6.5:1.
+ */
+const kavehOrangeSolid = "#fe7f42";
+/** The button fill lifted a further 0.04 and 0.06. Navy text keeps 7.5:1 and 8.2:1. */
+const kavehOrangeHover = "#ff9465";
+const kavehOrangeActive = "#ff9f75";
 
 /** Overrides that keep orange in front and navy as its counterpart in every Kaveh preset. */
 const kavehBrand = (light: SemanticOverrides = {}, dark: SemanticOverrides = {}): ThemeDefinition["overrides"] => ({
@@ -106,6 +111,7 @@ const kavehBrand = (light: SemanticOverrides = {}, dark: SemanticOverrides = {})
     foreground: "#040f26",
     "primary-on-solid": "#0b1f3f",
     // Hover and press brighten in Kaveh orange's own hue, so a button never reads darker than the brand.
+    "primary-solid": kavehOrangeSolid,
     "primary-solid-hover": kavehOrangeHover,
     "primary-solid-active": kavehOrangeActive,
     // Orange stays solid-only; every tint, link and soft badge of the primary is navy.
@@ -140,6 +146,7 @@ const kavehBrand = (light: SemanticOverrides = {}, dark: SemanticOverrides = {})
     "surface-active": "#183868",
     border: "#1f3d6b",
     "primary-on-solid": "#0b1f3f",
+    "primary-solid": kavehOrangeSolid,
     "primary-solid-hover": kavehOrangeHover,
     "primary-solid-active": kavehOrangeActive,
     "primary-subtle": "#13305c",

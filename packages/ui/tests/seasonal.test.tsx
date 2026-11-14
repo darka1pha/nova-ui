@@ -43,10 +43,11 @@ describe("seasonal presets", () => {
       expect(presets[id].overrides?.light?.["primary-text"]).toBe("#295097");
       expect(presets[id].overrides?.light?.["neutral-solid"]).toBe("#295097");
       expect(presets[id].overrides?.dark?.["neutral-solid"]).toBe("#295097");
-      // Hover and press brighten the orange rather than darken it, in both modes.
+      // Buttons use Kaveh orange a touch lighter; hover and press brighten it further, in both modes.
       for (const mode of ["light", "dark"] as const) {
-        expect(presets[id].overrides?.[mode]?.["primary-solid-hover"]).toBe("#ff8349");
-        expect(presets[id].overrides?.[mode]?.["primary-solid-active"]).toBe("#ff8f5c");
+        expect(presets[id].overrides?.[mode]?.["primary-solid"]).toBe("#fe7f42");
+        expect(presets[id].overrides?.[mode]?.["primary-solid-hover"]).toBe("#ff9465");
+        expect(presets[id].overrides?.[mode]?.["primary-solid-active"]).toBe("#ff9f75");
       }
     }
   });
