@@ -1,5 +1,15 @@
 # @darkalpha/nova-tokens
 
+## 0.9.0
+
+### Minor Changes
+
+- 5958c39: Chart colors meet 3:1 against the page and cards (WCAG 1.4.11). Light mode: `chart-3` `#1baf7a` → `#00a470`, `chart-4` `#eda100` → `#c18200`, `chart-5` `#e87ba4` → `#d86d96`. Kaveh presets: light `chart-1` `#e76a2a`, `chart-3` `#b34700`, `chart-6` `#7b8fb2` (Yalda `chart-4` `#c38100`, Nowruz `chart-4` `#039fa1`), dark `chart-6` `#4978c4`. `auditContrast` now also checks every `chart-*` token against `background`, `surface` and `surface-raised`, so a custom theme with an unreadable series color is reported.
+
+### Patch Changes
+
+- 5ec192d: Kaveh presets: solid primary buttons are a touch lighter. `primary-solid` is `#fe7f42` (Kaveh orange lifted 0.03 in OKLCH lightness, same hue), with hover `#ff9465` and press `#ff9f75`. Navy text stays at 6.5:1 or more.
+
 ## 0.8.0
 
 ### Patch Changes

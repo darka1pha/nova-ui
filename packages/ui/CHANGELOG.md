@@ -1,5 +1,42 @@
 # @darkalpha/nova-ui
 
+## 0.9.0
+
+### Minor Changes
+
+- f8edaf8: `DataTable` column features, all off by default:
+  
+  - `resizableColumns` (with `columnWidths` / `onColumnWidthsChange`): a handle on each header edge, dragged or moved with the arrow keys (Shift for bigger steps, mirrored in RTL). The first resize freezes every column at its width in a fixed layout.
+  - `reorderableColumns` (with `columnOrder` / `onColumnOrderChange`): drag a header onto another, or use its grip button with the arrow keys; moves are announced.
+  - Column `editable` (boolean or per-row function) with `editValue`, and `onCellEdit(row, columnId, value)` on the table: cells edit in place with InlineEdit (async saves and error messages included).
+  - `groupBy` (a column id) and `renderGroup`: rows under collapsible group headings with a count.
+  - New `labels`: `resize`, `move`, `moved`, `group`, `edit`.
+- 7016d62: New experimental `MentionTextarea` (`@darkalpha/nova-ui/experimental`): a textarea that suggests people, tags or anything else after a trigger character typed at the start of a word. Each trigger has fixed `options` or `loadOptions(query, signal)` (debounced; a newer query aborts the older request). Arrows move, Enter or Tab inserts plain text ("@Sara Ahmadi "), Escape closes; `onMention` reports what was picked. Focus stays in the textarea, which drives the listbox through `aria-activedescendant`, and the list opens at the caret.
+- 5958c39: `Popconfirm` now defaults to `tone="primary"`: its confirm button uses the theme's primary color instead of red. Pass `tone="danger"` for destructive confirmations (delete, remove, revoke) to keep the red button and start focus on Cancel.
+- 1f6ab67: New experimental `QRCode` (`@darkalpha/nova-ui/experimental`): a QR code for a URL or text, drawn as one SVG path with a built-in encoder (no new dependency), so it renders on the server and stays sharp at any size. Byte mode (UTF-8), error correction `ecc` L/M/Q/H, versions 1–40 and automatic mask selection; `size`, `margin` (quiet zone), `color` and `background`. `role="img"` with a required `label`. The encoder is exported as `encodeQR()` for other renderers.
+- 837a305: Rich text renders on the server:
+  
+  - New `RichTextContentView` (from `@darkalpha/nova-ui/rich-text-editor`) renders editor JSON (`editor.getJSON()`) as plain elements with no Tiptap or ProseMirror code, so it works in server rendering and adds about 13 kB gzip instead of the editor engine. The markup matches the editor's, so the same styles apply. Link and image URLs, colors and alignments are checked, and unknown nodes keep only their text, so the JSON can come from users.
+  - `RichTextViewer` uses it automatically when `value` or `defaultValue` is JSON. HTML strings keep the previous behavior (parsed by the editor on the client). Store JSON to render rich text on the server.
+  - Task list checkboxes are named in the editor and the viewer through a new `taskItem` label ("Task: …", Persian "کار: …").
+- 8a18022: New experimental charts in `@darkalpha/nova-ui/experimental`, built like the existing ones (dependency-free SVG, hover and keyboard tooltips, a legend, and a data table that's always available to screen readers):
+  
+  - `ScatterChart`: `x` and `y` fields per row, with optional `group` (colors and legend), `size` (bubbles, area scaled), `pointLabel`, axis titles and formatters. Arrow keys step through points in x order; RTL mirrors the x axis.
+  - `RadarChart`: one spoke per row of `data`, one polygon per series, from zero at the center. Arrow keys walk the spokes and wrap; RTL mirrors the direction.
+- 8ecd2cd: New experimental `Scheduler` (`@darkalpha/nova-ui/experimental`): events (`{ id, title, start, end, allDay?, color? }`) in month, week and day views, controlled or not (`view`, `date`). The month view is a keyboard grid (arrows mirrored in RTL, PageUp/PageDown, Enter picks a day, Tab reaches its events, "+N more" opens the day). Week and day views place timed events on an hour grid (`dayStartHour`, `dayEndHour`, `hourHeight`), side by side when they overlap, with all-day events above and a current-time line. Follows the locale's calendar (Jalali for fa), week start, weekend and digits. `onEventClick`, `onSlotClick`, `labels`.
+  
+  The Gregorian/Persian month math Calendar uses moved to an internal module shared with Scheduler; Calendar's behavior is unchanged.
+- 3850368: New experimental `Splitter` (`@darkalpha/nova-ui/experimental`): resizable panes from a `panes` list (`id`, `label`, `content`, sizes, `collapsible`), built on `ResizablePanelGroup`, with a grip and a named handle between each pair. Takes the group's `direction`, `autoSaveId`, `onLayout` and `labels`.
+- 21cf797: - `TreeView` gains `checkable` (with `checkedIds`, `defaultCheckedIds`, `onCheckedIdsChange`) for picking several items: checking a branch checks every enabled leaf under it, and branches show checked, mixed or unchecked (`aria-checked`, `aria-multiselectable`).
+  - New experimental `TreeSelect` (`@darkalpha/nova-ui/experimental`): a field-styled trigger that opens a searchable `TreeView`. Pick one item (branches open instead, unless `branchesSelectable`), or several with `multiple`. Works with `FormField` and submits through `name`.
+
+### Patch Changes
+
+- 48f2b46: Every component is about 2.5 kB gzip smaller (Button 14.4 → 11.9 kB). `cn()` now uses a tailwind-merge config cut down to the class groups the components use and the groups that conflict with them, generated from tailwind-merge's own config. A consumer's `className` overrides a component's classes exactly as before. One difference: two conflicting classes that both come from your own `className` are only deduplicated when their utility family is one the components use.
+- Updated dependencies [5958c39]
+- Updated dependencies [5ec192d]
+  - @darkalpha/nova-tokens@0.9.0
+
 ## 0.8.0
 
 ### Minor Changes
