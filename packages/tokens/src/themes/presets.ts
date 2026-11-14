@@ -121,12 +121,14 @@ const kavehBrand = (light: SemanticOverrides = {}, dark: SemanticOverrides = {})
     "secondary-text": kavehNavy,
     "focus-ring": "#e96c2c",
     selection: "#ffd9bf",
-    "chart-1": kavehOrange,
+    // Chart marks keep 3:1 on white (WCAG 1.4.11): Kaveh orange one OKLCH step deeper,
+    // a burnt orange in place of the light one, and a mid navy in place of the pale tint.
+    "chart-1": "#e76a2a",
     "chart-2": kavehNavy,
-    "chart-3": "#fc7d40",
+    "chart-3": "#b34700",
     "chart-4": "#4f7bc4",
     "chart-5": "#0b1f3f",
-    "chart-6": "#a9bee3",
+    "chart-6": "#7b8fb2",
     ...light,
   },
   dark: {
@@ -157,7 +159,8 @@ const kavehBrand = (light: SemanticOverrides = {}, dark: SemanticOverrides = {})
     "chart-3": "#f37537",
     "chart-4": "#a9bee3",
     "chart-5": "#ffc49c",
-    "chart-6": "#3f6db8",
+    // Light enough for 3:1 on raised navy cards.
+    "chart-6": "#4978c4",
     ...dark,
   },
 });
@@ -226,7 +229,7 @@ export const kavehYalda: ThemeDefinition = {
     vivid: `linear-gradient(120deg, #ffc46b 0%, #e8a33d 28%, ${kavehOrange} 62%, #ef5a3c 100%)`,
   },
   overrides: kavehBrand(
-    { "chart-3": "#b3122e", "chart-4": "#e8a33d" },
+    { "chart-3": "#b3122e", "chart-4": "#c38100" },
     { background: "#081430", surface: "#0d1c42", "surface-raised": "#13265a", "chart-3": "#e85a6b", "chart-4": "#e8a33d" },
   ),
 };
@@ -259,7 +262,7 @@ export const kavehNowruz: ThemeDefinition = {
     // Spring morning: orange sun into new leaf.
     vivid: `linear-gradient(120deg, ${kavehOrange} 0%, #ffb35c 50%, #a8d86e 100%)`,
   },
-  overrides: kavehBrand({ "chart-3": "#2f9a55", "chart-4": "#18a5a7" }, { "chart-3": "#5cc47f", "chart-4": "#3cc2c4" }),
+  overrides: kavehBrand({ "chart-3": "#2f9a55", "chart-4": "#039fa1" }, { "chart-3": "#5cc47f", "chart-4": "#3cc2c4" }),
 };
 
 export const presets = {

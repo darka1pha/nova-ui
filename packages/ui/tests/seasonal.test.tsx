@@ -36,7 +36,8 @@ describe("seasonal presets", () => {
       expect(presets[id].colors.secondary).toBe("#295097");
       // Navy text on orange: white on Kaveh orange is only 2.9:1.
       expect(presets[id].overrides?.light?.["primary-on-solid"]).toBe("#0b1f3f");
-      expect(presets[id].overrides?.light?.["chart-1"]).toBe("#f37537");
+      // Kaveh orange one OKLCH step deeper, so the first series keeps 3:1 on white (WCAG 1.4.11).
+      expect(presets[id].overrides?.light?.["chart-1"]).toBe("#e76a2a");
       expect(presets[id].overrides?.light?.["chart-2"]).toBe("#295097");
       // Navy carries text, links and dark fills so it is on screen next to the orange.
       expect(presets[id].overrides?.light?.["primary-text"]).toBe("#295097");

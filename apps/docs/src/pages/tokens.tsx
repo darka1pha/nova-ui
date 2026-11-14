@@ -1,5 +1,5 @@
-import { primitives } from "@darkalpha/nova-tokens";
-import { Badge, SearchInput, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, Tooltip, contrastRatio, useTheme, type SemanticColorName } from "@darkalpha/nova-ui";
+import { bestContrast, primitives } from "@darkalpha/nova-tokens";
+import { Badge, SearchInput, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, Tooltip, useTheme, type SemanticColorName } from "@darkalpha/nova-ui";
 import { useMemo, useState } from "react";
 import { CopyButton, Page, Prose, Section } from "../docs/kit.tsx";
 
@@ -78,7 +78,7 @@ export function TokensPage() {
                 <span className="font-mono text-xs font-semibold text-foreground-secondary">{name}</span>
                 {Object.entries(scale).map(([step, hex]) => (
                   <Tooltip key={step} content={`${name}-${step} · ${hex}`}>
-                    <div className="flex h-10 flex-col items-center justify-center rounded-sm text-[10px] font-semibold" style={{ background: hex, color: contrastRatio(hex, "#ffffff") >= 3 ? "#fff" : "#111" }}>
+                    <div className="flex h-10 flex-col items-center justify-center rounded-sm text-[10px] font-semibold" style={{ background: hex, color: bestContrast(hex, ["#ffffff", "#000000"]) }}>
                       {step}
                     </div>
                   </Tooltip>

@@ -389,7 +389,7 @@ export function PopconfirmExamples() {
     <Example
       title="Popconfirm"
       description="A quick confirmation next to the action. Destructive ones start focus on Cancel; async confirms show a spinner."
-      code={`<Popconfirm title="Delete this file?" description="This can't be undone."
+      code={`<Popconfirm tone="danger" title="Delete this file?" description="This can't be undone."
   confirmLabel="Delete" onConfirm={() => api.delete(id)}>
   <Button variant="ghost" startIcon={<Trash2 />}>Delete</Button>
 </Popconfirm>`}
@@ -399,6 +399,7 @@ export function PopconfirmExamples() {
           <li key={f} className="flex items-center justify-between rounded-(--nv-card-radius) border border-border bg-surface px-3 py-2 text-sm">
             {f}
             <Popconfirm
+              tone="danger"
               title={`Delete “${f}”?`}
               description="This can't be undone."
               confirmLabel="Delete"

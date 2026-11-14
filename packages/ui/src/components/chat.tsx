@@ -179,7 +179,8 @@ export const Message = forwardRef<HTMLDivElement, MessageProps>(function Message
           variant === "bubble" && (mine ? "bg-primary text-primary-on-solid" : "bg-surface-sunken text-foreground"),
           // Tighten the corners that face the next/previous bubble from the same author.
           variant === "bubble" && (mine ? "[&:not(:first-child)]:rounded-se-md" : "[&:not(:first-child)]:rounded-ss-md"),
-          status === "sending" && "opacity-70",
+          // Pending shows as a dashed outline, not by fading: a faded bubble drops its text below 4.5:1.
+          status === "sending" && "outline-1 outline-offset-2 outline-dashed outline-border-strong",
           status === "error" && "ring-2 ring-danger-text/60",
           className,
         )}

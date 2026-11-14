@@ -21,7 +21,11 @@ export interface PopconfirmProps {
   confirmLabel?: string;
   /** Text of the cancel button. */
   cancelLabel?: string;
-  /** `danger` styles the confirm button red and focuses Cancel first. */
+  /**
+   * `primary` (default) styles the confirm button with the theme's primary color.
+   * Use `danger` only for destructive actions (delete, remove, revoke): it styles
+   * the confirm button red and focuses Cancel first.
+   */
   tone?: "danger" | "primary";
   side?: "top" | "right" | "bottom" | "left";
   align?: "start" | "center" | "end";
@@ -43,7 +47,7 @@ export function Popconfirm({
   onCancel,
   confirmLabel = "Confirm",
   cancelLabel = "Cancel",
-  tone = "danger",
+  tone = "primary",
   side = "top",
   align = "center",
   open: openProp,

@@ -65,7 +65,7 @@ describe("Popconfirm", () => {
     let resolve!: () => void;
     const onConfirm = vi.fn(() => new Promise<void>((r) => (resolve = r)));
     wrap(
-      <Popconfirm title="Delete this file?" description="This cannot be undone." confirmLabel="Delete" onConfirm={onConfirm}>
+      <Popconfirm tone="danger" title="Delete this file?" description="This cannot be undone." confirmLabel="Delete" onConfirm={onConfirm}>
         <Button>Delete</Button>
       </Popconfirm>,
     );
@@ -74,6 +74,7 @@ describe("Popconfirm", () => {
     const dialog = screen.getByRole("alertdialog", { name: "Delete this file?" });
     expect(dialog).toHaveAccessibleDescription("This cannot be undone.");
     expect(screen.getByRole("button", { name: "Cancel" })).toHaveFocus();
+    expect(screen.getAllByRole("button", { name: "Delete" })[1]).toHaveAttribute("data-variant", "danger");
     await userEvent.click(screen.getAllByRole("button", { name: "Delete" })[1]!);
     expect(onConfirm).toHaveBeenCalled();
     expect(screen.getByRole("alertdialog")).toBeInTheDocument();
@@ -85,11 +86,13 @@ describe("Popconfirm", () => {
   it("stays open with the error when confirm throws, and cancels with Escape", async () => {
     const onCancel = vi.fn();
     wrap(
-      <Popconfirm title="Archive?" onConfirm={() => Promise.reject(new Error("Network error"))} onCancel={onCancel} tone="primary">
+      <Popconfirm title="Archive?" onConfirm={() => Promise.reject(new Error("Network error"))} onCancel={onCancel}>
         <Button>Archive</Button>
       </Popconfirm>,
     );
     await userEvent.click(screen.getByRole("button", { name: "Archive" }));
+    // Not destructive: the confirm button is the primary action, never red.
+    expect(screen.getByRole("button", { name: "Confirm" })).toHaveAttribute("data-variant", "primary");
     await userEvent.click(screen.getByRole("button", { name: "Confirm" }));
     expect(await screen.findByText("Network error")).toBeInTheDocument();
     expect(screen.getByRole("alertdialog")).toHaveAccessibleDescription("Network error");
