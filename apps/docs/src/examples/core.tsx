@@ -874,7 +874,7 @@ export function AlertExamples() {
     <Example
       title="Alert"
       code={`<Alert variant="success" title="Deployed">Your site is live.</Alert>
-<Alert variant="danger" title="Payment failed" action={<Button size="sm" variant="danger">Retry</Button>} />`}
+<Alert variant="danger" title="Payment failed" action={<Button size="sm" variant="outline">Retry</Button>} />`}
     >
       <Stack gap={3} className="w-full">
         <Alert variant="info" title="Heads up">
@@ -888,7 +888,7 @@ export function AlertExamples() {
           variant="danger"
           title="Payment failed"
           action={
-            <Button size="sm" variant="danger">
+            <Button size="sm" variant="outline">
               Retry payment
             </Button>
           }

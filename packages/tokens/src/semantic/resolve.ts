@@ -224,8 +224,13 @@ function resolveIntent(ctx: ModeContext, intent: Intent, seed: ResolvedSeed, neu
 /** Characters that could end a CSS declaration or rule, or open markup. */
 const UNSAFE_CSS_VALUE = /[;{}<>\\]|\/\*/;
 
+/**
+ * Series colors. Every light-mode color keeps at least 3:1 against white and the
+ * off-white page backgrounds (WCAG 1.4.11, graphical objects); green, amber and
+ * pink are the original hues taken a few OKLCH lightness steps darker to get there.
+ */
 const CHART_PALETTE: Record<ColorMode, readonly string[]> = {
-  light: ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300", "#6250d6", "#e34948"],
+  light: ["#2a78d6", "#eb6834", "#00a470", "#c18200", "#d86d96", "#008300", "#6250d6", "#e34948"],
   dark: ["#3987e5", "#d95926", "#199e70", "#c98500", "#d55181", "#008300", "#9085e9", "#e66767"],
 };
 

@@ -1,6 +1,6 @@
 import { contrastRatio, WCAG } from "./color/contrast.ts";
 import { isHexColor } from "./color/convert.ts";
-import { INTENTS, type SemanticColorName } from "./semantic/schema.ts";
+import { CHART_ROLES, INTENTS, type SemanticColorName } from "./semantic/schema.ts";
 import type { ColorMode, ResolvedTheme } from "./themes/types.ts";
 
 export interface ContrastCheck {
@@ -39,6 +39,10 @@ export function contrastPairs(): Pair[] {
     pairs.push([`${intent}-text`, "background", WCAG.text]);
     pairs.push([`${intent}-text`, "surface", WCAG.text]);
     pairs.push([`${intent}-text`, "surface-raised", WCAG.text]);
+  }
+  // Chart series are graphical objects: lines, bars and dots need 3:1 against the card or page behind them.
+  for (const chart of CHART_ROLES) {
+    for (const bg of ["background", "surface", "surface-raised"] as const) pairs.push([chart, bg, WCAG.ui]);
   }
   return pairs;
 }
