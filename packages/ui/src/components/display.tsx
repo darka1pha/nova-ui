@@ -436,6 +436,11 @@ export interface CarouselProps extends HTMLAttributes<HTMLElement> {
   autoPlay?: number | false;
   /** Show a dot per slide under the track. */
   showDots?: boolean;
+  /**
+   * Enable swipe and drag gesture navigation. Defaults to true.
+   * Supports touch, pen, and mouse dragging to advance or step back slides.
+   */
+  swipeable?: boolean;
   labels?: {
     previous?: string;
     next?: string;
@@ -454,7 +459,7 @@ export interface CarouselProps extends HTMLAttributes<HTMLElement> {
  * keyboard) plus previous/next buttons and dots. Follows the ARIA carousel pattern.
  */
 export const Carousel = forwardRef<HTMLElement, CarouselProps>(function Carousel(
-  { label, slideSize = "100%", gap = "1rem", autoPlay = false, showDots = true, labels, className, children, ...props },
+  { label, slideSize = "100%", gap = "1rem", autoPlay = false, showDots = true, swipeable = true, labels, className, children, ...props },
   ref,
 ) {
   const slides = Children.toArray(children);
@@ -470,6 +475,9 @@ export const Carousel = forwardRef<HTMLElement, CarouselProps>(function Carousel
   // An explicit stop from the rotation button; only that button undoes it.
   const [stopped, setStopped] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
+  // Gesture swipe & drag tracking
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStart = useRef<{ pointerId: number; startX: number; startScrollLeft: number; dragged: boolean } | null>(null);
   useEffect(() => {
     const mql = window.matchMedia?.("(prefers-reduced-motion: reduce)");
     if (!mql) return;
@@ -565,6 +573,74 @@ export const Carousel = forwardRef<HTMLElement, CarouselProps>(function Carousel
     return () => clearInterval(t);
   }, [rotates, autoPlay, paused, index, edges.end, goTo]);
 
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!swipeable) return;
+    // Allow primary click or touch/pen drag
+    if (e.button !== 0 && e.pointerType === "mouse") return;
+    const el = track.current;
+    if (!el) return;
+    target.current = null;
+    dragStart.current = {
+      pointerId: e.pointerId,
+      startX: e.clientX,
+      startScrollLeft: el.scrollLeft,
+      dragged: false,
+    };
+  };
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const ds = dragStart.current;
+    if (!ds || ds.pointerId !== e.pointerId) return;
+    const el = track.current;
+    if (!el) return;
+    const dx = e.clientX - ds.startX;
+    if (!ds.dragged && Math.abs(dx) > 4) {
+      ds.dragged = true;
+      setIsDragging(true);
+      try {
+        el.setPointerCapture(e.pointerId);
+      } catch {
+        /* pointer capture unsupported in older test mocks */
+      }
+    }
+    if (ds.dragged) {
+      el.scrollLeft = ds.startScrollLeft - dx;
+    }
+  };
+
+  const handlePointerUpOrCancel = (e: React.PointerEvent<HTMLDivElement>) => {
+    const ds = dragStart.current;
+    if (!ds || ds.pointerId !== e.pointerId) return;
+    const el = track.current;
+    const wasDragged = ds.dragged;
+    const dx = e.clientX - ds.startX;
+    dragStart.current = null;
+    setIsDragging(false);
+
+    if (el) {
+      try {
+        if (el.hasPointerCapture(e.pointerId)) {
+          el.releasePointerCapture(e.pointerId);
+        }
+      } catch {
+        /* ignore */
+      }
+    }
+
+    if (wasDragged && el) {
+      // Determine swipe direction accounting for RTL
+      const isRtl = getComputedStyle(el).direction === "rtl";
+      const swipeDistance = Math.abs(dx);
+      if (swipeDistance >= 40) {
+        const forward = isRtl ? dx > 0 : dx < 0;
+        goTo(forward ? Math.min(slides.length - 1, index + 1) : Math.max(0, index - 1));
+      } else {
+        // Snap back to the nearest slide if drag was small
+        goTo(index);
+      }
+    }
+  };
+
   const nav = cn(
     "absolute top-1/2 z-10 inline-flex size-9 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-surface/90 text-foreground shadow-md backdrop-blur-sm hover:scale-110 disabled:opacity-0 [&_svg]:size-4",
     focusRing,
@@ -605,7 +681,16 @@ export const Carousel = forwardRef<HTMLElement, CarouselProps>(function Carousel
           // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- a scrollable region must be focusable so keyboard users can scroll it
           tabIndex={0}
           aria-live={rotates && !paused ? "off" : "polite"}
-          className={cn("flex snap-x snap-mandatory overflow-x-auto scroll-smooth rounded-lg [scrollbar-width:none] motion-reduce:scroll-auto [&::-webkit-scrollbar]:hidden", focusRing)}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUpOrCancel}
+          onPointerCancel={handlePointerUpOrCancel}
+          className={cn(
+            "flex snap-x snap-mandatory overflow-x-auto scroll-smooth rounded-lg [scrollbar-width:none] motion-reduce:scroll-auto [&::-webkit-scrollbar]:hidden",
+            swipeable && "cursor-grab active:cursor-grabbing select-none",
+            isDragging && "snap-none scroll-auto",
+            focusRing,
+          )}
           style={{ gap }}
         >
           {slides.map((slide, i) => (

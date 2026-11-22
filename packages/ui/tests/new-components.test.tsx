@@ -342,6 +342,44 @@ describe("Display components", () => {
     expect(screen.getByRole("button", { name: "Go to slide 1" })).toHaveAttribute("aria-current", "true");
   });
 
+  it("Carousel supports swipe/drag gesture navigation", async () => {
+    const SLIDE = 352;
+    const STEP = SLIDE + 16;
+    wrap(
+      <Carousel label="Swipeable" slideSize="352px">
+        {[1, 2, 3].map((n) => (
+          <div key={n}>Slide {n}</div>
+        ))}
+      </Carousel>,
+    );
+    const region = screen.getByRole("region", { name: "Swipeable" });
+    const track = region.querySelector<HTMLElement>("[tabindex='0']");
+    if (!track) throw new Error("track not found");
+
+    Object.defineProperty(track, "clientWidth", { configurable: true, value: 766 });
+    Object.defineProperty(track, "scrollWidth", { configurable: true, value: STEP * 3 - 16 });
+    track.getBoundingClientRect = () => ({ left: 0, right: 766, top: 0, bottom: 200, width: 766, height: 200, x: 0, y: 0, toJSON: () => ({}) });
+    track.querySelectorAll<HTMLElement>("[data-index]").forEach((slide, i) => {
+      slide.getBoundingClientRect = () => {
+        const left = i * STEP - track.scrollLeft;
+        return { left, right: left + SLIDE, top: 0, bottom: 200, width: SLIDE, height: 200, x: left, y: 0, toJSON: () => ({}) };
+      };
+    });
+    track.scrollTo = ((opts: ScrollToOptions) => {
+      track.scrollLeft = opts.left ?? 0;
+      track.dispatchEvent(new Event("scroll"));
+    }) as typeof track.scrollTo;
+
+    // Simulate drag gesture to the left (swipe forward)
+    fireEvent.pointerDown(track, { button: 0, pointerId: 1, clientX: 200 });
+    fireEvent.pointerMove(track, { pointerId: 1, clientX: 130 }); // dx = -70 (> 40 threshold)
+    fireEvent.pointerUp(track, { pointerId: 1, clientX: 130 });
+
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Go to slide 2" })).toHaveAttribute("aria-current", "true");
+    });
+  });
+
   it("Collapsible toggles its content", async () => {
     wrap(
       <Collapsible>
