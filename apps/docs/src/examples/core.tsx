@@ -1354,6 +1354,7 @@ export function CommandPaletteExamples() {
 
 function InteractiveSidebarShowcase() {
   const [activePage, setActivePage] = useState<"dashboard" | "inbox" | "analytics" | "projects" | "team" | "settings">("dashboard");
+  const [activeSubProject, setActiveSubProject] = useState<"components" | "tokens">("components");
   const [demoTheme, setDemoTheme] = useState<string>("vibrant");
   const [demoMode, setDemoMode] = useState<"light" | "dark">("light");
   const [sidebarVariant, setSidebarVariant] = useState<"inset" | "dual" | "floating">("inset");
@@ -1633,8 +1634,22 @@ function InteractiveSidebarShowcase() {
                         isActive: activePage === "projects",
                         onClick: () => setActivePage("projects"),
                         subItems: [
-                          { title: "UI Components", isActive: activePage === "projects", onClick: () => setActivePage("projects") },
-                          { title: "Design Tokens", onClick: () => setActivePage("projects") },
+                          {
+                            title: "UI Components",
+                            isActive: activePage === "projects" && activeSubProject === "components",
+                            onClick: () => {
+                              setActivePage("projects");
+                              setActiveSubProject("components");
+                            },
+                          },
+                          {
+                            title: "Design Tokens",
+                            isActive: activePage === "projects" && activeSubProject === "tokens",
+                            onClick: () => {
+                              setActivePage("projects");
+                              setActiveSubProject("tokens");
+                            },
+                          },
                         ],
                       },
                       { title: "Team", icon: <Users />, isActive: activePage === "team", onClick: () => setActivePage("team") },
@@ -1661,7 +1676,7 @@ function InteractiveSidebarShowcase() {
                     <StatusIndicator status="online" label="Live" pulse />
                   </div>
                 </header>
-                <div key={activePage} className="p-5 flex flex-col gap-4">
+                <div key={activePage} className="p-5 flex flex-col gap-4 animate-nv-fade-in animate-nv-slide-up">
                   {renderActivePageContent()}
                 </div>
               </SidebarInset>
@@ -1693,7 +1708,7 @@ function InteractiveSidebarShowcase() {
                   <Separator orientation="vertical" className="h-4" />
                   <Text weight="semibold" size="sm" className="capitalize">{activeWorkspace === "ws-1" ? "Engineering" : activeWorkspace === "ws-2" ? "Design" : "Ops"} · {activePage}</Text>
                 </div>
-                <div key={activePage} className="p-2 flex flex-col gap-4">
+                <div key={activePage} className="p-2 flex flex-col gap-4 animate-nv-fade-in animate-nv-slide-up">
                   {renderActivePageContent()}
                 </div>
               </div>
@@ -1715,7 +1730,7 @@ function InteractiveSidebarShowcase() {
                   <Separator orientation="vertical" className="h-4" />
                   <Text weight="semibold" size="sm" className="capitalize">Floating Canvas · {activePage}</Text>
                 </div>
-                <div key={activePage} className="p-2 flex flex-col gap-4">
+                <div key={activePage} className="p-2 flex flex-col gap-4 animate-nv-fade-in animate-nv-slide-up">
                   {renderActivePageContent()}
                 </div>
               </div>

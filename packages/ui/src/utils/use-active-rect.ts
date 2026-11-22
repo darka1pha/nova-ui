@@ -21,11 +21,34 @@ export function useActiveRect(list: HTMLElement | null, activeSelector: string, 
     if (!list) return;
     const measure = () => {
       const active = list.querySelector<HTMLElement>(activeSelector);
-      setRect(active ? { x: active.offsetLeft, y: active.offsetTop, w: active.offsetWidth, h: active.offsetHeight } : null);
+      if (!active) {
+        setRect(null);
+        return;
+      }
+      const listRect = list.getBoundingClientRect();
+      const activeRect = active.getBoundingClientRect();
+      if (listRect.width > 0 || listRect.height > 0) {
+        setRect({
+          x: activeRect.left - listRect.left + list.scrollLeft,
+          y: activeRect.top - listRect.top + list.scrollTop,
+          w: activeRect.width,
+          h: activeRect.height,
+        });
+      } else {
+        let top = 0;
+        let left = 0;
+        let curr: HTMLElement | null = active;
+        while (curr && curr !== list) {
+          top += curr.offsetTop;
+          left += curr.offsetLeft;
+          curr = curr.offsetParent as HTMLElement | null;
+        }
+        setRect({ x: left, y: top, w: active.offsetWidth, h: active.offsetHeight });
+      }
     };
     measure();
     const mutations = new MutationObserver(measure);
-    mutations.observe(list, { subtree: true, attributes: true, attributeFilter: ["data-state"] });
+    mutations.observe(list, { subtree: true, attributes: true, attributeFilter: ["data-state", "data-active", "aria-current"] });
     const resize = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(measure);
     resize?.observe(list);
     list.querySelectorAll(itemSelector).forEach((item) => resize?.observe(item));

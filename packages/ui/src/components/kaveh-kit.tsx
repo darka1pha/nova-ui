@@ -1,8 +1,9 @@
 "use client";
 
 import { AlertTriangle, ArrowDownRight, ArrowUpRight, CheckCircle2, ChevronDown, Info, Mail, MapPin, Phone, Sparkles, X } from "lucide-react";
-import { forwardRef, useMemo, useState, type AnchorHTMLAttributes, type CSSProperties, type HTMLAttributes, type ReactNode } from "react";
+import { forwardRef, useEffect, useMemo, useState, type AnchorHTMLAttributes, type CSSProperties, type HTMLAttributes, type ReactNode } from "react";
 import { cn } from "../utils/cn.ts";
+import { useActiveRect } from "../utils/use-active-rect.ts";
 import { HorizonDivider, KavehEmblem, KavehLogo, KavehMark, kavehBrandColors as k, PortholeFrame, Tideband } from "./brand.tsx";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, MenuShortcut } from "./menu.tsx";
 import { focusRing } from "./shared.ts";
@@ -604,6 +605,140 @@ export interface KavehSidebarProps extends Omit<HTMLAttributes<HTMLElement>, "on
   label?: string;
 }
 
+function KavehSidebarMenu({
+  items,
+  activeId,
+  onNavigate,
+  collapsed,
+  navy,
+}: {
+  items: { id: string; label: ReactNode; labelFa?: ReactNode; icon?: ReactNode; badge?: ReactNode; href?: string; disabled?: boolean }[];
+  activeId?: string;
+  onNavigate?: (id: string) => void;
+  collapsed: boolean;
+  navy: boolean;
+}) {
+  const [list, setList] = useState<HTMLUListElement | null>(null);
+  const rect = useActiveRect(list, '[data-active="true"], [aria-current="page"]', 'button, a');
+  const [animate, setAnimate] = useState(false);
+
+  useEffect(() => {
+    if (!rect || animate) return;
+    const id = requestAnimationFrame(() => setAnimate(true));
+    return () => cancelAnimationFrame(id);
+  }, [rect, animate]);
+
+  const style = rect
+    ? {
+        left: 0,
+        top: 0,
+        width: rect.w,
+        height: rect.h,
+        translate: `${rect.x}px ${rect.y}px`,
+      }
+    : undefined;
+
+  return (
+    <ul
+      ref={setList}
+      data-indicator={rect ? "ready" : undefined}
+      className="group/kaveh-menu relative flex flex-col gap-0.5"
+    >
+      {rect ? (
+        <span
+          aria-hidden
+          data-kaveh-indicator=""
+          className={cn(
+            "pointer-events-none absolute z-0 rounded-md transition-[translate,width,height] motion-reduce:transition-none",
+            navy ? "bg-white/10" : "bg-primary-subtle",
+            animate && "duration-(--nv-duration-normal) ease-(--nv-ease-interactive)",
+          )}
+          style={style}
+        >
+          <span
+            className="absolute inset-y-1.5 start-0 w-[3px] rounded-full"
+            style={{ background: k.orange }}
+          />
+        </span>
+      ) : null}
+      {items.map((item) => {
+        const active = item.id === activeId;
+        const inner = (
+          <>
+            <span
+              aria-hidden
+              className={cn(
+                "absolute inset-y-1.5 start-0 w-[3px] rounded-full transition-opacity group-data-[indicator=ready]/kaveh-menu:hidden",
+                active ? "opacity-100" : "opacity-0",
+              )}
+              style={{ background: k.orange }}
+            />
+            {item.icon ? (
+              <span
+                aria-hidden
+                className={cn(
+                  "grid size-5 shrink-0 place-items-center transition-transform duration-(--nv-duration-normal) ease-(--nv-ease-interactive) [&_svg]:size-[18px]",
+                  active ? (navy ? "text-[#ffd0b0] scale-110" : "text-[light-dark(#b34700,#fc7d40)] scale-110") : "",
+                )}
+              >
+                {item.icon}
+              </span>
+            ) : null}
+            <span className={cn("flex min-w-0 flex-1 flex-col", collapsed && "sr-only")}>
+              <span className="truncate">{item.label}</span>
+              {/* On the lighter active/hover row, 75% white drops under 4.5:1; 85% keeps it. */}
+              {item.labelFa ? <Fa className={cn("truncate text-[11px] font-medium", navy ? "text-white/85" : "text-foreground-muted")}>{item.labelFa}</Fa> : null}
+            </span>
+            {item.badge && !collapsed ? <span className="shrink-0 rounded-full bg-[#f37537] px-1.5 text-[11px] font-bold text-[#0b1f3f]">{item.badge}</span> : null}
+          </>
+        );
+        const classes = cn(
+          "relative z-10 flex w-full items-center gap-3 rounded-md px-3 py-2 text-start text-sm font-medium transition-all duration-(--nv-duration-normal) ease-(--nv-ease-interactive) motion-reduce:transition-none",
+          collapsed && "justify-center px-0",
+          navy
+            ? active
+              ? "bg-white/10 text-white font-semibold group-data-[indicator=ready]/kaveh-menu:bg-transparent hover:group-data-[indicator=ready]/kaveh-menu:bg-transparent"
+              : "text-white/75 hover:bg-white/5 hover:text-white"
+            : active
+              ? "bg-primary-subtle text-primary-on-subtle font-semibold group-data-[indicator=ready]/kaveh-menu:bg-transparent hover:group-data-[indicator=ready]/kaveh-menu:bg-transparent"
+              : "text-foreground-secondary hover:bg-surface-hover hover:text-foreground",
+          item.disabled && "pointer-events-none opacity-50",
+          focusRing,
+        );
+        const tip = collapsed && typeof item.label === "string" ? item.label : undefined;
+        return (
+          <li key={item.id}>
+            {item.href ? (
+              <a
+                href={item.href}
+                data-active={active ? "true" : undefined}
+                aria-current={active ? "page" : undefined}
+                aria-disabled={item.disabled || undefined}
+                title={tip}
+                className={classes}
+              >
+                {inner}
+              </a>
+            ) : (
+              <button
+                type="button"
+                data-active={active ? "true" : undefined}
+                aria-current={active ? "page" : undefined}
+                disabled={item.disabled}
+                title={tip}
+                onClick={() => onNavigate?.(item.id)}
+                className={classes}
+              >
+                {inner}
+              </button>
+            )}
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
 /** An app sidebar in the Kaveh style: logo, grouped navigation with an orange active marker, and a footer. */
 export const KavehSidebar = forwardRef<HTMLElement, KavehSidebarProps>(function KavehSidebar(
   { variant = "light", sections, activeId, onNavigate, collapsed = false, logo, footer, label = "Main", className, style, ...props },
@@ -630,44 +765,13 @@ export const KavehSidebar = forwardRef<HTMLElement, KavehSidebarProps>(function 
         {sections.map((section, si) => (
           <div key={si} className="flex flex-col gap-1">
             {section.title && !collapsed ? <p className={cn("px-3 pb-1 text-[11px] font-semibold uppercase tracking-[0.18em]", navy ? "text-white/75" : "text-foreground-muted")}>{section.title}</p> : null}
-            <ul className="flex flex-col gap-0.5">
-              {section.items.map((item) => {
-                const active = item.id === activeId;
-                const inner = (
-                  <>
-                    <span aria-hidden className={cn("absolute inset-y-1.5 start-0 w-[3px] rounded-full transition-opacity", active ? "opacity-100" : "opacity-0")} style={{ background: k.orange }} />
-                    {item.icon ? <span aria-hidden className={cn("grid size-5 shrink-0 place-items-center [&_svg]:size-[18px]", active ? (navy ? "text-[#ffd0b0]" : "text-[light-dark(#b34700,#fc7d40)]") : "")}>{item.icon}</span> : null}
-                    <span className={cn("flex min-w-0 flex-1 flex-col", collapsed && "sr-only")}>
-                      <span className="truncate">{item.label}</span>
-                      {/* On the lighter active/hover row, 75% white drops under 4.5:1; 85% keeps it. */}
-                      {item.labelFa ? <Fa className={cn("truncate text-[11px] font-medium", navy ? "text-white/85" : "text-foreground-muted")}>{item.labelFa}</Fa> : null}
-                    </span>
-                    {item.badge && !collapsed ? <span className="shrink-0 rounded-full bg-[#f37537] px-1.5 text-[11px] font-bold text-[#0b1f3f]">{item.badge}</span> : null}
-                  </>
-                );
-                const classes = cn(
-                  "relative flex w-full items-center gap-3 rounded-md px-3 py-2 text-start text-sm font-medium transition-colors",
-                  collapsed && "justify-center px-0",
-                  navy ? (active ? "bg-white/10 text-white" : "text-white/75 hover:bg-white/5 hover:text-white") : active ? "bg-primary-subtle text-primary-on-subtle" : "text-foreground-secondary hover:bg-surface-hover hover:text-foreground",
-                  item.disabled && "pointer-events-none opacity-50",
-                  focusRing,
-                );
-                const tip = collapsed && typeof item.label === "string" ? item.label : undefined;
-                return (
-                  <li key={item.id}>
-                    {item.href ? (
-                      <a href={item.href} aria-current={active ? "page" : undefined} aria-disabled={item.disabled || undefined} title={tip} className={classes}>
-                        {inner}
-                      </a>
-                    ) : (
-                      <button type="button" aria-current={active ? "page" : undefined} disabled={item.disabled} title={tip} onClick={() => onNavigate?.(item.id)} className={classes}>
-                        {inner}
-                      </button>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
+            <KavehSidebarMenu
+              items={section.items}
+              activeId={activeId}
+              onNavigate={onNavigate}
+              collapsed={collapsed}
+              navy={navy}
+            />
           </div>
         ))}
       </nav>
