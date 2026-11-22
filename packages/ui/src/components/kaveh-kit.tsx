@@ -635,8 +635,17 @@ export const KavehSidebar = forwardRef<HTMLElement, KavehSidebarProps>(function 
                 const active = item.id === activeId;
                 const inner = (
                   <>
-                    <span aria-hidden className={cn("absolute inset-y-1.5 start-0 w-[3px] rounded-full transition-opacity", active ? "opacity-100" : "opacity-0")} style={{ background: k.orange }} />
-                    {item.icon ? <span aria-hidden className={cn("grid size-5 shrink-0 place-items-center [&_svg]:size-[18px]", active ? (navy ? "text-[#ffd0b0]" : "text-[light-dark(#b34700,#fc7d40)]") : "")}>{item.icon}</span> : null}
+                    <span
+                      aria-hidden
+                      className={cn(
+                        "absolute inset-y-1.5 start-0 w-[3px] rounded-full transition-all duration-(--nv-duration-normal) ease-(--nv-ease-interactive) motion-reduce:transition-none",
+                        active
+                          ? "opacity-100 scale-y-100 shadow-[0_0_8px_rgba(243,117,55,0.7)] animate-nv-bounce-in motion-reduce:animate-none"
+                          : "opacity-0 scale-y-50",
+                      )}
+                      style={{ background: k.orange }}
+                    />
+                    {item.icon ? <span aria-hidden className={cn("grid size-5 shrink-0 place-items-center transition-transform duration-(--nv-duration-normal) ease-(--nv-ease-interactive) [&_svg]:size-[18px]", active ? (navy ? "text-[#ffd0b0] scale-110" : "text-[light-dark(#b34700,#fc7d40)] scale-110") : "")}>{item.icon}</span> : null}
                     <span className={cn("flex min-w-0 flex-1 flex-col", collapsed && "sr-only")}>
                       <span className="truncate">{item.label}</span>
                       {/* On the lighter active/hover row, 75% white drops under 4.5:1; 85% keeps it. */}
@@ -646,9 +655,9 @@ export const KavehSidebar = forwardRef<HTMLElement, KavehSidebarProps>(function 
                   </>
                 );
                 const classes = cn(
-                  "relative flex w-full items-center gap-3 rounded-md px-3 py-2 text-start text-sm font-medium transition-colors",
+                  "relative flex w-full items-center gap-3 rounded-md px-3 py-2 text-start text-sm font-medium transition-all duration-(--nv-duration-normal) ease-(--nv-ease-interactive) motion-reduce:transition-none",
                   collapsed && "justify-center px-0",
-                  navy ? (active ? "bg-white/10 text-white" : "text-white/75 hover:bg-white/5 hover:text-white") : active ? "bg-primary-subtle text-primary-on-subtle" : "text-foreground-secondary hover:bg-surface-hover hover:text-foreground",
+                  navy ? (active ? "bg-white/10 text-white shadow-xs font-semibold" : "text-white/75 hover:bg-white/5 hover:text-white") : active ? "bg-primary-subtle text-primary-on-subtle shadow-xs font-semibold" : "text-foreground-secondary hover:bg-surface-hover hover:text-foreground",
                   item.disabled && "pointer-events-none opacity-50",
                   focusRing,
                 );

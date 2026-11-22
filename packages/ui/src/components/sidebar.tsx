@@ -448,7 +448,7 @@ export function SidebarMenuItem({ className, ...props }: HTMLAttributes<HTMLLIEl
 }
 
 const sidebarMenuButtonVariants = cva(
-  `peer/menu-button group/menu-btn relative flex w-full items-center gap-2.5 rounded-md p-2 text-start font-medium outline-none ${transition} ${focusRing} [&_svg]:size-4 [&_svg]:shrink-0 [&>svg]:transition-transform [&>svg]:duration-(--nv-duration-normal) [&>svg]:ease-(--nv-ease-interactive) hover:[&>svg]:scale-110 active:scale-(--nv-press-scale,0.98) disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50`,
+  `peer/menu-button group/menu-btn relative flex w-full items-center gap-2.5 rounded-md p-2 text-start font-medium outline-none ${transition} ${focusRing} [&_svg]:size-4 [&_svg]:shrink-0 [&>svg]:transition-transform [&>svg]:duration-(--nv-duration-normal) [&>svg]:ease-(--nv-ease-interactive) hover:[&>svg]:scale-110 active:scale-(--nv-press-scale,0.98) motion-reduce:transition-none disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50`,
   {
     variants: {
       variant: {
@@ -462,8 +462,8 @@ const sidebarMenuButtonVariants = cva(
       },
       /** Marks the current page (aria-current="page"). */
       isActive: {
-        // A slim indicator bar on the leading edge plus a tinted fill; the icon picks up the brand color.
-        true: "bg-primary-subtle text-primary-on-subtle font-semibold hover:bg-primary-subtle-hover [&_svg]:text-primary-text before:absolute before:inset-y-2 before:-start-0.5 before:w-1 before:rounded-full before:bg-primary-solid before:animate-nv-bounce-in group-data-[collapsible=icon]/sidebar:before:hidden",
+        // A slim indicator bar on the leading edge plus a tinted fill; the icon picks up the brand color and animates into focus.
+        true: "bg-primary-subtle text-primary-on-subtle font-semibold hover:bg-primary-subtle-hover shadow-xs [&_svg]:text-primary-text [&_svg]:scale-110 before:absolute before:inset-y-1.5 before:-start-0.5 before:w-1 before:rounded-full before:bg-primary-solid before:shadow-[0_0_8px_var(--nv-color-primary-solid)] before:animate-nv-bounce-in motion-reduce:before:animate-none group-data-[collapsible=icon]/sidebar:before:hidden group-data-[collapsible=icon]/sidebar:ring-2 group-data-[collapsible=icon]/sidebar:ring-primary/40 group-data-[collapsible=icon]/sidebar:scale-105",
         false: "",
       },
     },
@@ -584,10 +584,10 @@ export const SidebarMenuSubButton = forwardRef<
       data-active={isActive ? "true" : "false"}
       aria-current={isActive ? "page" : undefined}
       className={cn(
-        "relative flex h-8 w-full items-center gap-2 rounded-md px-2 text-start text-xs font-medium text-foreground-secondary hover:bg-surface-hover hover:text-foreground transition-colors duration-(--nv-duration-fast) ease-(--nv-ease-interactive) active:scale-(--nv-press-scale,0.98) [&_svg]:size-3.5 [&_svg]:shrink-0",
-        // The active sub item lights up its segment of the guide line.
+        "relative flex h-8 w-full items-center gap-2 rounded-md px-2 text-start text-xs font-medium text-foreground-secondary hover:bg-surface-hover hover:text-foreground transition-all duration-(--nv-duration-normal) ease-(--nv-ease-interactive) active:scale-(--nv-press-scale,0.98) motion-reduce:transition-none [&_svg]:size-3.5 [&_svg]:shrink-0",
+        // The active sub item lights up its segment of the guide line with animated bounce-in and glow.
         isActive &&
-          "text-primary-text font-semibold before:absolute before:inset-y-1.5 before:-start-[calc(0.625rem+1px)] before:w-0.5 before:rounded-full before:bg-primary-solid before:animate-nv-bounce-in",
+          "text-primary-text font-semibold bg-primary-subtle/50 before:absolute before:inset-y-1.5 before:-start-[calc(0.625rem+1px)] before:w-0.5 before:rounded-full before:bg-primary-solid before:shadow-[0_0_6px_var(--nv-color-primary-solid)] before:animate-nv-bounce-in motion-reduce:before:animate-none",
         focusRing,
         className,
       )}
@@ -956,10 +956,10 @@ export const DualSidebar = forwardRef<HTMLElement, DualSidebarProps>(function Du
                     item.onClick?.();
                   }}
                   className={cn(
-                    "relative flex size-11 items-center justify-center rounded-xl transition-all duration-(--nv-duration-normal) ease-(--nv-ease-interactive) active:scale-95",
+                    "relative flex size-11 items-center justify-center rounded-xl transition-all duration-(--nv-duration-normal) ease-(--nv-ease-interactive) active:scale-95 motion-reduce:transition-none",
                     focusRing,
                     isSelected
-                      ? "bg-primary text-primary-on-solid shadow-glow-primary scale-105 animate-nv-pop-in"
+                      ? "bg-primary text-primary-on-solid shadow-glow-primary scale-105 animate-nv-pop-in motion-reduce:animate-none after:absolute after:-start-1 after:inset-y-2.5 after:w-1 after:rounded-e-full after:bg-primary-solid after:shadow-[0_0_8px_var(--nv-color-primary-solid)] after:animate-nv-bounce-in motion-reduce:after:animate-none"
                       : "text-foreground-secondary hover:bg-surface-hover hover:text-foreground hover:scale-105",
                   )}
                 >

@@ -1661,7 +1661,7 @@ function InteractiveSidebarShowcase() {
                     <StatusIndicator status="online" label="Live" pulse />
                   </div>
                 </header>
-                <div key={activePage} className="p-5 flex flex-col gap-4">
+                <div key={activePage} className="p-5 flex flex-col gap-4 animate-nv-fade-in animate-nv-slide-up">
                   {renderActivePageContent()}
                 </div>
               </SidebarInset>
@@ -1693,7 +1693,7 @@ function InteractiveSidebarShowcase() {
                   <Separator orientation="vertical" className="h-4" />
                   <Text weight="semibold" size="sm" className="capitalize">{activeWorkspace === "ws-1" ? "Engineering" : activeWorkspace === "ws-2" ? "Design" : "Ops"} · {activePage}</Text>
                 </div>
-                <div key={activePage} className="p-2 flex flex-col gap-4">
+                <div key={activePage} className="p-2 flex flex-col gap-4 animate-nv-fade-in animate-nv-slide-up">
                   {renderActivePageContent()}
                 </div>
               </div>
@@ -1715,7 +1715,7 @@ function InteractiveSidebarShowcase() {
                   <Separator orientation="vertical" className="h-4" />
                   <Text weight="semibold" size="sm" className="capitalize">Floating Canvas · {activePage}</Text>
                 </div>
-                <div key={activePage} className="p-2 flex flex-col gap-4">
+                <div key={activePage} className="p-2 flex flex-col gap-4 animate-nv-fade-in animate-nv-slide-up">
                   {renderActivePageContent()}
                 </div>
               </div>
