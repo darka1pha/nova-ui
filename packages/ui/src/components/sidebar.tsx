@@ -445,7 +445,11 @@ export const SidebarMenu = forwardRef<HTMLUListElement, HTMLAttributes<HTMLUList
   function SidebarMenu({ className, children, ...props }, ref) {
     const [list, setList] = useState<HTMLUListElement | null>(null);
     const composed = useComposedRefs(ref, setList);
-    const rect = useActiveRect(list, '[data-active="true"], [aria-current="page"]', 'button, a, [role="button"]');
+    const rect = useActiveRect(
+      list,
+      '[data-slot="sidebar-menu-button"][data-active="true"], [data-slot="sidebar-menu-button"][aria-current="page"]',
+      '[data-slot="sidebar-menu-button"]',
+    );
     const [animate, setAnimate] = useState(false);
 
     useEffect(() => {
@@ -541,6 +545,7 @@ export const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButton
   const button = (
     <Comp
       ref={ref}
+      data-slot="sidebar-menu-button"
       data-active={isActive ? "true" : "false"}
       aria-current={isActive ? "page" : undefined}
       className={cn(
@@ -604,7 +609,11 @@ export const SidebarMenuSub = forwardRef<HTMLUListElement, HTMLAttributes<HTMLUL
   function SidebarMenuSub({ className, children, ...props }, ref) {
     const [list, setList] = useState<HTMLUListElement | null>(null);
     const composed = useComposedRefs(ref, setList);
-    const rect = useActiveRect(list, '[data-active="true"], [aria-current="page"]', 'button, a');
+    const rect = useActiveRect(
+      list,
+      '[data-slot="sidebar-menu-sub-button"][data-active="true"], [data-slot="sidebar-menu-sub-button"][aria-current="page"]',
+      '[data-slot="sidebar-menu-sub-button"]',
+    );
     const [animate, setAnimate] = useState(false);
 
     useEffect(() => {
@@ -638,7 +647,7 @@ export const SidebarMenuSub = forwardRef<HTMLUListElement, HTMLAttributes<HTMLUL
             aria-hidden
             data-sidebar-sub-indicator=""
             className={cn(
-              "pointer-events-none absolute z-0 rounded-md bg-primary-subtle/50 transition-[translate,width,height] motion-reduce:transition-none",
+              "pointer-events-none absolute z-0 rounded-md bg-primary-subtle transition-[translate,width,height] motion-reduce:transition-none",
               animate && "duration-(--nv-duration-normal) ease-(--nv-ease-interactive)",
             )}
             style={style}
@@ -668,13 +677,14 @@ export const SidebarMenuSubButton = forwardRef<
       ref={ref as never}
       href={href}
       {...(isButton ? { type: "button" as never } : null)}
+      data-slot="sidebar-menu-sub-button"
       data-active={isActive ? "true" : "false"}
       aria-current={isActive ? "page" : undefined}
       className={cn(
         "relative z-10 flex h-8 w-full items-center gap-2 rounded-md px-2 text-start text-xs font-medium text-foreground-secondary hover:bg-surface-hover hover:text-foreground transition-all duration-(--nv-duration-normal) ease-(--nv-ease-interactive) active:scale-(--nv-press-scale,0.98) motion-reduce:transition-none [&_svg]:size-3.5 [&_svg]:shrink-0",
         // The active sub item lights up its segment of the guide line.
         isActive &&
-          "text-primary-text font-semibold bg-primary-subtle/50 group-data-[indicator=ready]/sub-menu:bg-transparent hover:group-data-[indicator=ready]/sub-menu:bg-transparent before:absolute before:inset-y-1.5 before:-start-[calc(0.625rem+1px)] before:w-0.5 before:rounded-full before:bg-primary-solid group-data-[indicator=ready]/sub-menu:before:hidden",
+          "text-primary-text font-semibold bg-primary-subtle group-data-[indicator=ready]/sub-menu:bg-transparent hover:group-data-[indicator=ready]/sub-menu:bg-transparent before:absolute before:inset-y-1.5 before:-start-[calc(0.625rem+1px)] before:w-0.5 before:rounded-full before:bg-primary-solid group-data-[indicator=ready]/sub-menu:before:hidden",
         focusRing,
         className,
       )}
