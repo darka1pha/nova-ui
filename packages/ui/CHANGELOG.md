@@ -1,5 +1,16 @@
 # @darkalpha/nova-ui
 
+## 0.10.0
+
+### Minor Changes
+
+- - `Carousel`: added swipe and pointer drag gesture controls (`swipeable` prop, RTL-aware direction detection, and pointer capture).
+  - `Sidebar`: added smooth gliding active indicator animations across `SidebarMenu`, `SidebarMenuSub`, `DualSidebar` rail items, and `KavehSidebar`, with reduced-motion support.
+
+### Patch Changes
+
+- @darkalpha/nova-tokens@0.10.0
+
 ## 0.9.0
 
 ### Minor Changes
