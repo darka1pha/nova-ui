@@ -20,6 +20,8 @@ import {
   type ReactNode,
 } from "react";
 import { cn } from "../utils/cn.ts";
+import { useComposedRefs } from "../utils/compose-refs.ts";
+import { useActiveRect } from "../utils/use-active-rect.ts";
 import { buttonVariants } from "./button.tsx";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./disclosure.tsx";
 import { Separator, VisuallyHidden } from "./layout.tsx";
@@ -439,16 +441,61 @@ export function SidebarGroupContent({ className, ...props }: HTMLAttributes<HTML
   return <div className={cn("w-full text-sm", className)} {...props} />;
 }
 
-export function SidebarMenu({ className, ...props }: HTMLAttributes<HTMLUListElement>) {
-  return <ul className={cn("flex w-full min-w-0 flex-col gap-1 list-none p-0 m-0", className)} {...props} />;
-}
+export const SidebarMenu = forwardRef<HTMLUListElement, HTMLAttributes<HTMLUListElement>>(
+  function SidebarMenu({ className, children, ...props }, ref) {
+    const [list, setList] = useState<HTMLUListElement | null>(null);
+    const composed = useComposedRefs(ref, setList);
+    const rect = useActiveRect(list, '[data-active="true"], [aria-current="page"]', 'button, a, [role="button"]');
+    const [animate, setAnimate] = useState(false);
+
+    useEffect(() => {
+      if (!rect || animate) return;
+      const id = requestAnimationFrame(() => setAnimate(true));
+      return () => cancelAnimationFrame(id);
+    }, [rect, animate]);
+
+    const style = rect
+      ? {
+          left: 0,
+          top: 0,
+          width: rect.w,
+          height: rect.h,
+          translate: `${rect.x}px ${rect.y}px`,
+        }
+      : undefined;
+
+    return (
+      <ul
+        ref={composed}
+        data-indicator={rect ? "ready" : undefined}
+        className={cn("group/menu relative flex w-full min-w-0 flex-col gap-1 list-none p-0 m-0", className)}
+        {...props}
+      >
+        {rect ? (
+          <span
+            aria-hidden
+            data-sidebar-indicator=""
+            className={cn(
+              "pointer-events-none absolute z-0 rounded-md bg-primary-subtle transition-[translate,width,height] motion-reduce:transition-none",
+              animate && "duration-(--nv-duration-normal) ease-(--nv-ease-interactive)",
+            )}
+            style={style}
+          >
+            <span className="absolute inset-y-1.5 -start-0.5 w-1 rounded-full bg-primary-solid group-data-[collapsible=icon]/sidebar:hidden" />
+          </span>
+        ) : null}
+        {children}
+      </ul>
+    );
+  },
+);
 
 export function SidebarMenuItem({ className, ...props }: HTMLAttributes<HTMLLIElement>) {
   return <li className={cn("group/menu-item relative list-none", className)} {...props} />;
 }
 
 const sidebarMenuButtonVariants = cva(
-  `peer/menu-button group/menu-btn relative flex w-full items-center gap-2.5 rounded-md p-2 text-start font-medium outline-none ${transition} ${focusRing} [&_svg]:size-4 [&_svg]:shrink-0 [&>svg]:transition-transform [&>svg]:duration-(--nv-duration-normal) [&>svg]:ease-(--nv-ease-interactive) hover:[&>svg]:scale-110 active:scale-(--nv-press-scale,0.98) motion-reduce:transition-none disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50`,
+  `peer/menu-button group/menu-btn relative z-10 flex w-full items-center gap-2.5 rounded-md p-2 text-start font-medium outline-none ${transition} ${focusRing} [&_svg]:size-4 [&_svg]:shrink-0 [&>svg]:transition-transform [&>svg]:duration-(--nv-duration-normal) [&>svg]:ease-(--nv-ease-interactive) hover:[&>svg]:scale-110 active:scale-(--nv-press-scale,0.98) motion-reduce:transition-none disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50`,
   {
     variants: {
       variant: {
@@ -462,8 +509,8 @@ const sidebarMenuButtonVariants = cva(
       },
       /** Marks the current page (aria-current="page"). */
       isActive: {
-        // A slim indicator bar on the leading edge plus a tinted fill; the icon picks up the brand color and animates into focus.
-        true: "bg-primary-subtle text-primary-on-subtle font-semibold hover:bg-primary-subtle-hover shadow-xs [&_svg]:text-primary-text [&_svg]:scale-110 before:absolute before:inset-y-1.5 before:-start-0.5 before:w-1 before:rounded-full before:bg-primary-solid before:shadow-[0_0_8px_var(--nv-color-primary-solid)] before:animate-nv-bounce-in motion-reduce:before:animate-none group-data-[collapsible=icon]/sidebar:before:hidden group-data-[collapsible=icon]/sidebar:ring-2 group-data-[collapsible=icon]/sidebar:ring-primary/40 group-data-[collapsible=icon]/sidebar:scale-105",
+        // When the sliding indicator is ready, the active item's background is transparent so the indicator glides behind it.
+        true: "text-primary-on-subtle font-semibold [&_svg]:text-primary-text bg-primary-subtle group-data-[indicator=ready]/menu:bg-transparent hover:group-data-[indicator=ready]/menu:bg-transparent before:absolute before:inset-y-1.5 before:-start-0.5 before:w-1 before:rounded-full before:bg-primary-solid group-data-[indicator=ready]/menu:before:hidden group-data-[collapsible=icon]/sidebar:before:hidden group-data-[collapsible=icon]/sidebar:ring-2 group-data-[collapsible=icon]/sidebar:ring-primary/40 group-data-[collapsible=icon]/sidebar:scale-105",
         false: "",
       },
     },
@@ -553,17 +600,57 @@ export function SidebarMenuBadge({ className, ...props }: HTMLAttributes<HTMLSpa
   );
 }
 
-export function SidebarMenuSub({ className, ...props }: HTMLAttributes<HTMLUListElement>) {
-  return (
-    <ul
-      className={cn(
-        "ms-[1.125rem] flex flex-col gap-0.5 border-s border-border ps-2.5 py-1 list-none m-0 group-data-[collapsible=icon]/sidebar:hidden",
-        className,
-      )}
-      {...props}
-    />
-  );
-}
+export const SidebarMenuSub = forwardRef<HTMLUListElement, HTMLAttributes<HTMLUListElement>>(
+  function SidebarMenuSub({ className, children, ...props }, ref) {
+    const [list, setList] = useState<HTMLUListElement | null>(null);
+    const composed = useComposedRefs(ref, setList);
+    const rect = useActiveRect(list, '[data-active="true"], [aria-current="page"]', 'button, a');
+    const [animate, setAnimate] = useState(false);
+
+    useEffect(() => {
+      if (!rect || animate) return;
+      const id = requestAnimationFrame(() => setAnimate(true));
+      return () => cancelAnimationFrame(id);
+    }, [rect, animate]);
+
+    const style = rect
+      ? {
+          left: 0,
+          top: 0,
+          width: rect.w,
+          height: rect.h,
+          translate: `${rect.x}px ${rect.y}px`,
+        }
+      : undefined;
+
+    return (
+      <ul
+        ref={composed}
+        data-indicator={rect ? "ready" : undefined}
+        className={cn(
+          "group/sub-menu relative ms-[1.125rem] flex flex-col gap-0.5 border-s border-border ps-2.5 py-1 list-none m-0 group-data-[collapsible=icon]/sidebar:hidden",
+          className,
+        )}
+        {...props}
+      >
+        {rect ? (
+          <span
+            aria-hidden
+            data-sidebar-sub-indicator=""
+            className={cn(
+              "pointer-events-none absolute z-0 rounded-md bg-primary-subtle/50 transition-[translate,width,height] motion-reduce:transition-none",
+              animate && "duration-(--nv-duration-normal) ease-(--nv-ease-interactive)",
+            )}
+            style={style}
+          >
+            <span className="absolute inset-y-1.5 -start-[calc(0.625rem+1px)] w-0.5 rounded-full bg-primary-solid" />
+          </span>
+        ) : null}
+        {children}
+      </ul>
+    );
+  },
+);
 
 export function SidebarMenuSubItem({ className, ...props }: HTMLAttributes<HTMLLIElement>) {
   return <li className={cn("relative list-none", className)} {...props} />;
@@ -584,10 +671,10 @@ export const SidebarMenuSubButton = forwardRef<
       data-active={isActive ? "true" : "false"}
       aria-current={isActive ? "page" : undefined}
       className={cn(
-        "relative flex h-8 w-full items-center gap-2 rounded-md px-2 text-start text-xs font-medium text-foreground-secondary hover:bg-surface-hover hover:text-foreground transition-all duration-(--nv-duration-normal) ease-(--nv-ease-interactive) active:scale-(--nv-press-scale,0.98) motion-reduce:transition-none [&_svg]:size-3.5 [&_svg]:shrink-0",
-        // The active sub item lights up its segment of the guide line with animated bounce-in and glow.
+        "relative z-10 flex h-8 w-full items-center gap-2 rounded-md px-2 text-start text-xs font-medium text-foreground-secondary hover:bg-surface-hover hover:text-foreground transition-all duration-(--nv-duration-normal) ease-(--nv-ease-interactive) active:scale-(--nv-press-scale,0.98) motion-reduce:transition-none [&_svg]:size-3.5 [&_svg]:shrink-0",
+        // The active sub item lights up its segment of the guide line.
         isActive &&
-          "text-primary-text font-semibold bg-primary-subtle/50 before:absolute before:inset-y-1.5 before:-start-[calc(0.625rem+1px)] before:w-0.5 before:rounded-full before:bg-primary-solid before:shadow-[0_0_6px_var(--nv-color-primary-solid)] before:animate-nv-bounce-in motion-reduce:before:animate-none",
+          "text-primary-text font-semibold bg-primary-subtle/50 group-data-[indicator=ready]/sub-menu:bg-transparent hover:group-data-[indicator=ready]/sub-menu:bg-transparent before:absolute before:inset-y-1.5 before:-start-[calc(0.625rem+1px)] before:w-0.5 before:rounded-full before:bg-primary-solid group-data-[indicator=ready]/sub-menu:before:hidden",
         focusRing,
         className,
       )}
@@ -896,6 +983,25 @@ export const DualSidebar = forwardRef<HTMLElement, DualSidebarProps>(function Du
 ) {
   const { isMobile, openMobile, setOpenMobile } = useSidebar();
   const [activeRailId, setActiveRailId] = useState<string>(railItems[0]?.id ?? "");
+  const [railList, setRailList] = useState<HTMLDivElement | null>(null);
+  const railRect = useActiveRect(railList, '[data-active="true"], [aria-current="true"]', 'button');
+  const [railAnimate, setRailAnimate] = useState(false);
+
+  useEffect(() => {
+    if (!railRect || railAnimate) return;
+    const id = requestAnimationFrame(() => setRailAnimate(true));
+    return () => cancelAnimationFrame(id);
+  }, [railRect, railAnimate]);
+
+  const railIndicatorStyle = railRect
+    ? {
+        left: 0,
+        top: 0,
+        width: railRect.w,
+        height: railRect.h,
+        translate: `${railRect.x}px ${railRect.y}px`,
+      }
+    : undefined;
 
   if (isMobile) {
     return (
@@ -942,7 +1048,24 @@ export const DualSidebar = forwardRef<HTMLElement, DualSidebarProps>(function Du
       {/* Tier 1: Fixed primary icon rail */}
       <div className="flex w-16 flex-col items-center border-e border-border bg-surface-sunken py-3 px-2 shrink-0">
         {railHeader ? <div className="mb-4 shrink-0">{railHeader}</div> : null}
-        <div className="flex flex-1 flex-col items-center gap-2 w-full">
+        <div
+          ref={setRailList}
+          data-indicator={railRect ? "ready" : undefined}
+          className="group/rail relative flex flex-1 flex-col items-center gap-2 w-full"
+        >
+          {railRect ? (
+            <span
+              aria-hidden
+              data-rail-indicator=""
+              className={cn(
+                "pointer-events-none absolute z-0 rounded-xl bg-primary transition-[translate,width,height] motion-reduce:transition-none",
+                railAnimate && "duration-(--nv-duration-normal) ease-(--nv-ease-interactive)",
+              )}
+              style={railIndicatorStyle}
+            >
+              <span className="absolute -start-1 inset-y-2.5 w-1 rounded-e-full bg-primary-solid" />
+            </span>
+          ) : null}
           {railItems.map((item) => {
             const isSelected = activeRailId === item.id || item.isActive;
             return (
@@ -950,22 +1073,23 @@ export const DualSidebar = forwardRef<HTMLElement, DualSidebarProps>(function Du
                 <button
                   type="button"
                   aria-label={item.label}
+                  data-active={isSelected ? "true" : undefined}
                   aria-current={isSelected ? "true" : undefined}
                   onClick={() => {
                     setActiveRailId(item.id);
                     item.onClick?.();
                   }}
                   className={cn(
-                    "relative flex size-11 items-center justify-center rounded-xl transition-all duration-(--nv-duration-normal) ease-(--nv-ease-interactive) active:scale-95 motion-reduce:transition-none",
+                    "relative z-10 flex size-11 items-center justify-center rounded-xl transition-all duration-(--nv-duration-normal) ease-(--nv-ease-interactive) active:scale-95 motion-reduce:transition-none",
                     focusRing,
                     isSelected
-                      ? "bg-primary text-primary-on-solid shadow-glow-primary scale-105 animate-nv-pop-in motion-reduce:animate-none after:absolute after:-start-1 after:inset-y-2.5 after:w-1 after:rounded-e-full after:bg-primary-solid after:shadow-[0_0_8px_var(--nv-color-primary-solid)] after:animate-nv-bounce-in motion-reduce:after:animate-none"
+                      ? "text-primary-on-solid bg-primary group-data-[indicator=ready]/rail:bg-transparent"
                       : "text-foreground-secondary hover:bg-surface-hover hover:text-foreground hover:scale-105",
                   )}
                 >
                   {item.icon}
                   {item.badge ? (
-                    <span className="absolute -top-1 -end-1 flex size-4 items-center justify-center rounded-full bg-danger text-[10px] font-bold text-danger-on-solid animate-nv-pulse">
+                    <span className="absolute -top-1 -end-1 flex size-4 items-center justify-center rounded-full bg-danger text-[10px] font-bold text-danger-on-solid">
                       {item.badge}
                     </span>
                   ) : null}
